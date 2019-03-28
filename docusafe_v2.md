@@ -1,5 +1,41 @@
+# Docusafe2 virtual filesystem analogy
+Docusafe2 can be viewed as virtual filesystem, that has:
+- private encrypted user section - **private** folder 
+- documents that are shared with user - **inbox** folder
+- folder where user can share documents with other users - **share**. 
+
+For example:
+```
+│   
+└───private
+│   │
+│   └─── s3
+│   │    │
+│   │    └───bucket1
+│   │    │   │     private_file1.txt
+│   │    │   │     private_file2.txt
+│   │    │
+│   │    └───bucket2
+│   │       │      private_file1.txt
+│   │
+│   └───minio
+│       │
+│       └───bucket1  
+│           │     private_fileA.txt
+│   
+└───inbox
+│   │   file021.txt
+│   │   file022.txt
+│   
+└───share
+    │
+    └─── my_friend
+         │       shared_file1.txt
+```
+
+
 # Top level application architecture for server based application
-![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/top_level.puml&fmt=png&vvv=3)
+![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/top_level.puml&fmt=png&vvv=4)
 
 # General view of lookup server operations
 ![Lookup server general view](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/generic_view.puml&fmt=png&vvv=9)

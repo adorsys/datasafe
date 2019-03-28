@@ -14,7 +14,6 @@ ss->"Storage adapter" as sa : read keystore
 sa->ss : user keystore
 ss->ss : Decrypt **keystore** using **<&key>password**
 ss->sa : List all inbox files
-ss->ss : Decrypt inbox file paths using **keystore: <&key>private key**
 ss->ls : Inbox file list
 ls->User : List of files in inbox
 @enduml

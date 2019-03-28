@@ -13,7 +13,7 @@ loop Each path
   sa->ss : user keystore
   ss->ss : Decrypt **keystore** using **<&key>password**
   ss->sa : List all private files
-  ss->ss : Decrypt file paths using **keystore**
+  ss->ss : Decrypt file paths using **keystore: <&key>path secret**
   ss->ls : File list
 end
 ls->User : List of all files across all known user DFS's

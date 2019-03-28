@@ -1,24 +1,24 @@
 @startuml
 
 node ds [
-  Docusafe server
+  **Docusafe server**
   ===
   REST api
 ]
 node ls [
-  Lookup service
+  **Lookup service**
   ===
   private storage(s) location and ACESS_KEY/SECRET_KEY
   inbox storage location and ACESS_KEY/SECRET_KEY
 ]
 node vfs [
-  Virtual filesystem service
+  **Virtual filesystem service**
   ===
   create virtual filesystem (new Docusafe-managed user)
   mount virtual filesystem (register user filesystem)
 ]
 node sas [
-  Storage adapter service
+  **Storage adapter service**
   ===
   Encrypt/decrypt data stream
   List files within storage
