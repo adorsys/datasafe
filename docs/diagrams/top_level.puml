@@ -1,0 +1,16 @@
+@startuml
+
+component "Docusafe server" as ds
+component "Lookup service" as ls
+component "Virtual filesystem service" as vfs
+component "Storage adapter service" as sas
+
+ds -down-> ls
+ls -down-> ds
+ds -down-> vfs
+vfs -down-> ds
+ds -down-> sas
+sas -down-> ds
+ls -down-> sas
+sas -down-> ls
+@enduml
