@@ -1,0 +1,38 @@
+@startuml
+title Create user/ Register user
+hide footbox
+actor User
+box "Lookup Service" #LightBlue
+participant "get Key Store" as lks
+participant "get DFS Creds" as ldc
+end box
+
+box "Virtual File System Service" #LightGreen
+participant "create FS" as cfs
+participant "mount FS" as mfs
+end box
+
+box "Storage service" #LightYellow
+participant "create storage" as cs
+participant "cms ecryption" as cms
+end box
+
+User->lks : **<&key>login/password**
+lks->User : User's Key Store
+User->ldc : **<&key>login/password**
+ldc->User : User's storages credentials
+
+
+User->cfs : public key, storage type
+cfs->cs : storage prefix
+cs->"S3" as s3 : persistence
+s3->cs : accessKey, secretKey
+cs->cfs : dfs creds
+cfs->User : created default **/docusafe** and **/inbox** storages
+
+
+
+User->mfs : Register existing list of publicKey/Storages(accessKey/secretKey)
+mfs->User : success (can be used by docusafe)
+
+@enduml
