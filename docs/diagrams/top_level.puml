@@ -1,9 +1,29 @@
 @startuml
 
-component "Docusafe server" as ds
-component "Lookup service" as ls
-component "Virtual filesystem service" as vfs
-component "Storage adapter service" as sas
+node ds [
+  Docusafe server
+  ===
+  REST api
+]
+node ls [
+  Lookup service
+  ===
+  private storage(s) location and ACESS_KEY/SECRET_KEY
+  inbox storage location and ACESS_KEY/SECRET_KEY
+]
+node vfs [
+  Virtual filesystem service
+  ===
+  create virtual filesystem (new Docusafe-managed user)
+  mount virtual filesystem (register user filesystem)
+]
+node sas [
+  Storage adapter service
+  ===
+  Encrypt/decrypt data stream
+  List files within storage
+  Read/write bytes to storage using ACESS_KEY/SECRET_KEY
+]
 
 ds -down-> ls
 ls -down-> ds
