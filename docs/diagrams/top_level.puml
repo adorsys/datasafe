@@ -1,5 +1,13 @@
 @startuml
 
+actor User
+
+node ts [
+  **Transactional layer**
+  ===
+  REST api
+]
+
 node ds [
   **Docusafe server**
   ===
@@ -25,6 +33,11 @@ node sas [
   Read/write bytes to storage using ACESS_KEY/SECRET_KEY
 ]
 
+User <-down-> ts
+User <-down-> ds
+
+ts -down-> ds
+ds -down-> ts
 ds -down-> ls
 ls -down-> ds
 ds -down-> vfs
