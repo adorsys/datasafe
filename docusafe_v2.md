@@ -33,6 +33,31 @@ For example:
          │       shared_file1.txt
 ```
 
+# Lookup server API's
+Primary purpose of each lookup server api element is to answer **where** 
+(i.e. in what *s3 bucket* and using which *credentials*) **storage service** should look and decrypt files.
+
+### Operations with private files
+
+Full CRUD on private file section
+
+* [List files / get file content](api/private/get.md) : `GET /api/mount/private/<path to folder or file>`
+* [Add some private file](api/private/put.md) : `PUT /api/mount/private/<path>`
+* [Remove private file](api/private/delete.md) : `DELETE /api/mount/private/<path to folder or file>`
+
+### Operations with inbox
+
+List-Read-Delete operations
+
+* [List files / get file content](api/inbox/get.md) : `GET /api/mount/inbox/<filename or empty>`
+* [Remove file from inbox](api/inbox/delete.md) : `DELETE /api/mount/inbox/<filename>`
+
+### File sharing operations
+
+User-list and write-only operations
+
+* [List users who we can share with](api/share/get.md) : `GET /api/mount/share/`
+* [Share file (snapshot) with user](api/share/put.md) : `PUT /api/mount/share/<username>/<filename>`
 
 # Top level application architecture for server based application
 ![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/top_level.puml&fmt=png&vvv=5)
