@@ -2,7 +2,7 @@
 Docusafe2 can be viewed as virtual filesystem, that has:
 - private encrypted user section - **private** folder 
 - documents that are shared with user - **inbox** folder
-- folder where user can share documents with other users - **share**. 
+- folder where user can share documents with other users - **send_to**. 
 
 For example:
 ```
@@ -27,15 +27,32 @@ For example:
 │   │   file021.txt
 │   │   file022.txt
 │   
-└───share
-    │
-    └─── my_friend
-         │       shared_file1.txt
+└───send_to
+│   │
+│   └───joe
+│       │ shared_file1.txt
+│
+└───whitelist
+│   │       friend-of-mine.pub-key
+│
+└───public-keys
+    │         jane-doe.pub-key
 ```
 
-# Lookup server API's
+# Directory server API
+Directory service is responsible for user creation/data sharing/shared location management. It consists of 
+*Lookup service* and *Registration service*  
+
+### Registration service API
+* [List files / get file content](docs/api/private/get.md) : `GET /api/mount/private/<path to folder or file>`
+
+### Lookup service API
+* [List files / get file content](docs/api/private/get.md) : `GET /api/mount/private/<path to folder or file>`
+
 Primary purpose of each lookup server api element is to answer **where** 
 (i.e. in what *s3 bucket* and using which *credentials*) **storage service** should look and decrypt files.
+
+# Docusafe server API's
 
 ### Operations with private files
 
