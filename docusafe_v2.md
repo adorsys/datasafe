@@ -35,7 +35,7 @@ For example:
 
 
 # Top level application architecture for server based application
-![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/top_level.puml&fmt=png&vvv=4)
+![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/top_level.puml&fmt=png&vvv=5)
 
 # General view of lookup server operations
 ![Lookup server general view](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/generic_view.puml&fmt=png&vvv=9)
