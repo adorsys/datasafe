@@ -2,7 +2,7 @@
 Docusafe2 can be viewed as virtual filesystem, that has:
 - private encrypted user section - **private** folder 
 - documents that are shared with user - **inbox** folder
-- folder where user can share documents with other users - **send_to**. 
+- folder where user can share documents with other users (recipients) - **send_to**. 
 
 For example:
 ```
@@ -39,24 +39,26 @@ For example:
     │         jane-doe.pub-key
 ```
 
-# Directory server API
+# Directory service REST API
 Directory service is responsible for user creation/data sharing/shared location management. It consists of 
 *Lookup service* and *Registration service*  
 
-### Registration service API
-* [List files / get file content](docs/api/private/get.md) : `GET /api/mount/private/<path to folder or file>`
+### Registration sub-service API
+* [Create new VFS (register user)](docs/api/users/put.md) : `PUT /api/users`
+* [Delete VFS (de-register user)](docs/api/users/delete.md) : `DELETE /api/users/<id>`
 
-### Lookup service API
-* [List files / get file content](docs/api/private/get.md) : `GET /api/mount/private/<path to folder or file>`
+### Lookup sub-service API
+* [Get **private** storage access details](docs/api/lookup/private/get.md) : `GET /api/lookup/private`
+* [Get **inbox** storage access details](docs/api/lookup/inbox/get.md) : `GET /api/lookup/inbox`
+* [List available recipients](docs/api/lookup/send_to/get.md) : `GET /api/lookup/send_to`
+* [Get recipient inbox access details](docs/api/lookup/send_to/get_recipient.md) : `GET /api/lookup/send_to/<recipient_id>`
 
 Primary purpose of each lookup server api element is to answer **where** 
 (i.e. in what *s3 bucket* and using which *credentials*) **storage service** should look and decrypt files.
 
-# Docusafe server API's
+### User sub-service API
 
-### Operations with private files
-
-Full CRUD on private file section
+CRUD-like on private file section
 
 * [List files / get file content](docs/api/private/get.md) : `GET /api/mount/private/<path to folder or file>`
 * [Add some private file](docs/api/private/put.md) : `PUT /api/mount/private/<path>`
