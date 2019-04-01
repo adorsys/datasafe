@@ -48,6 +48,10 @@ Directory service is responsible for user creation/data sharing/shared location 
 * [Delete VFS (de-register user)](docs/api/users/delete.md) : `DELETE /api/users/<id>`
 
 ### Lookup sub-service API
+Lookup service is the replacement and extension of Docusafe 1.0 
+[UserIDUtil](https://github.com/adorsys/docusafe/blob/master/docusafe-business/src/main/java/org/adorsys/docusafe/business/utils/UserIDUtil.java) class. 
+UserIDUtil to Lookup service sequence diagram mapping can be found [**here**](docs/docu1_vs_docu2/useridutil_2_lookup.md).
+
 * [Get **private** storage access details](docs/api/lookup/private/get.md) : `GET /api/lookup/private`
 * [Get **inbox** storage access details](docs/api/lookup/inbox/get.md) : `GET /api/lookup/inbox`
 * [List available recipients](docs/api/lookup/send_to/get.md) : `GET /api/lookup/send_to`

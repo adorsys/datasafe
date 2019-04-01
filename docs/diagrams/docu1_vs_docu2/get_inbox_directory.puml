@@ -1,0 +1,13 @@
+@startuml
+
+actor User as u
+u->"UserIdUtilDelegate" as r : getInboxDirectory
+r->"Caching layer" as c : get inbox directory layout
+c->"Directory server" as d : GET /api/lookup/inbox
+d->"Lookup service" as ls : read metadata
+ls->d : metadata
+d->c : inbox directory layout
+c->r : inbox directory layout
+r->u : User inbox bucket
+
+@enduml
