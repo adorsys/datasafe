@@ -44,7 +44,6 @@ ts -down-> ds
 ds -down-> ts
 ds <|-down-|> LS
 ds <|--|> sas
-LS <|--|> sas
 ls <|--|> sas
 vfs <|--|> sas
 @enduml
