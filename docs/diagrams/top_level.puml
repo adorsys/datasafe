@@ -42,7 +42,7 @@ User <-down-> ds
 
 ts -down-> ds
 ds -down-> ts
-ds <|--|> LS
+ds <|-down-|> LS
 ds <|--|> sas
 LS <|--|> sas
 ls <|--|> sas
