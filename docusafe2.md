@@ -39,12 +39,13 @@ For example:
     │         jane-doe.pub-key
 ```
 
-# Directory service REST API
+# Directory service REST API / library exposed interfaces
 Directory service is responsible for user creation/data sharing/shared location management. It consists of 
 *Lookup service* and *Registration service*  
 
 ### Registration sub-service API
 * [Create new VFS (register user)](docs/api/users/put.md) : `PUT /api/users`
+* [Update user details (i.e. change key pair)](docs/api/users/post.md) : `POST /api/users/<id>`
 * [Delete VFS (de-register user)](docs/api/users/delete.md) : `DELETE /api/users/<id>`
 
 ### Lookup sub-service API
@@ -64,18 +65,20 @@ Primary purpose of each lookup server api element is to answer **where**
 
 CRUD-like on private file section
 
-* [List files / get file content](docs/api/private/get.md) : `GET /api/mount/private/<path to folder or file>`
+* [List files](docs/api/private/get.md) : `GET /api/mount/private`
+* [Get file content](docs/api/private/get_file.md) : `GET /api/mount/private/<path to folder or file>`
 * [Add some private file](docs/api/private/put.md) : `PUT /api/mount/private/<path>`
 * [Remove private file](docs/api/private/delete.md) : `DELETE /api/mount/private/<path to folder or file>`
 
-### Operations with inbox
+### Operations with inbox API
 
 List-Read-Delete operations
 
-* [List files / get file content](docs/api/inbox/get.md) : `GET /api/mount/inbox/<filename or empty>`
+* [List files](docs/api/inbox/get.md) : `GET /api/mount/inbox`
+* [Get file content](docs/api/inbox/get_file.md) : `GET /api/mount/inbox/<filename>`
 * [Remove file from inbox](docs/api/inbox/delete.md) : `DELETE /api/mount/inbox/<filename>`
 
-### File sharing operations
+### File sharing operations API
 
 User-list and write-only operations
 
@@ -83,12 +86,17 @@ User-list and write-only operations
 * [Share file (snapshot) with user](docs/api/share/put.md) : `PUT /api/mount/share/<username>/<filename>`
 
 # Top level application architecture for server based application
+Docusafe2 supports command chain request delegation using routers for each API (within request context), so that we can do `REST->library->REST->library` chains for data retrieval.
 ![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/top_level.puml&fmt=png&vvv=5)
 
 # General view of lookup server operations
 ![Lookup server general view](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/generic_view.puml&fmt=png&vvv=9)
 
+# Sequence diagrams for VFS/user creation
+* [VFS and user creation](docusafe_diagrams.md)
+
 # Sequence diagram for CRUD on private files
+### Detailed view
 ![Private files CRUD](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/sequence_private.puml&fmt=png&vvv=3)
 
 # Sequence diagram for INBOX file sharing

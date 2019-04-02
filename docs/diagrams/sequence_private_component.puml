@@ -1,0 +1,21 @@
+@startuml
+actor User
+User->"User subservice API router" as r_user : Get my private file list with **<&key>login/password**
+r_user->"User subservice REST API" as  api_user: Get my private file list with **<&key>login/password**
+box "Internal flow within lookup server"
+ls->"Metadata Service" as lss : get User 1 metadata from Lookup DFS
+lss->"Lookup DFS Service" as DFS : Read private store for User 1 using **<&key>password**
+end box
+DFS->lss : Map of **[s3:bucket1 : <&key>access1, minio:bucket2 : <&key>access2]**
+lss->ls : User data paths and credentials
+loop Each path
+  ls->"Storage Service" as ss : access private storage using **<&key>access** credentials
+  ss->"Storage adapter" as sa : read keystore
+  sa->ss : user keystore
+  ss->ss : Decrypt **keystore** using **<&key>password**
+  ss->sa : List all private files
+  ss->ss : Decrypt file paths using **keystore: <&key>path secret**
+  ss->ls : File list
+end
+ls->User : List of all files across all known user DFS's
+@enduml

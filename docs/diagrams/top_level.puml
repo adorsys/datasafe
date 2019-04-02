@@ -13,18 +13,22 @@ node ds [
   ===
   REST api
 ]
-node ls [
-  **Lookup service**
-  ===
-  private storage(s) location and ACESS_KEY/SECRET_KEY
-  inbox storage location and ACESS_KEY/SECRET_KEY
-]
-node vfs [
-  **Virtual filesystem service**
-  ===
-  create virtual filesystem (new Docusafe-managed user)
-  mount virtual filesystem (register user filesystem)
-]
+
+cloud "Lookup server" as LS {
+  node ls [
+    **Lookup service**
+    ===
+    private storage(s) location and ACESS_KEY/SECRET_KEY
+    inbox storage location and ACESS_KEY/SECRET_KEY
+  ]
+  node vfs [
+    **Virtual filesystem service**
+    ===
+    create virtual filesystem (new Docusafe-managed user)
+    mount virtual filesystem (register user filesystem)
+  ]
+}
+
 node sas [
   **Storage adapter service**
   ===
@@ -38,12 +42,9 @@ User <-down-> ds
 
 ts -down-> ds
 ds -down-> ts
-ds -down-> ls
-ls -down-> ds
-ds -down-> vfs
-vfs -down-> ds
-ds -down-> sas
-sas -down-> ds
-ls -down-> sas
-sas -down-> ls
+ds <|--|> LS
+ds <|--|> sas
+LS <|--|> sas
+ls <|--|> sas
+vfs <|--|> sas
 @enduml
