@@ -1,6 +1,7 @@
 package de.adorsys.docusafe2.services;
 
 import de.adorsys.docusafe2.exceptions.AsymmetricEncryptionException;
+import de.adorsys.docusafe2.model.DocumentContent;
 import lombok.extern.slf4j.Slf4j;
 import org.adorsys.cryptoutils.exceptions.BaseExceptionHandler;
 import org.bouncycastle.cms.*;
@@ -19,23 +20,22 @@ import java.util.Iterator;
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
     @Override
-    public byte[] encrypt(byte[] data, PublicKey publicKey, byte[] publicKeyId) {
+    public CMSEnvelopedData encrypt(DocumentContent data, PublicKey publicKey, byte[] publicKeyId) {
         try {
             CMSEnvelopedDataGenerator cmsEnvelopedDataGenerator = new CMSEnvelopedDataGenerator();
             JceKeyTransRecipientInfoGenerator jceKey = new JceKeyTransRecipientInfoGenerator(publicKeyId, publicKey);
             cmsEnvelopedDataGenerator.addRecipientInfoGenerator(jceKey);
-            CMSTypedData msg = new CMSProcessableByteArray(data);
+            CMSTypedData msg = new CMSProcessableByteArray(data.getValue());
             OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC).setProvider("BC").build();
-            return cmsEnvelopedDataGenerator.generate(msg, encryptor).getEncoded();
+            return cmsEnvelopedDataGenerator.generate(msg, encryptor);
         } catch (Exception e) {
             throw BaseExceptionHandler.handle(e);
         }
     }
 
     @Override
-    public byte[] decrypt(byte[] encryptedData, KeyStore keyStore, char[] keyStorePass) {
+    public DocumentContent decrypt(CMSEnvelopedData cmsEnvelopedData, KeyStore keyStore, char[] keyStorePass) {
         try {
-            CMSEnvelopedData cmsEnvelopedData = new CMSEnvelopedData(encryptedData);
 
             RecipientInformationStore recipients = cmsEnvelopedData.getRecipientInfos();
 
@@ -55,7 +55,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
             PrivateKey privateKey = (PrivateKey) keyStore.getKey(keyId, keyStorePass);
             JceKeyTransRecipient recipient = new JceKeyTransEnvelopedRecipient(privateKey);
 
-            return recipientInfo.getContent(recipient);
+            return new DocumentContent(recipientInfo.getContent(recipient));
         } catch (Exception e) {
             throw BaseExceptionHandler.handle(e);
         }

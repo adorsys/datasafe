@@ -1,11 +1,14 @@
 package de.adorsys.docusafe2.services;
 
+import de.adorsys.docusafe2.model.DocumentContent;
+import org.bouncycastle.cms.CMSEnvelopedData;
+
 import java.security.KeyStore;
 import java.security.PublicKey;
 
 public interface CMSEncryptionService {
 
-    byte[] encrypt(byte[] data, PublicKey publicKey, byte[] publicKeyID);
+    CMSEnvelopedData encrypt(DocumentContent data, PublicKey publicKey, byte[] publicKeyID);
 
-    byte[] decrypt(byte[] encryptedData, KeyStore keyStore, char[] keyStorePass);
+    DocumentContent decrypt(CMSEnvelopedData cmsEnvelopedData, KeyStore keyStore, char[] keyStorePass);
 }

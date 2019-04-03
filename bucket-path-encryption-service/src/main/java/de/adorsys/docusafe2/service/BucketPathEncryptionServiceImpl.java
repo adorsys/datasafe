@@ -23,7 +23,7 @@ public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionServ
         Cipher cipher = createCipher(secretKey, Cipher.ENCRYPT_MODE);
 
         List<String> subdirs = BucketPathUtil.split(BucketPathUtil.getAsString(bucketPath));
-        String encryptedPathString = "";
+        StringBuilder encryptedPathString = new StringBuilder();
         for(String subdir : subdirs) {
             byte[] encrypt = new byte[0];
             try {
@@ -33,9 +33,9 @@ public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionServ
             }
 
             String encryptedString = HexUtil.convertBytesToHexString(encrypt);
-            encryptedPathString = encryptedPathString + BucketPath.BUCKET_SEPARATOR + encryptedString;
+            encryptedPathString.append(BucketPath.BUCKET_SEPARATOR).append(encryptedString);
         }
-        return new BucketPath(encryptedPathString.toLowerCase());
+        return new BucketPath(encryptedPathString.toString().toLowerCase());
     }
 
     @Override
