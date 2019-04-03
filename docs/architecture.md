@@ -14,7 +14,6 @@ Everything is now done in the top service, which is called **DFSDocusafeService*
 Later the functionality of the transactional layer may be put on top of that **DFSDocusafeService**.
 
 <details><summary>DFSDocusafeService</summary>
-<p>
 ```
 registerDFS (dfsCredentials: DFSCredentials,userIDAuth: UserIDAuth,): void
 storeDocument (dsDocument: DSDocument,userIDAuth: UserIDAuth,): void
@@ -31,7 +30,6 @@ createUser (userIDAuth: UserIDAuth,): void
 destroyUser (userIDAuth: UserIDAuth,): void
 userExists (userID: UserID,): boolean
 ```
-</p>
 </details>
 
 DFS is the abrevation for Distritbuted File System. The DFSDocusafeService is the only interface given to the public. 
