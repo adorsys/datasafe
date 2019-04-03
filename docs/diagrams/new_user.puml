@@ -1,0 +1,37 @@
+@startuml
+skinparam SequenceMessageAlign center
+
+actor User
+
+activate User
+User -> DFSDocusafeService : createUser
+activate DFSDocusafeService
+DFSDocusafeService -> KeyStoreService : createKeyStore
+activate KeyStoreService
+KeyStoreService --> DFSDocusafeService : users public keystore
+deactivate KeyStoreService
+DFSDocusafeService -> DFSDocusafeService : create DFSCredential
+DFSDocusafeService -> DFSCredentialsService : registerDFS
+activate DFSCredentialsService
+DFSCredentialsService -> CMSEncryptionService : encrypt(DFSCredentials)
+activate CMSEncryptionService
+CMSEncryptionService --> DFSCredentialsService : encrypted data
+deactivate CMSEncryptionService
+DFSCredentialsService -> "SYSTEM DFS\nDFSConnectionService" as sysDFS : storeBlob
+DFSCredentialsService -> DFSDocusafeService : return
+deactivate DFSCredentialsService
+DFSDocusafeService -> "USER DFS\nDFSConnectionService" as usrDFS : NEW
+DFSDocusafeService -> KeyStoreService : createKeyStore
+activate KeyStoreService
+KeyStoreService --> DFSDocusafeService : users secret keystore
+deactivate KeyStoreService
+DFSDocusafeService -> usrDFS : storeBlob(users secret keystore)
+DFSDocusafeService ->  KeyStoreService : getAllPublicKeys(users secret keystore)
+activate KeyStoreService
+KeyStoreService --> DFSDocusafeService : List<PublicKey>
+deactivate KeyStoreService
+DFSDocusafeService -> sysDFS : storeBlob(List<PublicKey>)
+DFSDocusafeService --> User : return
+deactivate DFSDocusafeService
+deactivate User
+@enduml

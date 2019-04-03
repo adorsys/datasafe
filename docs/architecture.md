@@ -153,3 +153,60 @@ Their protection is given by the bouncy castle keystore class itself.
 The public keystore is called public because it is stored on the SYSTEM DFS.
 
 The following picture should give a rough idea, which elements are stored  on which DFS.
+
+![Components diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/architecture.puml&fmt=png&vvv=1)
+
+As soon as a __**new user**__ is to be created, the following actions have to be done:
+
+- Create a new keystore for the user. This will be the public keystore as it will be stored in the SYSTEM DFS. 
+  The password to read the keys is the users password. This keystore has one public/private key pair and no other keys. 
+  The public key is used to encrypt the DFS Credentials. The private key is used to decrypt the DFSCredential.
+- Create a new DFSCredential. (This is the default DFS Credential for each user the same. It is the SYSTEM DFS Credential). 
+- Use the CMSEncryptionService with the public key of the public keystore to encrypt the DFSCredential.
+- Store this DFS Credentials in the users space in SYSTEM DFS. This is done with the DFSCredentialService. 
+  The DFSCredentialsService uses the SYSTEM DFS to store the credentials in the users space.
+- Create a new instance of the DFS Connection with the DFS Credential.
+- Create a new keystore for the user. This will become the users private keystore. 
+  The password to read the keys is the users password. 
+  This is the same password as for the users public keystore. 
+  This keystore has a bunch of public/private key pairs, and at least one secret key. 
+  The public keys are used to create the CMSEncelopeData, e.g. to encrypt the users data. 
+  The private keys are used to decrypt the data. 
+  The secret key will  be used to for the symmetric path encryption of the users data. 
+- Store the users secret keystore in the USERS DFS.
+- Extract all public Keys of the users keystore  and store them in the users space in the SYSTEM DFS.
+
+![New user sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/new_user.puml&fmt=png&vvv=1)
+
+The DFSCredentialService is always connected to the SYSTEM DFS. When no former DFSCredentials are known,
+the registration of a new DFSCredential simply stores these DFSCredentials in the user space. 
+They are encrypted with the users public key. 
+I would suggest  to keep only one DFS per user. This means, if the method registerDFS is called a second time, 
+this means, that  all data stored so far will be moved from the previous DFS to the new DFS. 
+In the previous DFS they will be deleted after successfull movement. 
+The data will be retrieved and stored "as they are". E.g. neither the data nor the path will be decrypted. 
+They already are. And the encryption only depends on the users secret keystore which will be moved too.
+
+As seen above, the DFSCredentialService itself is encrypting and storing data. 
+Thus it needs access to the users public keystore and the SYSTEM DFS. 
+It may be better  to pass to all services needed elements like the keystore or public keys and do the 
+storing outside the service. However, in the next sequence diagram more details are shown of the DFSCredentialService.
+
+Now we look at a __**store document**__ use case:
+
+- First the DFSCredentialService has to be asked for the users DFSCredential. 
+- For that the DFSCredentialService has to read the users public keystore from the SYSTEM DFS.
+- And the encrypted DFSCredentials
+- Which now can be decrypted with the users public keystore (within its secret key that can be read with the users password)
+- With the DFSCredentials a USERS DFS can be instantiated
+- Next the document to be stored has to be encrypted. For that one of the users public keys has to be used. They are in the users space in the SYSTEM DFS. They are not encrypted, as they are public.
+- Then the bucketpath of the document has to encrypted. For that a secret key of the users private keystore is needed. For that this keystore has to be read first.
+- Then the bucketpath can be encrypted.
+- Then the encrypted document can be stored with an encrypted bucket path in the USERs DFS
+
+![Store file sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/store_file.puml&fmt=png&vvv=1)
+
+All data stored on the SYSTEM DFS does not have to have a path encryption. 
+Of course the DFSCredentials and the messages in the inbox have to be encrypted with a public key of the user. 
+But the keystores and the public keys must neither be encrypted nor their path. 
+On the USERs DFS all data except the keystore will have a path encryption and of course is encrypted too.

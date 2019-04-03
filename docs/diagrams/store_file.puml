@@ -1,0 +1,53 @@
+@startuml
+skinparam SequenceMessageAlign center
+
+actor User
+
+User -> DFSDocusafeService
+activate User
+activate DFSDocusafeService
+DFSDocusafeService -> DFSCredentialService
+activate DFSCredentialService
+DFSCredentialService -> "SYSTEM DFS\nDFSConnectionService" as sysDFS : readBlob(users public keystore)
+activate sysDFS
+sysDFS --> DFSCredentialService : return
+deactivate sysDFS
+DFSCredentialService -> sysDFS : readBlob(DFSConnectionDetails)
+activate sysDFS
+sysDFS --> DFSCredentialService : return
+deactivate sysDFS
+DFSCredentialService -> CMSEncryptionService : decrypt(DFSCredentials)
+activate CMSEncryptionService
+CMSEncryptionService --> DFSCredentialService : decrypted DFSCredentials
+deactivate CMSEncryptionService
+DFSCredentialService --> DFSDocusafeService : return DFSCredentials
+deactivate DFSCredentialService
+DFSDocusafeService -> "USER DFS\nDFSConnectionService" as usrDFS : NEW
+DFSDocusafeService -> sysDFS : readBlob(users public keys)
+activate sysDFS
+sysDFS --> DFSDocusafeService : return 
+deactivate sysDFS
+DFSDocusafeService -> CMSEncryptionService : encrypt(document, publicKey)
+activate CMSEncryptionService
+CMSEncryptionService --> DFSDocusafeService : encrypted document (CMSEnvelope)
+deactivate CMSEncryptionService
+DFSDocusafeService -> usrDFS : readBlob(user private keystore)
+activate usrDFS
+usrDFS --> DFSDocusafeService : return (user private keystore)
+deactivate usrDFS
+DFSDocusafeService -> KeystoreService : getSecretKey
+activate KeystoreService
+KeystoreService --> DFSDocusafeService : return secret key
+deactivate KeystoreService
+DFSDocusafeService -> BucketPathEncryptionService : encrypt bucketpath with secret key
+activate BucketPathEncryptionService
+BucketPathEncryptionService --> DFSDocusafeService : return 
+deactivate BucketPathEncryptionService
+DFSDocusafeService -> usrDFS : storeBlob(encrypted path, encrypted document)
+activate usrDFS
+usrDFS --> DFSDocusafeService : return
+deactivate usrDFS
+DFSDocusafeService --> User : return
+deactivate DFSDocusafeService
+deactivate User
+@enduml
