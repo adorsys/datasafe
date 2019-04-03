@@ -6,6 +6,8 @@
     <modules>
         <module>docusafe2-business-api</module>
         <module>docusafe2-business-impl</module>
+        <module>cms-encryption-service</module>
+        <module>bucket-path-encryption-service</module>
     </modules>
     <groupId>de.adorsys</groupId>
     <artifactId>docusafe2</artifactId>
@@ -24,16 +26,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection-api</artifactId>
-            <version>0.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection-impl-pathencryption</artifactId>
-            <version>0.0.3</version>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

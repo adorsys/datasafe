@@ -1,4 +1,4 @@
-package de.adorsys.docusafe2.keystore.api.exceptions;
+package de.adorsys.docusafe2.exceptions;
 
 import org.adorsys.cryptoutils.exceptions.BaseException;
 

@@ -2,7 +2,6 @@ package de.adorsys.docusafe2.keystore.impl;
 
 import com.nimbusds.jose.jwk.*;
 import de.adorsys.docusafe2.keystore.api.KeyStoreService;
-import de.adorsys.docusafe2.keystore.api.exceptions.AsymmetricEncryptionException;
 import de.adorsys.docusafe2.keystore.api.exceptions.SymmetricEncryptionException;
 import de.adorsys.docusafe2.keystore.api.types.*;
 import org.adorsys.cryptoutils.exceptions.BaseExceptionHandler;
@@ -155,7 +154,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
             }
             JWKSet jwkSet = new JWKSet(jwks);
             if (jwkSet.getKeys().isEmpty()) {
-                throw new AsymmetricEncryptionException("did not find any public keys in keystore ");
+                //throw new AsymmetricEncryptionException("did not find any public keys in keystore ");
             }
             return jwkSet;
         } catch (Exception e) {

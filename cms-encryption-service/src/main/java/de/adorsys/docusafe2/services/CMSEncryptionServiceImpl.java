@@ -1,10 +1,6 @@
-package de.adorsys.docusafe2.serivces;
+package de.adorsys.docusafe2.services;
 
-import de.adorsys.docusafe2.keystore.api.exceptions.AsymmetricEncryptionException;
-import de.adorsys.docusafe2.keystore.api.types.KeyID;
-import de.adorsys.docusafe2.keystore.api.types.KeyStoreAccess;
-import de.adorsys.docusafe2.keystore.impl.KeyStoreBasedPrivateKeySourceImpl;
-import de.adorsys.docusafe2.services.CMSEncryptionService;
+import de.adorsys.docusafe2.exceptions.AsymmetricEncryptionException;
 import lombok.extern.slf4j.Slf4j;
 import org.adorsys.cryptoutils.exceptions.BaseExceptionHandler;
 import org.bouncycastle.cms.*;
@@ -14,6 +10,7 @@ import org.bouncycastle.cms.jcajce.JceKeyTransRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.operator.OutputEncryptor;
 
+import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Iterator;
@@ -22,10 +19,10 @@ import java.util.Iterator;
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
     @Override
-    public byte[] encrypt(byte[] data, PublicKey publicKey, KeyID publicKeyId) {
+    public byte[] encrypt(byte[] data, PublicKey publicKey, byte[] publicKeyId) {
         try {
             CMSEnvelopedDataGenerator cmsEnvelopedDataGenerator = new CMSEnvelopedDataGenerator();
-            JceKeyTransRecipientInfoGenerator jceKey = new JceKeyTransRecipientInfoGenerator(publicKeyId.getValue().getBytes(), publicKey);
+            JceKeyTransRecipientInfoGenerator jceKey = new JceKeyTransRecipientInfoGenerator(publicKeyId, publicKey);
             cmsEnvelopedDataGenerator.addRecipientInfoGenerator(jceKey);
             CMSTypedData msg = new CMSProcessableByteArray(data);
             OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC).setProvider("BC").build();
@@ -36,9 +33,8 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     }
 
     @Override
-    public byte[] decrypt(byte[] encryptedData, KeyStoreAccess keyStoreAccess) {
+    public byte[] decrypt(byte[] encryptedData, KeyStore keyStore, char[] keyStorePass) {
         try {
-            byte[] decryptedData;
             CMSEnvelopedData cmsEnvelopedData = new CMSEnvelopedData(encryptedData);
 
             RecipientInformationStore recipients = cmsEnvelopedData.getRecipientInfos();
@@ -53,11 +49,10 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
             }
             KeyTransRecipientId recipientId = (KeyTransRecipientId) recipientInfo.getRID();
             byte[] subjectKeyIdentifier = recipientId.getSubjectKeyIdentifier();
-            KeyID keyId = new KeyID(new String(subjectKeyIdentifier));
+            String keyId = new String(subjectKeyIdentifier);
             log.debug("Private key ID from envelope: {}", keyId);
 
-            KeyStoreBasedPrivateKeySourceImpl keyStoreBasedPrivateKeySource = new KeyStoreBasedPrivateKeySourceImpl(keyStoreAccess.getKeyStore(), keyStoreAccess.getKeyStoreAuth().getReadKeyPassword());
-            PrivateKey privateKey = (PrivateKey) keyStoreBasedPrivateKeySource.readKey(keyId);
+            PrivateKey privateKey = (PrivateKey) keyStore.getKey(keyId, keyStorePass);
             JceKeyTransRecipient recipient = new JceKeyTransEnvelopedRecipient(privateKey);
 
             return recipientInfo.getContent(recipient);
