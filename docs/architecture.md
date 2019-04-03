@@ -13,7 +13,8 @@ Everything is now done in the top service, which is called [DFSDocusafeService](
 
 Later the functionality of the transactional layer may be put on top of that [DFSDocusafeService]().
 
-#### <details><summary>DFSDocusafeService</summary>
+#### DFSDocusafeService
+<details><summary>DFSDocusafeService</summary>
 <p>
 
 ```
@@ -43,7 +44,8 @@ But in general the documents can be on different DFS.
 
 To get its task done, it needs the following subservices:
 
-#### <details><summary>DFSConnectionService</summary>
+#### DFSConnectionService
+<details><summary>DFSConnectionService</summary>
 <p>
 
 ```
