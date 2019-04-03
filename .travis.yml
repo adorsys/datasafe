@@ -1,0 +1,21 @@
+language: java
+
+jdk:
+  - oraclejdk8
+
+script:
+  - mvn --settings .travis/settings.xml clean verify -B -V
+  - mvn --settings .travis/settings.xml test -DSC-AMAZONS3=http://minio-psp-docusafe-performancetest.cloud.adorsys.de,simpleAccessKey,simpleSecretKey,us-east-1,travis.crypto.${TRAVIS_BRANCH}
+
+before_deploy:
+  - echo $GPG_SECRET_KEY | base64 --decode | $GPG_EXECUTABLE --import
+  - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
+
+deploy:
+  -
+    skip_cleanup: true
+    provider: script
+    script: /bin/bash .travis/deploy.sh
+    on:
+      tags: true
+      condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
