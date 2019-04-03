@@ -51,7 +51,7 @@ Directory service is responsible for user creation/data sharing/shared location 
 ### Lookup sub-service API
 Lookup service is the replacement and extension of Docusafe 1.0 
 [UserIDUtil](https://github.com/adorsys/docusafe/blob/master/docusafe-business/src/main/java/org/adorsys/docusafe/business/utils/UserIDUtil.java) class. 
-UserIDUtil to Lookup service sequence diagram mapping can be found [**here**](docs/docu1_vs_docu2/useridutil_2_lookup.md).
+UserIDUtil to Lookup service sequence diagram mapping can be found [**here**](../docu1_vs_docu2/useridutil_2_lookup.md).
 
 * [Get **private** storage access details](docs/api/lookup/private/get.md) : `GET /api/lookup/private`
 * [Get **inbox** storage access details](docs/api/lookup/inbox/get.md) : `GET /api/lookup/inbox`
@@ -65,25 +65,25 @@ Primary purpose of each lookup server api element is to answer **where**
 
 CRUD-like on private file section
 
-* [List files](docs/api/private/get.md) : `GET /api/mount/private`
+* [List files](../api/private/get.md) : `GET /api/mount/private`
 * [Get file content](docs/api/private/get_file.md) : `GET /api/mount/private/<path to folder or file>`
-* [Add some private file](docs/api/private/put.md) : `PUT /api/mount/private/<path>`
-* [Remove private file](docs/api/private/delete.md) : `DELETE /api/mount/private/<path to folder or file>`
+* [Add some private file](../api/private/put.md) : `PUT /api/mount/private/<path>`
+* [Remove private file](../api/private/delete.md) : `DELETE /api/mount/private/<path to folder or file>`
 
 ### Operations with inbox API
 
 List-Read-Delete operations
 
-* [List files](docs/api/inbox/get.md) : `GET /api/mount/inbox`
-* [Get file content](docs/api/inbox/get_file.md) : `GET /api/mount/inbox/<filename>`
-* [Remove file from inbox](docs/api/inbox/delete.md) : `DELETE /api/mount/inbox/<filename>`
+* [List files](../api/inbox/get.md) : `GET /api/mount/inbox`
+* [Get file content](../api/inbox/get_file.md) : `GET /api/mount/inbox/<filename>`
+* [Remove file from inbox](../api/inbox/delete.md) : `DELETE /api/mount/inbox/<filename>`
 
 ### File sharing operations API
 
 User-list and write-only operations
 
-* [List users who we can share with](docs/api/share/get.md) : `GET /api/mount/share/`
-* [Share file (snapshot) with user](docs/api/share/put.md) : `PUT /api/mount/share/<username>/<filename>`
+* [List users who we can share with](../api/share/get.md) : `GET /api/mount/share/`
+* [Share file (snapshot) with user](../api/share/put.md) : `PUT /api/mount/share/<username>/<filename>`
 
 # Top level application architecture for server based application
 Docusafe2 supports command chain request delegation using routers for each API (within request context), so that we can do `REST->library->REST->library` chains for data retrieval.
