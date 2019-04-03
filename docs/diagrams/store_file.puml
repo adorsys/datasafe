@@ -3,10 +3,10 @@ skinparam SequenceMessageAlign center
 
 actor User
 
-User -> DFSDocusafeService
+User -> DFSDocusafeService : storeDocument
 activate User
 activate DFSDocusafeService
-DFSDocusafeService -> DFSCredentialService
+DFSDocusafeService -> DFSCredentialService : getCredentials
 activate DFSCredentialService
 DFSCredentialService -> "SYSTEM DFS\nDFSConnectionService" as sysDFS : readBlob(users public keystore)
 activate sysDFS

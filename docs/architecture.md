@@ -101,6 +101,7 @@ To encrypt, a public key and a KeyID have to be provided.
 For the decryption the keyStoreAccess must be provided, e.g. the KeyStore and the Password to access the private Keys. 
 
 #### DFSCredentialService ####
+This service is also known as Lookup/Directory service.
 <details><summary>DFSCredentialService - expand for interface</summary>
 <p>
 
@@ -204,7 +205,7 @@ Now we look at a __**store document**__ use case:
 - Then the bucketpath can be encrypted.
 - Then the encrypted document can be stored with an encrypted bucket path in the USERs DFS
 
-![Store file sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/store_file.puml&fmt=png&vvv=1)
+![Store file sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/store_file.puml&fmt=png&vvv=2)
 
 All data stored on the SYSTEM DFS does not have to have a path encryption. 
 Of course the DFSCredentials and the messages in the inbox have to be encrypted with a public key of the user. 
