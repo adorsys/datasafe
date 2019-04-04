@@ -1,5 +1,6 @@
 package de.adorsys.docusafe2.business.impl.bucketpathencryption;
 
+import de.adorsys.dfs.connection.api.complextypes.BucketDirectory;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.complextypes.BucketPathUtil;
 import de.adorsys.docusafe2.business.api.bucketpathencryption.BucketPathEncryptionService;
@@ -19,20 +20,8 @@ public class BucketPathEncryptionTest {
 
     @Test
     public void encryptionTest() {
-        BucketPathEncryptionService bucketPathEncryptionService = null;
-        SecretKeySpec secretKeySpec = null;
-        {
-            bucketPathEncryptionService = new BucketPathEncryptionServiceImpl();
-            KeyStoreService keyStoreService = new KeyStoreServiceImpl();
-            ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
-            ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
-            KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-            KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 1);
-            KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
-            KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-            SecretKeyIDWithKey randomSecretKeyIDWithKey = keyStoreService.getRandomSecretKeyIDWithKey(keyStoreAccess);
-            secretKeySpec = (SecretKeySpec) randomSecretKeyIDWithKey.getSecretKey();
-        }
+        BucketPathEncryptionService bucketPathEncryptionService = new BucketPathEncryptionServiceImpl();
+        SecretKeySpec secretKeySpec = getSecretKey();
 
         BucketPath bucketPath = new BucketPath("/folder1/folder2/folder3/file1.txt");
         int loopsize = 100;
@@ -50,5 +39,33 @@ public class BucketPathEncryptionTest {
             log.info(String.format("asymmetric encryption blew up path length from %d to %d ", BucketPathUtil.getAsString(bucketPath).length(), BucketPathUtil.getAsString(encryptedBucketPath).length()));
         }
 
+    }
+
+    @Test
+    public void encryptionPartTest() {
+        BucketPathEncryptionService bucketPathEncryptionService = new BucketPathEncryptionServiceImpl();
+        SecretKeySpec secretKeySpec = getSecretKey();
+
+        BucketPath bucketPath1 = new BucketPath("/folder1/folder2/folder3/file1.txt");
+        BucketPath bucketPath2 = bucketPath1.getBucketDirectory().appendName("anotherfile");
+        BucketPath full1 = bucketPathEncryptionService.encrypt(secretKeySpec, bucketPath1);
+        BucketPath full2 = bucketPathEncryptionService.encrypt(secretKeySpec, bucketPath2);
+        BucketDirectory d1 = full1.getBucketDirectory();
+        BucketDirectory d2 = full2.getBucketDirectory();
+
+        Assert.assertEquals(BucketPathUtil.getAsString(d1), BucketPathUtil.getAsString(d2));
+        log.info(bucketPath1 + " and " + bucketPath2 + " both have thZZe same prefix when encrypted:" + d1);
+    }
+
+    private SecretKeySpec getSecretKey() {
+        KeyStoreService keyStoreService = new KeyStoreServiceImpl();
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
+        ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
+        KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
+        KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 1);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+        SecretKeyIDWithKey randomSecretKeyIDWithKey = keyStoreService.getRandomSecretKeyIDWithKey(keyStoreAccess);
+        return (SecretKeySpec) randomSecretKeyIDWithKey.getSecretKey();
     }
 }
