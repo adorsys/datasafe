@@ -1,4 +1,4 @@
-package de.adorsys.docusafe2.business.api.cmsencryption.types;
+package de.adorsys.docusafe2.business.api.types;
 
 import de.adorsys.common.basetypes.BaseTypeByteArray;
 
