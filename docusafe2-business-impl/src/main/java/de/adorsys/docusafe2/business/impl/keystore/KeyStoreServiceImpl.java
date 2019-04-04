@@ -84,14 +84,14 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     public KeySourceAndKeyID getKeySourceAndKeyIDForSecretKey(KeyStoreAccess keyStoreAccess) {
         LOGGER.debug("get keysource for secret key of ");
         KeySource keySource = new KeyStoreBasedSecretKeySourceImpl(keyStoreAccess.getKeyStore(), new PasswordCallbackHandler(keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray()));
-        return new KeySourceAndKeyID(keySource, getRandomSecretKeyIDWithKey(keyStoreAccess, keyStoreAccess.getKeyStore()).getKeyID());
+        return new KeySourceAndKeyID(keySource, getRandomSecretKeyIDWithKey(keyStoreAccess).getKeyID());
 
     }
 
     @Override
-    public SecretKeyIDWithKey getRandomSecretKeyIDWithKey(KeyStoreAccess keyStoreAccess, KeyStore userKeystore) {
+    public SecretKeyIDWithKey getRandomSecretKeyIDWithKey(KeyStoreAccess keyStoreAccess) {
         // Choose a random secret key with its id
-        JWKSet jwkSet = JwkExport.exportKeys(userKeystore, new PasswordCallbackHandler(keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray()));
+        JWKSet jwkSet = JwkExport.exportKeys(keyStoreAccess.getKeyStore(), new PasswordCallbackHandler(keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray()));
         if (jwkSet.getKeys().isEmpty()) {
             throw new SymmetricEncryptionException("did not find any keys in keystore with id: ");
         }

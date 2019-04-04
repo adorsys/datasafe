@@ -19,6 +19,6 @@ public interface KeyStoreService {
 
     KeySourceAndKeyID getKeySourceAndKeyIDForSecretKey(KeyStoreAccess keyStoreAccess);
 
-    SecretKeyIDWithKey getRandomSecretKeyIDWithKey(KeyStoreAccess keyStoreAccess, KeyStore userKeystore);
+    SecretKeyIDWithKey getRandomSecretKeyIDWithKey(KeyStoreAccess keyStoreAccess);
 
 }

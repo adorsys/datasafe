@@ -1,4 +1,4 @@
-package de.adorsys.docusafe2.business.impl.bucketpathencryption;
+package de.adorsys.docusafe2.business.impl.cmsencryption;
 
 import de.adorsys.docusafe2.business.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
