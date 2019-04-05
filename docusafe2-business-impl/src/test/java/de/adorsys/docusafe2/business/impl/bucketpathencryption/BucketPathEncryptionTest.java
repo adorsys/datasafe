@@ -1,5 +1,6 @@
 package de.adorsys.docusafe2.business.impl.bucketpathencryption;
 
+import de.adorsys.common.exceptions.BaseException;
 import de.adorsys.dfs.connection.api.complextypes.BucketDirectory;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.complextypes.BucketPathUtil;
@@ -55,6 +56,13 @@ public class BucketPathEncryptionTest {
 
         Assert.assertEquals(BucketPathUtil.getAsString(d1), BucketPathUtil.getAsString(d2));
         log.info(bucketPath1 + " and " + bucketPath2 + " both have thZZe same prefix when encrypted:" + d1);
+    }
+
+    @Test(expected = BaseException.class)
+    public void keyIsAbsentTest() {
+        BucketPath bucketPath = new BucketPath("/folder1/folder2/folder3/file1.txt");
+        BucketPathEncryptionService bucketPathEncryptionService = new BucketPathEncryptionServiceImpl();
+        bucketPathEncryptionService.encrypt(null, bucketPath);
     }
 
     private SecretKeySpec getSecretKey() {
