@@ -1,6 +1,6 @@
 package de.adorsys.docusafe2.business.api.inbox.dto;
 
-import de.adorsys.docusafe2.business.api.types.FileIn;
+import de.adorsys.docusafe2.business.api.types.file.FileIn;
 import de.adorsys.docusafe2.business.api.types.UserId;
 import de.adorsys.docusafe2.business.api.types.UserIdAuth;
 import lombok.Data;

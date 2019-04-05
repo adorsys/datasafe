@@ -1,14 +1,23 @@
 package de.adorsys.docusafe2.business.api.profile;
 
-import de.adorsys.docusafe2.business.api.profile.dto.ResolveRequest;
-import de.adorsys.docusafe2.business.api.types.UserProfile;
+import de.adorsys.docusafe2.business.api.types.UserId;
+import de.adorsys.docusafe2.business.api.types.UserIdAuth;
+import de.adorsys.docusafe2.business.api.types.profile.UserPrivateProfile;
+import de.adorsys.docusafe2.business.api.types.profile.UserPublicProfile;
 
 public interface UserProfileService {
 
     /**
-     * Resolves user's meta-information like folder mapping, etc.
-     * @param forUser resolve request
-     * @return fully-resolved user's profile
+     * Resolves user's public meta-information like folder mapping, etc.
+     * @param ofUser resolve request
+     * @return resolved user's profile
      */
-    UserProfile user(ResolveRequest forUser);
+    UserPublicProfile publicProfile(UserId ofUser);
+
+    /**
+     * Resolves user's private meta-information like folder mapping, etc.
+     * @param ofUser resolve request
+     * @return resolved user's profile
+     */
+    UserPrivateProfile privateProfile(UserIdAuth ofUser);
 }

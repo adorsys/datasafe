@@ -1,4 +1,4 @@
-package de.adorsys.docusafe2.business.api.types;
+package de.adorsys.docusafe2.business.api.types.file;
 
 import lombok.Data;
 

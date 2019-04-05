@@ -1,11 +1,11 @@
-package de.adorsys.docusafe2.business.api.types;
+package de.adorsys.docusafe2.business.api.types.profile;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import lombok.Data;
 
 @Data
-public class UserProfile {
+public class UserPrivateProfile {
 
-    private final BucketPath inbox;
+    private final BucketPath keystore;
     private final BucketPath privateStorage;
 }
