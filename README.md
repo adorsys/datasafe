@@ -7,6 +7,10 @@
  - feature/DOC2-17
  - bugfix/DOC2-17_Fix-formatting
 
+but we now stick to:
+ - feature/DOC2-17_Fix-formatting
+ - bugfix/DOC2-17_Fix-formatting
+
 ### Commit naming strategy:
 
 Always include **prefix** DOC2-**issue-id** in your commit message, so that valid commit message can be only:
