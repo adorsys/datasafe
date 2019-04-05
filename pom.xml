@@ -9,7 +9,7 @@
     </modules>
     <groupId>de.adorsys</groupId>
     <artifactId>docusafe2</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2</version>
     <name>docusafe2</name>
     <description>Docusafe 2</description>
 
