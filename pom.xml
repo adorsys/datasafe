@@ -20,7 +20,7 @@
         <dfs-connection.version>0.0.3</dfs-connection.version>
         <common-basetypes.version>0.0.7</common-basetypes.version>
         <bcpkix-jdk15on.version>1.58</bcpkix-jdk15on.version>
-        <nimbus-jose-jwt.version>4.34.1</nimbus-jose-jwt.version>
+        <!--<nimbus-jose-jwt.version>7.0.1</nimbus-jose-jwt.version>-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -54,11 +54,11 @@
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>${bcpkix-jdk15on.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-            <version>${nimbus-jose-jwt.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.nimbusds</groupId>-->
+            <!--<artifactId>nimbus-jose-jwt</artifactId>-->
+            <!--<version>${nimbus-jose-jwt.version}</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
