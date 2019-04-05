@@ -25,6 +25,7 @@
         <dagger.version>2.17</dagger.version>
         <junit.version>5.4.1</junit.version>
         <assertj.version>3.12.2</assertj.version>
+        <mockito.version>2.25.1</mockito.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -72,6 +73,28 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.dagger</groupId>
+                            <artifactId>dagger-compiler</artifactId>
+                            <version>${dagger.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
@@ -162,26 +185,6 @@
                             <configuration>
                                 <releaseProfiles>release</releaseProfiles>
                                 <autoVersionSubmodules>true</autoVersionSubmodules>
-                            </configuration>
-                        </plugin>
-
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <version>${maven.compiler.plugin.version}</version>
-                            <configuration>
-                                <annotationProcessorPaths>
-                                    <path>
-                                        <groupId>com.google.dagger</groupId>
-                                        <artifactId>dagger-compiler</artifactId>
-                                        <version>${dagger.version}</version>
-                                    </path>
-                                    <path>
-                                        <groupId>org.projectlombok</groupId>
-                                        <artifactId>lombok</artifactId>
-                                        <version>${lombok.version}</version>
-                                    </path>
-                                </annotationProcessorPaths>
                             </configuration>
                         </plugin>
 
