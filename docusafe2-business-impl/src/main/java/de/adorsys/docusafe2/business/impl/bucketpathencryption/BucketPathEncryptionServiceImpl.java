@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
 import java.util.Optional;
@@ -20,10 +21,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Slf4j
 public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionService {
 
-    public static final String ALGORITHM = "AES";
+    private static final String ALGORITHM = "AES";
 
     @Override
-    public BucketPath encrypt(SecretKeySpec secretKey, BucketPath bucketPath) {
+    public BucketPath encrypt(SecretKey secretKey, BucketPath bucketPath) {
         Optional<Cipher> cipher = createCipher(secretKey, Cipher.ENCRYPT_MODE);
 
         cipher.orElseThrow(() -> new BaseException("Can't build cipher, secret key is absent"));
@@ -45,7 +46,7 @@ public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionServ
     }
 
     @Override
-    public BucketPath decrypt(SecretKeySpec secretKey, BucketPath bucketPath) {
+    public BucketPath decrypt(SecretKey secretKey, BucketPath bucketPath) {
         Optional<Cipher> cipher = createCipher(secretKey, Cipher.DECRYPT_MODE);
 
         cipher.orElseThrow(() -> new BaseException("Can't build cipher, secret key is absent"));
@@ -65,12 +66,12 @@ public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionServ
         return new BucketPath(decryptedPathString.toString());
     }
 
-    private Optional<Cipher> createCipher(SecretKeySpec secretKey, int cipherMode) {
+    private Optional<Cipher> createCipher(SecretKey secretKey, int cipherMode) {
         if(secretKey == null) return Optional.empty();
 
         try {
             byte[] key = secretKey.getEncoded();
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key, ALGORITHM);
+            SecretKey secretKeySpec = new SecretKeySpec(key, ALGORITHM);
 
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(cipherMode, secretKeySpec);
