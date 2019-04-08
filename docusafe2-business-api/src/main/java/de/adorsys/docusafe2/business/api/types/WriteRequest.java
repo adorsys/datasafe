@@ -1,4 +1,4 @@
-package de.adorsys.docusafe2.business.impl.document.dto;
+package de.adorsys.docusafe2.business.api.types;
 
 import de.adorsys.docusafe2.business.api.types.DFSAccess;
 import de.adorsys.docusafe2.business.api.types.file.FileIn;

@@ -6,8 +6,8 @@ import de.adorsys.docusafe2.business.api.inbox.dto.InboxReadRequest;
 import de.adorsys.docusafe2.business.api.profile.UserProfileService;
 import de.adorsys.docusafe2.business.api.types.DFSAccess;
 import de.adorsys.docusafe2.business.impl.credentials.BucketAccessService;
-import de.adorsys.docusafe2.business.impl.document.DocumentReadService;
-import de.adorsys.docusafe2.business.impl.document.dto.ReadRequest;
+import de.adorsys.docusafe2.business.impl.document.CMSDocumentReadService;
+import de.adorsys.docusafe2.business.api.types.ReadRequest;
 
 import javax.inject.Inject;
 import java.util.function.Function;
@@ -15,10 +15,10 @@ import java.util.function.Function;
 public class ReadFromInboxImpl implements ReadFromInbox {
 
     private final BucketAccessService accessService;
-    private final DocumentReadService reader;
+    private final CMSDocumentReadService reader;
 
     @Inject
-    public ReadFromInboxImpl(BucketAccessService accessService, DocumentReadService reader) {
+    public ReadFromInboxImpl(BucketAccessService accessService, CMSDocumentReadService reader) {
         this.accessService = accessService;
         this.reader = reader;
     }
