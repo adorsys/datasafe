@@ -23,6 +23,7 @@
         <bcpkix-jdk15on.version>1.58</bcpkix-jdk15on.version>
         <nimbus-jose-jwt.version>4.34.1</nimbus-jose-jwt.version>
         <dagger.version>2.17</dagger.version>
+        <guava.version>27.0.1-jre</guava.version>
         <junit.version>5.4.1</junit.version>
         <assertj.version>3.12.2</assertj.version>
         <mockito.version>2.25.1</mockito.version>
@@ -68,6 +69,11 @@
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger</artifactId>
             <version>${dagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
     </dependencies>
 

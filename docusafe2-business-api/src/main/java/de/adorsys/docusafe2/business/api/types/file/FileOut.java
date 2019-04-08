@@ -1,12 +1,16 @@
 package de.adorsys.docusafe2.business.api.types.file;
 
 import lombok.Data;
+import lombok.NonNull;
 
-import java.io.InputStream;
+import java.io.OutputStream;
 
 @Data
 public class FileOut {
 
+    @NonNull
     private final FileMeta meta;
-    private final InputStream data;
+
+    @NonNull
+    private final OutputStream data;
 }

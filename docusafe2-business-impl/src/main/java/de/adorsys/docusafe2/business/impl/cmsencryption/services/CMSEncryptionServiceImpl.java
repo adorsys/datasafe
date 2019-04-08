@@ -4,18 +4,17 @@ import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.docusafe2.business.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.docusafe2.business.api.keystore.types.KeyID;
 import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreAccess;
-import de.adorsys.docusafe2.business.api.keystore.types.ReadStorePassword;
-import de.adorsys.docusafe2.business.impl.cmsencryption.exceptions.AsymmetricEncryptionException;
 import de.adorsys.docusafe2.business.api.types.DocumentContent;
+import de.adorsys.docusafe2.business.impl.cmsencryption.exceptions.AsymmetricEncryptionException;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.*;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.OutputEncryptor;
 
-import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Iterator;
@@ -27,10 +26,16 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     public CMSEnvelopedData encrypt(DocumentContent data, PublicKey publicKey, KeyID publicKeyId) {
         try {
             CMSEnvelopedDataGenerator cmsEnvelopedDataGenerator = new CMSEnvelopedDataGenerator();
-            JceKeyTransRecipientInfoGenerator jceKey = new JceKeyTransRecipientInfoGenerator(publicKeyId.getValue().getBytes(), publicKey);
+            JceKeyTransRecipientInfoGenerator jceKey = new JceKeyTransRecipientInfoGenerator(
+                    publicKeyId.getValue().getBytes(),
+                    publicKey
+            );
+
             cmsEnvelopedDataGenerator.addRecipientInfoGenerator(jceKey);
             CMSTypedData msg = new CMSProcessableByteArray(data.getValue());
-            OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC).setProvider("BC").build();
+            OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC)
+                    .setProvider(BouncyCastleProvider.PROVIDER_NAME)
+                    .build();
             return cmsEnvelopedDataGenerator.generate(msg, encryptor);
         } catch (Exception e) {
             throw BaseExceptionHandler.handle(e);
@@ -56,7 +61,11 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
             String keyId = new String(subjectKeyIdentifier);
             log.debug("Private key ID from envelope: {}", keyId);
 
-            PrivateKey privateKey = (PrivateKey) keyStoreAccess.getKeyStore().getKey(keyId, keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
+            PrivateKey privateKey = (PrivateKey) keyStoreAccess.getKeyStore().getKey(
+                    keyId,
+                    keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray()
+            );
+
             JceKeyTransRecipient recipient = new JceKeyTransEnvelopedRecipient(privateKey);
 
             return new DocumentContent(recipientInfo.getContent(recipient));
