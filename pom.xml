@@ -13,6 +13,39 @@
     <name>docusafe2</name>
     <description>Docusafe 2</description>
     <url>https://github.com/adorsys/docusafe2</url>
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Peter Spiessbach</name>
+            <email>psp@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Maksym Hryshchenko</name>
+            <email>mhrex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Valentyn Berezin</name>
+            <email>vbeex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Ihor Yatsenko</name>
+            <email>iyaex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+    </developers>
+
 
 
     <properties>
