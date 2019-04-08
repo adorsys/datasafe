@@ -12,6 +12,8 @@
     <version>0.0.3-SNAPSHOT</version>
     <name>docusafe2</name>
     <description>Docusafe 2</description>
+    <url>https://github.com/adorsys/docusafe2</url>
+
 
     <properties>
         <java.version>1.8</java.version>
