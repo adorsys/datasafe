@@ -4,6 +4,7 @@ import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.docusafe2.business.api.credentials.DFSCredentialsService;
 import de.adorsys.docusafe2.business.api.credentials.dto.DFSCredentials;
 import de.adorsys.docusafe2.business.api.profile.UserProfileService;
+import de.adorsys.docusafe2.business.api.types.UserId;
 import de.adorsys.docusafe2.business.api.types.UserIdAuth;
 import de.adorsys.docusafe2.business.api.types.DFSAccess;
 
@@ -21,10 +22,21 @@ public class BucketAccessService {
         this.credentials = credentials;
     }
 
-    public DFSAccess accessFor(UserIdAuth user, Function<UserProfileService, BucketPath> bucket) {
+    public DFSAccess privateAccessFor(UserIdAuth user, Function<UserProfileService, BucketPath> bucket) {
         BucketPath path = bucket.apply(profiles);
 
-        DFSCredentials creds = credentials.userCredentials(user, path);
+        DFSCredentials creds = credentials.privateUserCredentials(user, path);
+
+        return DFSAccess.builder()
+                .path(path)
+                .credentials(creds)
+                .build();
+    }
+
+    public DFSAccess publicAccessFor(UserId user, Function<UserProfileService, BucketPath> bucket) {
+        BucketPath path = bucket.apply(profiles);
+
+        DFSCredentials creds = credentials.publicUserCredentials(user, path);
 
         return DFSAccess.builder()
                 .path(path)

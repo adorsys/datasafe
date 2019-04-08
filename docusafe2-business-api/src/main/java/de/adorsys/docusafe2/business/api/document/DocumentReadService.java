@@ -1,4 +1,4 @@
-package de.adorsys.docusafe2.business.api.access;
+package de.adorsys.docusafe2.business.api.document;
 
 import de.adorsys.docusafe2.business.api.types.ReadRequest;
 

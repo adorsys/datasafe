@@ -1,6 +1,5 @@
 package de.adorsys.docusafe2.business.api.types;
 
-import de.adorsys.docusafe2.business.api.types.DFSAccess;
 import de.adorsys.docusafe2.business.api.types.file.FileIn;
 import lombok.Builder;
 import lombok.NonNull;
@@ -15,4 +14,7 @@ public class WriteRequest {
 
     @NonNull
     private final FileIn data;
+
+    @NonNull
+    private final PublicKeyWithId keyWithId;
 }

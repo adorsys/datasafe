@@ -1,7 +1,7 @@
 package de.adorsys.docusafe2.business.impl.document;
 
 import de.adorsys.dfs.connection.api.service.api.ExtendedStoreConnection;
-import de.adorsys.docusafe2.business.api.access.DocumentWriteService;
+import de.adorsys.docusafe2.business.api.document.DocumentWriteService;
 import de.adorsys.docusafe2.business.api.dfs.DFSConnectionService;
 import de.adorsys.docusafe2.business.api.types.WriteRequest;
 

@@ -1,6 +1,6 @@
 package de.adorsys.docusafe2.business.api.types;
 
-import de.adorsys.docusafe2.business.api.types.DFSAccess;
+import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreAccess;
 import de.adorsys.docusafe2.business.api.types.file.FileOut;
 import lombok.Builder;
 import lombok.NonNull;
@@ -15,4 +15,7 @@ public class ReadRequest {
 
     @NonNull
     private final FileOut response;
+
+    @NonNull
+    private final KeyStoreAccess keyStore;
 }
