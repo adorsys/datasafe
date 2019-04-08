@@ -30,6 +30,7 @@ public class CMSDocumentReadService implements DocumentReadService {
         ExtendedStoreConnection connection = dfs.obtain(request.getFrom());
         Payload payload = connection.getBlob(request.getFrom().getPath());
 
+        // FIXME https://github.com/adorsys/docusafe2/issues/5
         DocumentContent content = cms.decrypt(
                 new CMSEnvelopedData(payload.getData()),
                 request.getKeyStore()
