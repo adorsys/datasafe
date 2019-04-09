@@ -6,7 +6,13 @@ import de.adorsys.docusafe2.business.api.types.UserIdAuth;
 import de.adorsys.docusafe2.business.api.types.profile.UserPrivateProfile;
 import de.adorsys.docusafe2.business.api.types.profile.UserPublicProfile;
 
-public class DefaultProfileService implements UserProfileService {
+import javax.inject.Inject;
+
+public class ProfileServiceImpl implements UserProfileService {
+
+    @Inject
+    public ProfileServiceImpl() {
+    }
 
     @Override
     public UserPublicProfile publicProfile(UserId ofUser) {

@@ -7,6 +7,9 @@ import de.adorsys.docusafe2.business.api.credentials.DFSCredentialsService;
 import de.adorsys.docusafe2.business.api.keystore.PrivateKeyService;
 import de.adorsys.docusafe2.business.api.keystore.PublicKeyService;
 
+/**
+ * This module is responsible for credentials access - either user or dfs.
+ */
 @Module
 public abstract class DefaultCredentialsModule {
 

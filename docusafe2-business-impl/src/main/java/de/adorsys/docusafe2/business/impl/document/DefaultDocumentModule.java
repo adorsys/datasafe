@@ -9,6 +9,9 @@ import de.adorsys.docusafe2.business.impl.document.cms.CMSDocumentReadService;
 import de.adorsys.docusafe2.business.impl.document.cms.CMSDocumentWriteService;
 import de.adorsys.docusafe2.business.impl.document.list.DocumentListServiceImpl;
 
+/**
+ * This module is responsible for document storage (i.e. which encryption to use) and listing bucket content.
+ */
 @Module
 public abstract class DefaultDocumentModule {
 

@@ -6,8 +6,11 @@ import de.adorsys.docusafe2.business.api.inbox.actions.ListInbox;
 import de.adorsys.docusafe2.business.api.inbox.actions.ReadFromInbox;
 import de.adorsys.docusafe2.business.api.inbox.actions.WriteToInbox;
 
+/**
+ * This module is responsible for providing default actions on INBOX folder.
+ */
 @Module
-public abstract class DefaultActionsModule {
+public abstract class DefaultInboxActionsModule {
 
     @Binds
     abstract ListInbox listInbox(ListInboxImpl impl);

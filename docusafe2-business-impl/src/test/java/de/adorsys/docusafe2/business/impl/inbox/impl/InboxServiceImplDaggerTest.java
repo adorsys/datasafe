@@ -15,11 +15,7 @@ class InboxServiceImplDaggerTest extends BaseMockitoTest {
 
     @Test
     void testDaggerObjectCreation() {
-        DefaultInboxService service = DaggerDefaultInboxService.builder()
-                .userProfile(userProfileService)
-                .build();
-
-        InboxService inbox = service.inboxService();
+        InboxService inbox = DaggerDefaultInboxService.builder().build().inboxService();
 
         inbox.readDocumentFromInbox(null);
     }
