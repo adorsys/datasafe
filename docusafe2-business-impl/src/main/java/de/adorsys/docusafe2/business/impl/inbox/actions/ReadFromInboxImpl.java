@@ -8,7 +8,7 @@ import de.adorsys.docusafe2.business.api.keystore.PrivateKeyService;
 import de.adorsys.docusafe2.business.api.profile.UserProfileService;
 import de.adorsys.docusafe2.business.api.types.DFSAccess;
 import de.adorsys.docusafe2.business.api.types.ReadRequest;
-import de.adorsys.docusafe2.business.impl.credentials.BucketAccessService;
+import de.adorsys.docusafe2.business.impl.credentials.BucketAccessServiceImpl;
 
 import javax.inject.Inject;
 import java.util.function.Function;
@@ -16,12 +16,12 @@ import java.util.function.Function;
 public class ReadFromInboxImpl implements ReadFromInbox {
 
     private final PrivateKeyService privateKeyService;
-    private final BucketAccessService accessService;
+    private final BucketAccessServiceImpl accessService;
     private final DocumentReadService reader;
 
     @Inject
     public ReadFromInboxImpl(
-            PrivateKeyService privateKeyService, BucketAccessService accessService, DocumentReadService reader
+            PrivateKeyService privateKeyService, BucketAccessServiceImpl accessService, DocumentReadService reader
     ) {
         this.privateKeyService = privateKeyService;
         this.accessService = accessService;

@@ -1,4 +1,4 @@
-package de.adorsys.docusafe2.business.impl.document;
+package de.adorsys.docusafe2.business.impl.document.cms;
 
 import com.google.common.io.ByteSource;
 import de.adorsys.dfs.connection.api.domain.Payload;

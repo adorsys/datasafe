@@ -8,7 +8,7 @@ import de.adorsys.docusafe2.business.api.keystore.PublicKeyService;
 import de.adorsys.docusafe2.business.api.profile.UserProfileService;
 import de.adorsys.docusafe2.business.api.types.DFSAccess;
 import de.adorsys.docusafe2.business.api.types.WriteRequest;
-import de.adorsys.docusafe2.business.impl.credentials.BucketAccessService;
+import de.adorsys.docusafe2.business.impl.credentials.BucketAccessServiceImpl;
 
 import javax.inject.Inject;
 import java.util.function.Function;
@@ -16,12 +16,12 @@ import java.util.function.Function;
 public class WriteToInboxImpl implements WriteToInbox {
 
     private final PublicKeyService publicKeyService;
-    private final BucketAccessService accessService;
+    private final BucketAccessServiceImpl accessService;
     private final DocumentWriteService writer;
 
     @Inject
     public WriteToInboxImpl(
-            PublicKeyService publicKeyService, BucketAccessService accessService, DocumentWriteService writer
+            PublicKeyService publicKeyService, BucketAccessServiceImpl accessService, DocumentWriteService writer
     ) {
         this.publicKeyService = publicKeyService;
         this.accessService = accessService;
