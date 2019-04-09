@@ -4,21 +4,14 @@ import de.adorsys.common.exceptions.BaseException;
 import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.common.utils.HexUtil;
 import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
-import de.adorsys.docusafe2.business.api.keystore.types.KeyID;
-import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreAccess;
-import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreAuth;
-import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreCreationConfig;
-import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreType;
-import de.adorsys.docusafe2.business.api.keystore.types.PublicKeyIDWithPublicKey;
-import de.adorsys.docusafe2.business.api.keystore.types.ReadKeyPassword;
-import de.adorsys.docusafe2.business.api.keystore.types.SecretKeyIDWithKey;
+import de.adorsys.docusafe2.business.api.keystore.types.*;
 import de.adorsys.docusafe2.business.impl.keystore.generator.KeyStoreGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 
 import javax.crypto.SecretKey;
 import java.security.*;
-import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 @Slf4j
@@ -61,16 +54,18 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         try {
             for (Enumeration<String> keyAliases = keyStore.aliases(); keyAliases.hasMoreElements(); ) {
                 final String keyAlias = keyAliases.nextElement();
-//                if (!keyStore.isCertificateEntry(keyAlias)) continue;
-                if(!keyStore.entryInstanceOf(keyAlias, KeyStore.PrivateKeyEntry.class)) continue;
-                Certificate cert = keyStore.getCertificate(keyAlias);
+                X509Certificate cert = (X509Certificate) keyStore.getCertificate(keyAlias);
                 if (cert == null) continue; // skip
-                result.add(new PublicKeyIDWithPublicKey(new KeyID(keyAlias), cert.getPublicKey()));
+                boolean[] keyUsage = cert.getKeyUsage();
+                // digitalSignature (0), nonRepudiation (1), keyEncipherment (2), dataEncipherment (3),
+                // keyAgreement (4), keyCertSign (5), cRLSign (6), encipherOnly (7), decipherOnly (8)
+                if (keyUsage[2] || keyUsage[3] || keyUsage[4]) {
+                    result.add(new PublicKeyIDWithPublicKey(new KeyID(keyAlias), cert.getPublicKey()));
+                }
             }
         } catch (Exception e) {
             throw BaseExceptionHandler.handle(e);
         }
-
         return result;
     }
 
@@ -95,9 +90,8 @@ public class KeyStoreServiceImpl implements KeyStoreService {
             char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
             key = (SecretKey) keyStore.getKey(keyID.getValue(), password);
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-            e.printStackTrace();
+            throw BaseExceptionHandler.handle(e);
         }
-
         return key;
     }
 
@@ -122,7 +116,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
             char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
             key = keyStore.getKey(randomAlias, password);
         } catch (KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw BaseExceptionHandler.handle(e);
         }
         return new SecretKeyIDWithKey(new KeyID(randomAlias), (SecretKey) key);
     }

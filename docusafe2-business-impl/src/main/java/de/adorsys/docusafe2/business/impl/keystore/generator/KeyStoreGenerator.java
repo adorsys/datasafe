@@ -3,7 +3,6 @@ package de.adorsys.docusafe2.business.impl.keystore.generator;
 import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.docusafe2.business.api.keystore.exceptions.KeyStoreConfigException;
 import de.adorsys.docusafe2.business.api.keystore.types.*;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +50,7 @@ public class KeyStoreGenerator {
                 int numberOfEncKeyPairs = config.getEncKeyNumber();
                 for (int i = 0; i < numberOfEncKeyPairs; i++) {
                     KeyPairEntry signatureKeyPair = encKeyPairGenerator.generateEncryptionKey(
-                            serverKeyPairAliasPrefix + RandomStringUtils.randomAlphanumeric(5).toUpperCase(),
+                            serverKeyPairAliasPrefix + UUID.randomUUID().toString(),
                             readKeyHandler
                     );
 
@@ -75,7 +74,7 @@ public class KeyStoreGenerator {
                 int numberOfSecretKeys = config.getSecretKeyNumber();
                 for (int i = 0; i < numberOfSecretKeys; i++) {
                     SecretKeyEntry secretKeyData = secretKeyGenerator.generate(
-                            serverKeyPairAliasPrefix + RandomStringUtils.randomAlphanumeric(5).toUpperCase(),
+                            serverKeyPairAliasPrefix + UUID.randomUUID().toString(),
                             readKeyHandler
                     );
 

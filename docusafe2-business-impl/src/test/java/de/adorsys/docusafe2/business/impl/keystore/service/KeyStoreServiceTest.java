@@ -3,17 +3,23 @@ package de.adorsys.docusafe2.business.impl.keystore.service;
 import de.adorsys.common.exceptions.BaseException;
 import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
 import de.adorsys.docusafe2.business.api.keystore.types.*;
-import org.junit.After;
+import de.adorsys.docusafe2.business.impl.keystore.generator.KeyStoreCreationConfigImpl;
+import de.adorsys.docusafe2.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
+import de.adorsys.docusafe2.business.impl.keystore.generator.PasswordCallbackHandler;
+import de.adorsys.docusafe2.business.impl.keystore.generator.ProviderUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
+import javax.security.auth.callback.CallbackHandler;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.Security;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class KeyStoreServiceTest {
 
@@ -21,7 +27,7 @@ public class KeyStoreServiceTest {
     private KeyStoreAuth keyStoreAuth;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ReadStorePassword readStorePassword = new ReadStorePassword("keystorepass");
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
         keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
@@ -39,33 +45,20 @@ public class KeyStoreServiceTest {
 
         Assert.assertEquals("UBER", keyStore.getType());
         Assert.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
-
-//        String firstEntryAlias = keyStore.aliases().nextElement();
-//        //KeyStore.PasswordProtection protParam = new KeyStore.PasswordProtection(readStorePassword.getValue().toCharArray());
-//        KeyStore.PasswordProtection protParam = new KeyStore.PasswordProtection("".toCharArray());
-//        KeyStore.Entry firstEntry = keyStore.getEntry(firstEntryAlias, protParam);
-//        Assert.assertTrue(firstEntry instanceof KeyStore.PrivateKeyEntry);
-//
-//        String secondEntryAlias = keyStore.aliases().nextElement();
-//        KeyStore.Entry secondEntry = keyStore.getEntry(secondEntryAlias, null);
-//        Assert.assertTrue(secondEntry instanceof KeyStore.TrustedCertificateEntry);
     }
 
     @Test
     public void createKeyStoreEmptyConfig() throws Exception {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
-
         Assert.assertNotNull(keyStore);
-
         List<String> list = Collections.list(keyStore.aliases());
-
         Assert.assertEquals(15, list.size());
     }
 
     @Test(expected = BaseException.class)
     public void createKeyStoreException() {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 0);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+        keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
     }
 
     @Test
@@ -78,18 +71,24 @@ public class KeyStoreServiceTest {
 
     @Test
     public void getPrivateKey() throws Exception {
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 0);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+        Provider bcProvider = ProviderUtils.bcProvider;
+        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreType.DEFAULT); // UBER
 
-//        KeyStore.Entry privateKeyEntry = new KeyStore.PrivateKeyEntry();
-//        KeyStore.ProtectionParameter protParam = new KeyStore.PasswordProtection("123".toCharArray());
-//        keyStore.setEntry("privateTest", privateKeyEntry, protParam);
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
+        CallbackHandler readKeyHandler = new PasswordCallbackHandler(readKeyPassword.getValue().toCharArray());
+        KeyStoreCreationConfigImpl keyStoreCreationConfig = new KeyStoreCreationConfigImpl(null);
+        KeyPairGenerator encKeyPairGenerator = keyStoreCreationConfig.getEncKeyPairGenerator("KEYSTORE-ID-0");
+        String alias = "KEYSTORE-ID-0" + UUID.randomUUID().toString();
+        KeyPairEntry keyPairEntry = encKeyPairGenerator.generateEncryptionKey(alias, readKeyHandler);
+        KeyStoreServiceImplBaseFunctions.addToKeyStore(keyStore, keyPairEntry);
+
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
         String keyID = keyStore.aliases().nextElement();
         PrivateKey privateKey = keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(keyID));
         System.out.println(privateKey);
-        //Assert.assertEquals(privateKey.);
+        System.out.println(keyID);
+        Assert.assertEquals(alias, keyID);
     }
 
     @Test(expected = BaseException.class)
@@ -110,7 +109,7 @@ public class KeyStoreServiceTest {
 
         String keyID = keyStore.aliases().nextElement();
         SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID(keyID));
-
+        Assert.assertNotNull(secretKey);
     }
 
     @Test
