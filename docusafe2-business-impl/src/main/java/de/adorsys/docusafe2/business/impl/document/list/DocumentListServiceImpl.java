@@ -1,8 +1,8 @@
 package de.adorsys.docusafe2.business.impl.document.list;
 
 import de.adorsys.docusafe2.business.api.document.DocumentListService;
-import de.adorsys.docusafe2.business.api.types.DFSAccess;
 import de.adorsys.docusafe2.business.api.types.ListRequest;
+import de.adorsys.docusafe2.business.api.types.file.FileOnBucket;
 
 import javax.inject.Inject;
 import java.util.stream.Stream;
@@ -12,19 +12,19 @@ import java.util.stream.Stream;
  */
 public class DocumentListServiceImpl implements DocumentListService {
 
-    private final PathDecryptingServiceImpl decryptingService;
-    private final PathNonDecryptingServiceImpl nonDecryptingService;
+    private final ListPathDecryptingServiceImpl decryptingService;
+    private final ListPathNonDecryptingServiceImpl nonDecryptingService;
 
     @Inject
     public DocumentListServiceImpl(
-            PathDecryptingServiceImpl decryptingService,
-            PathNonDecryptingServiceImpl nonDecryptingService) {
+            ListPathDecryptingServiceImpl decryptingService,
+            ListPathNonDecryptingServiceImpl nonDecryptingService) {
         this.decryptingService = decryptingService;
         this.nonDecryptingService = nonDecryptingService;
     }
 
     @Override
-    public Stream<DFSAccess> list(ListRequest request) {
+    public Stream<FileOnBucket> list(ListRequest request) {
         if (request.isDecryptPath()) {
             return decryptingService.list(request);
         }

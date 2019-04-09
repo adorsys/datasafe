@@ -1,7 +1,7 @@
 package de.adorsys.docusafe2.business.api.document;
 
-import de.adorsys.docusafe2.business.api.types.DFSAccess;
 import de.adorsys.docusafe2.business.api.types.ListRequest;
+import de.adorsys.docusafe2.business.api.types.file.FileOnBucket;
 
 import java.util.stream.Stream;
 
@@ -12,5 +12,5 @@ public interface DocumentListService {
      * @param request bucket descriptor where to list data
      * @return stream of available bucket paths
      */
-    Stream<DFSAccess> list(ListRequest request);
+    Stream<FileOnBucket> list(ListRequest request);
 }

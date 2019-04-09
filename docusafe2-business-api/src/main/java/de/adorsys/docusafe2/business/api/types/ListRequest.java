@@ -1,5 +1,6 @@
 package de.adorsys.docusafe2.business.api.types;
 
+import de.adorsys.dfs.connection.api.types.ListRecursiveFlag;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -12,4 +13,5 @@ public class ListRequest {
     private final DFSAccess location;
 
     private final boolean decryptPath;
+    private final ListRecursiveFlag recursiveFlag;
 }
