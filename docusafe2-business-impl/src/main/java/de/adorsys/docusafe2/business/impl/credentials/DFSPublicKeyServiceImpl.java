@@ -8,7 +8,7 @@ import de.adorsys.docusafe2.business.api.types.UserId;
 import javax.inject.Inject;
 
 /**
- * Retrieves public keystore associated with user from DFS storage.
+ * Retrieves and opens public keystore associated with user from DFS storage.
  */
 public class DFSPublicKeyServiceImpl implements PublicKeyService {
 
