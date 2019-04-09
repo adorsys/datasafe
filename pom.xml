@@ -9,9 +9,51 @@
     </modules>
     <groupId>de.adorsys</groupId>
     <artifactId>docusafe2</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.6-SNAPSHOT</version>
     <name>docusafe2</name>
     <description>Docusafe 2</description>
+    <url>https://github.com/adorsys/docusafe2</url>
+    <scm>
+        <connection>scm:git@github.com:adorsys/docusafe2.git</connection>
+        <developerConnection>scm:git:git@github.com:adorsys/docusafe2.git</developerConnection>
+        <url>git@github.com:adorsys/docusafe2.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Peter Spiessbach</name>
+            <email>psp@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Maksym Hryshchenko</name>
+            <email>mhrex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Valentyn Berezin</name>
+            <email>vbeex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Ihor Yatsenko</name>
+            <email>iyaex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+    </developers>
+
+
 
     <properties>
         <java.version>1.8</java.version>
