@@ -10,4 +10,6 @@ public class ListRequest {
 
     @NonNull
     private final DFSAccess location;
+
+    private final boolean decryptPath;
 }

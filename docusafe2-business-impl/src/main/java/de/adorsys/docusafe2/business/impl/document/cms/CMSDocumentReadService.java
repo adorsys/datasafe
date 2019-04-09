@@ -13,6 +13,9 @@ import org.bouncycastle.cms.CMSEnvelopedData;
 
 import javax.inject.Inject;
 
+/**
+ * Read CMS-encrypted document from DFS.
+ */
 public class CMSDocumentReadService implements DocumentReadService {
 
     private final DFSConnectionService dfs;

@@ -13,6 +13,9 @@ import org.bouncycastle.cms.CMSEnvelopedData;
 
 import javax.inject.Inject;
 
+/**
+ * Write CMS-encrypted document to DFS.
+ */
 public class CMSDocumentWriteService implements DocumentWriteService {
 
     private final DFSConnectionService dfs;

@@ -17,10 +17,10 @@ public abstract class DefaultCredentialsModule {
     abstract BucketAccessService bucketAccessService(BucketAccessServiceImpl impl);
 
     @Binds
-    abstract PublicKeyService publicKeyService(PublicKeyServiceImpl impl);
+    abstract PublicKeyService publicKeyService(DFSPublicKeyServiceImpl impl);
 
     @Binds
-    abstract PrivateKeyService privateKeyService(PrivateKeyServiceImpl impl);
+    abstract PrivateKeyService privateKeyService(DFSPrivateKeyServiceImpl impl);
 
     @Binds
     abstract DFSCredentialsService dfsCredentialsService(DFSCredentialsServiceImpl impl);

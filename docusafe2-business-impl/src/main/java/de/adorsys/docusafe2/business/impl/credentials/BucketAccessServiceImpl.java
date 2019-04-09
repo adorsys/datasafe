@@ -12,6 +12,9 @@ import de.adorsys.docusafe2.business.api.types.UserIdAuth;
 import javax.inject.Inject;
 import java.util.function.Function;
 
+/**
+ * Specifies how to access desired user resource (i.e. private bucket).
+ */
 public class BucketAccessServiceImpl implements BucketAccessService {
 
     private final UserProfileService profiles;

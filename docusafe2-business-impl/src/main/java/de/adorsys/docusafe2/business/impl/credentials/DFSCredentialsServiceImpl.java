@@ -8,6 +8,9 @@ import de.adorsys.docusafe2.business.api.types.UserIdAuth;
 
 import javax.inject.Inject;
 
+/**
+ * Retrieves DFS credentials associated with some resource (i.e. s3 credentials for private folder access).
+ */
 public class DFSCredentialsServiceImpl implements DFSCredentialsService {
 
     @Inject

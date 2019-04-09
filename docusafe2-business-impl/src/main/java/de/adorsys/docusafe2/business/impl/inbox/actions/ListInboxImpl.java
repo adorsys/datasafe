@@ -31,7 +31,12 @@ public class ListInboxImpl implements ListInbox {
                 resolveInboxLocation(forUser)
         );
 
-        return listService.list(ListRequest.builder().location(userInbox).build());
+        ListRequest listRequest = ListRequest.builder()
+                .location(userInbox)
+                .decryptPath(false)
+                .build();
+
+        return listService.list(listRequest);
     }
 
     private Function<UserProfileService, BucketPath> resolveInboxLocation(UserIdAuth forUser) {

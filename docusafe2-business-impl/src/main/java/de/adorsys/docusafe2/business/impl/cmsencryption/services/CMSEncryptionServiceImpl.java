@@ -20,6 +20,10 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Iterator;
 
+/**
+ * Cryptographic message syntax document encoder/decoder - see
+ * @see <a href=https://en.wikipedia.org/wiki/Cryptographic_Message_Syntax">CMS wiki</a>
+ */
 @Slf4j
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
