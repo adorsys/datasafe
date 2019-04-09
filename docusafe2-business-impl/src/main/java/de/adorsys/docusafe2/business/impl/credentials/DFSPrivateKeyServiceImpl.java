@@ -21,6 +21,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
     @Override
     public KeyStoreAccess keystore(UserIdAuth forUser) {
-        return null;
+        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
+        throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/<>");
     }
 }

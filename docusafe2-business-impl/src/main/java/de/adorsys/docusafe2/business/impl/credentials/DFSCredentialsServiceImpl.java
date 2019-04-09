@@ -19,11 +19,13 @@ public class DFSCredentialsServiceImpl implements DFSCredentialsService {
 
     @Override
     public DFSCredentials privateUserCredentials(UserIdAuth forUser, BucketPath forBucket) {
-        return null;
+        // FIXME https://github.com/adorsys/datasafe2/issues/12
+        throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/12");
     }
 
     @Override
     public DFSCredentials publicUserCredentials(UserId forUser, BucketPath forBucket) {
-        return null;
+        // FIXME https://github.com/adorsys/datasafe2/issues/12
+        throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/12");
     }
 }

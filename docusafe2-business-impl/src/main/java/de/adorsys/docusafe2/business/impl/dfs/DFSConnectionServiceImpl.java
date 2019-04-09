@@ -14,6 +14,7 @@ public class DFSConnectionServiceImpl implements DFSConnectionService {
 
     @Override
     public ExtendedStoreConnection obtain(DFSAccess connectTo) {
-        return null;
+        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
+        throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/<>");
     }
 }

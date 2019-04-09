@@ -36,6 +36,7 @@ public class WriteToInboxImpl implements WriteToInbox {
         );
 
         // TODO: Map from into file meta
+        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
         WriteRequest writeRequest = WriteRequest.builder()
                 .to(userInbox)
                 .keyWithId(publicKeyService.publicKey(request.getTo()))
@@ -50,6 +51,7 @@ public class WriteToInboxImpl implements WriteToInbox {
                 .publicProfile(request.getTo())
                 .getInbox()
                 // TODO: UUID based unique filename
+                // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
                 .append(request.getRequest().getMeta().getName());
     }
 }

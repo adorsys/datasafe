@@ -15,6 +15,7 @@ public class PathNonDecryptingServiceImpl implements DocumentListService {
 
     @Override
     public Stream<DFSAccess> list(ListRequest request) {
-        return null;
+        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
+        throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/<>");
     }
 }

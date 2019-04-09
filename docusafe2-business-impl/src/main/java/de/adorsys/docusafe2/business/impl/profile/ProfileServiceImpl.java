@@ -16,11 +16,13 @@ public class ProfileServiceImpl implements UserProfileService {
 
     @Override
     public UserPublicProfile publicProfile(UserId ofUser) {
-        return null;
+        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
+        throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/<>");
     }
 
     @Override
     public UserPrivateProfile privateProfile(UserIdAuth ofUser) {
-        return null;
+        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
+        throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/<>");
     }
 }

@@ -21,6 +21,7 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
 
     @Override
     public PublicKeyWithId publicKey(UserId forUser) {
-        return null;
+        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
+        throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/<>");
     }
 }
