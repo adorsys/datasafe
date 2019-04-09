@@ -1,5 +1,6 @@
 package de.adorsys.docusafe2.business.impl.keystore.service;
 
+import de.adorsys.common.exceptions.BaseException;
 import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.common.utils.HexUtil;
 import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
@@ -60,6 +61,8 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         try {
             for (Enumeration<String> keyAliases = keyStore.aliases(); keyAliases.hasMoreElements(); ) {
                 final String keyAlias = keyAliases.nextElement();
+//                if (!keyStore.isCertificateEntry(keyAlias)) continue;
+                if(!keyStore.entryInstanceOf(keyAlias, KeyStore.PrivateKeyEntry.class)) continue;
                 Certificate cert = keyStore.getCertificate(keyAlias);
                 if (cert == null) continue; // skip
                 result.add(new PublicKeyIDWithPublicKey(new KeyID(keyAlias), cert.getPublicKey()));
@@ -89,7 +92,8 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         KeyStore keyStore = keyStoreAccess.getKeyStore();
         SecretKey key = null;
         try {
-            key = (SecretKey) keyStore.getKey(keyID.getValue(), keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
+            char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
+            key = (SecretKey) keyStore.getKey(keyID.getValue(), password);
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             e.printStackTrace();
         }
@@ -104,7 +108,15 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         String randomAlias = null;
         try {
             Enumeration<String> aliases = keyStore.aliases();
-            List<String> keyIDs = new ArrayList<>(Collections.list(aliases));
+            List<String> keyIDs = new ArrayList<>();
+            for(String keyAlias : Collections.list(aliases)) {
+                if(keyStore.entryInstanceOf(keyAlias, KeyStore.SecretKeyEntry.class)) {
+                    keyIDs.add(keyAlias);
+                }
+            }
+            if(keyIDs.size() == 0) {
+                throw new BaseException("No secret keys in the keystore");
+            }
             int randomIndex = RandomUtils.nextInt(0, keyIDs.size());
             randomAlias = keyIDs.get(randomIndex);
             char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
