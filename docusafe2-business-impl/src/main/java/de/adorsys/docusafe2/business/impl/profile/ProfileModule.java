@@ -1,12 +1,12 @@
 package de.adorsys.docusafe2.business.impl.profile;
 
+import dagger.Binds;
 import dagger.Module;
 import de.adorsys.docusafe2.business.api.profile.UserProfileService;
 
 @Module
-public class ProfileModule {
+public abstract class ProfileModule {
 
-    UserProfileService profileService() {
-        return new DefaultProfileService();
-    }
+    @Binds
+    abstract UserProfileService profileService(DefaultProfileService impl);
 }

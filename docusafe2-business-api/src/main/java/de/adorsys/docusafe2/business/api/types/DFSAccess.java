@@ -10,9 +10,21 @@ import lombok.Value;
 @Builder
 public class DFSAccess {
 
+    /**
+     * Logical path - decrypted path value.
+     */
     @NonNull
     private final BucketPath path;
 
+    /**
+     * Physical path - encrypted path value.
+     */
+    @NonNull
+    private final BucketPath physicalPath;
+
+    /**
+     * Credentials to access DFS system.
+     */
     @NonNull
     private final DFSCredentials credentials;
 }

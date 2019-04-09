@@ -15,12 +15,17 @@ import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.OutputEncryptor;
 
+import javax.inject.Inject;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Iterator;
 
 @Slf4j
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
+
+    @Inject
+    public CMSEncryptionServiceImpl() {
+    }
 
     @Override
     public CMSEnvelopedData encrypt(DocumentContent data, PublicKey publicKey, KeyID publicKeyId) {

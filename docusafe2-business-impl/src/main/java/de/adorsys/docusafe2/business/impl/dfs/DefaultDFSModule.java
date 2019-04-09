@@ -1,14 +1,12 @@
 package de.adorsys.docusafe2.business.impl.dfs;
 
+import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 import de.adorsys.docusafe2.business.api.dfs.DFSConnectionService;
 
 @Module
-public class DefaultDFSModule {
+public abstract class DefaultDFSModule {
 
-    @Provides
-    public DFSConnectionService dfsConnectionService() {
-        return new DFSConnectionServiceImpl();
-    }
+    @Binds
+    abstract DFSConnectionService dfsConnectionService(DFSConnectionServiceImpl impl);
 }
