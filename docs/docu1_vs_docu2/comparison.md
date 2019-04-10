@@ -1,5 +1,3 @@
-9.4.2019
-
 # Adorsys Docusafe vs. Datasafe
 
 ## IN BRIEF
@@ -17,7 +15,7 @@ The datasafe version has the following features:
 
 The keystores in docusafe and datasafe actually are the same, but the usage of the keys differs significantly. 
 ![](../images/v1-keystore.bmp) 
-A keystore allways has two locks. The first lock is used to protect the keystore at all. In docusafe this lock is to be opened with a general key. It is the same key for all users. It give the owner of the general key the chance to get the public keys of the user. As in datasafe the public keys of all users are kept in an authorization server, there is no more need to use a general key. So in datastore the general key is the users password too and thus each keystore can only be opened by the user him/herself. Inside the keystore is a private area, that only can be retrieved with another key. For this key, the users password is used. In this private area the private keys corresponding to the public keys and some symmetric keys are kept. In docusafe the users documents are encrypted with the secret key of the keystore. (actually this is since version 0.5.22. versions before use a symmetric document guard that is locked with the secret key). In datastore the symmetric key is only used for the encryption of the document path.
+A keystore allways has two locks. The first lock is used to protect the keystore at all. In docusafe this lock is to be opened with a general key. It is the same key for all users. It gives the owner of the general key the chance to get the public keys of the user. As in datasafe the public keys of all users are kept in an authorization server, there is no more need to use a general key. So in datastore the general key is the users password too and thus each keystore can only be opened by the user him/herself. Inside the keystore is a private area, that only can be retrieved with another key. For this key, the users password is used. In this private area the private keys corresponding to the public keys and some symmetric keys are kept. In docusafe the users documents are encrypted with the secret key of the keystore. (actually this is since version 0.5.22. versions before use a symmetric document guard that is locked with the secret key). In datastore the symmetric key is only used for the encryption of the document path.
 
 In docusafe and datasafe documents/data are always encrypted with a symmetric key. 
 ![](../images/v1-document-safe.bmp) 
