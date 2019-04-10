@@ -25,4 +25,4 @@ The Term after the issue id is not mandatory the same as the branch-short-term f
 * [Project architecture](docs/architecture.md) 
 * [Possible future achitecture](docs/general/docusafe_future_client.md)
 * [Deployment to maven central](docs/general/deployment_maven_central.md)
-* [comparison to docusafe](docs/comparison.md)
+* [comparison to docusafe](docs/docu1_vs_docu2/comparison.md)
