@@ -1,8 +1,8 @@
 9.4.2019
 
-#Adorsys Docusafe vs. Datasafe
+# Adorsys Docusafe vs. Datasafe
 
-##IN BRIEF
+## IN BRIEF
 The docusafe version has the following features:
 - all documents are encrypted symmetricly (individually per user)
 - all document names are encrypted (system wide same encryption)
@@ -13,7 +13,7 @@ The datasafe version has the following features:
 - all data names are encrypted (individually per user)
 - each user has its own DFS
 
-##IN DETAIL
+## IN DETAIL
 
 The keystores in docusafe and datasafe actually are the same, but the usage of the keys differs significantly. 
 ![](../images/v1-keystore.bmp) 
@@ -39,14 +39,9 @@ As consequence in datastore every time, data is stored, it is encrypted with ano
 
 Further in docusafe there is only one distributed file system to be used at one time. So all users are stored at this DFS. Of course each user is protected individually. In datastsore each user may have its own personal DFS. So one user may be stored at amazon, the other one at a local ceph or the next one at a remote minio system. For the user of the datastore, this is transparent. Data can be stored and given from one user to another user without caring about these details. 
 
-##Overview in table
+## Overview in table
 | docusafe | docusafe 0.5.22 and newer | datasafe |
 |:----------|---------------------------|----------|
 | Each document protected with a document guard. Documents to other users protected with an asymmetric document guard, documents for the usher him/herself with a symmetric document guard.|Documents to other users protected with an asymmetric document guard, documents for the usher him/herself are encrypted with a secret key of the users keystore.|All documents symmetricly encrypted with a CMSEnvelope (that assymetricly protects the encryption key).|
 | Path encryption equal for all users. | Path encryption equal for all users.| Path encryption individually for each user.|
 | One DFS for all users. | One DFS for all users. | One DFS per user.|
-
-
-
-
-
