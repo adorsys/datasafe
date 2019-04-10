@@ -5,7 +5,7 @@ import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
 import de.adorsys.docusafe2.business.api.keystore.types.*;
 import de.adorsys.docusafe2.business.api.types.DocumentContent;
 import de.adorsys.docusafe2.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
-import de.adorsys.docusafe2.business.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.docusafe2.business.impl.keystore.service.KeyStoreServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.junit.Test;
@@ -32,9 +32,9 @@ public class CmsEncryptionServiceTest {
             KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
             KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
-            KeySourceAndKeyID forPublicKey = keyStoreService.getKeySourceAndKeyIDForPublicKey(keyStoreAccess);
-            KeyID keyID = forPublicKey.getKeyID();
-            PublicKey publicKey = (PublicKey) forPublicKey.getKeySource().readKey(keyID);
+            PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+            PublicKey publicKey = publicKeyIDWithPublicKey.getPublicKey();
+            KeyID keyID = publicKeyIDWithPublicKey.getKeyID();
 
             DocumentContent origMessage = new DocumentContent("message content".getBytes());
             CMSEnvelopedData encrypted  = cmsEncryptionService.encrypt(origMessage, publicKey, keyID);
