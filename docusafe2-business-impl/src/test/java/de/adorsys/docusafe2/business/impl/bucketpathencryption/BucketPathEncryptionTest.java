@@ -8,12 +8,13 @@ import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
 import de.adorsys.docusafe2.business.api.keystore.types.*;
 import de.adorsys.docusafe2.business.impl.keystore.service.KeyStoreServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.KeyStore;
 import java.util.Date;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class BucketPathEncryptionTest {
@@ -30,7 +31,7 @@ public class BucketPathEncryptionTest {
             for (int i = 0; i < loopsize; i++) {
                 BucketPath encryptedBucketPath = bucketPathEncryptionService.encrypt(secretKeySpec, bucketPath);
                 BucketPath decryptedBucketPath = bucketPathEncryptionService.decrypt(secretKeySpec, encryptedBucketPath);
-                Assert.assertEquals(bucketPath.toString(), decryptedBucketPath.toString());
+                assertThat(decryptedBucketPath.toString()).isEqualTo(bucketPath.toString());
             }
             long stop = new Date().getTime();
             BucketPath encryptedBucketPath = bucketPathEncryptionService.encrypt(secretKeySpec, bucketPath);
@@ -53,7 +54,7 @@ public class BucketPathEncryptionTest {
         BucketDirectory d1 = full1.getBucketDirectory();
         BucketDirectory d2 = full2.getBucketDirectory();
 
-        Assert.assertEquals(BucketPathUtil.getAsString(d1), BucketPathUtil.getAsString(d2));
+        assertThat(BucketPathUtil.getAsString(d2)).isEqualTo(BucketPathUtil.getAsString(d1));
         log.info(bucketPath1 + " and " + bucketPath2 + " both have thZZe same prefix when encrypted:" + d1);
     }
 
