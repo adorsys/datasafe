@@ -1,7 +1,7 @@
 package de.adorsys.docusafe2.business.impl.document.cms;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.dfs.connection.api.service.api.ExtendedStoreConnection;
+import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 import de.adorsys.dfs.connection.api.service.impl.SimplePayloadImpl;
 import de.adorsys.docusafe2.business.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.docusafe2.business.api.dfs.DFSConnectionService;
@@ -30,7 +30,7 @@ public class CMSDocumentWriteService implements DocumentWriteService {
     @Override
     @SneakyThrows
     public void write(WriteRequest request) {
-        ExtendedStoreConnection connection = dfs.obtain(request.getTo());
+        DFSConnection connection = dfs.obtain(request.getTo());
 
         // FIXME https://github.com/adorsys/docusafe2/issues/5
         CMSEnvelopedData data = cms.encrypt(

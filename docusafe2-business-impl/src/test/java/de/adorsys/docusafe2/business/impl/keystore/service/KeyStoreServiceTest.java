@@ -58,7 +58,8 @@ public class KeyStoreServiceTest {
     @Test
     public void createKeyStoreException() {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 0);
-        Assertions.assertThrows(BaseException.class, () ->keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config));
+
+            Assertions.assertThrows(BaseException.class, () ->keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config));
     }
 
     @Test
