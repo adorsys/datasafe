@@ -4,34 +4,34 @@ skinparam SequenceMessageAlign center
 actor User
 
 activate User
-User -> DFSDocusafeService : createUser
-activate DFSDocusafeService
-DFSDocusafeService -> KeyStoreService : createKeyStore
+User -> DFSDatasafeService : createUser
+activate DFSDatasafeService
+DFSDatasafeService -> KeyStoreService : createKeyStore
 activate KeyStoreService
-KeyStoreService --> DFSDocusafeService : users public keystore
+KeyStoreService --> DFSDatasafeService : users public keystore
 deactivate KeyStoreService
-DFSDocusafeService -> DFSDocusafeService : create DFSCredential
-DFSDocusafeService -> DFSCredentialsService : registerDFS
+DFSDatasafeService -> DFSDatasafeService : create DFSCredential
+DFSDatasafeService -> DFSCredentialsService : registerDFS
 activate DFSCredentialsService
 DFSCredentialsService -> CMSEncryptionService : encrypt(DFSCredentials)
 activate CMSEncryptionService
 CMSEncryptionService --> DFSCredentialsService : encrypted data
 deactivate CMSEncryptionService
 DFSCredentialsService -> "SYSTEM DFS\nDFSConnectionService" as sysDFS : storeBlob
-DFSCredentialsService -> DFSDocusafeService : return
+DFSCredentialsService -> DFSDatasafeService : return
 deactivate DFSCredentialsService
-DFSDocusafeService -> "USER DFS\nDFSConnectionService" as usrDFS : NEW
-DFSDocusafeService -> KeyStoreService : createKeyStore
+DFSDatasafeService -> "USER DFS\nDFSConnectionService" as usrDFS : NEW
+DFSDatasafeService -> KeyStoreService : createKeyStore
 activate KeyStoreService
-KeyStoreService --> DFSDocusafeService : users secret keystore
+KeyStoreService --> DFSDatasafeService : users secret keystore
 deactivate KeyStoreService
-DFSDocusafeService -> usrDFS : storeBlob(users secret keystore)
-DFSDocusafeService ->  KeyStoreService : getAllPublicKeys(users secret keystore)
+DFSDatasafeService -> usrDFS : storeBlob(users secret keystore)
+DFSDatasafeService ->  KeyStoreService : getAllPublicKeys(users secret keystore)
 activate KeyStoreService
-KeyStoreService --> DFSDocusafeService : List<PublicKey>
+KeyStoreService --> DFSDatasafeService : List<PublicKey>
 deactivate KeyStoreService
-DFSDocusafeService -> sysDFS : storeBlob(List<PublicKey>)
-DFSDocusafeService --> User : return
-deactivate DFSDocusafeService
+DFSDatasafeService -> sysDFS : storeBlob(List<PublicKey>)
+DFSDatasafeService --> User : return
+deactivate DFSDatasafeService
 deactivate User
 @enduml

@@ -1,5 +1,5 @@
-# Docusafe2 virtual filesystem analogy
-Docusafe2 can be viewed as virtual filesystem, that has:
+# Datasafe2 virtual filesystem analogy
+Datasafe2 can be viewed as virtual filesystem, that has:
 - private encrypted user section - **private** folder 
 - documents that are shared with user - **inbox** folder
 - folder where user can share documents with other users (recipients) - **send_to**. 
@@ -49,7 +49,7 @@ Directory service is responsible for user creation/data sharing/shared location 
 * [Delete VFS (de-register user)](docs/api/users/delete.md) : `DELETE /api/users/<id>`
 
 ### Lookup sub-service API
-Lookup service is the replacement and extension of Docusafe 1.0 
+Lookup service is the replacement and extension of Datasafe 1.0 
 [UserIDUtil](https://github.com/adorsys/docusafe/blob/master/docusafe-business/src/main/java/org/adorsys/docusafe/business/utils/UserIDUtil.java) class. 
 UserIDUtil to Lookup service sequence diagram mapping can be found [**here**](../docu1_vs_docu2/useridutil_2_lookup.md).
 
@@ -86,21 +86,21 @@ User-list and write-only operations
 * [Share file (snapshot) with user](../api/share/put.md) : `PUT /api/mount/share/<username>/<filename>`
 
 # Top level application architecture for server based application
-Docusafe2 supports command chain request delegation using routers for each API (within request context), so that we can do `REST->library->REST->library` chains for data retrieval.
-![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/top_level.puml&fmt=png&vvv=9)
+Datasafe2 supports command chain request delegation using routers for each API (within request context), so that we can do `REST->library->REST->library` chains for data retrieval.
+![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/top_level.puml&fmt=png&vvv=9)
 
 # General view of lookup server operations
-![Lookup server general view](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/generic_view.puml&fmt=png&vvv=9)
+![Lookup server general view](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/generic_view.puml&fmt=png&vvv=9)
 
 # Sequence diagrams for VFS/user creation
 * [VFS and user creation](docusafe_diagrams.md)
 
 # Sequence diagram for CRUD on private files
 ### Detailed view
-![Private files CRUD](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/sequence_private.puml&fmt=png&vvv=3)
+![Private files CRUD](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/sequence_private.puml&fmt=png&vvv=3)
 
 # Sequence diagram for INBOX file sharing
-![INBOX file sharing](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/sequence_put_inbox.puml&fmt=png&vvv=1)
+![INBOX file sharing](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/sequence_put_inbox.puml&fmt=png&vvv=1)
 
 # Sequence diagram for INBOX reading
-![INBOX reading](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/sequence_read_inbox.puml&fmt=png&vvv=1)
+![INBOX reading](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/sequence_read_inbox.puml&fmt=png&vvv=1)

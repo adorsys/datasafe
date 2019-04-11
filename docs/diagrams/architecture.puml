@@ -9,7 +9,7 @@ left to right direction
 hide stereotype
 
 rectangle " " as main <<MainGrp>> {
-  component DFSDocusafeService as svc
+  component DFSDatasafeService as svc
 
 together {
   rectangle " " as sys <<MainGrp>> {
