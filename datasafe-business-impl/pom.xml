@@ -9,12 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>docusafe2-business-impl</artifactId>
+    <artifactId>datasafe-business-impl</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>de.adorsys</groupId>
-            <artifactId>docusafe2-business-api</artifactId>
+            <artifactId>datasafe-business-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

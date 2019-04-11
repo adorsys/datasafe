@@ -5,7 +5,7 @@ import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreCreationConf
 import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.keystore.generator.ProviderUtils;
-import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.keystore.KeyStoreService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -3,11 +3,11 @@ package de.adorsys.datasafe.business.impl.document.cms;
 import com.google.common.io.ByteSource;
 import de.adorsys.dfs.connection.api.domain.Payload;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
-import de.adorsys.docusafe2.business.api.cmsencryption.CMSEncryptionService;
-import de.adorsys.docusafe2.business.api.dfs.DFSConnectionService;
-import de.adorsys.docusafe2.business.api.document.DocumentReadService;
-import de.adorsys.docusafe2.business.api.types.DocumentContent;
-import de.adorsys.docusafe2.business.api.types.ReadRequest;
+import de.adorsys.datasafe.business.api.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.document.DocumentReadService;
+import de.adorsys.datasafe.business.api.types.DocumentContent;
+import de.adorsys.datasafe.business.api.types.ReadRequest;
 import lombok.SneakyThrows;
 import org.bouncycastle.cms.CMSEnvelopedData;
 

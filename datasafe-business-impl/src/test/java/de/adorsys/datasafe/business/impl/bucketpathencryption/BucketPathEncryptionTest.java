@@ -4,8 +4,8 @@ import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
 import de.adorsys.dfs.connection.api.complextypes.BucketDirectory;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.complextypes.BucketPathUtil;
-import de.adorsys.docusafe2.business.api.bucketpathencryption.BucketPathEncryptionService;
-import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.bucketpathencryption.BucketPathEncryptionService;
+import de.adorsys.datasafe.business.api.keystore.KeyStoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.keystore.generator;
 
-import de.adorsys.docusafe2.business.api.keystore.types.KeyEntry;
-import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreType;
+import de.adorsys.datasafe.business.api.keystore.types.KeyEntry;
+import de.adorsys.datasafe.business.api.keystore.types.KeyStoreType;
 
 import javax.security.auth.callback.CallbackHandler;
 import java.io.IOException;

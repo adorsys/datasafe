@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.impl.dfs;
 
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
-import de.adorsys.docusafe2.business.api.dfs.DFSConnectionService;
-import de.adorsys.docusafe2.business.api.types.DFSAccess;
+import de.adorsys.datasafe.business.api.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.types.DFSAccess;
 
 import javax.inject.Inject;
 

@@ -4,7 +4,7 @@ import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.common.utils.HexUtil;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.complextypes.BucketPathUtil;
-import de.adorsys.docusafe2.business.api.bucketpathencryption.BucketPathEncryptionService;
+import de.adorsys.datasafe.business.api.bucketpathencryption.BucketPathEncryptionService;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

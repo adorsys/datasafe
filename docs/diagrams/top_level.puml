@@ -9,7 +9,7 @@ node ts [
 ]
 
 node ds [
-  **Docusafe server**
+  **Datasafe server**
   ===
   REST api
 ]
@@ -24,7 +24,7 @@ cloud "Lookup server" as LS {
   node vfs [
     **Virtual filesystem service**
     ===
-    create virtual filesystem (new Docusafe-managed user)
+    create virtual filesystem (new Datasafe-managed user)
     mount virtual filesystem (register user filesystem)
   ]
 }

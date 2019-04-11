@@ -2,10 +2,10 @@ package de.adorsys.datasafe.business.impl.cmsencryption.services;
 
 import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.AsymmetricEncryptionException;
-import de.adorsys.docusafe2.business.api.cmsencryption.CMSEncryptionService;
-import de.adorsys.docusafe2.business.api.keystore.types.KeyID;
-import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreAccess;
-import de.adorsys.docusafe2.business.api.types.DocumentContent;
+import de.adorsys.datasafe.business.api.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.keystore.types.KeyID;
+import de.adorsys.datasafe.business.api.keystore.types.KeyStoreAccess;
+import de.adorsys.datasafe.business.api.types.DocumentContent;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.*;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;

@@ -1,11 +1,11 @@
 package de.adorsys.datasafe.business.impl.dfscredentialservice;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import de.adorsys.docusafe2.business.api.dfscredentialservice.DFSCredentialService;
-import de.adorsys.docusafe2.business.api.keystore.types.ReadKeyPassword;
-import de.adorsys.docusafe2.business.api.types.DFSCredentials;
-import de.adorsys.docusafe2.business.api.types.UserID;
-import de.adorsys.docusafe2.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.dfscredentialservice.DFSCredentialService;
+import de.adorsys.datasafe.business.api.keystore.types.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.types.DFSCredentials;
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

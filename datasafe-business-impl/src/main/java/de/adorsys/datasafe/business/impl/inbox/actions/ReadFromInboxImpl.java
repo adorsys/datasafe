@@ -1,14 +1,14 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import de.adorsys.docusafe2.business.api.credentials.BucketAccessService;
-import de.adorsys.docusafe2.business.api.document.DocumentReadService;
-import de.adorsys.docusafe2.business.api.inbox.actions.ReadFromInbox;
-import de.adorsys.docusafe2.business.api.inbox.dto.InboxReadRequest;
-import de.adorsys.docusafe2.business.api.keystore.PrivateKeyService;
-import de.adorsys.docusafe2.business.api.profile.UserProfileService;
-import de.adorsys.docusafe2.business.api.types.DFSAccess;
-import de.adorsys.docusafe2.business.api.types.ReadRequest;
+import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
+import de.adorsys.datasafe.business.api.document.DocumentReadService;
+import de.adorsys.datasafe.business.api.inbox.actions.ReadFromInbox;
+import de.adorsys.datasafe.business.api.inbox.dto.InboxReadRequest;
+import de.adorsys.datasafe.business.api.keystore.PrivateKeyService;
+import de.adorsys.datasafe.business.api.profile.UserProfileService;
+import de.adorsys.datasafe.business.api.types.DFSAccess;
+import de.adorsys.datasafe.business.api.types.ReadRequest;
 
 import javax.inject.Inject;
 import java.util.function.Function;

@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.business.impl.inbox.impl;
 
-import de.adorsys.docusafe2.business.api.inbox.InboxService;
-import de.adorsys.docusafe2.business.api.inbox.actions.ListInbox;
-import de.adorsys.docusafe2.business.api.inbox.actions.ReadFromInbox;
-import de.adorsys.docusafe2.business.api.inbox.actions.WriteToInbox;
+import de.adorsys.datasafe.business.api.inbox.InboxService;
+import de.adorsys.datasafe.business.api.inbox.actions.ListInbox;
+import de.adorsys.datasafe.business.api.inbox.actions.ReadFromInbox;
+import de.adorsys.datasafe.business.api.inbox.actions.WriteToInbox;
 import lombok.experimental.Delegate;
 
 import javax.inject.Inject;

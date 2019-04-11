@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.impl.keystore.generator;
 
-import de.adorsys.docusafe2.business.api.keystore.types.KeyStoreCreationConfig;
+import de.adorsys.datasafe.business.api.keystore.types.KeyStoreCreationConfig;
 
 /**
  * Created by peter on 09.01.18.

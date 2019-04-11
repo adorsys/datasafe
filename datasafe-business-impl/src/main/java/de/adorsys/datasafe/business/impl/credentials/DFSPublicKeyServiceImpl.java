@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.business.impl.credentials;
 
-import de.adorsys.docusafe2.business.api.credentials.BucketAccessService;
-import de.adorsys.docusafe2.business.api.keystore.PublicKeyService;
-import de.adorsys.docusafe2.business.api.types.PublicKeyWithId;
-import de.adorsys.docusafe2.business.api.types.UserId;
+import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
+import de.adorsys.datasafe.business.api.keystore.PublicKeyService;
+import de.adorsys.datasafe.business.api.types.PublicKeyWithId;
+import de.adorsys.datasafe.business.api.types.UserId;
 
 import javax.inject.Inject;
 

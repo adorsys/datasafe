@@ -3,10 +3,10 @@ skinparam SequenceMessageAlign center
 
 actor User
 
-User -> DFSDocusafeService : storeDocument
+User -> DFSDatasafeService : storeDocument
 activate User
-activate DFSDocusafeService
-DFSDocusafeService -> DFSCredentialService : getCredentials
+activate DFSDatasafeService
+DFSDatasafeService -> DFSCredentialService : getCredentials
 activate DFSCredentialService
 DFSCredentialService -> "SYSTEM DFS\nDFSConnectionService" as sysDFS : readBlob(users public keystore)
 activate sysDFS
@@ -20,34 +20,34 @@ DFSCredentialService -> CMSEncryptionService : decrypt(DFSCredentials)
 activate CMSEncryptionService
 CMSEncryptionService --> DFSCredentialService : decrypted DFSCredentials
 deactivate CMSEncryptionService
-DFSCredentialService --> DFSDocusafeService : return DFSCredentials
+DFSCredentialService --> DFSDatasafeService : return DFSCredentials
 deactivate DFSCredentialService
-DFSDocusafeService -> "USER DFS\nDFSConnectionService" as usrDFS : NEW
-DFSDocusafeService -> sysDFS : readBlob(users public keys)
+DFSDatasafeService -> "USER DFS\nDFSConnectionService" as usrDFS : NEW
+DFSDatasafeService -> sysDFS : readBlob(users public keys)
 activate sysDFS
-sysDFS --> DFSDocusafeService : return 
+sysDFS --> DFSDatasafeService : return
 deactivate sysDFS
-DFSDocusafeService -> CMSEncryptionService : encrypt(document, publicKey)
+DFSDatasafeService -> CMSEncryptionService : encrypt(document, publicKey)
 activate CMSEncryptionService
-CMSEncryptionService --> DFSDocusafeService : encrypted document (CMSEnvelope)
+CMSEncryptionService --> DFSDatasafeService : encrypted document (CMSEnvelope)
 deactivate CMSEncryptionService
-DFSDocusafeService -> usrDFS : readBlob(user private keystore)
+DFSDatasafeService -> usrDFS : readBlob(user private keystore)
 activate usrDFS
-usrDFS --> DFSDocusafeService : return (user private keystore)
+usrDFS --> DFSDatasafeService : return (user private keystore)
 deactivate usrDFS
-DFSDocusafeService -> KeystoreService : getSecretKey
+DFSDatasafeService -> KeystoreService : getSecretKey
 activate KeystoreService
-KeystoreService --> DFSDocusafeService : return secret key
+KeystoreService --> DFSDatasafeService : return secret key
 deactivate KeystoreService
-DFSDocusafeService -> BucketPathEncryptionService : encrypt bucketpath with secret key
+DFSDatasafeService -> BucketPathEncryptionService : encrypt bucketpath with secret key
 activate BucketPathEncryptionService
-BucketPathEncryptionService --> DFSDocusafeService : return 
+BucketPathEncryptionService --> DFSDatasafeService : return
 deactivate BucketPathEncryptionService
-DFSDocusafeService -> usrDFS : storeBlob(encrypted path, encrypted document)
+DFSDatasafeService -> usrDFS : storeBlob(encrypted path, encrypted document)
 activate usrDFS
-usrDFS --> DFSDocusafeService : return
+usrDFS --> DFSDatasafeService : return
 deactivate usrDFS
-DFSDocusafeService --> User : return
-deactivate DFSDocusafeService
+DFSDatasafeService --> User : return
+deactivate DFSDatasafeService
 deactivate User
 @enduml

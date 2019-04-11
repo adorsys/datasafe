@@ -2,14 +2,14 @@ package de.adorsys.datasafe.business.impl.inbox.actions;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.types.ListRecursiveFlag;
-import de.adorsys.docusafe2.business.api.credentials.BucketAccessService;
-import de.adorsys.docusafe2.business.api.document.DocumentListService;
-import de.adorsys.docusafe2.business.api.inbox.actions.ListInbox;
-import de.adorsys.docusafe2.business.api.profile.UserProfileService;
-import de.adorsys.docusafe2.business.api.types.DFSAccess;
-import de.adorsys.docusafe2.business.api.types.ListRequest;
-import de.adorsys.docusafe2.business.api.types.UserIdAuth;
-import de.adorsys.docusafe2.business.api.types.file.FileOnBucket;
+import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
+import de.adorsys.datasafe.business.api.document.DocumentListService;
+import de.adorsys.datasafe.business.api.inbox.actions.ListInbox;
+import de.adorsys.datasafe.business.api.profile.UserProfileService;
+import de.adorsys.datasafe.business.api.types.DFSAccess;
+import de.adorsys.datasafe.business.api.types.ListRequest;
+import de.adorsys.datasafe.business.api.types.UserIdAuth;
+import de.adorsys.datasafe.business.api.types.file.FileOnBucket;
 
 import javax.inject.Inject;
 import java.util.function.Function;

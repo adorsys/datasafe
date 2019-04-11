@@ -39,7 +39,7 @@ cloud "Lookup service" {
 actor User1 as user1
 actor User2 as user2
 
-card "Docusafe library functionality" {
+card "Datasafe library functionality" {
   package {
     card "User 1 data" as User1data {
       node inboxUsr1 [

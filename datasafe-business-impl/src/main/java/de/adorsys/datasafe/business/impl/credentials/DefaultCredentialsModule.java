@@ -2,10 +2,10 @@ package de.adorsys.datasafe.business.impl.credentials;
 
 import dagger.Binds;
 import dagger.Module;
-import de.adorsys.docusafe2.business.api.credentials.BucketAccessService;
-import de.adorsys.docusafe2.business.api.credentials.DFSCredentialsService;
-import de.adorsys.docusafe2.business.api.keystore.PrivateKeyService;
-import de.adorsys.docusafe2.business.api.keystore.PublicKeyService;
+import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
+import de.adorsys.datasafe.business.api.credentials.DFSCredentialsService;
+import de.adorsys.datasafe.business.api.keystore.PrivateKeyService;
+import de.adorsys.datasafe.business.api.keystore.PublicKeyService;
 
 /**
  * This module is responsible for credentials access - either user or dfs.

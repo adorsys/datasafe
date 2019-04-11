@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.impl.credentials;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import de.adorsys.docusafe2.business.api.credentials.DFSCredentialsService;
-import de.adorsys.docusafe2.business.api.credentials.dto.DFSCredentials;
-import de.adorsys.docusafe2.business.api.types.UserId;
-import de.adorsys.docusafe2.business.api.types.UserIdAuth;
+import de.adorsys.datasafe.business.api.credentials.DFSCredentialsService;
+import de.adorsys.datasafe.business.api.credentials.dto.DFSCredentials;
+import de.adorsys.datasafe.business.api.types.UserId;
+import de.adorsys.datasafe.business.api.types.UserIdAuth;
 
 import javax.inject.Inject;
 

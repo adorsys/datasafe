@@ -1,20 +1,20 @@
-# Docusafe2
-This is the simplified architecture of **Docusafe2**. 
+# Datasafe
+This is the simplified architecture of **Datasafe**. 
 
 * It only contains one DFS per user.
 * It uses plain inbox folders for users to store documents given from one user to another. The format might be [S/MIME](https://en.wikipedia.org/wiki/S/MIME).
 * The inbox folder is on the SYSTEM DFS, not the USERs DFS (explained later).
 
 First all needed services are explained. The term server is not used at all. A server is stand alone application. 
-Docusafe2 can be regarded as a server. For this term lookup-server is no more used. 
-Its functionality can be found in the [DFSDocusafeService](#DFSDocusafeService). 
+Datasafe2 can be regarded as a server. For this term lookup-server is no more used. 
+Its functionality can be found in the [DFSDatasafeService](#DFSDatasafeService). 
 Further the old docusafe business layer is no more needed and used. 
-Everything is now done in the top service, which is called [DFSDocusafeService](#DFSDocusafeService) here.
+Everything is now done in the top service, which is called [DFSDatasafeService](#DFSDatasafeService) here.
 
-Later the functionality of the transactional layer may be put on top of that [DFSDocusafeService](#DFSDocusafeService).
+Later the functionality of the transactional layer may be put on top of that [DFSDatasafeService](#DFSDatasafeService).
 
-#### DFSDocusafeService ####
-<details><summary>DFSDocusafeService - expand for interface</summary>
+#### DFSDatasafeService ####
+<details><summary>DFSDatasafeService - expand for interface</summary>
 <p>
 
 ```
@@ -37,9 +37,9 @@ userExists (userID: UserID,): boolean
 </p>
 </details>
 
-DFS is the abbreviation for _Distritbuted File System_. The [DFSDocusafeService](#DFSDocusafeService) is the only interface given to the public. 
+DFS is the abbreviation for _Distritbuted File System_. The [DFSDatasafeService](#DFSDatasafeService) is the only interface given to the public. 
 It has all the methods that are known from the old docusafe. Except one additional method: registerDFS. 
-An instance to this DFSService basically works like the old Docusafe with creating and storing documents. 
+An instance to this DFSService basically works like the old Datasafe with creating and storing documents. 
 But in general the documents can be on different DFS.
 
 To get its task done, it needs the following subservices:
@@ -63,7 +63,7 @@ listAllDirectories ( ): List<BucketDirectory>
 
 This is the service to to store and read documents from the DFS. 
 The only change to the old ExtendedStoreConnection is that the encryption of the path is no more part of this service.
-It has to be done by the client, e.g. the implementation of the [DFSDocusafeService](#DFSDocusafeService). 
+It has to be done by the client, e.g. the implementation of the [DFSDatasafeService](#DFSDatasafeService). 
 So this service stores and retrieves the data as they are. 
 Another difference to the old ExtendedStoreConnection is that MetaInformation is no more supported. 
 Only the data can be stored with a name. No further information like size, last changed data are supported.
@@ -114,7 +114,7 @@ registerDFS (dfsCredentials: DFSCredentials,userIDAuth: UserIDAuth,): void
 </details>
 
 This service task is to store and return the DFSCredentials. They are used to access the "real" data of the user. 
-Keep in mind the DFS Service itself uses a DFS. This will be the [DFSDocusafeService](#DFSDocusafeService) DFS all the time.
+Keep in mind the DFS Service itself uses a DFS. This will be the [DFSDatasafeService](#DFSDatasafeService) DFS all the time.
 
 #### KeyStoreService ####
 <details><summary>KeyStoreService - expand for interface</summary>
@@ -138,13 +138,13 @@ To retrieve and store the KeyStore to a DFS is task of the client.
 
 ## So how does it work?
 
-The [DFSDocusafeService](#DFSDocusafeService) needs a supplied DFS right in the beginning. 
+The [DFSDatasafeService](#DFSDatasafeService) needs a supplied DFS right in the beginning. 
 We call this DFS the SYSTEM DFS. Here each user gets its own user space. 
 It will contain a keystore, an inbox folder, the users public keys and the users DFSCredentials (all explained later). 
 Further, to store the users data, another DFSConnection Instance is used. We will call this the USERS DFS. 
 Keep in mind, that those users, that do not have their own DFS will use ths SYSTEM DFS. 
-But this is not visible for the [DFSDocusafeService](#DFSDocusafeService). 
-The [DFSDocusafeService](#DFSDocusafeService) all the time deals with two DFS, the SYSTEM DFS and the USERs DFS. 
+But this is not visible for the [DFSDatasafeService](#DFSDatasafeService). 
+The [DFSDatasafeService](#DFSDatasafeService) all the time deals with two DFS, the SYSTEM DFS and the USERs DFS. 
 
 The USERs DFS contains another keystore and the data the user wants to store. 
 So the user has one keystore in the SYSTEM DFS (we call it a public user keystore) and one keystore in the USER DFS 

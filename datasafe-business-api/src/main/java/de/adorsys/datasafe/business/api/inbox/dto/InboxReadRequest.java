@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.api.inbox.dto;
 
 import de.adorsys.datasafe.business.api.types.InboxBucketPath;
 import de.adorsys.datasafe.business.api.types.file.FileOut;
-import de.adorsys.docusafe2.business.api.types.UserIdAuth;
+import de.adorsys.datasafe.business.api.types.UserIdAuth;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

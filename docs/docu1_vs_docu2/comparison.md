@@ -1,4 +1,4 @@
-# Adorsys Docusafe vs. Datasafe
+# Adorsys Datasafe vs. Datasafe
 
 ## IN BRIEF
 The docusafe version has the following features:

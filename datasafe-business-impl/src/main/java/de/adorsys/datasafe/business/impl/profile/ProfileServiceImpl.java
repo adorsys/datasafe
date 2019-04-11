@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.impl.profile;
 
-import de.adorsys.docusafe2.business.api.profile.UserProfileService;
-import de.adorsys.docusafe2.business.api.types.UserId;
-import de.adorsys.docusafe2.business.api.types.UserIdAuth;
-import de.adorsys.docusafe2.business.api.types.profile.UserPrivateProfile;
-import de.adorsys.docusafe2.business.api.types.profile.UserPublicProfile;
+import de.adorsys.datasafe.business.api.profile.UserProfileService;
+import de.adorsys.datasafe.business.api.types.UserId;
+import de.adorsys.datasafe.business.api.types.UserIdAuth;
+import de.adorsys.datasafe.business.api.types.profile.UserPrivateProfile;
+import de.adorsys.datasafe.business.api.types.profile.UserPublicProfile;
 
 import javax.inject.Inject;
 

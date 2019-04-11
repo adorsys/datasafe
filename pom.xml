@@ -12,7 +12,7 @@
     <version>0.0.6-SNAPSHOT</version>
     <name>datasafe</name>
     <description>Datasafe</description>
-    <url>https://github.com/adorsys/docusafe2</url>
+    <url>https://github.com/adorsys/datasafe</url>
     <scm>
         <connection>scm:git@github.com:adorsys/datasafe.git</connection>
         <developerConnection>scm:git:git@github.com:adorsys/datasafe.git</developerConnection>
