@@ -6,8 +6,12 @@ import de.adorsys.docusafe2.business.api.keystore.types.ReadKeyPassword;
 import de.adorsys.docusafe2.business.api.types.DFSCredentials;
 import de.adorsys.docusafe2.business.api.types.UserID;
 import de.adorsys.docusafe2.business.api.types.UserIDAuth;
-import org.junit.*;
-import org.junit.runners.MethodSorters;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +28,7 @@ public class DFSCredentialServiceTest {
 
     private DFSCredentials dfsCredentialsExpected = new DFSCredentials();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         dfsCredentialsExpected.setS3accessKey("s3AccessKey");
         dfsCredentialsExpected.setSecret("secret");
@@ -38,8 +42,8 @@ public class DFSCredentialServiceTest {
 
         DFSCredentials dfsCredentialsActual = dfsCredentialService.getDFSCredentials(userIDAuth);
 
-        Assert.assertEquals(dfsCredentialsExpected.getS3accessKey(), dfsCredentialsActual.getS3accessKey());
-        Assert.assertEquals(dfsCredentialsExpected.getSecret(), dfsCredentialsActual.getSecret());
+        Assertions.assertEquals(dfsCredentialsExpected.getS3accessKey(), dfsCredentialsActual.getS3accessKey());
+        Assertions.assertEquals(dfsCredentialsExpected.getSecret(), dfsCredentialsActual.getSecret());
     }
 
     @Test
@@ -51,7 +55,7 @@ public class DFSCredentialServiceTest {
 
         dfsCredentialService.registerDFS(dfsCredentialsExpected, userIDAuth);
 
-        Assert.assertTrue(new File(
+        Assertions.assertTrue(new File(
           DFS_FS_PATH + BucketPath.BUCKET_SEPARATOR +
                     SYSTEM_DFS_DIRECTORY_NAME + BucketPath.BUCKET_SEPARATOR +
                     testUserID.getValue()
@@ -59,12 +63,14 @@ public class DFSCredentialServiceTest {
         );
     }
 
-    @Test(expected = DFSCredentialException.class)
+    @Test
     public void testAlreadyRegisteredUser() {
         UserIDAuth userIDAuth = getTestUser();
 
         dfsCredentialService.registerDFS(dfsCredentialsExpected, userIDAuth);
-        dfsCredentialService.registerDFS(dfsCredentialsExpected, userIDAuth);
+
+        Assertions.assertThrows(DFSCredentialException.class,
+                () -> dfsCredentialService.registerDFS(dfsCredentialsExpected, userIDAuth));
     }
 
     private UserIDAuth getTestUser() {
@@ -74,7 +80,7 @@ public class DFSCredentialServiceTest {
         return userIDAuth;
     }
 
-    @After
+    @AfterEach
     public void cleanUp() throws IOException {
         Files.walk(Paths.get(DFS_FS_PATH))
                 .sorted(Comparator.reverseOrder())

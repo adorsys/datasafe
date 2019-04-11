@@ -2,7 +2,7 @@ package de.adorsys.docusafe2.business.impl.document.cms;
 
 import com.google.common.io.ByteSource;
 import de.adorsys.dfs.connection.api.domain.Payload;
-import de.adorsys.dfs.connection.api.service.api.ExtendedStoreConnection;
+import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 import de.adorsys.docusafe2.business.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.docusafe2.business.api.dfs.DFSConnectionService;
 import de.adorsys.docusafe2.business.api.document.DocumentReadService;
@@ -30,7 +30,7 @@ public class CMSDocumentReadService implements DocumentReadService {
     @Override
     @SneakyThrows
     public void read(ReadRequest request) {
-        ExtendedStoreConnection connection = dfs.obtain(request.getFrom());
+        DFSConnection connection = dfs.obtain(request.getFrom());
         Payload payload = connection.getBlob(request.getFrom().getPath());
 
         // FIXME https://github.com/adorsys/docusafe2/issues/5

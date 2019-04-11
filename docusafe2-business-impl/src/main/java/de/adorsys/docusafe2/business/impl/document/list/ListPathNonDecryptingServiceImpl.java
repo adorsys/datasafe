@@ -1,7 +1,7 @@
 package de.adorsys.docusafe2.business.impl.document.list;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketDirectory;
-import de.adorsys.dfs.connection.api.service.api.ExtendedStoreConnection;
+import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 import de.adorsys.docusafe2.business.api.dfs.DFSConnectionService;
 import de.adorsys.docusafe2.business.api.document.DocumentListService;
 import de.adorsys.docusafe2.business.api.types.ListRequest;
@@ -24,14 +24,15 @@ public class ListPathNonDecryptingServiceImpl implements DocumentListService {
 
     @Override
     public Stream<FileOnBucket> list(ListRequest request) {
-        ExtendedStoreConnection connection = dfs.obtain(request.getLocation());
+        DFSConnection connection = dfs.obtain(request.getLocation());
 
         BucketDirectory bucketPath = request.getLocation().getPhysicalPath().getBucketDirectory();
 
         // TODO - {@link ExtendedStoreConnection} should return stream instead of list
-        return connection
+        /*return connection
                 .list(bucketPath, request.getRecursiveFlag())
                 .stream()
-                .map(it -> mapper.map(bucketPath, it));
+                .map(it -> mapper.map(bucketPath, it));*/
+        return null;
     }
 }

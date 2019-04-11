@@ -1,6 +1,5 @@
 package de.adorsys.docusafe2.business.api.types;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
