@@ -6,7 +6,7 @@ import de.adorsys.dfs.connection.api.complextypes.BucketPathUtil;
 import de.adorsys.docusafe2.business.api.bucketpathencryption.BucketPathEncryptionService;
 import de.adorsys.docusafe2.business.api.keystore.KeyStoreService;
 import de.adorsys.docusafe2.business.api.keystore.types.*;
-import de.adorsys.docusafe2.business.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.docusafe2.business.impl.keystore.service.KeyStoreServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +66,7 @@ public class BucketPathEncryptionTest {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-        SecretKeyIDWithKey randomSecretKeyIDWithKey = keyStoreService.getRandomSecretKeyIDWithKey(keyStoreAccess);
+        SecretKeyIDWithKey randomSecretKeyIDWithKey = keyStoreService.getRandomSecretKeyID(keyStoreAccess);
         return (SecretKeySpec) randomSecretKeyIDWithKey.getSecretKey();
     }
 }

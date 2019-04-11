@@ -9,9 +9,51 @@
     </modules>
     <groupId>de.adorsys</groupId>
     <artifactId>docusafe2</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.6-SNAPSHOT</version>
     <name>docusafe2</name>
     <description>Docusafe 2</description>
+    <url>https://github.com/adorsys/docusafe2</url>
+    <scm>
+        <connection>scm:git@github.com:adorsys/docusafe2.git</connection>
+        <developerConnection>scm:git:git@github.com:adorsys/docusafe2.git</developerConnection>
+        <url>git@github.com:adorsys/docusafe2.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Peter Spiessbach</name>
+            <email>psp@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Maksym Hryshchenko</name>
+            <email>mhrex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Valentyn Berezin</name>
+            <email>vbeex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Ihor Yatsenko</name>
+            <email>iyaex@adorsys.de</email>
+            <organization>adorsys</organization>
+            <organizationUrl>https://adorsys.de/</organizationUrl>
+        </developer>
+    </developers>
+
+
 
     <properties>
         <java.version>1.8</java.version>
@@ -21,12 +63,14 @@
         <dfs-connection.version>0.0.3</dfs-connection.version>
         <common-basetypes.version>0.0.7</common-basetypes.version>
         <bcpkix-jdk15on.version>1.58</bcpkix-jdk15on.version>
-        <nimbus-jose-jwt.version>4.34.1</nimbus-jose-jwt.version>
+
+
         <dagger.version>2.17</dagger.version>
         <guava.version>27.0.1-jre</guava.version>
         <junit.version>5.4.1</junit.version>
         <assertj.version>3.12.2</assertj.version>
         <mockito.version>2.25.1</mockito.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -61,11 +105,6 @@
             <version>${bcpkix-jdk15on.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-            <version>${nimbus-jose-jwt.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger</artifactId>
             <version>${dagger.version}</version>
@@ -75,6 +114,7 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+
     </dependencies>
 
     <build>
