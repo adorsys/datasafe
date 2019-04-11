@@ -8,12 +8,12 @@ import de.adorsys.docusafe2.business.impl.cmsencryption.services.CMSEncryptionSe
 import de.adorsys.docusafe2.business.impl.keystore.service.KeyStoreServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.CMSEnvelopedData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.security.KeyStore;
 import java.security.PublicKey;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 @Slf4j
 public class CmsEncryptionServiceTest {
