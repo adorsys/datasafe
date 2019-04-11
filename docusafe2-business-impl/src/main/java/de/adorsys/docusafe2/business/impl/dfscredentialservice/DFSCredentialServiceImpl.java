@@ -36,6 +36,7 @@ public class DFSCredentialServiceImpl implements DFSCredentialService {
     private DFSConnection dfsConnectionService = DFSConnectionFactory.get();
 
     @Override
+    @SneakyThrows
     public DFSCredentials getDFSCredentials(UserIDAuth userIDAuth) {
         log.trace("get dfs credential for user: " + userIDAuth.getUserID().getValue());
 
@@ -43,12 +44,7 @@ public class DFSCredentialServiceImpl implements DFSCredentialService {
 
         BucketPath bucketPathForNewUserInSystemDfs = new BucketPath(SYSTEM_DFS_DIRECTORY_NAME, userIDAuth.getUserID().getValue());
         byte[] data = dfsConnectionService.getBlob(bucketPathForNewUserInSystemDfs).getData();
-        DocumentContent decrypt = null;
-        try {
-            decrypt = cmsEncryptionService.decrypt(new CMSEnvelopedData(data), keyStoreAccess);
-        } catch (CMSException e) {
-            throw new DFSCredentialException(e.getMessage(), e);
-        }
+        DocumentContent decrypt = cmsEncryptionService.decrypt(new CMSEnvelopedData(data), keyStoreAccess);
 
         return gson.fromJson(new String(decrypt.getValue()), DFSCredentials.class);
     }
@@ -78,7 +74,7 @@ public class DFSCredentialServiceImpl implements DFSCredentialService {
         Payload payload = new SimplePayloadImpl(encrypted.getEncoded());
         dfsConnectionService.putBlob(bucketPathForNewUserInSystemDfs, payload);
 
-        log.trace("dfs registered");
+        log.trace("dfs successfully registered");
     }
 
     private KeyStoreAccess getKeyStoreAccess(UserIDAuth userIDAuth) {

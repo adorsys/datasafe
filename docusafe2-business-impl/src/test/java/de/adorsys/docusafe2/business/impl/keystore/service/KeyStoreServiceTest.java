@@ -7,7 +7,6 @@ import de.adorsys.docusafe2.business.impl.keystore.generator.KeyStoreCreationCon
 import de.adorsys.docusafe2.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.docusafe2.business.impl.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.docusafe2.business.impl.keystore.generator.ProviderUtils;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,9 +59,7 @@ public class KeyStoreServiceTest {
     public void createKeyStoreException() {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 0);
 
-        Assertions.assertThrows(BaseException.class, () ->
-                keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config));
-
+            Assertions.assertThrows(BaseException.class, () ->keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config));
     }
 
     @Test
@@ -95,8 +92,7 @@ public class KeyStoreServiceTest {
         Assertions.assertEquals(alias, keyID);
     }
 
-    @Test//FIXME expected isn't working witj Junit5
-    @Ignore
+    @Test
     public void getPrivateKeyException() throws Exception {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
@@ -126,12 +122,11 @@ public class KeyStoreServiceTest {
         Assertions.assertNotNull(randomSecretKeyID);
     }
 
-    @Test//FIXME(expected = BaseException.class)
-    @Ignore
+    @Test
     public void getRandomSecretKeyIDException() {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(10, 10, 0);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-        keyStoreService.getRandomSecretKeyID(keyStoreAccess);
+        Assertions.assertThrows(BaseException.class, () ->keyStoreService.getRandomSecretKeyID(keyStoreAccess));
     }
 }
