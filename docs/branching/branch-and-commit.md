@@ -1,5 +1,5 @@
 # Branch naming strategy: 
-1. Get issue id from github (**issue-id**), i.e. for https://github.com/adorsys/docusafe2/issues/17 **issue-id** is **17**
+1. Get issue id from github (**issue-id**), i.e. for https://github.com/adorsys/datasafe/issues/17 **issue-id** is **17**
 2. Your branch should have *feature/DOC-2* or *bugfix/DOC2-* as a prefix and than the issue id.
 Optionally the issue id can have suffix with a short-term description of the issue itself.
 

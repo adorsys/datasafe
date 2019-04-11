@@ -1,12 +1,12 @@
-# Docusafe2
-This is the simplified architecture of **Docusafe2**. 
+# Datasafe
+This is the simplified architecture of **datasafe**. 
 
 * It only contains one DFS per user.
 * It uses plain inbox folders for users to store documents given from one user to another. The format might be [S/MIME](https://en.wikipedia.org/wiki/S/MIME).
 * The inbox folder is on the SYSTEM DFS, not the USERs DFS (explained later).
 
 First all needed services are explained. The term server is not used at all. A server is stand alone application. 
-Docusafe2 can be regarded as a server. For this term lookup-server is no more used. 
+datasafe can be regarded as a server. For this term lookup-server is no more used. 
 Its functionality can be found in the [DFSDocusafeService](#DFSDocusafeService). 
 Further the old docusafe business layer is no more needed and used. 
 Everything is now done in the top service, which is called [DFSDocusafeService](#DFSDocusafeService) here.
@@ -155,7 +155,7 @@ The public keystore is called public because it is stored on the SYSTEM DFS.
 
 The following picture should give a rough idea, which elements are stored  on which DFS.
 
-![Components diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/architecture.puml&fmt=png&vvv=1)
+![Components diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/architecture.puml&fmt=png&vvv=1)
 
 As soon as a __**new user**__ is to be created, the following actions have to be done:
 
@@ -177,7 +177,7 @@ As soon as a __**new user**__ is to be created, the following actions have to be
 - Store the users secret keystore in the USERS DFS.
 - Extract all public Keys of the users keystore  and store them in the users space in the SYSTEM DFS.
 
-![New user sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/new_user.puml&fmt=png&vvv=1)
+![New user sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/new_user.puml&fmt=png&vvv=1)
 
 The DFSCredentialService is always connected to the SYSTEM DFS. When no former DFSCredentials are known,
 the registration of a new DFSCredential simply stores these DFSCredentials in the user space. 
@@ -205,7 +205,7 @@ Now we look at a __**store document**__ use case:
 - Then the bucketpath can be encrypted.
 - Then the encrypted document can be stored with an encrypted bucket path in the USERs DFS
 
-![Store file sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/docusafe2/develop/docs/diagrams/store_file.puml&fmt=png&vvv=2)
+![Store file sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/store_file.puml&fmt=png&vvv=2)
 
 All data stored on the SYSTEM DFS does not have to have a path encryption. 
 Of course the DFSCredentials and the messages in the inbox have to be encrypted with a public key of the user. 

@@ -4,19 +4,19 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>docusafe2-business-api</module>
-        <module>docusafe2-business-impl</module>
+        <module>datasafe-business-api</module>
+        <module>datasafe-business-impl</module>
     </modules>
     <groupId>de.adorsys</groupId>
-    <artifactId>docusafe2</artifactId>
+    <artifactId>datasafe</artifactId>
     <version>0.0.6-SNAPSHOT</version>
-    <name>docusafe2</name>
-    <description>Docusafe 2</description>
-    <url>https://github.com/adorsys/docusafe2</url>
+    <name>datasafe</name>
+    <description>Datasafe 2</description>
+    <url>https://github.com/adorsys/datasafe</url>
     <scm>
-        <connection>scm:git@github.com:adorsys/docusafe2.git</connection>
-        <developerConnection>scm:git:git@github.com:adorsys/docusafe2.git</developerConnection>
-        <url>git@github.com:adorsys/docusafe2.git</url>
+        <connection>scm:git@github.com:adorsys/datasafe.git</connection>
+        <developerConnection>scm:git:git@github.com:adorsys/datasafe.git</developerConnection>
+        <url>git@github.com:adorsys/datasafe.git</url>
         <tag>HEAD</tag>
     </scm>
 
