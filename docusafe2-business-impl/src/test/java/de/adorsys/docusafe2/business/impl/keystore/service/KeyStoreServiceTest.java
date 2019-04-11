@@ -7,9 +7,9 @@ import de.adorsys.docusafe2.business.impl.keystore.generator.KeyStoreCreationCon
 import de.adorsys.docusafe2.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.docusafe2.business.impl.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.docusafe2.business.impl.keystore.generator.ProviderUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import javax.security.auth.callback.CallbackHandler;
@@ -26,7 +26,7 @@ public class KeyStoreServiceTest {
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl();
     private KeyStoreAuth keyStoreAuth;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ReadStorePassword readStorePassword = new ReadStorePassword("keystorepass");
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
@@ -38,27 +38,27 @@ public class KeyStoreServiceTest {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
 
-        Assert.assertNotNull(keyStore);
+        Assertions.assertNotNull(keyStore);
 
         List<String> list = Collections.list(keyStore.aliases());
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
 
-        Assert.assertEquals("UBER", keyStore.getType());
-        Assert.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
+        Assertions.assertEquals("UBER", keyStore.getType());
+        Assertions.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
     }
 
     @Test
     public void createKeyStoreEmptyConfig() throws Exception {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
-        Assert.assertNotNull(keyStore);
+        Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
-        Assert.assertEquals(15, list.size());
+        Assertions.assertEquals(15, list.size());
     }
 
-    @Test(expected = BaseException.class)
+    @Test
     public void createKeyStoreException() {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 0);
-        keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+        Assertions.assertThrows(BaseException.class, () ->keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class KeyStoreServiceTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(keyStoreAccess);
-        Assert.assertEquals(5, publicKeys.size());
+        Assertions.assertEquals(5, publicKeys.size());
     }
 
     @Test
@@ -88,10 +88,10 @@ public class KeyStoreServiceTest {
         PrivateKey privateKey = keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(keyID));
         System.out.println(privateKey);
         System.out.println(keyID);
-        Assert.assertEquals(alias, keyID);
+        Assertions.assertEquals(alias, keyID);
     }
 
-    @Test(expected = BaseException.class)
+    @Test
     public void getPrivateKeyException() throws Exception {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
@@ -109,7 +109,7 @@ public class KeyStoreServiceTest {
 
         String keyID = keyStore.aliases().nextElement();
         SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID(keyID));
-        Assert.assertNotNull(secretKey);
+        Assertions.assertNotNull(secretKey);
     }
 
     @Test
@@ -118,14 +118,14 @@ public class KeyStoreServiceTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         SecretKeyIDWithKey randomSecretKeyID = keyStoreService.getRandomSecretKeyID(keyStoreAccess);
-        Assert.assertNotNull(randomSecretKeyID);
+        Assertions.assertNotNull(randomSecretKeyID);
     }
 
-    @Test(expected = BaseException.class)
+    @Test
     public void getRandomSecretKeyIDException() {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(10, 10, 0);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-        keyStoreService.getRandomSecretKeyID(keyStoreAccess);
+        Assertions.assertThrows(BaseException.class, () ->keyStoreService.getRandomSecretKeyID(keyStoreAccess));
     }
 }
