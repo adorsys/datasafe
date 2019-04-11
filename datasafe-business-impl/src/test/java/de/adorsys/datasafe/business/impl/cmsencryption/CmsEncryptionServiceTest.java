@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.impl.cmsencryption;
 
+import de.adorsys.datasafe.business.api.keystore.types.*;
 import de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
 import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
 import de.adorsys.datasafe.business.api.cmsencryption.CMSEncryptionService;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import java.security.KeyStore;
 import java.security.PublicKey;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class CmsEncryptionServiceTest {
@@ -37,7 +40,7 @@ public class CmsEncryptionServiceTest {
             CMSEnvelopedData encrypted  = cmsEncryptionService.encrypt(origMessage, publicKey, keyID);
             DocumentContent decrypted = cmsEncryptionService.decrypt(encrypted, keyStoreAccess);
 
-            assertArrayEquals(origMessage.getValue(), decrypted.getValue());
+            assertThat(origMessage.getValue()).isEqualTo(decrypted.getValue());
             log.debug("en and decrypted successfully");
         }
     }

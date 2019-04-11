@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.api.inbox.dto;
 
 import de.adorsys.datasafe.business.api.types.InboxBucketPath;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.file.FileOut;
-import de.adorsys.datasafe.business.api.types.UserIdAuth;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -12,7 +12,7 @@ import lombok.Value;
 public class InboxReadRequest {
 
     @NonNull
-    private final UserIdAuth owner;
+    private final UserIDAuth owner;
 
     @NonNull
     private final InboxBucketPath path;

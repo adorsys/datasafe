@@ -1,15 +1,15 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
-import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import de.adorsys.dfs.connection.api.types.ListRecursiveFlag;
 import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
 import de.adorsys.datasafe.business.api.document.DocumentListService;
 import de.adorsys.datasafe.business.api.inbox.actions.ListInbox;
 import de.adorsys.datasafe.business.api.profile.UserProfileService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.ListRequest;
-import de.adorsys.datasafe.business.api.types.UserIdAuth;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.file.FileOnBucket;
+import de.adorsys.dfs.connection.api.complextypes.BucketPath;
+import de.adorsys.dfs.connection.api.types.ListRecursiveFlag;
 
 import javax.inject.Inject;
 import java.util.function.Function;
@@ -27,7 +27,7 @@ public class ListInboxImpl implements ListInbox {
     }
 
     @Override
-    public Stream<FileOnBucket> listInbox(UserIdAuth forUser) {
+    public Stream<FileOnBucket> listInbox(UserIDAuth forUser) {
         DFSAccess userInbox = accessService.privateAccessFor(
                 forUser,
                 resolveInboxLocation(forUser)
@@ -42,9 +42,9 @@ public class ListInboxImpl implements ListInbox {
         return listService.list(listRequest);
     }
 
-    private Function<UserProfileService, BucketPath> resolveInboxLocation(UserIdAuth forUser) {
+    private Function<UserProfileService, BucketPath> resolveInboxLocation(UserIDAuth forUser) {
         return profiles -> profiles
-                .publicProfile(forUser.getId())
+                .publicProfile(forUser.getUserID())
                 .getInbox();
     }
 }

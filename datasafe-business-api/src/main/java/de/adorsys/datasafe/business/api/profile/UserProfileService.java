@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.business.api.profile;
 
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.profile.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.profile.UserPublicProfile;
-import de.adorsys.datasafe.business.api.types.UserId;
-import de.adorsys.datasafe.business.api.types.UserIdAuth;
 
 public interface UserProfileService {
 
@@ -12,12 +12,12 @@ public interface UserProfileService {
      * @param ofUser resolve request
      * @return resolved user's profile
      */
-    UserPublicProfile publicProfile(UserId ofUser);
+    UserPublicProfile publicProfile(UserID ofUser);
 
     /**
      * Resolves user's private meta-information like folder mapping, etc.
      * @param ofUser resolve request
      * @return resolved user's profile
      */
-    UserPrivateProfile privateProfile(UserIdAuth ofUser);
+    UserPrivateProfile privateProfile(UserIDAuth ofUser);
 }

@@ -1,12 +1,12 @@
 package de.adorsys.datasafe.business.api.keystore;
 
 import de.adorsys.datasafe.business.api.types.PublicKeyWithId;
-import de.adorsys.datasafe.business.api.types.UserId;
+import de.adorsys.datasafe.business.api.types.UserID;
 
 /**
  * Acts as a public keys database.
  */
 public interface PublicKeyService {
 
-    PublicKeyWithId publicKey(UserId forUser);
+    PublicKeyWithId publicKey(UserID forUser);
 }

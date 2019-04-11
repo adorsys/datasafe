@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.cmsencryption;
 
 import dagger.Binds;
 import dagger.Module;
+import de.adorsys.datasafe.business.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
 
 /**

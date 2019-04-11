@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.credentials;
 import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
 import de.adorsys.datasafe.business.api.keystore.PublicKeyService;
 import de.adorsys.datasafe.business.api.types.PublicKeyWithId;
-import de.adorsys.datasafe.business.api.types.UserId;
+import de.adorsys.datasafe.business.api.types.UserID;
 
 import javax.inject.Inject;
 
@@ -20,7 +20,7 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
     }
 
     @Override
-    public PublicKeyWithId publicKey(UserId forUser) {
+    public PublicKeyWithId publicKey(UserID forUser) {
         // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
         throw new UnsupportedOperationException("https://github.com/adorsys/datasafe2/issues/<>");
     }

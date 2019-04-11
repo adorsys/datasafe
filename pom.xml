@@ -69,6 +69,7 @@
         <jupiter.version>5.4.1</jupiter.version>
         <assertj.version>3.12.2</assertj.version>
         <mockito.version>2.25.1</mockito.version>
+        <surefire.version>2.22.1</surefire.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -76,11 +77,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection</artifactId>
-            <version>${dfs-connection.version}</version>
-        </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>dfs-connection-api</artifactId>
@@ -150,6 +146,11 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
             </plugin>
         </plugins>
     </build>

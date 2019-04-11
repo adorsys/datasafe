@@ -46,7 +46,7 @@ public class ReadFromInboxImpl implements ReadFromInbox {
 
     private Function<UserProfileService, BucketPath> resolveFileLocation(InboxReadRequest request) {
         return profiles -> profiles
-                .publicProfile(request.getOwner().getId())
+                .publicProfile(request.getOwner().getUserID())
                 .getInbox()
                 .append(request.getPath());
     }
