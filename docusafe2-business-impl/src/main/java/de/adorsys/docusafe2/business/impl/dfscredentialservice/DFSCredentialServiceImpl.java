@@ -16,6 +16,7 @@ import de.adorsys.docusafe2.business.api.types.DocumentContent;
 import de.adorsys.docusafe2.business.api.types.UserIDAuth;
 import de.adorsys.docusafe2.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
 import de.adorsys.docusafe2.business.impl.keystore.service.KeyStoreServiceImpl;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSException;
@@ -53,6 +54,7 @@ public class DFSCredentialServiceImpl implements DFSCredentialService {
     }
 
     @Override
+    @SneakyThrows
     public void registerDFS(DFSCredentials dfsCredentials, UserIDAuth userIDAuth) {
         log.trace("register dfs for user: " + userIDAuth.getUserID().getValue());
 
@@ -73,14 +75,10 @@ public class DFSCredentialServiceImpl implements DFSCredentialService {
 
         dfsConnectionService.createContainer(bucketPathForNewUserInSystemDfs.getBucketDirectory());
 
-        try {
-            Payload payload = new SimplePayloadImpl(encrypted.getEncoded());
-            dfsConnectionService.putBlob(bucketPathForNewUserInSystemDfs, payload);
+        Payload payload = new SimplePayloadImpl(encrypted.getEncoded());
+        dfsConnectionService.putBlob(bucketPathForNewUserInSystemDfs, payload);
 
-            log.trace("dfs registered");
-        } catch (IOException e) {
-            throw new DFSCredentialException(e.getMessage(), e);
-        }
+        log.trace("dfs registered");
     }
 
     private KeyStoreAccess getKeyStoreAccess(UserIDAuth userIDAuth) {
