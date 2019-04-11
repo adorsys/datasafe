@@ -9,7 +9,6 @@ import de.adorsys.docusafe2.business.impl.keystore.generator.KeyStoreGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.*;
 import java.security.cert.X509Certificate;
