@@ -2,10 +2,10 @@ package de.adorsys.datasafe.business.impl.dfscredentialservice;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.adorsys.datasafe.business.api.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.api.dfscredentialservice.DFSCredentialService;
-import de.adorsys.datasafe.business.api.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.keystore.types.*;
+import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
 import de.adorsys.datasafe.business.api.types.DFSCredentials;
 import de.adorsys.datasafe.business.api.types.DocumentContent;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;

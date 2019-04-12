@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.impl.keystore.generator;
 
-import de.adorsys.datasafe.business.api.keystore.types.CertificationResult;
-import de.adorsys.datasafe.business.api.keystore.types.KeyPairEntry;
-import de.adorsys.datasafe.business.api.keystore.types.SelfSignedKeyPairData;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.CertificationResult;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyPairEntry;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.SelfSignedKeyPairData;
 import lombok.Builder;
 import lombok.Getter;
 

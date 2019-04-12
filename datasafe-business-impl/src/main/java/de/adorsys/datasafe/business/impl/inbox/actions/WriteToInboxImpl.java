@@ -1,12 +1,12 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
-import de.adorsys.datasafe.business.api.document.DocumentWriteService;
-import de.adorsys.datasafe.business.api.inbox.actions.WriteToInbox;
-import de.adorsys.datasafe.business.api.inbox.dto.InboxWriteRequest;
-import de.adorsys.datasafe.business.api.keystore.PublicKeyService;
-import de.adorsys.datasafe.business.api.profile.UserProfileService;
+import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
+import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
+import de.adorsys.datasafe.business.api.deployment.inbox.actions.WriteToInbox;
+import de.adorsys.datasafe.business.api.deployment.inbox.dto.InboxWriteRequest;
+import de.adorsys.datasafe.business.api.deployment.keystore.PublicKeyService;
+import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.WriteRequest;
 
@@ -29,7 +29,7 @@ public class WriteToInboxImpl implements WriteToInbox {
     }
 
     @Override
-    public void writeDocumentToInboxOfUser(InboxWriteRequest request) {
+    public void write(InboxWriteRequest request) {
         DFSAccess userInbox = accessService.publicAccessFor(
                 request.getTo(),
                 resolveFileLocation(request)
@@ -46,7 +46,7 @@ public class WriteToInboxImpl implements WriteToInbox {
         writer.write(writeRequest);
     }
 
-    private Function<UserProfileService, BucketPath> resolveFileLocation(InboxWriteRequest request) {
+    private Function<ProfileRetrievalService, BucketPath> resolveFileLocation(InboxWriteRequest request) {
         return profiles -> profiles
                 .publicProfile(request.getTo())
                 .getInbox()

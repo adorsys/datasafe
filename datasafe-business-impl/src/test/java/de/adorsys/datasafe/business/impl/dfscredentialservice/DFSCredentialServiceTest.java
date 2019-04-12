@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.impl.dfscredentialservice;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.datasafe.business.api.dfscredentialservice.DFSCredentialService;
-import de.adorsys.datasafe.business.api.keystore.types.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.DFSCredentials;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;

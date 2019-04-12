@@ -1,33 +1,33 @@
 package de.adorsys.datasafe.business.impl.inbox.impl;
 
-import de.adorsys.datasafe.business.api.inbox.InboxService;
-import de.adorsys.datasafe.business.api.keystore.types.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.impl.BaseMockitoTest;
-import de.adorsys.datasafe.business.impl.inbox.DaggerDefaultInboxService;
-import de.adorsys.datasafe.business.impl.profile.DaggerDefaultProfileService;
-import de.adorsys.datasafe.business.impl.profile.filesystem.HashMapProfileStorageImpl;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeService;
+import de.adorsys.datasafe.business.impl.service.DefaultDocusafeService;
 import org.junit.jupiter.api.Test;
 
 class InboxServiceImplDaggerTest extends BaseMockitoTest {
 
-    private InboxService inbox = DaggerDefaultInboxService.builder().build().inboxService();
-    private HashMapProfileStorageImpl creationService = DaggerDefaultProfileService.builder().build().userProfileRegistration();
+    private DefaultDocusafeService docusafeService = DaggerDefaultDocusafeService
+            .builder()
+            .build();
 
     @Test
     void testDaggerObjectCreation() {
-        UserIDAuth user = registerUser();
+        UserIDAuth john = registerUser("John");
+        UserIDAuth jane = registerUser("Jane");
 
-        inbox.listInbox(null);
+        docusafeService.inboxService().list(john);
     }
 
-    private UserIDAuth registerUser() {
+    private UserIDAuth registerUser(String userName) {
         UserIDAuth auth = new UserIDAuth();
-        auth.setUserID(new UserID("John Doe"));
-        auth.setReadKeyPassword(new ReadKeyPassword("secure-password"));
+        auth.setUserID(new UserID(userName));
+        auth.setReadKeyPassword(new ReadKeyPassword("secure-password " + userName));
 
-        creationService.register(auth);
+        docusafeService.userProfile().register(auth);
 
         return auth;
     }

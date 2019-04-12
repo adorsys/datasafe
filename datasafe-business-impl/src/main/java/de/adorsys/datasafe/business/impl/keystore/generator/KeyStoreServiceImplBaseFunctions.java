@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.keystore.generator;
 
 import de.adorsys.common.exceptions.BaseExceptionHandler;
-import de.adorsys.datasafe.business.api.keystore.types.*;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
 import org.bouncycastle.cert.X509CertificateHolder;
 
 import javax.crypto.SecretKey;

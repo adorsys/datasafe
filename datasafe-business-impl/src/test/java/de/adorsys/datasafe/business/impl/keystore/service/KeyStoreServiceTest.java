@@ -1,12 +1,12 @@
 package de.adorsys.datasafe.business.impl.keystore.service;
 
 import de.adorsys.common.exceptions.BaseException;
-import de.adorsys.datasafe.business.api.keystore.types.*;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
 import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.keystore.generator.ProviderUtils;
-import de.adorsys.datasafe.business.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,12 +1,13 @@
 package de.adorsys.datasafe.business.impl.credentials;
 
-import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
-import de.adorsys.datasafe.business.api.keystore.PublicKeyService;
+import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
+import de.adorsys.datasafe.business.api.deployment.keystore.PublicKeyService;
 import de.adorsys.datasafe.business.api.types.PublicKeyWithId;
 import de.adorsys.datasafe.business.api.types.UserID;
 
 import javax.inject.Inject;
 
+// DEPLOYMENT
 /**
  * Retrieves and opens public keystore associated with user from DFS storage.
  */

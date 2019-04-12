@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.types;
 
-import de.adorsys.datasafe.business.api.keystore.types.KeyID;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
