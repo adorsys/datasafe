@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.profile.filesystem;
+package de.adorsys.datasafe.business.impl.profile;
 
 import de.adorsys.datasafe.business.api.profile.UserCreationService;
 import de.adorsys.datasafe.business.api.profile.UserProfileService;
@@ -9,9 +9,12 @@ import de.adorsys.datasafe.business.api.types.profile.UserPublicProfile;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+// DEPLOYMENT
+@Singleton
 public class HashMapProfileStorageImpl implements UserCreationService, UserProfileService {
 
     private final Map<UserID, UserPublicProfile> publicProfiles = new ConcurrentHashMap<>();
@@ -55,9 +58,6 @@ public class HashMapProfileStorageImpl implements UserCreationService, UserProfi
 
     private BucketPath of(UserIDAuth user, String subDir) {
         BucketPath base = new BucketPath("file://");
-        base.append(user.getUserID().getValue());
-        base.append(subDir);
-
-        return base;
+        return base.append(user.getUserID().getValue()).append(subDir);
     }
 }
