@@ -42,8 +42,10 @@ public class DFSBasedProfileStorageImpl implements
     public void registerPublic(CreateUserPublicProfile profile) {
         DFSConnection connection = dfsConnectionService.obtain(dfsSystem.systemDfs());
 
+        BucketPath profilePath = locatePublicProfile(profile.getId());
+        connection.createContainer(profilePath.getBucketDirectory());
         connection.putBlob(
-            locatePublicProfile(profile.getId()),
+            profilePath,
             new SimplePayloadImpl(serde.toJson(profile).getBytes())
         );
     }
@@ -52,8 +54,10 @@ public class DFSBasedProfileStorageImpl implements
     public void registerPrivate(CreateUserPrivateProfile profile) {
         DFSConnection connection = dfsConnectionService.obtain(dfsSystem.systemDfs());
 
+        BucketPath profilePath = locatePrivateProfile(profile.getId().getUserID());
+        connection.createContainer(profilePath.getBucketDirectory());
         connection.putBlob(
-            locatePrivateProfile(profile.getId().getUserID()),
+            profilePath,
             new SimplePayloadImpl(serde.toJson(profile).getBytes())
         );
     }

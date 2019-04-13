@@ -31,7 +31,7 @@ public class CMSDocumentReadService implements DocumentReadService {
     @SneakyThrows
     public void read(ReadRequest request) {
         DFSConnection connection = dfs.obtain(request.getFrom());
-        Payload payload = connection.getBlob(request.getFrom().getPath());
+        Payload payload = connection.getBlob(request.getFrom().getPhysicalPath());
 
         // FIXME https://github.com/adorsys/docusafe2/issues/5
         DocumentContent content = cms.decrypt(

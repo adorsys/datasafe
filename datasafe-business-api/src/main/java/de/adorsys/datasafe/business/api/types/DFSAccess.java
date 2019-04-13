@@ -14,7 +14,7 @@ public class DFSAccess {
      * Logical path - decrypted path value.
      */
     @NonNull
-    private final BucketPath path;
+    private final BucketPath logicalPath;
 
     /**
      * Physical path - encrypted path value.

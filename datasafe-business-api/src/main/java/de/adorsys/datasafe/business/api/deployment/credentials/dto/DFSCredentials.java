@@ -1,10 +1,7 @@
 package de.adorsys.datasafe.business.api.deployment.credentials.dto;
 
-import lombok.Data;
+public interface DFSCredentials {
 
-@Data
-public class DFSCredentials {
-
-    private final String s3AccessKey;
-    private final String s3AccessSecret;
+    String getId();
+    CredentialsType getType();
 }

@@ -39,6 +39,6 @@ public class CMSDocumentWriteService implements DocumentWriteService {
                 request.getKeyWithId().getPublicKeyId()
         );
 
-        connection.putBlob(request.getTo().getPath(), new SimplePayloadImpl(data.getEncoded()));
+        connection.putBlob(request.getTo().getPhysicalPath(), new SimplePayloadImpl(data.getEncoded()));
     }
 }

@@ -33,7 +33,7 @@ public class BucketAccessServiceImpl implements BucketAccessService {
         DFSCredentials creds = credentials.privateUserCredentials(user, path);
 
         return DFSAccess.builder()
-                .path(path)
+                .physicalPath(path)
                 .credentials(creds)
                 .build();
     }
@@ -45,7 +45,7 @@ public class BucketAccessServiceImpl implements BucketAccessService {
         DFSCredentials creds = credentials.publicUserCredentials(user, path);
 
         return DFSAccess.builder()
-                .path(path)
+                .physicalPath(path)
                 .credentials(creds)
                 .build();
     }
