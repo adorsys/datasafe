@@ -7,8 +7,8 @@ import de.adorsys.datasafe.business.impl.dfs.DefaultDFSModule;
 import de.adorsys.datasafe.business.impl.document.DefaultDocumentModule;
 import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule;
 import de.adorsys.datasafe.business.impl.inbox.impl.InboxServiceImpl;
+import de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.business.impl.profile.DefaultProfileModule;
-import de.adorsys.datasafe.business.impl.profile.HashMapProfileStorageImpl;
 
 import javax.inject.Singleton;
 
@@ -27,5 +27,5 @@ import javax.inject.Singleton;
 public interface DefaultDocusafeService {
 
     InboxServiceImpl inboxService();
-    HashMapProfileStorageImpl userProfile();
+    DFSBasedProfileStorageImpl userProfile();
 }

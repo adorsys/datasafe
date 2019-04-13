@@ -7,6 +7,9 @@ import de.adorsys.datasafe.business.impl.BaseMockitoTest;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeService;
 import de.adorsys.datasafe.business.impl.service.DefaultDocusafeService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.nio.file.Path;
 
 class InboxServiceImplDaggerTest extends BaseMockitoTest {
 
@@ -15,7 +18,7 @@ class InboxServiceImplDaggerTest extends BaseMockitoTest {
             .build();
 
     @Test
-    void testDaggerObjectCreation() {
+    void testDaggerObjectCreation(@TempDir Path dfsLocation) {
         UserIDAuth john = registerUser("John");
         UserIDAuth jane = registerUser("Jane");
 
@@ -27,7 +30,7 @@ class InboxServiceImplDaggerTest extends BaseMockitoTest {
         auth.setUserID(new UserID(userName));
         auth.setReadKeyPassword(new ReadKeyPassword("secure-password " + userName));
 
-        docusafeService.userProfile().register(auth);
+        //docusafeService.userProfile().register(auth);
 
         return auth;
     }

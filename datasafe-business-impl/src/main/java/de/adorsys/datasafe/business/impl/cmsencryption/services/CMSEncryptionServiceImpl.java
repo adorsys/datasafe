@@ -42,9 +42,11 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
         cmsEnvelopedDataGenerator.addRecipientInfoGenerator(jceKey);
         CMSTypedData msg = new CMSProcessableByteArray(data.getValue());
+
         OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC)
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME)
                 .build();
+
         return cmsEnvelopedDataGenerator.generate(msg, encryptor);
     }
 
@@ -54,13 +56,17 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         RecipientInformationStore recipients = cmsEnvelopedData.getRecipientInfos();
 
         Iterator<RecipientInformation> recipientInformationIterator = recipients.getRecipients().iterator();
+
         if (!recipientInformationIterator.hasNext()) {
             throw new AsymmetricEncryptionException("CMS Envelope doesn't contain recipients");
         }
+
         RecipientInformation recipientInfo = recipientInformationIterator.next();
+
         if (recipientInformationIterator.hasNext()) {
             throw new AsymmetricEncryptionException("PROGRAMMING ERROR. HANDLE OF MORE THAN ONE RECIPIENT NOT DONE YET");
         }
+
         KeyTransRecipientId recipientId = (KeyTransRecipientId) recipientInfo.getRID();
         byte[] subjectKeyIdentifier = recipientId.getSubjectKeyIdentifier();
         String keyId = new String(subjectKeyIdentifier);

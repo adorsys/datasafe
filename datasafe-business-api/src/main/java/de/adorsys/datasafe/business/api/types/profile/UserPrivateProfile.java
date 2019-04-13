@@ -1,11 +1,13 @@
 package de.adorsys.datasafe.business.api.types.profile;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import lombok.Data;
+import lombok.Builder;
 import lombok.NonNull;
+import lombok.Value;
 
-@Data
-public class UserPrivateProfile {
+@Value
+@Builder
+public class UserPrivateProfile implements PrivateProfile<BucketPath> {
 
     @NonNull
     private final BucketPath keystore;

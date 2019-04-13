@@ -12,8 +12,8 @@ import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalServi
 public abstract class DefaultProfileModule {
 
     @Binds
-    abstract ProfileRetrievalService profileService(HashMapProfileStorageImpl impl);
+    abstract ProfileRetrievalService profileService(DFSBasedProfileStorageImpl impl);
 
     @Binds
-    abstract ProfileRegistrationService creationService(HashMapProfileStorageImpl impl);
+    abstract ProfileRegistrationService creationService(DFSBasedProfileStorageImpl impl);
 }
