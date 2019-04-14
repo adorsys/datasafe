@@ -7,6 +7,7 @@ import de.adorsys.datasafe.business.impl.dfs.DefaultDFSModule;
 import de.adorsys.datasafe.business.impl.document.DefaultDocumentModule;
 import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule;
 import de.adorsys.datasafe.business.impl.inbox.impl.InboxServiceImpl;
+import de.adorsys.datasafe.business.impl.keystore.DefaultKeyStoreModule;
 import de.adorsys.datasafe.business.impl.profile.DefaultProfileModule;
 
 import javax.inject.Singleton;
@@ -17,6 +18,7 @@ import javax.inject.Singleton;
 @Singleton
 @Component(modules = {
         DefaultCredentialsModule.class,
+        DefaultKeyStoreModule.class,
         DefaultDocumentModule.class,
         DefaultDFSModule.class,
         DefaultCMSEncryptionModule.class,

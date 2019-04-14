@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.api.types;
 
+import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.business.api.types.file.FileIn;
 import lombok.Builder;
 import lombok.NonNull;
@@ -16,5 +17,5 @@ public class WriteRequest {
     private final FileIn data;
 
     @NonNull
-    private final PublicKeyWithId keyWithId;
+    private final PublicKeyIDWithPublicKey keyWithId;
 }

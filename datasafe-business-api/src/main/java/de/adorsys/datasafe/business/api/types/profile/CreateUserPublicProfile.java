@@ -8,7 +8,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CreateUserPublicProfile implements PublicProfile<DFSAccess> {
+public class CreateUserPublicProfile {
 
     @NonNull
     private final UserID id;
@@ -18,4 +18,11 @@ public class CreateUserPublicProfile implements PublicProfile<DFSAccess> {
 
     @NonNull
     private final DFSAccess inbox;
+
+    public UserPublicProfile removeAccess() {
+        return UserPublicProfile.builder()
+            .inbox(inbox.getPhysicalPath())
+            .publicKeys(publicKeys.getPhysicalPath())
+            .build();
+    }
 }

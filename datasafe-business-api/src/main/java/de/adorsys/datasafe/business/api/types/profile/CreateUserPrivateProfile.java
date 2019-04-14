@@ -8,7 +8,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CreateUserPrivateProfile implements PrivateProfile<DFSAccess> {
+public class CreateUserPrivateProfile {
 
     @NonNull
     private final UserIDAuth id;
@@ -18,4 +18,11 @@ public class CreateUserPrivateProfile implements PrivateProfile<DFSAccess> {
 
     @NonNull
     private final DFSAccess privateStorage;
+
+    public UserPrivateProfile removeAccess() {
+        return UserPrivateProfile.builder()
+            .privateStorage(keystore.getPhysicalPath())
+            .keystore(privateStorage.getPhysicalPath())
+            .build();
+    }
 }

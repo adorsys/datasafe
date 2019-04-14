@@ -10,12 +10,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 
 import javax.crypto.SecretKey;
+import javax.inject.Inject;
 import java.security.*;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
 @Slf4j
 public class KeyStoreServiceImpl implements KeyStoreService {
+
+    @Inject
+    public KeyStoreServiceImpl() {
+    }
 
     @Override
     public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,

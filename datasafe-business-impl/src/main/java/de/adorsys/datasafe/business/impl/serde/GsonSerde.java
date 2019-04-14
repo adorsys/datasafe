@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.api.serde;
+package de.adorsys.datasafe.business.impl.serde;
 
 import com.google.gson.Gson;
 import lombok.experimental.Delegate;

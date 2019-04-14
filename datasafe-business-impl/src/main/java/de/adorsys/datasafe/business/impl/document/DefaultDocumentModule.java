@@ -35,13 +35,7 @@ public abstract class DefaultDocumentModule {
 
     @Provides
     static ListPathNonDecryptingServiceImpl pathNonDecryptingService(
-            StorageMetadataMapper mapper,
             DFSConnectionService dfs) {
-        return new ListPathNonDecryptingServiceImpl(dfs, mapper);
-    }
-
-    @Provides
-    static StorageMetadataMapper storageMetadataMapper() {
-        return new StorageMetadataMapper();
+        return new ListPathNonDecryptingServiceImpl(dfs);
     }
 }

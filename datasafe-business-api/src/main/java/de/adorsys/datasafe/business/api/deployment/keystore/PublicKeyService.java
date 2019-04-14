@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.deployment.keystore;
 
-import de.adorsys.datasafe.business.api.types.PublicKeyWithId;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.business.api.types.UserID;
 
 /**
@@ -8,5 +8,5 @@ import de.adorsys.datasafe.business.api.types.UserID;
  */
 public interface PublicKeyService {
 
-    PublicKeyWithId publicKey(UserID forUser);
+    PublicKeyIDWithPublicKey publicKey(UserID forUser);
 }

@@ -7,7 +7,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class UserPrivateProfile implements PrivateProfile<BucketPath> {
+public class UserPrivateProfile {
 
     @NonNull
     private final BucketPath keystore;

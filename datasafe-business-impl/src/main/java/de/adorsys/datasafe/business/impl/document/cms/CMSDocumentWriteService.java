@@ -36,7 +36,7 @@ public class CMSDocumentWriteService implements DocumentWriteService {
         CMSEnvelopedData data = cms.encrypt(
                 new DocumentContent(ByteStreams.toByteArray(request.getData().getData())),
                 request.getKeyWithId().getPublicKey(),
-                request.getKeyWithId().getPublicKeyId()
+                request.getKeyWithId().getKeyID()
         );
 
         connection.putBlob(request.getTo().getPhysicalPath(), new SimplePayloadImpl(data.getEncoded()));
