@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.deployment.inbox.actions;
 
-import de.adorsys.datasafe.business.api.deployment.inbox.dto.InboxReadRequest;
+import de.adorsys.datasafe.business.api.types.inbox.InboxReadRequest;
 
 public interface ReadFromInbox {
 

@@ -29,8 +29,8 @@ public abstract class DefaultDocumentModule {
     abstract DocumentListService documentListService(DocumentListServiceImpl impl);
 
     @Provides
-    static ListPathDecryptingServiceImpl pathDecryptingService() {
-        return new ListPathDecryptingServiceImpl();
+    static ListPathDecryptingServiceImpl pathDecryptingService(ListPathNonDecryptingServiceImpl nonDecrypt) {
+        return new ListPathDecryptingServiceImpl(nonDecrypt);
     }
 
     @Provides

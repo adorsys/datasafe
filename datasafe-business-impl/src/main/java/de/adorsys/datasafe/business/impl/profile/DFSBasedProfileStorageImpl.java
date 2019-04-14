@@ -34,8 +34,8 @@ public class DFSBasedProfileStorageImpl implements
     ProfileRetrievalService,
     ProfileRemovalService {
 
-    private static final BucketPath PRIVATE = new BucketPath("private");
-    private static final BucketPath PUBLIC = new BucketPath("public");
+    private static final BucketPath PRIVATE = new BucketPath("profiles/private");
+    private static final BucketPath PUBLIC = new BucketPath("profiles/public");
 
     private final KeyStoreService keyStoreService;
     private final DFSConnectionService dfsConnectionService;

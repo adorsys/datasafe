@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.api.types;
+package de.adorsys.datasafe.business.api.types.inbox;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 

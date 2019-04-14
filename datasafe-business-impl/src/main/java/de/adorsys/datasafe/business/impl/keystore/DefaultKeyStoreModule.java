@@ -5,6 +5,9 @@ import dagger.Module;
 import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
 
+/**
+ * This module provides keystore management operations.
+ */
 @Module
 public abstract class DefaultKeyStoreModule {
 

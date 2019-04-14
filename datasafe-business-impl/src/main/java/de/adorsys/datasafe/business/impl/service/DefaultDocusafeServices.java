@@ -8,6 +8,8 @@ import de.adorsys.datasafe.business.impl.document.DefaultDocumentModule;
 import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule;
 import de.adorsys.datasafe.business.impl.inbox.impl.InboxServiceImpl;
 import de.adorsys.datasafe.business.impl.keystore.DefaultKeyStoreModule;
+import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActionsModule;
+import de.adorsys.datasafe.business.impl.privatestore.impl.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.business.impl.profile.DefaultProfileModule;
 
@@ -24,10 +26,12 @@ import javax.inject.Singleton;
         DefaultDFSModule.class,
         DefaultCMSEncryptionModule.class,
         DefaultInboxActionsModule.class,
+        DefaultPrivateActionsModule.class,
         DefaultProfileModule.class
 })
-public interface DefaultDocusafeService {
+public interface DefaultDocusafeServices {
 
+    PrivateSpaceServiceImpl privateService();
     InboxServiceImpl inboxService();
     DFSBasedProfileStorageImpl userProfile();
 }

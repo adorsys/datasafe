@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.deployment.document;
 
-import de.adorsys.datasafe.business.api.types.ListRequest;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.file.FileOnBucket;
 
 import java.util.stream.Stream;

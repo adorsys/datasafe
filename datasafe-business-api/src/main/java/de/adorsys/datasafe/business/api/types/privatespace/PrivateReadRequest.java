@@ -1,6 +1,5 @@
-package de.adorsys.datasafe.business.api.deployment.inbox.dto;
+package de.adorsys.datasafe.business.api.types.privatespace;
 
-import de.adorsys.datasafe.business.api.types.InboxBucketPath;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.file.FileOut;
 import lombok.Builder;
@@ -9,13 +8,13 @@ import lombok.Value;
 
 @Value
 @Builder
-public class InboxReadRequest {
+public class PrivateReadRequest {
 
     @NonNull
     private final UserIDAuth owner;
 
     @NonNull
-    private final InboxBucketPath path;
+    private final PrivateBucketPath path;
 
     @NonNull
     private final FileOut response;

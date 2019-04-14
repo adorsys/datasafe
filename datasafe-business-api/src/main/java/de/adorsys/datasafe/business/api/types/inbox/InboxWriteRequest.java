@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.api.deployment.inbox.dto;
+package de.adorsys.datasafe.business.api.types.inbox;
 
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.file.FileIn;

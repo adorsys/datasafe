@@ -1,6 +1,7 @@
-package de.adorsys.datasafe.business.api.types;
+package de.adorsys.datasafe.business.api.types.action;
 
 import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.file.FileIn;
 import lombok.Builder;
 import lombok.NonNull;

@@ -7,7 +7,7 @@ import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionSe
 import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
 import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
 import de.adorsys.datasafe.business.api.types.DocumentContent;
-import de.adorsys.datasafe.business.api.types.WriteRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import lombok.SneakyThrows;
 import org.bouncycastle.cms.CMSEnvelopedData;
 
