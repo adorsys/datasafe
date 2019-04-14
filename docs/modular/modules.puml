@@ -1,0 +1,50 @@
+@startuml
+
+cloud "DocusafeServices" {
+
+  package "CredentialsModule" {
+    [BucketAccessService]
+    [PublicKeyService]
+    [PrivateKeyService]
+    [DFSCredentialsService]
+  }
+
+  package "KeyStoreModule" {
+    [KeyStoreService]
+  }
+
+  package "DocumentModule" {
+    [DocumentReadService]
+    [DocumentWriteService]
+    [DocumentListService]
+    [ListPathDecryptingServiceImpl]
+    [ListPathNonDecryptingServiceImpl]
+  }
+
+  package "DFSModule" {
+    [DFSConnectionService]
+  }
+
+  package "CMSEncryptionModule" {
+    [CMSEncryptionService]
+  }
+
+  package "InboxActionsModule" {
+    [ListInbox]
+    [ReadFromInbox]
+    [WriteToInbox]
+  }
+
+  package "PrivateActionsModule" {
+    [ListPrivate]
+    [ReadFromPrivate]
+    [WriteToPrivate]
+  }
+
+  package "ProfileModule" {
+    [ProfileRetrievalService]
+    [ProfileRegistrationService]
+    [ProfileRemovalService]
+  }
+}
+@enduml

@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.impl;
+package de.adorsys.datasafe.business.impl.inbox.impl;
 
 import de.adorsys.datasafe.business.api.deployment.inbox.InboxService;
 import de.adorsys.datasafe.business.api.deployment.inbox.actions.ListInbox;
