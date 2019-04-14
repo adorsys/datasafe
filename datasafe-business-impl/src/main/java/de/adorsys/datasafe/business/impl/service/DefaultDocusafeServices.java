@@ -16,7 +16,7 @@ import de.adorsys.datasafe.business.impl.profile.DefaultProfileModule;
 import javax.inject.Singleton;
 
 /**
- * This is user INBOX service default implementation.
+ * This is user Docusafe service default implementation.
  */
 @Singleton
 @Component(modules = {
