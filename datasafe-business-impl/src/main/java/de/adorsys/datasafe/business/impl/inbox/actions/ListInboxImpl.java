@@ -5,6 +5,7 @@ import de.adorsys.datasafe.business.api.deployment.document.DocumentListService;
 import de.adorsys.datasafe.business.api.deployment.inbox.actions.ListInbox;
 import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
+import de.adorsys.datasafe.business.api.types.InboxBucketPath;
 import de.adorsys.datasafe.business.api.types.ListRequest;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.file.FileOnBucket;
@@ -27,7 +28,7 @@ public class ListInboxImpl implements ListInbox {
     }
 
     @Override
-    public Stream<FileOnBucket> list(UserIDAuth forUser) {
+    public Stream<InboxBucketPath> list(UserIDAuth forUser) {
         DFSAccess userInbox = accessService.privateAccessFor(
                 forUser,
                 resolveInboxLocation(forUser)
@@ -39,12 +40,21 @@ public class ListInboxImpl implements ListInbox {
                 .recursiveFlag(ListRecursiveFlag.FALSE)
                 .build();
 
-        return listService.list(listRequest);
+        return listService.list(listRequest).map(this::asInbox);
     }
 
     private Function<ProfileRetrievalService, BucketPath> resolveInboxLocation(UserIDAuth forUser) {
         return profiles -> profiles
                 .publicProfile(forUser.getUserID())
                 .getInbox();
+    }
+
+    private InboxBucketPath asInbox(FileOnBucket path) {
+        return new InboxBucketPath(relativize(path.getPath()));
+    }
+
+    private BucketPath relativize(BucketPath child) {
+        String[] name = child.getObjectHandle().getName().split(BucketPath.BUCKET_SEPARATOR);
+        return new BucketPath(name.length == 1 ? name[0] : name[name.length - 1]);
     }
 }

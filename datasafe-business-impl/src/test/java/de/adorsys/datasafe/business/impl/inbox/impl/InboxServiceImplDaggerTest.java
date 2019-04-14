@@ -10,7 +10,6 @@ import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.file.FileIn;
 import de.adorsys.datasafe.business.api.types.file.FileMeta;
-import de.adorsys.datasafe.business.api.types.file.FileOnBucket;
 import de.adorsys.datasafe.business.api.types.file.FileOut;
 import de.adorsys.datasafe.business.api.types.profile.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.profile.CreateUserPublicProfile;
@@ -50,14 +49,14 @@ class InboxServiceImplDaggerTest extends BaseMockitoTest {
         registerJohnAndJane();
 
         sendToInbox(jane.getUserID(), john.getUserID(), "hello.txt", MESSAGE_ONE);
-        FileOnBucket inboxJohn = getFirstFileInInbox(john);
+        InboxBucketPath inboxJohn = getFirstFileInInbox(john);
 
         String result = readInboxUsingPrivateKey(john, inboxJohn);
 
         assertThat(result).isEqualTo(MESSAGE_ONE);
     }
 
-    private String readInboxUsingPrivateKey(UserIDAuth user, FileOnBucket location) {
+    private String readInboxUsingPrivateKey(UserIDAuth user, InboxBucketPath location) {
         FileOut out = new FileOut(
             new FileMeta(""),
             new ByteArrayOutputStream(1000)
@@ -66,7 +65,7 @@ class InboxServiceImplDaggerTest extends BaseMockitoTest {
         docusafeService.inboxService()
             .read(InboxReadRequest.builder()
                 .owner(user)
-                .path(new InboxBucketPath(location.getPath()))
+                .path(location)
                 .response(out)
                 .build()
             );
@@ -77,8 +76,8 @@ class InboxServiceImplDaggerTest extends BaseMockitoTest {
         return data;
     }
 
-    private FileOnBucket getFirstFileInInbox(UserIDAuth inboxOwner) {
-        List<FileOnBucket> files = docusafeService.inboxService().list(inboxOwner).collect(Collectors.toList());
+    private InboxBucketPath getFirstFileInInbox(UserIDAuth inboxOwner) {
+        List<InboxBucketPath> files = docusafeService.inboxService().list(inboxOwner).collect(Collectors.toList());
         log.info("{} has {} in INBOX", inboxOwner.getUserID().getValue(), files);
         return files.get(0);
     }

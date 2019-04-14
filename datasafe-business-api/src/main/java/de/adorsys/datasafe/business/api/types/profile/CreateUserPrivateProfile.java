@@ -21,8 +21,8 @@ public class CreateUserPrivateProfile {
 
     public UserPrivateProfile removeAccess() {
         return UserPrivateProfile.builder()
-            .privateStorage(keystore.getPhysicalPath())
-            .keystore(privateStorage.getPhysicalPath())
+            .keystore(keystore.getPhysicalPath())
+            .privateStorage(privateStorage.getPhysicalPath())
             .build();
     }
 }
