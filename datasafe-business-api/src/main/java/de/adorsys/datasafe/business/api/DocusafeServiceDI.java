@@ -10,6 +10,9 @@ import de.adorsys.dfs.connection.api.types.ListRecursiveFlag;
 
 import java.util.List;
 
+/**
+ * This is same as {@link DocusafeServiceOrig}
+ */
 public interface DocusafeServiceDI {
 
     void registerDFS(DFSCredentials dfsCredentials, UserIDAuth userIDAuth);

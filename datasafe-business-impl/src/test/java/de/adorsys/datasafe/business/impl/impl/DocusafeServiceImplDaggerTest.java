@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.inbox.impl;
+package de.adorsys.datasafe.business.impl.impl;
 
 import de.adorsys.datasafe.business.api.deployment.credentials.dto.SystemCredentials;
 import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
