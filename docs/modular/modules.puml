@@ -2,6 +2,19 @@
 
 cloud "DocusafeServices" {
 
+left to right direction
+  together {
+    cloud "Inbox" {
+    }
+
+    cloud "Private" {
+    }
+
+    cloud "Profile" {
+    }
+  }
+
+
   package "CredentialsModule" {
     [BucketAccessService]
     [PublicKeyService]
@@ -29,22 +42,42 @@ cloud "DocusafeServices" {
     [CMSEncryptionService]
   }
 
-  package "InboxActionsModule" {
+  package "Serde (serialization)" as serde {
+      [GsonSerde]
+    }
+
+  package "InboxActionsModule" as inbox {
     [ListInbox]
     [ReadFromInbox]
     [WriteToInbox]
   }
 
-  package "PrivateActionsModule" {
+  package "PrivateActionsModule" as private {
     [ListPrivate]
     [ReadFromPrivate]
     [WriteToPrivate]
   }
 
-  package "ProfileModule" {
+  package "ProfileModule" as profile {
     [ProfileRetrievalService]
     [ProfileRegistrationService]
     [ProfileRemovalService]
   }
+
+  Inbox -> inbox
+  Private -> private
+  Profile -> profile
+
+  inbox -down-> CredentialsModule
+  inbox -down-> DocumentModule
+  inbox -down-> KeyStoreModule
+
+  private -down-> CredentialsModule
+  private -down-> DocumentModule
+  private -down-> KeyStoreModule
+
+  profile -down-> serde
+  profile -down-> KeyStoreModule
+  profile -down-> DFSModule
 }
 @enduml
