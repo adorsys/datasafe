@@ -9,4 +9,4 @@
 * [Comparison to docusafe](docs/docu1_vs_docu2/comparison.md)
 
 # Modular design overview
-* [Modular design](docs/modular/comparison.md)
+* [Modular design](docs/modular/modular.md)
