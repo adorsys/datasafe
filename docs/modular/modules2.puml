@@ -25,9 +25,9 @@ Profile -- "Serde (se/deserialization)"
 Inbox -- CredentialsModule
 Private -- CredentialsModule
 
-CredentialsModule -- CMSEncryptionModule
-
 Private -- DocumentModule
 Inbox -- DocumentModule
+
+DocumentModule -- CMSEncryptionModule
 
 @enduml

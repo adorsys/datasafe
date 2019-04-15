@@ -7,3 +7,6 @@
 * [Project architecture](docs/architecture.md) 
 * [Possible future achitecture](docs/general/docusafe_future_client.md)
 * [Comparison to docusafe](docs/docu1_vs_docu2/comparison.md)
+
+# Modular design overview
+* [Modular design](docs/modular/comparison.md)

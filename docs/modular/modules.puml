@@ -1,11 +1,9 @@
 @startuml
 left to right direction
 
-
-
-cloud "DocusafeServices" {
-  rectangle {
-    cloud "Inbox" {
+  cloud "DocusafeServices" {
+    rectangle {
+      cloud "Inbox" {
     }
 
     cloud "Private" {
