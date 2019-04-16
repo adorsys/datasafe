@@ -11,12 +11,12 @@ import java.io.OutputStream;
  */
 public interface EncryptionService {
 
-	OutputStream buildEncryptionStream(OutputStream dataStream, EncryptionSpec encryptionSpec);
+	OutputStream buildEncryptionOutputStream(OutputStream outputStream, EncryptionSpec encryptionSpec);
 
-	OutputStream buildSignatureStream(OutputStream dataStream, SignatureSpec signatureSpec);
+	OutputStream buildSignatureOutputStream(OutputStream outputStream, SignatureSpec signatureSpec);
 
-	InputStream decryptingInputStream(InputStream dataStream, KeySource keySource);
+	InputStream buildDecryptionInputStream(InputStream inputStream, KeySource keySource);
 
-	InputStream verifyingInputStream(InputStream dataStream, KeySource keySource);
+	InputStream buildVerifyicationInputStream(InputStream inputStream, KeySource keySource);
 
 }

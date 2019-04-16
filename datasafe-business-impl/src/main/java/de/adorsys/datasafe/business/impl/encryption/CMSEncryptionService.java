@@ -41,27 +41,27 @@ public class CMSEncryptionService implements EncryptionService {
 
 	@Override
 	@SneakyThrows
-	public OutputStream buildEncryptionStream(OutputStream dataStream, EncryptionSpec encryptionSpec) {
+	public OutputStream buildEncryptionOutputStream(OutputStream outputStream, EncryptionSpec encryptionSpec) {
 
 		CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
-
+		
 		encryptionSpec.getSecretRecipients().stream().forEach(secretRecipient -> {
 			gen.addRecipientInfoGenerator(
-					new JceKEKRecipientInfoGenerator(secretRecipient.getKeyId(), secretRecipient.getSecretKey()));
+					new JceKEKRecipientInfoGenerator(secretRecipient.getKeyID().getValue().getBytes(), secretRecipient.getSecretKey()));
 		});
 
 		encryptionSpec.getPublicRecipients().stream().forEach(publicRecipient -> {
 			gen.addRecipientInfoGenerator(
-					new JceKeyTransRecipientInfoGenerator(publicRecipient.getKeyId(), publicRecipient.getPublicKey()));
+					new JceKeyTransRecipientInfoGenerator(publicRecipient.getKeyID().getValue().getBytes(), publicRecipient.getPublicKey()));
 		});
 
-		return gen.open(dataStream,
+		return gen.open(outputStream,
 				new JceCMSContentEncryptorBuilder(encryptionSpec.getEncryptionAlgo()).setProvider(ProviderUtils.bcProvider).build());
 	}
 
 	@Override
 	@SneakyThrows
-	public OutputStream buildSignatureStream(OutputStream dataStream, SignatureSpec signatureSpec) {
+	public OutputStream buildSignatureOutputStream(OutputStream outputStream, SignatureSpec signatureSpec) {
 
 		ContentSigner contentSigner = new JcaContentSignerBuilder(signatureSpec.getSignatureAlgorithm())
 				.setProvider(ProviderUtils.bcProvider).build(signatureSpec.getPrivateKey());
@@ -70,13 +70,13 @@ public class CMSEncryptionService implements EncryptionService {
 				signatureSpec.getKeyId());
 		CMSSignedDataStreamGenerator gen = new CMSSignedDataStreamGenerator();
 		gen.addSignerInfoGenerator(signerInfoGenerator);
-		return gen.open(dataStream, true);
+		return gen.open(outputStream, true);
 	}
 
 	@Override
 	@SneakyThrows
-	public InputStream decryptingInputStream(InputStream dataStream, KeySource keySource) {
-		RecipientInformationStore recipientInfos = new CMSEnvelopedDataParser(dataStream).getRecipientInfos();
+	public InputStream buildDecryptionInputStream(InputStream inputStream, KeySource keySource) {
+		RecipientInformationStore recipientInfos = new CMSEnvelopedDataParser(inputStream).getRecipientInfos();
 		for (RecipientInformation recipientInfo : recipientInfos) {
 			RecipientId recipientId = recipientInfo.getRID();
 			switch (recipientId.getType()) {
@@ -98,10 +98,10 @@ public class CMSEncryptionService implements EncryptionService {
 
 	@Override
 	@SneakyThrows
-	public InputStream verifyingInputStream(InputStream dataStream, KeySource keySource) {
+	public InputStream buildVerifyicationInputStream(InputStream inputStream, KeySource keySource) {
 		DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder()
 				.setProvider(ProviderUtils.bcProvider).build();
-		return new CMSSignedDataParser(digestCalculatorProvider, dataStream).getSignedContent().getContentStream();
+		return new CMSSignedDataParser(digestCalculatorProvider, inputStream).getSignedContent().getContentStream();
 	}
 	
 
