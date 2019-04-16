@@ -34,6 +34,7 @@ import de.adorsys.datasafe.business.api.encryption.EncryptionService;
 import de.adorsys.datasafe.business.api.encryption.EncryptionSpec;
 import de.adorsys.datasafe.business.api.encryption.KeySource;
 import de.adorsys.datasafe.business.api.encryption.SignatureSpec;
+import de.adorsys.datasafe.business.impl.keystore.generator.ProviderUtils;
 import lombok.SneakyThrows;
 
 public class CMSEncryptionService implements EncryptionService {
