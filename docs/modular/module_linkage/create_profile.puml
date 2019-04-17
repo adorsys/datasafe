@@ -1,0 +1,19 @@
+@startuml
+actor User
+
+component Profile
+component DFS
+component KeyStore
+component "Serialize/Deserialize" as serde
+
+User --> Profile : register/create
+Profile =right=> DFS
+Profile <-- DFS
+
+Profile =right=> KeyStore
+Profile <-- KeyStore
+
+Profile =right=> serde
+Profile <-- serde
+
+@enduml
