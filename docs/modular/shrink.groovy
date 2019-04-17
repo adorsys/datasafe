@@ -4,13 +4,15 @@ import java.nio.file.Paths
 REGEX_MAPPING = [
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.profile.+': 'Profile',
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.credentials.+': 'Credentials',
-        'de\\.adorsys\\.datasafe\\.business\\.impl\\.cmsencryption.+': 'CMSEncryption',
+        'de\\.adorsys\\.datasafe\\.business\\.impl\\.cmsencryption.+': 'CMS',
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.dfs.+': 'DFS',
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.document.+': 'Document',
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.inbox.+': 'INBOX',
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.private.+': 'PRIVATE',
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.serde.+': 'SERDE',
         'de\\.adorsys\\.dfs\\.connection\\.api\\.service\\.api.+': 'DFS',
+        'de\\.adorsys\\.datasafe\\.business\\.api\\.encryption\\.cmsencryption.+': 'CMS',
+        'de\\.adorsys\\.datasafe\\.business\\.impl\\.cmsencryption\\.services.+': 'CMS',
         '.+deployment\\.profile.+': 'Profile',
         '.+deployment\\.credentials.+': 'Credentials',
         '.+deployment\\.cmsencryption.+': 'CMSEncryption',
@@ -19,11 +21,12 @@ REGEX_MAPPING = [
         '.+deployment\\.inbox.+': 'INBOX',
         '.+deployment\\.private.+': 'PRIVATE',
         '.+deployment\\.serde.+': 'SERDE',
-        '.+deployment\\.keystore.+' : 'KeyStore'
+        '.+deployment\\.keystore.+' : 'KeyStore',
+        'de\\.adorsys\\.datasafe\\.business\\.impl\\.keystore.+': 'KeyStore'
 ]
 
 def lines = Files.lines(
-        Paths.get('/Users/valentyn.berezin/IdeaProjects/my-fork-datasafe/docs/modular/create_user.puml')
+        Paths.get('/Users/valentyn.berezin/IdeaProjects/my-fork-datasafe/docs/modular/read_inbox.puml')
 ).collect {it}
 
 def classFromPackage(String pkg) {
