@@ -1,0 +1,27 @@
+@startuml
+
+actor User
+
+component Inbox
+component Profile
+component DFS
+component "Serialize/Deserialize" as serde
+component Credentials
+component Document
+
+User -down-> Inbox : list inbox
+
+Inbox =right=> Profile
+Inbox <-- Profile
+Profile =right=> DFS
+Profile <-- DFS
+Profile =down=> serde
+Profile <-- serde
+
+Inbox =right=> Credentials
+Inbox <-- Credentials
+
+Inbox =right=> Document
+Inbox <-- Document
+
+@enduml

@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.impl.keystore.generator;
 
-import de.adorsys.datasafe.business.api.keystore.types.SecretKeyEntry;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.SecretKeyEntry;
 import lombok.Builder;
 import lombok.Getter;
 

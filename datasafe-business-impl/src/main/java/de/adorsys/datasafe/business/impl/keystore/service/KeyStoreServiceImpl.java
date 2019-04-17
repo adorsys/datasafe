@@ -3,19 +3,24 @@ package de.adorsys.datasafe.business.impl.keystore.service;
 import de.adorsys.common.exceptions.BaseException;
 import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.common.utils.HexUtil;
-import de.adorsys.datasafe.business.api.keystore.types.*;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
 import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreGenerator;
-import de.adorsys.datasafe.business.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 
 import javax.crypto.SecretKey;
+import javax.inject.Inject;
 import java.security.*;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
 @Slf4j
 public class KeyStoreServiceImpl implements KeyStoreService {
+
+    @Inject
+    public KeyStoreServiceImpl() {
+    }
 
     @Override
     public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,

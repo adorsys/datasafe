@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.document.list;
 
-import de.adorsys.datasafe.business.api.document.DocumentListService;
-import de.adorsys.datasafe.business.api.types.ListRequest;
+import de.adorsys.datasafe.business.api.deployment.document.DocumentListService;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.file.FileOnBucket;
 
 import javax.inject.Inject;

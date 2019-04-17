@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.impl.dfs;
 
 import dagger.Binds;
 import dagger.Module;
-import de.adorsys.datasafe.business.api.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
 
 /**
  * This module is responsible for DFS connection retrieval.

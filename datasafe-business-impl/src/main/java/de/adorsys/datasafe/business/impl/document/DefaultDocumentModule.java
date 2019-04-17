@@ -8,10 +8,10 @@ import de.adorsys.datasafe.business.impl.document.cms.CMSDocumentWriteService;
 import de.adorsys.datasafe.business.impl.document.list.DocumentListServiceImpl;
 import de.adorsys.datasafe.business.impl.document.list.ListPathDecryptingServiceImpl;
 import de.adorsys.datasafe.business.impl.document.list.ListPathNonDecryptingServiceImpl;
-import de.adorsys.datasafe.business.api.dfs.DFSConnectionService;
-import de.adorsys.datasafe.business.api.document.DocumentListService;
-import de.adorsys.datasafe.business.api.document.DocumentReadService;
-import de.adorsys.datasafe.business.api.document.DocumentWriteService;
+import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.deployment.document.DocumentListService;
+import de.adorsys.datasafe.business.api.deployment.document.DocumentReadService;
+import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
 
 /**
  * This module is responsible for document storage (i.e. which encryption to use) and listing bucket content.
@@ -29,19 +29,13 @@ public abstract class DefaultDocumentModule {
     abstract DocumentListService documentListService(DocumentListServiceImpl impl);
 
     @Provides
-    static ListPathDecryptingServiceImpl pathDecryptingService() {
-        return new ListPathDecryptingServiceImpl();
+    static ListPathDecryptingServiceImpl pathDecryptingService(ListPathNonDecryptingServiceImpl nonDecrypt) {
+        return new ListPathDecryptingServiceImpl(nonDecrypt);
     }
 
     @Provides
     static ListPathNonDecryptingServiceImpl pathNonDecryptingService(
-            StorageMetadataMapper mapper,
             DFSConnectionService dfs) {
-        return new ListPathNonDecryptingServiceImpl(dfs, mapper);
-    }
-
-    @Provides
-    static StorageMetadataMapper storageMetadataMapper() {
-        return new StorageMetadataMapper();
+        return new ListPathNonDecryptingServiceImpl(dfs);
     }
 }

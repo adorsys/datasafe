@@ -3,11 +3,11 @@ package de.adorsys.datasafe.business.impl.document.cms;
 import com.google.common.io.ByteStreams;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 import de.adorsys.dfs.connection.api.service.impl.SimplePayloadImpl;
-import de.adorsys.datasafe.business.api.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.api.dfs.DFSConnectionService;
-import de.adorsys.datasafe.business.api.document.DocumentWriteService;
+import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
 import de.adorsys.datasafe.business.api.types.DocumentContent;
-import de.adorsys.datasafe.business.api.types.WriteRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import lombok.SneakyThrows;
 import org.bouncycastle.cms.CMSEnvelopedData;
 
@@ -36,9 +36,9 @@ public class CMSDocumentWriteService implements DocumentWriteService {
         CMSEnvelopedData data = cms.encrypt(
                 new DocumentContent(ByteStreams.toByteArray(request.getData().getData())),
                 request.getKeyWithId().getPublicKey(),
-                request.getKeyWithId().getPublicKeyId()
+                request.getKeyWithId().getKeyID()
         );
 
-        connection.putBlob(request.getTo().getPath(), new SimplePayloadImpl(data.getEncoded()));
+        connection.putBlob(request.getTo().getPhysicalPath(), new SimplePayloadImpl(data.getEncoded()));
     }
 }

@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.types;
 
-import de.adorsys.datasafe.business.api.credentials.dto.DFSCredentials;
+import de.adorsys.datasafe.business.api.deployment.credentials.dto.DFSCredentials;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import lombok.Builder;
 import lombok.NonNull;
@@ -13,8 +13,7 @@ public class DFSAccess {
     /**
      * Logical path - decrypted path value.
      */
-    @NonNull
-    private final BucketPath path;
+    private final BucketPath logicalPath;
 
     /**
      * Physical path - encrypted path value.

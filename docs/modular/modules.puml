@@ -1,0 +1,83 @@
+@startuml
+left to right direction
+
+  cloud "DocusafeServices" {
+    rectangle {
+      cloud "Inbox" {
+    }
+
+    cloud "Private" {
+    }
+
+    cloud "Profile" {
+    }
+  }
+
+  rectangle {
+    package "InboxActionsModule" as inbox {
+      [ListInbox]
+      [ReadFromInbox]
+      [WriteToInbox]
+    }
+
+    package "PrivateActionsModule" as private {
+      [ListPrivate]
+      [ReadFromPrivate]
+      [WriteToPrivate]
+    }
+
+    package "ProfileModule" as profile {
+      [ProfileRetrievalService]
+      [ProfileRegistrationService]
+      [ProfileRemovalService]
+    }
+  }
+
+  package "KeyStoreModule" {
+    [KeyStoreService]
+  }
+
+  package "DocumentModule" {
+    [DocumentReadService]
+    [DocumentWriteService]
+    [DocumentListService]
+    [ListPathDecryptingServiceImpl]
+    [ListPathNonDecryptingServiceImpl]
+  }
+
+  package "DFSModule" {
+    [DFSConnectionService]
+  }
+
+  package "CMSEncryptionModule" {
+    [CMSEncryptionService]
+  }
+
+  package "Serde (serialization)" as serde {
+      [GsonSerde]
+  }
+
+  package "CredentialsModule" {
+    [BucketAccessService]
+    [PublicKeyService]
+    [PrivateKeyService]
+    [DFSCredentialsService]
+  }
+
+  Inbox -> inbox
+  Private -> private
+  Profile -> profile
+  
+  inbox -down-> CredentialsModule
+  inbox -down-> DocumentModule
+
+  private -down-> CredentialsModule
+  private -down-> DocumentModule
+
+  profile -down-> serde
+  profile -down-> KeyStoreModule
+  profile -down-> DFSModule
+
+  CredentialsModule -down-> CMSEncryptionModule
+}
+@enduml

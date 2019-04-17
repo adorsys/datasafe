@@ -1,14 +1,14 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import de.adorsys.datasafe.business.api.credentials.BucketAccessService;
-import de.adorsys.datasafe.business.api.document.DocumentReadService;
-import de.adorsys.datasafe.business.api.inbox.actions.ReadFromInbox;
-import de.adorsys.datasafe.business.api.inbox.dto.InboxReadRequest;
-import de.adorsys.datasafe.business.api.keystore.PrivateKeyService;
-import de.adorsys.datasafe.business.api.profile.UserProfileService;
+import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
+import de.adorsys.datasafe.business.api.deployment.document.DocumentReadService;
+import de.adorsys.datasafe.business.api.deployment.inbox.actions.ReadFromInbox;
+import de.adorsys.datasafe.business.api.types.inbox.InboxReadRequest;
+import de.adorsys.datasafe.business.api.deployment.keystore.PrivateKeyService;
+import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
-import de.adorsys.datasafe.business.api.types.ReadRequest;
+import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 
 import javax.inject.Inject;
 import java.util.function.Function;
@@ -29,7 +29,7 @@ public class ReadFromInboxImpl implements ReadFromInbox {
     }
 
     @Override
-    public void readDocumentFromInbox(InboxReadRequest request) {
+    public void read(InboxReadRequest request) {
         DFSAccess userInbox = accessService.privateAccessFor(
                 request.getOwner(),
                 resolveFileLocation(request)
@@ -44,7 +44,7 @@ public class ReadFromInboxImpl implements ReadFromInbox {
         reader.read(readRequest);
     }
 
-    private Function<UserProfileService, BucketPath> resolveFileLocation(InboxReadRequest request) {
+    private Function<ProfileRetrievalService, BucketPath> resolveFileLocation(InboxReadRequest request) {
         return profiles -> profiles
                 .publicProfile(request.getOwner().getUserID())
                 .getInbox()

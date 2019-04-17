@@ -1,0 +1,33 @@
+@startuml
+
+class DocusafeServices
+
+DocusafeServices -- Inbox
+DocusafeServices -- Private
+DocusafeServices -- Profile
+
+Inbox -- ListInbox
+Inbox -- ReadFromInbox
+Inbox -- WriteToInbox
+
+Private -- ListPrivate
+Private -- ReadFromPrivate
+Private -- WriteToPrivate
+
+Profile -- ProfileRetrievalService
+Profile -- ProfileRegistrationService
+Profile -- ProfileRemovalService
+
+Profile -- KeyStoreModule
+Profile -- DFSModule
+Profile -- "Serde (se/deserialization)"
+
+Inbox -- CredentialsModule
+Private -- CredentialsModule
+
+Private -- DocumentModule
+Inbox -- DocumentModule
+
+DocumentModule -- CMSEncryptionModule
+
+@enduml

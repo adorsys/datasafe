@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.impl.cmsencryption;
 
-import de.adorsys.datasafe.business.api.keystore.types.*;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
 import de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
 import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
-import de.adorsys.datasafe.business.api.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.types.DocumentContent;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.CMSEnvelopedData;
