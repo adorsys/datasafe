@@ -10,14 +10,16 @@ REGEX_MAPPING = [
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.inbox.+': 'INBOX',
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.private.+': 'PRIVATE',
         'de\\.adorsys\\.datasafe\\.business\\.impl\\.serde.+': 'SERDE',
+        'de\\.adorsys\\.dfs\\.connection\\.api\\.service\\.api.+': 'DFS',
         '.+deployment\\.profile.+': 'Profile',
         '.+deployment\\.credentials.+': 'Credentials',
         '.+deployment\\.cmsencryption.+': 'CMSEncryption',
-        '.+deployment\\.dfs.+': 'DFS',
+        '.+deployment\\..*dfs.+': 'DFS',
         '.+deployment\\.document.+': 'Document',
         '.+deployment\\.inbox.+': 'INBOX',
         '.+deployment\\.private.+': 'PRIVATE',
-        '.+deployment\\.serde.+': 'SERDE'
+        '.+deployment\\.serde.+': 'SERDE',
+        '.+deployment\\.keystore.+' : 'KeyStore'
 ]
 
 def lines = Files.lines(
@@ -51,7 +53,7 @@ String replacement(String clazz) {
     return null
 }
 
-def replaceIfNeeded(String line, String sep) {
+def replaceIfNeededBracket(String line, String sep) {
     if (!line.contains(sep)) {
         return line
     }
@@ -78,9 +80,32 @@ def replaceIfNeeded(String line, String sep) {
     return line
 }
 
+def replaceIfNeededActivateDeactivate(String line) {
+    if (!line.contains("activate")) { // matches deactivate too
+        return line
+    }
+
+    def parts = line.split("activate ")
+    def clazz = parts.length > 1 ? parts[1] : parts[0]
+
+
+    if (!fqn[clazz]) {
+        return line
+    }
+
+    def repl = replacement(fqn[clazz])
+
+    if (repl) {
+        line = line.replaceAll("\\b${clazz}\\b", repl)
+    }
+
+    return line
+}
+
 lines.forEach {
-    def line = replaceIfNeeded(it, '<')
-    line = replaceIfNeeded(line, '>')
+    def line = replaceIfNeededBracket(it, '<')
+    line = replaceIfNeededBracket(line, '>')
+    line = replaceIfNeededActivateDeactivate(line)
 
     mappedLines += line
 }

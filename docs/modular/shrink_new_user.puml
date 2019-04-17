@@ -26,66 +26,66 @@ deactivate DefaultDocusafeServices
 ' de.adorsys.datasafe.business.impl.service.DocusafeServiceAdapterImpl
 DocusafeServiceAdapterImpl -> Profile : registerPublic
 
-activate DFSBasedProfileStorageImpl
+activate Profile
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> Profile : systemDfs
 
-activate DFSSystem
+activate Profile
 ' de.adorsys.datasafe.business.impl.profile.DFSSystem
 Profile <-- Profile : DFSAccess
-deactivate DFSSystem
+deactivate Profile
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> DFS : obtain
 
-activate DFSConnectionService
+activate DFS
 ' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
 DFS -> DFS : obtain
 
-activate DFSConnectionServiceImpl
+activate DFS
 ' de.adorsys.datasafe.business.impl.dfs.DFSConnectionServiceImpl
 DFS <-- DFS : DFSConnection
-deactivate DFSConnectionServiceImpl
+deactivate DFS
 
 ' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
 Profile <-- DFS : DFSConnection
-deactivate DFSConnectionService
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> Profile : locatePublicProfile
 
-activate DFSBasedProfileStorageImpl
+activate Profile
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile <-- Profile : BucketPath
-deactivate DFSBasedProfileStorageImpl
+deactivate Profile
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
-Profile -> DFSConnection : createContainer
+Profile -> DFS : createContainer
 
-activate DFSConnection
+activate DFS
 ' de.adorsys.dfs.connection.api.service.api.DFSConnection
-Profile <-- DFSConnection :
-deactivate DFSConnection
+Profile <-- DFS :
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> SERDE : toJson
 
-activate GsonSerde
+activate SERDE
 ' de.adorsys.datasafe.business.impl.serde.GsonSerde
 Profile <-- SERDE : String
-deactivate GsonSerde
+deactivate SERDE
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
-Profile -> DFSConnection : putBlob
+Profile -> DFS : putBlob
 
-activate DFSConnection
+activate DFS
 ' de.adorsys.dfs.connection.api.service.api.DFSConnection
-Profile <-- DFSConnection :
-deactivate DFSConnection
+Profile <-- DFS :
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 DocusafeServiceAdapterImpl <-- Profile :
-deactivate DFSBasedProfileStorageImpl
+deactivate Profile
 
 ' de.adorsys.datasafe.business.impl.service.DocusafeServiceAdapterImpl
 DocusafeServiceAdapterImpl -> DefaultDocusafeServices : userProfile
@@ -106,122 +106,122 @@ deactivate DefaultDocusafeServices
 ' de.adorsys.datasafe.business.impl.service.DocusafeServiceAdapterImpl
 DocusafeServiceAdapterImpl -> Profile : registerPrivate
 
-activate DFSBasedProfileStorageImpl
+activate Profile
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> Profile : systemDfs
 
-activate DFSSystem
+activate Profile
 ' de.adorsys.datasafe.business.impl.profile.DFSSystem
 Profile <-- Profile : DFSAccess
-deactivate DFSSystem
+deactivate Profile
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> DFS : obtain
 
-activate DFSConnectionService
+activate DFS
 ' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
 DFS -> DFS : obtain
 
-activate DFSConnectionServiceImpl
+activate DFS
 ' de.adorsys.datasafe.business.impl.dfs.DFSConnectionServiceImpl
 DFS <-- DFS : DFSConnection
-deactivate DFSConnectionServiceImpl
+deactivate DFS
 
 ' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
 Profile <-- DFS : DFSConnection
-deactivate DFSConnectionService
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> Profile : locatePrivateProfile
 
-activate DFSBasedProfileStorageImpl
+activate Profile
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile <-- Profile : BucketPath
-deactivate DFSBasedProfileStorageImpl
+deactivate Profile
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
-Profile -> DFSConnection : createContainer
+Profile -> DFS : createContainer
 
-activate DFSConnection
+activate DFS
 ' de.adorsys.dfs.connection.api.service.api.DFSConnection
-Profile <-- DFSConnection :
-deactivate DFSConnection
+Profile <-- DFS :
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> SERDE : toJson
 
-activate GsonSerde
+activate SERDE
 ' de.adorsys.datasafe.business.impl.serde.GsonSerde
 Profile <-- SERDE : String
-deactivate GsonSerde
+deactivate SERDE
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
-Profile -> DFSConnection : putBlob
+Profile -> DFS : putBlob
 
-activate DFSConnection
+activate DFS
 ' de.adorsys.dfs.connection.api.service.api.DFSConnection
-Profile <-- DFSConnection :
-deactivate DFSConnection
+Profile <-- DFS :
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> Profile : createKeyStore
 
-activate DFSBasedProfileStorageImpl
+activate Profile
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> Profile : privateKeyStoreAuth
 
-activate DFSSystem
+activate Profile
 ' de.adorsys.datasafe.business.impl.profile.DFSSystem
 Profile <-- Profile : KeyStoreAuth
-deactivate DFSSystem
+deactivate Profile
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
-Profile -> KeyStoreService : createKeyStore
+Profile -> KeyStore : createKeyStore
 
-activate KeyStoreService
+activate KeyStore
 ' de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService
-Profile <-- KeyStoreService : KeyStore
-deactivate KeyStoreService
+Profile <-- KeyStore : KeyStore
+deactivate KeyStore
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile -> DFS : obtain
 
-activate DFSConnectionService
+activate DFS
 ' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
 DFS -> DFS : obtain
 
-activate DFSConnectionServiceImpl
+activate DFS
 ' de.adorsys.datasafe.business.impl.dfs.DFSConnectionServiceImpl
 DFS <-- DFS : DFSConnection
-deactivate DFSConnectionServiceImpl
+deactivate DFS
 
 ' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
 Profile <-- DFS : DFSConnection
-deactivate DFSConnectionService
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
-Profile -> DFSConnection : createContainer
+Profile -> DFS : createContainer
 
-activate DFSConnection
+activate DFS
 ' de.adorsys.dfs.connection.api.service.api.DFSConnection
-Profile <-- DFSConnection :
-deactivate DFSConnection
+Profile <-- DFS :
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
-Profile -> DFSConnection : putBlob
+Profile -> DFS : putBlob
 
-activate DFSConnection
+activate DFS
 ' de.adorsys.dfs.connection.api.service.api.DFSConnection
-Profile <-- DFSConnection :
-deactivate DFSConnection
+Profile <-- DFS :
+deactivate DFS
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 Profile <-- Profile :
-deactivate DFSBasedProfileStorageImpl
+deactivate Profile
 
 ' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
 DocusafeServiceAdapterImpl <-- Profile :
-deactivate DFSBasedProfileStorageImpl
+deactivate Profile
 
 ' de.adorsys.datasafe.business.impl.service.DocusafeServiceAdapterImpl
 DocusafeServiceAdapterTest <-- DocusafeServiceAdapterImpl :
