@@ -11,7 +11,7 @@ import de.adorsys.dfs.connection.api.types.ListRecursiveFlag;
 import java.util.List;
 
 /**
- * This is same as {@link DocusafeServiceOrig}
+ * This is same as {@link DocusafeServiceOrig} but implemented with dagger and modules
  */
 public interface DocusafeServiceDI {
 
