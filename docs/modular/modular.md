@@ -47,7 +47,7 @@
 ## Top level
 ![Top level read private](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/valb3r/datasafe/feature/e2e-dagger-full/docs/modular/module_linkage/read_private.puml&fmt=png&vvv=1)
 ## Sequence diagram - top level
-<details><summary>Create user module level - expand</summary>
+<details><summary>>Read private file module level - expand</summary>
 
 ![Low detail read private sequence diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/valb3r/datasafe/feature/e2e-dagger-full/docs/modular/sequences/shrinked/shrink_read_private.puml&fmt=png&vvv=1)
 

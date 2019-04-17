@@ -51,7 +51,7 @@ public class DocusafeServiceAdapterImpl implements DocusafeServiceDI {
                 userIDAuth,
                 new FileIn(
                     // TODO: relativize it
-                    new FileMeta(dsDocument.getPath().getObjectHandle().getName()),
+                    new FileMeta(getFileName(dsDocument.getPath())),
                     new ByteArrayInputStream(dsDocument.getContent()))
             )
         );
@@ -94,7 +94,7 @@ public class DocusafeServiceAdapterImpl implements DocusafeServiceDI {
     public List<DocumentFQN> list(DocumentDirectoryFQN documentDirectoryFQN, UserIDAuth userIDAuth, ListRecursiveFlag recursiveFlag) {
         return docusafeService.privateService()
             .list(userIDAuth)
-            .map(it -> new DocumentFQN(new BucketPath("private").append(it)))
+            .map(it -> new DocumentFQN(new BucketPath(it)))
             .collect(Collectors.toList());
     }
 
@@ -113,7 +113,7 @@ public class DocusafeServiceAdapterImpl implements DocusafeServiceDI {
                 receiverUserID, // FIXME - it must have from
                 receiverUserID,
                 new FileIn(
-                    new FileMeta(document.getPath().getObjectHandle().getName()),
+                    new FileMeta(getFileName(document.getPath())),
                     new ByteArrayInputStream(document.getContent()))
             )
         );
@@ -178,5 +178,13 @@ public class DocusafeServiceAdapterImpl implements DocusafeServiceDI {
             .logicalPath(path)
             .credentials(SystemCredentials.builder().id(CREDS_ID).build())
             .build();
+    }
+
+    private String getFileName(BucketPath path) {
+        if (null != path.getObjectHandle().getName()) {
+            return path.getObjectHandle().getName();
+        }
+
+        return path.getObjectHandle().getContainer();
     }
 }
