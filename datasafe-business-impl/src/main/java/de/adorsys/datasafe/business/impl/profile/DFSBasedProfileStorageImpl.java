@@ -127,7 +127,7 @@ public class DFSBasedProfileStorageImpl implements
 
         DFSConnection connection = dfsConnectionService.obtain(keystore);
 
-        connection.createContainer(new BucketDirectory(keystore.getPhysicalPath().getPath()));
+        connection.createContainer(new BucketDirectory(keystore.getPhysicalPath().toString()));
 
         byte[] serialized = KeyStoreServiceImplBaseFunctions.toByteArray(
             store,
@@ -135,7 +135,7 @@ public class DFSBasedProfileStorageImpl implements
             new PasswordCallbackHandler(auth.getReadStorePassword().getValue().toCharArray())
         );
 
-        connection.putBlob(new BucketPath(keystore.getPhysicalPath().getPath()), new SimplePayloadImpl(serialized));
+        connection.putBlob(new BucketPath(keystore.getPhysicalPath().toString()), new SimplePayloadImpl(serialized));
     }
 
     private static BucketPath locatePrivateProfile(UserID ofUser) {

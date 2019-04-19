@@ -150,15 +150,15 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
         docusafeService.userProfile().registerPublic(CreateUserPublicProfile.builder()
             .id(auth.getUserID())
-            .inbox(access(new URI("").resolve("inbox")))
-            .publicKeys(access(new URI("").resolve("keystore")))
+            .inbox(access(new URI("s3:///bucket").resolve("inbox")))
+            .publicKeys(access(new URI("s3:///bucket").resolve("keystore")))
             .build()
         );
 
         docusafeService.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
             .id(auth)
-            .privateStorage(access(new URI("").resolve("private")))
-            .keystore(access(new URI("").resolve("keystore")))
+            .privateStorage(access(new URI("s3:///bucket").resolve("private")))
+            .keystore(access(new URI("s3:///bucket").resolve("keystore")))
             .build()
         );
 
