@@ -1,25 +1,21 @@
 package de.adorsys.datasafe.business.impl.encryption;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.*;
-import java.security.KeyStore;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
-
+import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
 import de.adorsys.datasafe.business.api.encryption.EncryptionService;
-import de.adorsys.datasafe.business.api.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.keystore.types.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.keystore.types.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.keystore.types.KeyStoreType;
-import de.adorsys.datasafe.business.api.keystore.types.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.keystore.types.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.keystore.types.ReadStorePassword;
 import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.KeyStore;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class CMSEncryptionServiceTest {

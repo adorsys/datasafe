@@ -1,12 +1,10 @@
 package de.adorsys.datasafe.business.impl.encryption;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.PrivateKey;
-
-import de.adorsys.datasafe.business.api.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.keystore.types.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.encryption.EncryptionService;
 import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.AsymmetricEncryptionException;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.*;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
@@ -14,8 +12,9 @@ import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import de.adorsys.datasafe.business.api.encryption.EncryptionService;
-import lombok.SneakyThrows;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.PrivateKey;
 
 @Slf4j
 public class CMSEncryptionService implements EncryptionService {

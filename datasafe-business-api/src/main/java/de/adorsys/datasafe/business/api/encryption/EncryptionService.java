@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.encryption;
 
-import de.adorsys.datasafe.business.api.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.keystore.types.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
 
 import java.io.InputStream;
 import java.io.OutputStream;
