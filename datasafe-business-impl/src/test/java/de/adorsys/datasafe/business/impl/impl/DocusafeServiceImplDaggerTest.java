@@ -49,13 +49,13 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
         registerJohnAndJane();
 
-        writeDataToPrivate(jane, "secret.txt", MESSAGE_ONE);
+        writeDataToPrivate(jane, "./secret.txt", MESSAGE_ONE);
 
         URI privateJane = getFirstFileInPrivate(jane);
 
         String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane);
 
-        sendToInbox(jane.getUserID(), john.getUserID(), "hello.txt", privateContentJane);
+        sendToInbox(jane.getUserID(), john.getUserID(), "./hello.txt", privateContentJane);
 
         URI inboxJohn = getFirstFileInInbox(john);
 
@@ -150,15 +150,15 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
         docusafeService.userProfile().registerPublic(CreateUserPublicProfile.builder()
             .id(auth.getUserID())
-            .inbox(access(new URI("s3:///bucket").resolve("inbox")))
-            .publicKeys(access(new URI("s3:///bucket").resolve("keystore")))
+            .inbox(access(new URI("s3://bucket/" + userName + "/").resolve("./inbox/")))
+            .publicKeys(access(new URI("s3://bucket/" + userName + "/").resolve("./keystore")))
             .build()
         );
 
         docusafeService.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
             .id(auth)
-            .privateStorage(access(new URI("s3:///bucket").resolve("private")))
-            .keystore(access(new URI("s3:///bucket").resolve("keystore")))
+            .privateStorage(access(new URI("s3://bucket/" + userName + "/").resolve("./private/")))
+            .keystore(access(new URI("s3://bucket/" + userName + "/").resolve("./keystore")))
             .build()
         );
 

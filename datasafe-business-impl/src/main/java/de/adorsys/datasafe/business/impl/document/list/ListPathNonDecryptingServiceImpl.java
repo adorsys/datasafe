@@ -28,7 +28,7 @@ public class ListPathNonDecryptingServiceImpl implements DocumentListService {
 
         return connection
             .list(
-                new BucketDirectory(request.getLocation().getPhysicalPath().getPath()),
+                new BucketDirectory(request.getLocation().getPhysicalPath().toString()),
                 ListRecursiveFlag.FALSE
             ).stream()
                 .map(this::fromBucketPath);
@@ -36,6 +36,6 @@ public class ListPathNonDecryptingServiceImpl implements DocumentListService {
 
     @SneakyThrows
     private URI fromBucketPath(BucketPath path) {
-        return new URI(path.getObjectHandle().getContainer());
+        return new URI(path.getObjectHandle().getContainer() + "//" + path.getObjectHandle().getName());
     }
 }

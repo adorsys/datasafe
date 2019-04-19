@@ -46,7 +46,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         DFSConnection connection = dfsConnectionService.obtain(access);
         KeyStoreAuth privateAuth = dfsSystem.privateKeyStoreAuth(forUser);
 
-        Payload payload = connection.getBlob(new BucketPath(access.getPhysicalPath().getPath()));
+        Payload payload = connection.getBlob(new BucketPath(access.getPhysicalPath().toString()));
 
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.loadKeyStore(
             payload.getData(),

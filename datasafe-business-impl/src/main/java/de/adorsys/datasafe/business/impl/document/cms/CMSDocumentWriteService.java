@@ -41,7 +41,7 @@ public class CMSDocumentWriteService implements DocumentWriteService {
         );
 
         connection.putBlob(
-                new BucketPath(request.getTo().getPhysicalPath().getPath()),
+                new BucketPath(request.getTo().getPhysicalPath().toString()),
                 new SimplePayloadImpl(data.getEncoded())
         );
     }

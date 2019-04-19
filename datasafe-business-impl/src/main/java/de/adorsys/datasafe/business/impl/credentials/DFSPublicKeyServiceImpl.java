@@ -51,7 +51,7 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
         DFSConnection connection = dfsConnectionService.obtain(access);
         KeyStoreAuth publicAuth = dfsSystem.publicKeyStoreAuth();
 
-        Payload payload = connection.getBlob(new BucketPath(access.getPhysicalPath().getPath()));
+        Payload payload = connection.getBlob(new BucketPath(access.getPhysicalPath().toString()));
 
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.loadKeyStore(
             payload.getData(),

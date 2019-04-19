@@ -53,11 +53,6 @@ public class WriteToPrivateImpl implements WriteToPrivate {
                 .privateProfile(request.getOwner())
                 .getPrivateStorage()
                 // TODO: Encrypt file name and path
-                .resolve(
-                        pathEncryption.encrypt(
-                                request.getOwner(),
-                                request.getRequest().getPath()
-                        )
-                );
+                .resolve(request.getRequest().getPath());
     }
 }
