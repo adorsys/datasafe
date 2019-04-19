@@ -1,18 +1,21 @@
 package de.adorsys.datasafe.business.impl.document.cms;
 
-import com.google.common.io.ByteStreams;
+import com.google.common.collect.ImmutableList;
+import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
+import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 import de.adorsys.dfs.connection.api.service.impl.SimplePayloadImpl;
-import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
-import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
-import de.adorsys.datasafe.business.api.types.DocumentContent;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.bouncycastle.cms.CMSEnvelopedData;
 
 import javax.inject.Inject;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collection;
 
 /**
  * Write CMS-encrypted document to DFS.
@@ -30,19 +33,72 @@ public class CMSDocumentWriteService implements DocumentWriteService {
 
     @Override
     @SneakyThrows
-    public void write(WriteRequest request) {
+    public OutputStream write(WriteRequest request) {
         DFSConnection connection = dfs.obtain(request.getTo());
 
-        // FIXME https://github.com/adorsys/docusafe2/issues/5
-        CMSEnvelopedData data = cms.encrypt(
-                new DocumentContent(ByteStreams.toByteArray(request.getData().getData())),
+        // FIXME Streaming DFS https://github.com/adorsys/docusafe2/issues/5
+        OutputStream dfsSink = new PutBlobOnClose(
+                new BucketPath(request.getTo().getPhysicalPath().toString()),
+                connection
+        );
+
+        OutputStream encryptionSink = cms.buildEncryptionOutputStream(
+                dfsSink,
                 request.getKeyWithId().getPublicKey(),
                 request.getKeyWithId().getKeyID()
         );
 
-        connection.putBlob(
-                new BucketPath(request.getTo().getPhysicalPath().toString()),
-                new SimplePayloadImpl(data.getEncoded())
-        );
+        return new CloseCoordinatingStream(encryptionSink, ImmutableList.of(encryptionSink, dfsSink));
+    }
+
+    /**
+     * This class fixes issue that bouncy castle does not close underlying stream - i.e. DFS stream
+     * when wrapping it.
+     */
+    @RequiredArgsConstructor
+    private static final class CloseCoordinatingStream extends OutputStream {
+
+        private final OutputStream streamToWrite;
+        private final Collection<OutputStream> streamsToClose;
+
+        @Override
+        public void write(int b) throws IOException {
+            streamToWrite.write(b);
+        }
+
+        @Override
+        public void write(byte[] bytes, int off, int len) throws IOException {
+            streamToWrite.write(bytes, off, len);
+        }
+
+        @Override
+        @SneakyThrows
+        public void close() {
+            super.close();
+            streamsToClose.forEach(CloseCoordinatingStream::doClose);
+        }
+
+
+        @SneakyThrows
+        private static void doClose(OutputStream stream) {
+            stream.close();
+        }
+    }
+
+    @RequiredArgsConstructor
+    // FIXME Streaming DFS https://github.com/adorsys/docusafe2/issues/5
+    private static final class PutBlobOnClose extends ByteArrayOutputStream {
+
+        private final BucketPath path;
+        private final DFSConnection connection;
+
+        @Override
+        public void close() throws IOException {
+            super.close();
+            connection.putBlob(
+                    new BucketPath(path),
+                    new SimplePayloadImpl(toByteArray())
+            );
+        }
     }
 }

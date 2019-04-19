@@ -12,6 +12,7 @@ import de.adorsys.datasafe.business.api.types.privatespace.PrivateReadRequest;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 
 import javax.inject.Inject;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.function.Function;
 
@@ -32,7 +33,7 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
     }
 
     @Override
-    public void read(PrivateReadRequest request) {
+    public InputStream read(PrivateReadRequest request) {
         DFSAccess userInbox = accessService.privateAccessFor(
                 request.getOwner(),
                 resolveFileLocation(request)
@@ -41,10 +42,9 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
         ReadRequest readRequest = ReadRequest.builder()
                 .from(userInbox)
                 .keyStore(privateKeyService.keystore(request.getOwner()))
-                .response(request.getResponse())
                 .build();
 
-        reader.read(readRequest);
+        return reader.read(readRequest);
     }
 
     private Function<ProfileRetrievalService, URI> resolveFileLocation(PrivateReadRequest request) {

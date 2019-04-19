@@ -2,9 +2,10 @@ package de.adorsys.datasafe.business.impl.pathencryption;
 
 import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.common.utils.HexUtil;
+import de.adorsys.datasafe.business.api.encryption.bucketpathencryption.BucketPathEncryptionService;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.complextypes.BucketPathUtil;
-import de.adorsys.datasafe.business.api.encryption.bucketpathencryption.BucketPathEncryptionService;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -18,7 +19,7 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-
+@Slf4j
 public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionService {
 
     @Inject

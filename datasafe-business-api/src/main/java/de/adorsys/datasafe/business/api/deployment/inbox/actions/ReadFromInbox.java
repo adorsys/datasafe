@@ -2,7 +2,9 @@ package de.adorsys.datasafe.business.api.deployment.inbox.actions;
 
 import de.adorsys.datasafe.business.api.types.inbox.InboxReadRequest;
 
+import java.io.InputStream;
+
 public interface ReadFromInbox {
 
-    void read(InboxReadRequest request);
+    InputStream read(InboxReadRequest request);
 }

@@ -10,6 +10,7 @@ import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.inbox.InboxWriteRequest;
 
 import javax.inject.Inject;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.function.Function;
 
@@ -29,7 +30,7 @@ public class WriteToInboxImpl implements WriteToInbox {
     }
 
     @Override
-    public void write(InboxWriteRequest request) {
+    public OutputStream write(InboxWriteRequest request) {
         DFSAccess userInbox = accessService.publicAccessFor(
                 request.getTo(),
                 resolveFileLocation(request)
@@ -40,10 +41,9 @@ public class WriteToInboxImpl implements WriteToInbox {
         WriteRequest writeRequest = WriteRequest.builder()
                 .to(userInbox)
                 .keyWithId(publicKeyService.publicKey(request.getTo()))
-                .data(request.getRequest())
                 .build();
 
-        writer.write(writeRequest);
+        return writer.write(writeRequest);
     }
 
     private Function<ProfileRetrievalService, URI> resolveFileLocation(InboxWriteRequest request) {

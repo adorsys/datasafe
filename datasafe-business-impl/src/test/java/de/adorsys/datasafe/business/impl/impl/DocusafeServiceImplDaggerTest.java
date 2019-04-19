@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.impl.impl;
 
+import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.deployment.credentials.dto.SystemCredentials;
 import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
@@ -23,6 +24,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -65,11 +68,14 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     @SneakyThrows
     private void writeDataToPrivate(UserIDAuth auth, String path, String data) {
-        docusafeService.privateService().write(
+        OutputStream stream = docusafeService.privateService().write(
             new PrivateWriteRequest(
                 auth,
-                new FileIn(new URI(path), new ByteArrayInputStream(data.getBytes())))
+                new FileIn(new URI(path)))
         );
+
+        stream.write(data.getBytes());
+        stream.close();
     }
 
     @SneakyThrows
@@ -82,11 +88,10 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     @SneakyThrows
     private String readPrivateUsingPrivateKey(UserIDAuth user, URI location) {
         FileOut out = new FileOut(
-            new URI(""),
-            new ByteArrayOutputStream(1000)
-        );
+            new URI(""));
 
-        docusafeService.privateService()
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        InputStream dataStream = docusafeService.privateService()
             .read(PrivateReadRequest.builder()
                 .owner(user)
                 .path(location)
@@ -94,7 +99,8 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
                 .build()
             );
 
-        String data = out.getData().toString();
+        ByteStreams.copy(dataStream, outputStream);
+        String data = new String(outputStream.toByteArray());
         log.info("{} has {} in PRIVATE", user.getUserID().getValue(), data);
 
         return data;
@@ -103,11 +109,11 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     @SneakyThrows
     private String readInboxUsingPrivateKey(UserIDAuth user, URI location) {
         FileOut out = new FileOut(
-            new URI(""),
-            new ByteArrayOutputStream(1000)
+            new URI("")
         );
 
-        docusafeService.inboxService()
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        InputStream dataStream = docusafeService.inboxService()
             .read(InboxReadRequest.builder()
                 .owner(user)
                 .path(location)
@@ -115,7 +121,8 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
                 .build()
             );
 
-        String data = out.getData().toString();
+        ByteStreams.copy(dataStream, outputStream);
+        String data = new String(outputStream.toByteArray());
         log.info("{} has {} in INBOX", user.getUserID().getValue(), data);
 
         return data;
@@ -134,12 +141,16 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     @SneakyThrows
     private void sendToInbox(UserID from, UserID to, String filename, String data) {
-        docusafeService.inboxService().write(
+        OutputStream stream = docusafeService.inboxService().write(
             new InboxWriteRequest(
                 from,
                 to,
-                new FileIn(new URI(filename), new ByteArrayInputStream(data.getBytes())))
+                new FileIn(new URI(filename))
+            )
         );
+
+        stream.write(data.getBytes());
+        stream.close();
     }
 
     @SneakyThrows

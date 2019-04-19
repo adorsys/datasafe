@@ -10,6 +10,7 @@ import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.inbox.InboxReadRequest;
 
 import javax.inject.Inject;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.function.Function;
 
@@ -29,7 +30,7 @@ public class ReadFromInboxImpl implements ReadFromInbox {
     }
 
     @Override
-    public void read(InboxReadRequest request) {
+    public InputStream read(InboxReadRequest request) {
         DFSAccess userInbox = accessService.privateAccessFor(
                 request.getOwner(),
                 resolveFileLocation(request)
@@ -38,10 +39,9 @@ public class ReadFromInboxImpl implements ReadFromInbox {
         ReadRequest readRequest = ReadRequest.builder()
                 .from(userInbox)
                 .keyStore(privateKeyService.keystore(request.getOwner()))
-                .response(request.getResponse())
                 .build();
 
-        reader.read(readRequest);
+        return reader.read(readRequest);
     }
 
     private Function<ProfileRetrievalService, URI> resolveFileLocation(InboxReadRequest request) {

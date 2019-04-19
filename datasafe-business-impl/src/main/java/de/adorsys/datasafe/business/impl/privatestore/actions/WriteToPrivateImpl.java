@@ -11,6 +11,7 @@ import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.privatespace.PrivateWriteRequest;
 
 import javax.inject.Inject;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.function.Function;
 
@@ -31,7 +32,7 @@ public class WriteToPrivateImpl implements WriteToPrivate {
     }
 
     @Override
-    public void write(PrivateWriteRequest request) {
+    public OutputStream write(PrivateWriteRequest request) {
         DFSAccess userPrivate = accessService.privateAccessFor(
                 request.getOwner(),
                 resolveFileLocation(request)
@@ -42,17 +43,17 @@ public class WriteToPrivateImpl implements WriteToPrivate {
         WriteRequest writeRequest = WriteRequest.builder()
                 .to(userPrivate)
                 .keyWithId(publicKeyService.publicKey(request.getOwner().getUserID()))
-                .data(request.getRequest())
                 .build();
 
-        writer.write(writeRequest);
+        return writer.write(writeRequest);
     }
 
     private Function<ProfileRetrievalService, URI> resolveFileLocation(PrivateWriteRequest request) {
         return profiles -> profiles
                 .privateProfile(request.getOwner())
                 .getPrivateStorage()
-                // TODO: Encrypt file name and path
-                .resolve(request.getRequest().getPath());
+                .resolve(
+                        pathEncryption.encrypt(request.getOwner(), request.getRequest().getPath())
+                );
     }
 }

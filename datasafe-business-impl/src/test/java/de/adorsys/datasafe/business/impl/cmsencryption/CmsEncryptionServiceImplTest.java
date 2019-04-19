@@ -30,34 +30,11 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CmsEncryptionServiceTest {
+public class CmsEncryptionServiceImplTest {
 
 	private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl();
 	private KeyStoreService keyStoreService = new KeyStoreServiceImpl();
     private static final String MESSAGE_CONTENT = "message content";
-
-	@Test
-	public void cmsEnvelopeEncryptAndDecryptTest() {
-
-		ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
-		ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
-		KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-
-		KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 1);
-		KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
-		KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-
-		PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
-		PublicKey publicKey = publicKeyIDWithPublicKey.getPublicKey();
-		KeyID keyID = publicKeyIDWithPublicKey.getKeyID();
-
-		DocumentContent origMessage = new DocumentContent("message content".getBytes());
-		CMSEnvelopedData encrypted = cmsEncryptionService.encrypt(origMessage, publicKey, keyID);
-		DocumentContent decrypted = cmsEncryptionService.decrypt(encrypted, keyStoreAccess);
-
-		assertThat(origMessage.getValue()).isEqualTo(decrypted.getValue());
-		log.debug("en and decrypted successfully");
-	}
 
 	@Test
 	@SneakyThrows
