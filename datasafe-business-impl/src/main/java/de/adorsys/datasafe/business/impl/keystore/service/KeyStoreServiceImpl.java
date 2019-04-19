@@ -1,19 +1,38 @@
-package de.adorsys.datasafe.business.impl.keystore.service;
+	package de.adorsys.datasafe.business.impl.keystore.service;
+
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.UUID;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.RandomUtils;
 
 import de.adorsys.common.exceptions.BaseException;
 import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.common.utils.HexUtil;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
-import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreGenerator;
 import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreCreationConfig;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreType;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
-
-import javax.crypto.SecretKey;
-import javax.inject.Inject;
-import java.security.*;
-import java.security.cert.X509Certificate;
-import java.util.*;
 
 @Slf4j
 public class KeyStoreServiceImpl implements KeyStoreService {
@@ -88,12 +107,12 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     }
 
     @Override
-    public SecretKey getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID) {
+    public SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID) {
         KeyStore keyStore = keyStoreAccess.getKeyStore();
-        SecretKey key = null;
+        SecretKeySpec key = null;
         try {
             char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
-            key = (SecretKey) keyStore.getKey(keyID.getValue(), password);
+            key = (SecretKeySpec) keyStore.getKey(keyID.getValue(), password);
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             throw BaseExceptionHandler.handle(e);
         }
@@ -107,9 +126,15 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         String randomAlias = null;
         try {
             Enumeration<String> aliases = keyStore.aliases();
+            // Do not return the Path encryption key
+            
             List<String> keyIDs = new ArrayList<>();
             for(String keyAlias : Collections.list(aliases)) {
                 if(keyStore.entryInstanceOf(keyAlias, KeyStore.SecretKeyEntry.class)) {
+                	// DO not use the path encryption key for content encryption.
+                	if(KeyStoreCreationConfig.PATH_KEY_ID.getValue().equals(keyAlias)){
+                		continue;
+                	}
                     keyIDs.add(keyAlias);
                 }
             }

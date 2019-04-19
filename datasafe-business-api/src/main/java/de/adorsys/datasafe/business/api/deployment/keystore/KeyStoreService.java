@@ -3,6 +3,7 @@ package de.adorsys.datasafe.business.api.deployment.keystore;
 import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.util.List;
@@ -20,7 +21,7 @@ public interface KeyStoreService {
 
     PrivateKey getPrivateKey(KeyStoreAccess keyStoreAccess, KeyID keyID);
 
-    SecretKey getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID);
+    SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID);
 
     SecretKeyIDWithKey getRandomSecretKeyID(KeyStoreAccess keyStoreAccess);
 

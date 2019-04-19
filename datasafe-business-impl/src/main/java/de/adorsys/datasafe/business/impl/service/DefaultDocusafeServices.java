@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.service;
 
 import dagger.Component;
+import de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionModule;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.credentials.DefaultCredentialsModule;
 import de.adorsys.datasafe.business.impl.dfs.DefaultDFSModule;
@@ -25,6 +26,7 @@ import javax.inject.Singleton;
         DefaultDocumentModule.class,
         DefaultDFSModule.class,
         DefaultCMSEncryptionModule.class,
+        DefaultPathEncryptionModule.class,
         DefaultInboxActionsModule.class,
         DefaultPrivateActionsModule.class,
         DefaultProfileModule.class

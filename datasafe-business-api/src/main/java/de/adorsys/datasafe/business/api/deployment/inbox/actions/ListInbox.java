@@ -1,11 +1,11 @@
 package de.adorsys.datasafe.business.api.deployment.inbox.actions;
 
-import de.adorsys.datasafe.business.api.types.inbox.InboxBucketPath;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 
+import java.net.URI;
 import java.util.stream.Stream;
 
 public interface ListInbox {
 
-    Stream<InboxBucketPath> list(UserIDAuth forUser);
+    Stream<URI> list(UserIDAuth forUser);
 }

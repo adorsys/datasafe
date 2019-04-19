@@ -6,17 +6,10 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
-import org.bouncycastle.cms.CMSEnvelopedData;
-
 import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
 import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.types.DocumentContent;
 
 public interface CMSEncryptionService {
-
-    CMSEnvelopedData encrypt(DocumentContent data, PublicKey publicKey, KeyID publicKeyID);
-
-    DocumentContent decrypt(CMSEnvelopedData cmsEnvelopedData, KeyStoreAccess keyStoreAccess);
 
     OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey, KeyID publicKeyID);
 

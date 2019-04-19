@@ -13,6 +13,7 @@ import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.profile.DFSSystem;
+import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.domain.Payload;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 
@@ -50,7 +51,7 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
         DFSConnection connection = dfsConnectionService.obtain(access);
         KeyStoreAuth publicAuth = dfsSystem.publicKeyStoreAuth();
 
-        Payload payload = connection.getBlob(access.getPhysicalPath());
+        Payload payload = connection.getBlob(new BucketPath(access.getPhysicalPath().toString()));
 
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.loadKeyStore(
             payload.getData(),

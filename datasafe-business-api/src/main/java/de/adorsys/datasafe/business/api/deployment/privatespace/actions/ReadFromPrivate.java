@@ -2,7 +2,9 @@ package de.adorsys.datasafe.business.api.deployment.privatespace.actions;
 
 import de.adorsys.datasafe.business.api.types.privatespace.PrivateReadRequest;
 
+import java.io.InputStream;
+
 public interface ReadFromPrivate {
 
-    void read(PrivateReadRequest request);
+    InputStream read(PrivateReadRequest request);
 }

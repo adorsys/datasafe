@@ -6,9 +6,10 @@ import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPasswor
 import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadStorePassword;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.dfs.connection.api.complextypes.BucketPath;
+import lombok.SneakyThrows;
 
 import javax.inject.Inject;
+import java.net.URI;
 
 public class DFSSystem {
 
@@ -21,11 +22,12 @@ public class DFSSystem {
     public DFSSystem() {
     }
 
+    @SneakyThrows
     public DFSAccess systemDfs() {
 
         return DFSAccess.builder()
-            .logicalPath(new BucketPath(PATH))
-            .physicalPath(new BucketPath(PATH))
+            .logicalPath(new URI(PATH))
+            .physicalPath(new URI(PATH))
             .credentials(SystemCredentials.builder().id(CREDS_ID).build())
             .build();
     }

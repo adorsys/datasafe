@@ -18,6 +18,7 @@ import de.adorsys.datasafe.business.api.types.profile.UserPublicProfile;
 import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.serde.GsonSerde;
+import de.adorsys.dfs.connection.api.complextypes.BucketDirectory;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.domain.Payload;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
@@ -126,7 +127,7 @@ public class DFSBasedProfileStorageImpl implements
 
         DFSConnection connection = dfsConnectionService.obtain(keystore);
 
-        connection.createContainer(keystore.getPhysicalPath().getBucketDirectory());
+        connection.createContainer(new BucketDirectory(keystore.getPhysicalPath().toString()));
 
         byte[] serialized = KeyStoreServiceImplBaseFunctions.toByteArray(
             store,
@@ -134,7 +135,7 @@ public class DFSBasedProfileStorageImpl implements
             new PasswordCallbackHandler(auth.getReadStorePassword().getValue().toCharArray())
         );
 
-        connection.putBlob(keystore.getPhysicalPath(), new SimplePayloadImpl(serialized));
+        connection.putBlob(new BucketPath(keystore.getPhysicalPath().toString()), new SimplePayloadImpl(serialized));
     }
 
     private static BucketPath locatePrivateProfile(UserID ofUser) {

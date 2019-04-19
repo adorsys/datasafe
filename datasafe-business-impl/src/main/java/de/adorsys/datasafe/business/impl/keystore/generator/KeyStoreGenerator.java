@@ -31,7 +31,7 @@ public class KeyStoreGenerator {
         this.readKeyPassword = readKeyPassword;
         LOGGER.debug("Keystore ID ignored " + serverKeyPairAliasPrefix);
     }
-
+    
     public KeyStore generate() {
         if (config.getEncKeyNumber() == 0 &&
                 config.getSecretKeyNumber() == 0 &&
@@ -73,13 +73,20 @@ public class KeyStoreGenerator {
                 SecretKeyGenerator secretKeyGenerator = config.getSecretKeyGenerator(keyStoreID);
                 int numberOfSecretKeys = config.getSecretKeyNumber();
                 for (int i = 0; i < numberOfSecretKeys; i++) {
-                    SecretKeyEntry secretKeyData = secretKeyGenerator.generate(
+                    keystoreBuilder = buildSecretKey(
                             serverKeyPairAliasPrefix + UUID.randomUUID().toString(),
-                            readKeyHandler
+                            secretKeyGenerator,
+                            readKeyHandler,
+                            keystoreBuilder
                     );
-
-                    keystoreBuilder = keystoreBuilder.withKeyEntry(secretKeyData);
                 }
+
+                keystoreBuilder = buildSecretKey(
+                        KeyStoreCreationConfig.PATH_KEY_ID.getValue(),
+                        secretKeyGenerator,
+                        readKeyHandler,
+                        keystoreBuilder
+                );
             }
             keyStore = keystoreBuilder.build();
             return keyStore;
@@ -90,5 +97,18 @@ public class KeyStoreGenerator {
             long duration = stopTime.getTime() - startTime.getTime();
             LOGGER.debug("KeyStoreGeneration (milliseconds) DURATION WAS " + duration);
         }
+    }
+
+    private KeystoreBuilder buildSecretKey(
+            String id,
+            SecretKeyGenerator secretKeyGenerator,
+            CallbackHandler readKeyHandler,
+            KeystoreBuilder keystoreBuilder) {
+        SecretKeyEntry secretKeyData = secretKeyGenerator.generate(
+                id,
+                readKeyHandler
+        );
+
+        return keystoreBuilder.withKeyEntry(secretKeyData);
     }
 }

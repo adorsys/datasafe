@@ -2,9 +2,11 @@ package de.adorsys.datasafe.business.api.deployment.document;
 
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 
+import java.io.OutputStream;
+
 public interface DocumentWriteService {
 
-    void write(WriteRequest request);
+    OutputStream write(WriteRequest request);
 }
 
 
