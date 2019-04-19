@@ -31,7 +31,7 @@ public class KeyStoreGenerator {
         this.readKeyPassword = readKeyPassword;
         LOGGER.debug("Keystore ID ignored " + serverKeyPairAliasPrefix);
     }
-
+    
     public KeyStore generate() {
         if (config.getEncKeyNumber() == 0 &&
                 config.getSecretKeyNumber() == 0 &&
