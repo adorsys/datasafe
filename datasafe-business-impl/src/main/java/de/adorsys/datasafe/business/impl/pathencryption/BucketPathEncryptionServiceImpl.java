@@ -1,76 +1,63 @@
 package de.adorsys.datasafe.business.impl.pathencryption;
 
 import de.adorsys.common.exceptions.BaseExceptionHandler;
-import de.adorsys.common.utils.HexUtil;
 import de.adorsys.datasafe.business.api.encryption.bucketpathencryption.BucketPathEncryptionService;
-import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import de.adorsys.dfs.connection.api.complextypes.BucketPathUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
 public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionService {
 
+    private static final String PATH_SEPARATOR = "/";
+
     @Inject
     public BucketPathEncryptionServiceImpl() {
     }
 
     @Override
+    @SneakyThrows
     public URI encrypt(SecretKeySpec secretKey, URI bucketPath) {
-        return bucketPath;
+        validateUriIsRelative(bucketPath);
+
+        Cipher cipher = createCipher(secretKey, Cipher.ENCRYPT_MODE);
+
+        String path = bucketPath.getPath().startsWith("./") ? bucketPath.getPath().substring(2) : bucketPath.getPath();
+
+        StringBuilder result = new StringBuilder();
+        for (String part : path.split(PATH_SEPARATOR)) {
+            result.append(
+                    Base64.getUrlEncoder().encodeToString(cipher.doFinal(part.getBytes(UTF_8)))
+            ).append(PATH_SEPARATOR);
+        }
+
+        return new URI(result.toString());
     }
 
     @Override
+    @SneakyThrows
     public URI decrypt(SecretKeySpec secretKey, URI bucketPath) {
-        return bucketPath;
-    }
+        validateUriIsRelative(bucketPath);
 
-    public BucketPath encrypt(SecretKeySpec secretKey, BucketPath bucketPath) {
-        Cipher cipher = createCipher(secretKey, Cipher.ENCRYPT_MODE);
-
-        List<String> subdirs = BucketPathUtil.split(BucketPathUtil.getAsString(bucketPath));
-        StringBuilder encryptedPathString = new StringBuilder();
-        for(String subdir : subdirs) {
-            byte[] encrypt = new byte[0];
-            try {
-                encrypt = cipher.doFinal(subdir.getBytes(UTF_8));
-            } catch (IllegalBlockSizeException | BadPaddingException e) {
-                e.printStackTrace();
-            }
-
-            String encryptedString = HexUtil.convertBytesToHexString(encrypt);
-            encryptedPathString.append(BucketPath.BUCKET_SEPARATOR).append(encryptedString);
-        }
-        return new BucketPath(encryptedPathString.toString().toLowerCase());
-    }
-
-    public BucketPath decrypt(SecretKeySpec secretKey, BucketPath bucketPath) {
         Cipher cipher = createCipher(secretKey, Cipher.DECRYPT_MODE);
 
-        List<String> subdirs = BucketPathUtil.split(BucketPathUtil.getAsString(bucketPath));
-        StringBuilder decryptedPathString = new StringBuilder();
-        for(String subdir : subdirs) {
-            byte[] decrypt = HexUtil.convertHexStringToBytes(subdir.toUpperCase());
-            byte[] decryptedBytes = new byte[0];
-            try {
-                decryptedBytes = cipher.doFinal(decrypt);
-            } catch (IllegalBlockSizeException | BadPaddingException e) {
-                e.printStackTrace();
-            }
-            decryptedPathString.append(BucketPath.BUCKET_SEPARATOR).append(new String(decryptedBytes, UTF_8));
+        StringBuilder result = new StringBuilder();
+        for (String part : bucketPath.getPath().split(PATH_SEPARATOR)) {
+            result.append(
+                    new String(cipher.doFinal(Base64.getUrlDecoder().decode(part)), UTF_8)
+            ).append(PATH_SEPARATOR);
         }
-        return new BucketPath(decryptedPathString.toString());
+
+        return new URI(result.toString());
     }
 
     private static Cipher createCipher(SecretKeySpec secretKey, int cipherMode) {
@@ -89,6 +76,11 @@ public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionServ
         } catch (Exception e) {
             throw BaseExceptionHandler.handle(e);
         }
+    }
 
+    private void validateUriIsRelative(URI uri) {
+        if (uri.isAbsolute()) {
+            throw new IllegalArgumentException("URI should be relative");
+        }
     }
 }

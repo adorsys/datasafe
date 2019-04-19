@@ -1,28 +1,18 @@
 package de.adorsys.datasafe.business.api.deployment.keystore.types;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Created by peter on 26.02.18 at 17:04.
  */
+@Getter
+@RequiredArgsConstructor
 public class KeyStoreCreationConfig {
-    private final Integer encKeyNumber;
-    private final Integer signKeyNumber;
-    private final Integer secretKeyNumber;
 
-    public KeyStoreCreationConfig(Integer encKeyNumber, Integer signKeyNumber, Integer secretKeyNumber) {
-        this.encKeyNumber = encKeyNumber;
-        this.signKeyNumber = signKeyNumber;
-        this.secretKeyNumber = secretKeyNumber;
-    }
+    public static final KeyID PATH_KEY_ID = new KeyID("PATH_SECRET");
 
-    public Integer getEncKeyNumber() {
-        return encKeyNumber;
-    }
-
-    public Integer getSignKeyNumber() {
-        return signKeyNumber;
-    }
-
-    public Integer getSecretKeyNumber() {
-        return secretKeyNumber;
-    }
+    private final int encKeyNumber;
+    private final int signKeyNumber;
+    private final int secretKeyNumber;
 }

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.security.*;
 import java.security.cert.X509Certificate;
@@ -88,12 +89,12 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     }
 
     @Override
-    public SecretKey getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID) {
+    public SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID) {
         KeyStore keyStore = keyStoreAccess.getKeyStore();
-        SecretKey key = null;
+        SecretKeySpec key = null;
         try {
             char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
-            key = (SecretKey) keyStore.getKey(keyID.getValue(), password);
+            key = (SecretKeySpec) keyStore.getKey(keyID.getValue(), password);
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             throw BaseExceptionHandler.handle(e);
         }

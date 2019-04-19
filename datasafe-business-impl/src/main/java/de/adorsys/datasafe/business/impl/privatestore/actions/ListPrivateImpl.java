@@ -2,7 +2,6 @@ package de.adorsys.datasafe.business.impl.privatestore.actions;
 
 import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
 import de.adorsys.datasafe.business.api.deployment.document.DocumentListService;
-import de.adorsys.datasafe.business.api.deployment.pathencryption.PathEncryption;
 import de.adorsys.datasafe.business.api.deployment.privatespace.actions.ListPrivate;
 import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
@@ -19,13 +18,11 @@ public class ListPrivateImpl implements ListPrivate {
 
     private final BucketAccessService accessService;
     private final DocumentListService listService;
-    private final PathEncryption pathEncryption;
 
     @Inject
-    public ListPrivateImpl(BucketAccessService accessService, DocumentListService listService, PathEncryption pathEncryption) {
+    public ListPrivateImpl(BucketAccessService accessService, DocumentListService listService) {
         this.accessService = accessService;
         this.listService = listService;
-        this.pathEncryption = pathEncryption;
     }
 
     @Override

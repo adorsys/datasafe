@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Write CMS-encrypted document to DFS.
@@ -59,7 +60,7 @@ public class CMSDocumentWriteService implements DocumentWriteService {
     private static final class CloseCoordinatingStream extends OutputStream {
 
         private final OutputStream streamToWrite;
-        private final Collection<OutputStream> streamsToClose;
+        private final List<OutputStream> streamsToClose;
 
         @Override
         public void write(int b) throws IOException {

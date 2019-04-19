@@ -10,6 +10,5 @@ import java.security.PublicKey;
 public interface CMSEncryptionService {
 
     OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey, KeyID publicKeyID);
-
     InputStream buildDecryptionInputStream(InputStream inputStream, KeyStoreAccess keyStoreAccess);
 }

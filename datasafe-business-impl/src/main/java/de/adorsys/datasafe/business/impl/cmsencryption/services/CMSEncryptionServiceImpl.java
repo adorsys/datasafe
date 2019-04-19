@@ -31,7 +31,10 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     
     @Override
     @SneakyThrows
-    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey, KeyID publicKeyID) {
+    public OutputStream buildEncryptionOutputStream(
+            OutputStream dataContentStream,
+            PublicKey publicKey,
+            KeyID publicKeyID) {
         CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
 
         gen.addRecipientInfoGenerator(new JceKeyTransRecipientInfoGenerator(
@@ -49,13 +52,18 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     public InputStream buildDecryptionInputStream(InputStream inputStream, KeyStoreAccess keyStoreAccess) {
         RecipientInformationStore recipientInfoStore = new CMSEnvelopedDataParser(inputStream).getRecipientInfos();
 
-        if(recipientInfoStore.size() == 0) {
+        if (recipientInfoStore.size() == 0) {
             throw new AsymmetricEncryptionException("CMS Envelope doesn't contain recipients");
         }
-        if(recipientInfoStore.size() > 1) {
+
+        if (recipientInfoStore.size() > 1) {
             throw new AsymmetricEncryptionException("Programming error. Handling of more that one recipient not done yet");
         }
-        RecipientInformation recipientInfo = recipientInfoStore.getRecipients().stream().findFirst().get();
+
+        RecipientInformation recipientInfo = recipientInfoStore.getRecipients()
+                .stream().findFirst()
+                .orElseThrow(() -> new AsymmetricEncryptionException("Unknown error - expected 1 recipient"));
+
         KeyTransRecipientId recipientId = (KeyTransRecipientId) recipientInfo.getRID();
         byte[] subjectKeyIdentifier = recipientId.getSubjectKeyIdentifier();
         String keyId = new String(subjectKeyIdentifier);
