@@ -1,19 +1,5 @@
 package de.adorsys.datasafe.business.impl.keystore.service;
 
-import de.adorsys.common.exceptions.BaseException;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
-import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreCreationConfigImpl;
-import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
-import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
-import de.adorsys.datasafe.business.impl.keystore.generator.ProviderUtils;
-import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
-
-import javax.crypto.SecretKey;
-import javax.security.auth.callback.CallbackHandler;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Provider;
@@ -21,6 +7,31 @@ import java.security.Security;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import javax.crypto.SecretKey;
+import javax.security.auth.callback.CallbackHandler;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import de.adorsys.common.exceptions.BaseException;
+import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyPairEntry;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyPairGenerator;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreCreationConfig;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreType;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadStorePassword;
+import de.adorsys.datasafe.business.api.deployment.keystore.types.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreCreationConfigImpl;
+import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
+import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
+import de.adorsys.datasafe.business.impl.keystore.generator.ProviderUtils;
 
 public class KeyStoreServiceTest {
 
@@ -42,7 +53,8 @@ public class KeyStoreServiceTest {
         Assertions.assertNotNull(keyStore);
 
         List<String> list = Collections.list(keyStore.aliases());
-        Assertions.assertEquals(2, list.size());
+        // One additional secret key being generated for path encryption.
+        Assertions.assertEquals(3, list.size());
 
         Assertions.assertEquals("UBER", keyStore.getType());
         Assertions.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
@@ -53,7 +65,8 @@ public class KeyStoreServiceTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
-        Assertions.assertEquals(15, list.size());
+        // One additional secret key being generated for path encryption.
+        Assertions.assertEquals(16, list.size());
     }
 
     @Test
@@ -94,14 +107,15 @@ public class KeyStoreServiceTest {
     }
 
     @Test
-    @Disabled //FIXME !!!
     public void getPrivateKeyException() throws Exception {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<String> list = Collections.list(keyStore.aliases());
-        for(String id : list) {
-            System.out.println(keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(id)));
-        }
+        Assertions.assertThrows(BaseException.class, () -> {
+        	for(String id : list) {
+        		keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(id));
+        	}
+        });
     }
 
     @Test

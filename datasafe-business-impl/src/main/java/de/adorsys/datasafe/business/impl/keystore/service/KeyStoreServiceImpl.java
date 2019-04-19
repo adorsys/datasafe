@@ -108,9 +108,15 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         String randomAlias = null;
         try {
             Enumeration<String> aliases = keyStore.aliases();
+            // Do not return the Path encryption key
+            
             List<String> keyIDs = new ArrayList<>();
             for(String keyAlias : Collections.list(aliases)) {
                 if(keyStore.entryInstanceOf(keyAlias, KeyStore.SecretKeyEntry.class)) {
+                	// DO not use the path encryption key for content encryption.
+                	if(KeyStoreCreationConfig.PATH_KEY_ID.getValue().equals(keyAlias)){
+                		continue;
+                	}
                     keyIDs.add(keyAlias);
                 }
             }
