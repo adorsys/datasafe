@@ -1,0 +1,16 @@
+version: '2.0'
+
+services:
+#---------------------MINIO---------------------------------------------------------------------------------------------
+  minio:
+    image: minio/minio
+    ports:
+      - 9000:9000
+    environment:
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=password
+    command: server /data
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
