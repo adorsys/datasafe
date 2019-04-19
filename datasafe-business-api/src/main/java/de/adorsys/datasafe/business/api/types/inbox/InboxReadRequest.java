@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.net.URI;
+
 @Value
 @Builder
 public class InboxReadRequest {
@@ -14,7 +16,7 @@ public class InboxReadRequest {
     private final UserIDAuth owner;
 
     @NonNull
-    private final InboxBucketPath path;
+    private final URI path;
 
     @NonNull
     private final FileOut response;

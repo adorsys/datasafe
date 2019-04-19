@@ -2,9 +2,9 @@ package de.adorsys.datasafe.business.impl.document.list;
 
 import de.adorsys.datasafe.business.api.deployment.document.DocumentListService;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.file.FileOnBucket;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.stream.Stream;
 
 /**
@@ -24,7 +24,7 @@ public class DocumentListServiceImpl implements DocumentListService {
     }
 
     @Override
-    public Stream<FileOnBucket> list(ListRequest request) {
+    public Stream<URI> list(ListRequest request) {
         if (request.isDecryptPath()) {
             return decryptingService.list(request);
         }

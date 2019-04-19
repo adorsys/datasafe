@@ -1,16 +1,16 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
-import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
 import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
 import de.adorsys.datasafe.business.api.deployment.inbox.actions.WriteToInbox;
-import de.adorsys.datasafe.business.api.types.inbox.InboxWriteRequest;
 import de.adorsys.datasafe.business.api.deployment.keystore.PublicKeyService;
 import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.inbox.InboxWriteRequest;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.function.Function;
 
 public class WriteToInboxImpl implements WriteToInbox {
@@ -46,12 +46,12 @@ public class WriteToInboxImpl implements WriteToInbox {
         writer.write(writeRequest);
     }
 
-    private Function<ProfileRetrievalService, BucketPath> resolveFileLocation(InboxWriteRequest request) {
+    private Function<ProfileRetrievalService, URI> resolveFileLocation(InboxWriteRequest request) {
         return profiles -> profiles
                 .publicProfile(request.getTo())
                 .getInbox()
                 // TODO: UUID based unique filename
                 // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
-                .append(request.getRequest().getMeta().getName());
+                .resolve(request.getRequest().getPath());
     }
 }

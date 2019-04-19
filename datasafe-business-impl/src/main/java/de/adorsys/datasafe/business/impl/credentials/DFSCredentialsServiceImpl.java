@@ -5,9 +5,9 @@ import de.adorsys.datasafe.business.api.deployment.credentials.dto.DFSCredential
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.impl.profile.DFSSystem;
-import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 
 import javax.inject.Inject;
+import java.net.URI;
 
 // DEPLOYMENT
 /**
@@ -24,12 +24,12 @@ public class DFSCredentialsServiceImpl implements DFSCredentialsService {
 
 
     @Override
-    public DFSCredentials privateUserCredentials(UserIDAuth forUser, BucketPath forBucket) {
+    public DFSCredentials privateUserCredentials(UserIDAuth forUser, URI forBucket) {
         return dfsSystem.systemDfs().getCredentials();
     }
 
     @Override
-    public DFSCredentials publicUserCredentials(UserID forUser, BucketPath forBucket) {
+    public DFSCredentials publicUserCredentials(UserID forUser, URI forBucket) {
         return dfsSystem.systemDfs().getCredentials();
     }
 }

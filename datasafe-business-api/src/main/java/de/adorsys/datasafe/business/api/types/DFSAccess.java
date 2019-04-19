@@ -1,10 +1,11 @@
 package de.adorsys.datasafe.business.api.types;
 
 import de.adorsys.datasafe.business.api.deployment.credentials.dto.DFSCredentials;
-import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
+
+import java.net.URI;
 
 @Value
 @Builder
@@ -13,13 +14,13 @@ public class DFSAccess {
     /**
      * Logical path - decrypted path value.
      */
-    private final BucketPath logicalPath;
+    private final URI logicalPath;
 
     /**
      * Physical path - encrypted path value.
      */
     @NonNull
-    private final BucketPath physicalPath;
+    private final URI physicalPath;
 
     /**
      * Credentials to access DFS system.

@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.document.cms;
 
 import com.google.common.io.ByteStreams;
+import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 import de.adorsys.dfs.connection.api.service.impl.SimplePayloadImpl;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
@@ -39,6 +40,9 @@ public class CMSDocumentWriteService implements DocumentWriteService {
                 request.getKeyWithId().getKeyID()
         );
 
-        connection.putBlob(request.getTo().getPhysicalPath(), new SimplePayloadImpl(data.getEncoded()));
+        connection.putBlob(
+                new BucketPath(request.getTo().getPhysicalPath().getPath()),
+                new SimplePayloadImpl(data.getEncoded())
+        );
     }
 }

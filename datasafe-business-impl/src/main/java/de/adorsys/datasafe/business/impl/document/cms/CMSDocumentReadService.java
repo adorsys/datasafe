@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.document.cms;
 
 import com.google.common.io.ByteSource;
+import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.domain.Payload;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
@@ -31,7 +32,7 @@ public class CMSDocumentReadService implements DocumentReadService {
     @SneakyThrows
     public void read(ReadRequest request) {
         DFSConnection connection = dfs.obtain(request.getFrom());
-        Payload payload = connection.getBlob(request.getFrom().getPhysicalPath());
+        Payload payload = connection.getBlob(new BucketPath(request.getFrom().getPhysicalPath().getPath()));
 
         // FIXME https://github.com/adorsys/docusafe2/issues/5
         DocumentContent content = cms.decrypt(

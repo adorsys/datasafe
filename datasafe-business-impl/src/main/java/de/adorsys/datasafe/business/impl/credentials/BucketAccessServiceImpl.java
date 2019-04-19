@@ -7,9 +7,9 @@ import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalServi
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.function.Function;
 
 /**
@@ -27,8 +27,8 @@ public class BucketAccessServiceImpl implements BucketAccessService {
     }
 
     @Override
-    public DFSAccess privateAccessFor(UserIDAuth user, Function<ProfileRetrievalService, BucketPath> bucket) {
-        BucketPath path = bucket.apply(profiles);
+    public DFSAccess privateAccessFor(UserIDAuth user, Function<ProfileRetrievalService, URI> bucket) {
+        URI path = bucket.apply(profiles);
 
         DFSCredentials creds = credentials.privateUserCredentials(user, path);
 
@@ -39,8 +39,8 @@ public class BucketAccessServiceImpl implements BucketAccessService {
     }
 
     @Override
-    public DFSAccess publicAccessFor(UserID user, Function<ProfileRetrievalService, BucketPath> bucket) {
-        BucketPath path = bucket.apply(profiles);
+    public DFSAccess publicAccessFor(UserID user, Function<ProfileRetrievalService, URI> bucket) {
+        URI path = bucket.apply(profiles);
 
         DFSCredentials creds = credentials.publicUserCredentials(user, path);
 

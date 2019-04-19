@@ -11,6 +11,7 @@ import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.profile.DFSSystem;
+import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.domain.Payload;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 
@@ -45,7 +46,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         DFSConnection connection = dfsConnectionService.obtain(access);
         KeyStoreAuth privateAuth = dfsSystem.privateKeyStoreAuth(forUser);
 
-        Payload payload = connection.getBlob(access.getPhysicalPath());
+        Payload payload = connection.getBlob(new BucketPath(access.getPhysicalPath().getPath()));
 
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.loadKeyStore(
             payload.getData(),
