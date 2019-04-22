@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.types.profile;
 
-import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -14,15 +14,16 @@ public class CreateUserPrivateProfile {
     private final UserIDAuth id;
 
     @NonNull
-    private final DFSAccess keystore;
+    private final PrivateResource keystore;
 
     @NonNull
-    private final DFSAccess privateStorage;
+    private final PrivateResource privateStorage;
 
     public UserPrivateProfile removeAccess() {
         return UserPrivateProfile.builder()
-            .keystore(keystore.getPhysicalPath())
-            .privateStorage(privateStorage.getPhysicalPath())
+            // FIXME - remove access ?
+            .keystore(keystore)
+            .privateStorage(privateStorage)
             .build();
     }
 }

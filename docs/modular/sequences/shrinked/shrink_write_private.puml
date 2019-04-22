@@ -11,7 +11,7 @@ activate PRIVATE
 PRIVATE -> Profile : privateProfile
 
 activate Profile
-' de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService
+' de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService
 Profile -> Profile : privateProfile
 
 activate Profile
@@ -27,7 +27,7 @@ deactivate Profile
 Profile -> DFS : obtain
 
 activate DFS
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 Profile <-- DFS : DFSConnection
 deactivate DFS
 
@@ -59,7 +59,7 @@ deactivate SERDE
 Profile <-- Profile : UserPrivateProfile
 deactivate Profile
 
-' de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService
+' de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService
 PRIVATE <-- Profile : UserPrivateProfile
 deactivate Profile
 
@@ -69,7 +69,7 @@ deactivate PRIVATE
 PRIVATE -> Credentials : privateAccessFor
 
 activate Credentials
-' de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService
+' de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService
 Credentials -> Credentials : privateAccessFor
 
 activate Credentials
@@ -77,11 +77,11 @@ activate Credentials
 Credentials -> Credentials : privateUserCredentials
 
 activate Credentials
-' de.adorsys.datasafe.business.api.deployment.credentials.DFSCredentialsService
+' de.adorsys.datasafe.business.api.storage.dfs.credentials.DFSCredentialsService
 Credentials -> Credentials : privateUserCredentials
 
 activate Credentials
-' de.adorsys.datasafe.business.impl.credentials.DFSCredentialsServiceImpl
+' de.adorsys.datasafe.business.impl.credentials.SystemCredentialsServiceImpl
 Credentials -> Profile : systemDfs
 
 activate Profile
@@ -89,11 +89,11 @@ activate Profile
 Credentials <-- Profile : DFSAccess
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.credentials.DFSCredentialsServiceImpl
+' de.adorsys.datasafe.business.impl.credentials.SystemCredentialsServiceImpl
 Credentials <-- Credentials : DFSCredentials
 deactivate Credentials
 
-' de.adorsys.datasafe.business.api.deployment.credentials.DFSCredentialsService
+' de.adorsys.datasafe.business.api.storage.dfs.credentials.DFSCredentialsService
 Credentials <-- Credentials : DFSCredentials
 deactivate Credentials
 
@@ -101,7 +101,7 @@ deactivate Credentials
 Credentials <-- Credentials : DFSAccess
 deactivate Credentials
 
-' de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService
+' de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService
 PRIVATE <-- Credentials : DFSAccess
 deactivate Credentials
 
@@ -109,7 +109,7 @@ deactivate Credentials
 PRIVATE -> KeyStore : publicKey
 
 activate KeyStore
-' de.adorsys.datasafe.business.api.deployment.keystore.PublicKeyService
+' de.adorsys.datasafe.business.api.directory.profile.keys.PublicKeyService
 KeyStore -> Credentials : publicKey
 
 activate Credentials
@@ -117,7 +117,7 @@ activate Credentials
 Credentials -> Credentials : publicAccessFor
 
 activate Credentials
-' de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService
+' de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService
 Credentials -> Credentials : publicAccessFor
 
 activate Credentials
@@ -125,11 +125,11 @@ activate Credentials
 Credentials -> Credentials : publicUserCredentials
 
 activate Credentials
-' de.adorsys.datasafe.business.api.deployment.credentials.DFSCredentialsService
+' de.adorsys.datasafe.business.api.storage.dfs.credentials.DFSCredentialsService
 Credentials -> Credentials : publicUserCredentials
 
 activate Credentials
-' de.adorsys.datasafe.business.impl.credentials.DFSCredentialsServiceImpl
+' de.adorsys.datasafe.business.impl.credentials.SystemCredentialsServiceImpl
 Credentials -> Profile : systemDfs
 
 activate Profile
@@ -137,11 +137,11 @@ activate Profile
 Credentials <-- Profile : DFSAccess
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.credentials.DFSCredentialsServiceImpl
+' de.adorsys.datasafe.business.impl.credentials.SystemCredentialsServiceImpl
 Credentials <-- Credentials : DFSCredentials
 deactivate Credentials
 
-' de.adorsys.datasafe.business.api.deployment.credentials.DFSCredentialsService
+' de.adorsys.datasafe.business.api.storage.dfs.credentials.DFSCredentialsService
 Credentials <-- Credentials : DFSCredentials
 deactivate Credentials
 
@@ -149,7 +149,7 @@ deactivate Credentials
 Credentials <-- Credentials : DFSAccess
 deactivate Credentials
 
-' de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService
+' de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService
 Credentials <-- Credentials : DFSAccess
 deactivate Credentials
 
@@ -157,7 +157,7 @@ deactivate Credentials
 Credentials -> Profile : publicProfile
 
 activate Profile
-' de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService
+' de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService
 Profile -> Profile : publicProfile
 
 activate Profile
@@ -173,7 +173,7 @@ deactivate Profile
 Profile -> DFS : obtain
 
 activate DFS
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 Profile <-- DFS : DFSConnection
 deactivate DFS
 
@@ -205,7 +205,7 @@ deactivate SERDE
 Profile <-- Profile : UserPublicProfile
 deactivate Profile
 
-' de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService
+' de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService
 Credentials <-- Profile : UserPublicProfile
 deactivate Profile
 
@@ -213,7 +213,7 @@ deactivate Profile
 Credentials -> DFS : obtain
 
 activate DFS
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 Credentials <-- DFS : DFSConnection
 deactivate DFS
 
@@ -237,7 +237,7 @@ deactivate DFS
 Credentials -> KeyStore : getPublicKeys
 
 activate KeyStore
-' de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService
+' de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService
 KeyStore -> KeyStore : getPublicKeys
 
 activate KeyStore
@@ -245,14 +245,14 @@ activate KeyStore
 KeyStore <-- KeyStore : List
 deactivate KeyStore
 
-' de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService
+' de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService
 Credentials <-- KeyStore : List
 
 ' de.adorsys.datasafe.business.impl.credentials.DFSPublicKeyServiceImpl
 KeyStore <-- Credentials : PublicKeyIDWithPublicKey
 deactivate Credentials
 
-' de.adorsys.datasafe.business.api.deployment.keystore.PublicKeyService
+' de.adorsys.datasafe.business.api.directory.profile.keys.PublicKeyService
 PRIVATE <-- KeyStore : PublicKeyIDWithPublicKey
 deactivate KeyStore
 
@@ -260,7 +260,7 @@ deactivate KeyStore
 PRIVATE -> Document : write
 
 activate Document
-' de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService
+' de.adorsys.datasafe.business.api.storage.document.DocumentWriteService
 Document -> Document : write
 
 activate Document
@@ -268,7 +268,7 @@ activate Document
 Document -> DFS : obtain
 
 activate DFS
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 Document <-- DFS : DFSConnection
 deactivate DFS
 
@@ -300,7 +300,7 @@ deactivate DFS
 Document <-- Document :
 deactivate Document
 
-' de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService
+' de.adorsys.datasafe.business.api.storage.document.DocumentWriteService
 PRIVATE <-- Document :
 deactivate Document
 

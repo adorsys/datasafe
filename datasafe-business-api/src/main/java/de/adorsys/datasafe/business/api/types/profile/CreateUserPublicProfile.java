@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.types.profile;
 
-import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -14,15 +14,16 @@ public class CreateUserPublicProfile {
     private final UserID id;
 
     @NonNull
-    private final DFSAccess publicKeys;
+    private final PublicResource publicKeys;
 
     @NonNull
-    private final DFSAccess inbox;
+    private final PublicResource inbox;
 
     public UserPublicProfile removeAccess() {
         return UserPublicProfile.builder()
-            .inbox(inbox.getPhysicalPath())
-            .publicKeys(publicKeys.getPhysicalPath())
+            // FIXME - remove access ?
+            .inbox(inbox)
+            .publicKeys(publicKeys)
             .build();
     }
 }

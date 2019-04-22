@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.types.action;
 
-import de.adorsys.datasafe.business.api.types.DFSAccess;
-import de.adorsys.dfs.connection.api.types.ListRecursiveFlag;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -11,8 +11,11 @@ import lombok.Value;
 public class ListRequest {
 
     @NonNull
-    private final DFSAccess location;
+    private final UserIDAuth owner;
+
+    @NonNull
+    private final PrivateResource location;
 
     private final boolean decryptPath;
-    private final ListRecursiveFlag recursiveFlag;
+    private final boolean recursiveFlag;
 }

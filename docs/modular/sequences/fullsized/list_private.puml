@@ -11,7 +11,7 @@ activate ListPrivateImpl
 ListPrivateImpl -> ProfileRetrievalService : privateProfile
 
 activate ProfileRetrievalService
-' de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService
+' de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService
 ProfileRetrievalService -> DFSBasedProfileStorageImpl : privateProfile
 
 activate DFSBasedProfileStorageImpl
@@ -27,7 +27,7 @@ deactivate DFSSystem
 DFSBasedProfileStorageImpl -> DFSConnectionService : obtain
 
 activate DFSConnectionService
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSConnectionService -> DFSConnectionServiceImpl : obtain
 
 activate DFSConnectionServiceImpl
@@ -35,7 +35,7 @@ activate DFSConnectionServiceImpl
 DFSConnectionService <-- DFSConnectionServiceImpl : DFSConnection
 deactivate DFSConnectionServiceImpl
 
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSBasedProfileStorageImpl <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
@@ -67,7 +67,7 @@ deactivate GsonSerde
 ProfileRetrievalService <-- DFSBasedProfileStorageImpl : UserPrivateProfile
 deactivate DFSBasedProfileStorageImpl
 
-' de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService
+' de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService
 ListPrivateImpl <-- ProfileRetrievalService : UserPrivateProfile
 deactivate ProfileRetrievalService
 
@@ -77,7 +77,7 @@ deactivate ListPrivateImpl
 ListPrivateImpl -> BucketAccessService : privateAccessFor
 
 activate BucketAccessService
-' de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService
+' de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService
 BucketAccessService -> BucketAccessServiceImpl : privateAccessFor
 
 activate BucketAccessServiceImpl
@@ -85,11 +85,11 @@ activate BucketAccessServiceImpl
 BucketAccessServiceImpl -> DFSCredentialsService : privateUserCredentials
 
 activate DFSCredentialsService
-' de.adorsys.datasafe.business.api.deployment.credentials.DFSCredentialsService
+' de.adorsys.datasafe.business.api.storage.dfs.credentials.DFSCredentialsService
 DFSCredentialsService -> DFSCredentialsServiceImpl : privateUserCredentials
 
 activate DFSCredentialsServiceImpl
-' de.adorsys.datasafe.business.impl.credentials.DFSCredentialsServiceImpl
+' de.adorsys.datasafe.business.impl.credentials.SystemCredentialsServiceImpl
 DFSCredentialsServiceImpl -> DFSSystem : systemDfs
 
 activate DFSSystem
@@ -97,11 +97,11 @@ activate DFSSystem
 DFSCredentialsServiceImpl <-- DFSSystem : DFSAccess
 deactivate DFSSystem
 
-' de.adorsys.datasafe.business.impl.credentials.DFSCredentialsServiceImpl
+' de.adorsys.datasafe.business.impl.credentials.SystemCredentialsServiceImpl
 DFSCredentialsService <-- DFSCredentialsServiceImpl : DFSCredentials
 deactivate DFSCredentialsServiceImpl
 
-' de.adorsys.datasafe.business.api.deployment.credentials.DFSCredentialsService
+' de.adorsys.datasafe.business.api.storage.dfs.credentials.DFSCredentialsService
 BucketAccessServiceImpl <-- DFSCredentialsService : DFSCredentials
 deactivate DFSCredentialsService
 
@@ -109,7 +109,7 @@ deactivate DFSCredentialsService
 BucketAccessService <-- BucketAccessServiceImpl : DFSAccess
 deactivate BucketAccessServiceImpl
 
-' de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService
+' de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService
 ListPrivateImpl <-- BucketAccessService : DFSAccess
 deactivate BucketAccessService
 
@@ -126,7 +126,7 @@ activate ListPathNonDecryptingServiceImpl
 ListPathNonDecryptingServiceImpl -> DFSConnectionService : obtain
 
 activate DFSConnectionService
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSConnectionService -> DFSConnectionServiceImpl : obtain
 
 activate DFSConnectionServiceImpl
@@ -134,7 +134,7 @@ activate DFSConnectionServiceImpl
 DFSConnectionService <-- DFSConnectionServiceImpl : DFSConnection
 deactivate DFSConnectionServiceImpl
 
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 ListPathNonDecryptingServiceImpl <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
@@ -154,7 +154,7 @@ deactivate ListPathNonDecryptingServiceImpl
 DocumentListService <-- ListPathDecryptingServiceImpl : Stream
 
 deactivate ListPathDecryptingServiceImpl
-' de.adorsys.datasafe.business.api.deployment.document.DocumentListService
+' de.adorsys.datasafe.business.api.storage.document.StorageListService
 ListPrivateImpl <-- DocumentListService : Stream
 deactivate DocumentListService
 

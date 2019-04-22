@@ -39,7 +39,7 @@ deactivate DFSSystem
 DFSBasedProfileStorageImpl -> DFSConnectionService : obtain
 
 activate DFSConnectionService
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSConnectionService -> DFSConnectionServiceImpl : obtain
 
 activate DFSConnectionServiceImpl
@@ -47,7 +47,7 @@ activate DFSConnectionServiceImpl
 DFSConnectionService <-- DFSConnectionServiceImpl : DFSConnection
 deactivate DFSConnectionServiceImpl
 
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSBasedProfileStorageImpl <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
@@ -119,7 +119,7 @@ deactivate DFSSystem
 DFSBasedProfileStorageImpl -> DFSConnectionService : obtain
 
 activate DFSConnectionService
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSConnectionService -> DFSConnectionServiceImpl : obtain
 
 activate DFSConnectionServiceImpl
@@ -127,7 +127,7 @@ activate DFSConnectionServiceImpl
 DFSConnectionService <-- DFSConnectionServiceImpl : DFSConnection
 deactivate DFSConnectionServiceImpl
 
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSBasedProfileStorageImpl <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
@@ -179,7 +179,7 @@ deactivate DFSSystem
 DFSBasedProfileStorageImpl -> KeyStoreService : createKeyStore
 
 activate KeyStoreService
-' de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService
+' de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService
 DFSBasedProfileStorageImpl <-- KeyStoreService : KeyStore
 deactivate KeyStoreService
 
@@ -187,7 +187,7 @@ deactivate KeyStoreService
 DFSBasedProfileStorageImpl -> DFSConnectionService : obtain
 
 activate DFSConnectionService
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSConnectionService -> DFSConnectionServiceImpl : obtain
 
 activate DFSConnectionServiceImpl
@@ -195,7 +195,7 @@ activate DFSConnectionServiceImpl
 DFSConnectionService <-- DFSConnectionServiceImpl : DFSConnection
 deactivate DFSConnectionServiceImpl
 
-' de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService
+' de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService
 DFSBasedProfileStorageImpl <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 

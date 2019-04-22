@@ -1,18 +1,17 @@
 package de.adorsys.datasafe.business.api.types.profile;
 
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import java.net.URI;
 
 @Value
 @Builder
 public class UserPrivateProfile {
 
     @NonNull
-    private final URI keystore;
+    private final PrivateResource keystore;
 
     @NonNull
-    private final URI privateStorage;
+    private final PrivateResource privateStorage;
 }
