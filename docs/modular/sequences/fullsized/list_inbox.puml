@@ -117,7 +117,7 @@ deactivate BucketAccessService
 ListInboxImpl -> DocumentListService : list
 
 activate DocumentListService
-' de.adorsys.datasafe.business.api.storage.document.StorageListService
+' de.adorsys.datasafe.business.api.storage.StorageListService
 
 ' de.adorsys.datasafe.business.impl.inbox.actions.ListInboxImpl
 DocumentListService -> ListPathNonDecryptingServiceImpl : list

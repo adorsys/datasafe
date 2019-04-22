@@ -154,7 +154,7 @@ deactivate Document
 Document <-- Document : Stream
 
 deactivate Document
-' de.adorsys.datasafe.business.api.storage.document.StorageListService
+' de.adorsys.datasafe.business.api.storage.StorageListService
 PRIVATE <-- Document : Stream
 deactivate Document
 
