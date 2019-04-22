@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.api.storage.document;
+package de.adorsys.datasafe.business.api.storage;
 
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 
