@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.business.impl.credentials;
 
-import de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;

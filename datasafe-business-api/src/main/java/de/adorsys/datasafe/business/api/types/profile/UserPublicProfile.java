@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.net.URI;
-
 @Value
 @Builder
 public class UserPublicProfile {

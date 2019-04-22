@@ -77,7 +77,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 	private SecretKey secretKey(KeyStoreAccess keyStoreAccess, RecipientId rid)
 			throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
 		String keyIdentifier = new String(((KEKRecipientId) rid).getKeyIdentifier());
-		log.debug("Secret key ID from envelope: {}", keyIdentifier);
+		log.debug("Secret key ID location envelope: {}", keyIdentifier);
 		return (SecretKey) keyStoreAccess.getKeyStore().getKey(keyIdentifier,
 				keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
 	}
@@ -85,7 +85,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 	private PrivateKey privateKey(KeyStoreAccess keyStoreAccess, RecipientId rid)
 			throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
 		String subjectKeyIdentifier = new String(((KeyTransRecipientId) rid).getSubjectKeyIdentifier());
-		log.debug("Private key ID from envelope: {}", subjectKeyIdentifier);
+		log.debug("Private key ID location envelope: {}", subjectKeyIdentifier);
 		return (PrivateKey) keyStoreAccess.getKeyStore().getKey(subjectKeyIdentifier,
 				keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
 	}

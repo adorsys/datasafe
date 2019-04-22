@@ -1,40 +1,29 @@
 package de.adorsys.datasafe.business.impl.privatestore.actions;
 
 import de.adorsys.datasafe.business.api.directory.privatespace.actions.WriteToPrivate;
-import de.adorsys.datasafe.business.api.directory.profile.keys.PublicKeyService;
-import de.adorsys.datasafe.business.api.encryption.document.DocumentWriteService;
-import de.adorsys.datasafe.business.api.encryption.pathencryption.PathEncryption;
-import de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService;
-import de.adorsys.datasafe.business.api.storage.document.DocumentWriteService;
-import de.adorsys.datasafe.business.api.types.action.PrivateWriteRequest;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 
 import javax.inject.Inject;
 import java.io.OutputStream;
 
 public class WriteToPrivateImpl implements WriteToPrivate {
 
-    private final PublicKeyService publicKeyService;
-    private final BucketAccessService accessService;
-    private final DocumentWriteService writer;
-    private final PathEncryption pathEncryption;
+    private final EncryptedDocumentWriteService writer;
 
     @Inject
-    public WriteToPrivateImpl(PublicKeyService publicKeyService, BucketAccessService accessService,
-                              DocumentWriteService writer, PathEncryption pathEncryption) {
-        this.publicKeyService = publicKeyService;
-        this.accessService = accessService;
+    public WriteToPrivateImpl(EncryptedDocumentWriteService writer) {
         this.writer = writer;
-        this.pathEncryption = pathEncryption;
     }
 
     @Override
-    public OutputStream write(PrivateWriteRequest request) {
-        PrivateResource userPrivate = accessService.privateAccessFor(
-                request.getOwner(),
-                request.getTo()
+    public OutputStream write(WriteRequest<UserIDAuth> request) {
+        return writer.write(WriteRequest.<UserID>builder()
+                .location(request.getLocation())
+                .owner(request.getOwner().getUserID())
+                .build()
         );
-
-        return writer.write(userPrivate);
     }
 }

@@ -1,17 +1,16 @@
 package de.adorsys.datasafe.business.api.types.action;
 
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 @Value
 @Builder
-public class ReadRequest<T> {
+public class WriteRequest<T, L> {
 
     @NonNull
     private final T owner;
 
     @NonNull
-    private final PrivateResource location;
+    private final L location;
 }

@@ -1,18 +1,17 @@
 package de.adorsys.datasafe.business.impl.document.cms;
 
 import com.google.common.collect.ImmutableList;
+import de.adorsys.datasafe.business.api.directory.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService;
-import de.adorsys.datasafe.business.api.storage.document.DocumentWriteService;
-import de.adorsys.datasafe.business.api.types.action.PrivateWriteRequest;
-import de.adorsys.dfs.connection.api.complextypes.BucketPath;
-import de.adorsys.dfs.connection.api.service.api.DFSConnection;
-import de.adorsys.dfs.connection.api.service.impl.SimplePayloadImpl;
+import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
+import de.adorsys.datasafe.business.api.storage.StorageWriteService;
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -20,32 +19,31 @@ import java.util.List;
 /**
  * Write CMS-encrypted document to DFS.
  */
-public class CMSDocumentWriteService implements DocumentWriteService {
+public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
-    private final DFSConnectionService dfs;
+    private final StorageWriteService writeService;
+    private final PublicKeyService publicKeyService;
     private final CMSEncryptionService cms;
 
     @Inject
-    public CMSDocumentWriteService(DFSConnectionService dfs, CMSEncryptionService cms) {
-        this.dfs = dfs;
+    public CMSDocumentWriteService(StorageWriteService writeService, PublicKeyService publicKeyService,
+                                   CMSEncryptionService cms) {
+        this.writeService = writeService;
+        this.publicKeyService = publicKeyService;
         this.cms = cms;
     }
 
     @Override
     @SneakyThrows
-    public OutputStream write(PrivateWriteRequest request) {
-        DFSConnection connection = dfs.obtain(request.getTo());
+    public OutputStream write(WriteRequest<UserID> request) {
 
-        // FIXME Streaming DFS https://github.com/adorsys/docusafe2/issues/5
-        OutputStream dfsSink = new PutBlobOnClose(
-                new BucketPath(request.getTo().getPhysicalPath().toString()),
-                connection
-        );
+        OutputStream dfsSink = writeService.write(request.getLocation());
+        PublicKeyIDWithPublicKey withId = publicKeyService.publicKey(request.getOwner());
 
         OutputStream encryptionSink = cms.buildEncryptionOutputStream(
                 dfsSink,
-                request.getKeyWithId().getPublicKey(),
-                request.getKeyWithId().getKeyID()
+                withId.getPublicKey(),
+                withId.getKeyID()
         );
 
         return new CloseCoordinatingStream(encryptionSink, ImmutableList.of(encryptionSink, dfsSink));
@@ -82,23 +80,6 @@ public class CMSDocumentWriteService implements DocumentWriteService {
         @SneakyThrows
         private static void doClose(OutputStream stream) {
             stream.close();
-        }
-    }
-
-    @RequiredArgsConstructor
-    // FIXME Streaming DFS https://github.com/adorsys/docusafe2/issues/5
-    private static final class PutBlobOnClose extends ByteArrayOutputStream {
-
-        private final BucketPath path;
-        private final DFSConnection connection;
-
-        @Override
-        public void close() throws IOException {
-            super.close();
-            connection.putBlob(
-                    new BucketPath(path),
-                    new SimplePayloadImpl(toByteArray())
-            );
         }
     }
 }

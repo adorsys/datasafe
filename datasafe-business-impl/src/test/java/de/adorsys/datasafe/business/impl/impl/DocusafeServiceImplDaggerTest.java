@@ -1,22 +1,21 @@
 package de.adorsys.datasafe.business.impl.impl;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.DFSAccess;
-import de.adorsys.datasafe.business.api.types.SystemCredentials;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.file.FileIn;
-import de.adorsys.datasafe.business.api.types.file.FileOut;
-import de.adorsys.datasafe.business.api.types.inbox.InboxReadRequest;
-import de.adorsys.datasafe.business.api.types.inbox.InboxWriteRequest;
-import de.adorsys.datasafe.business.api.types.privatespace.PrivateReadRequest;
-import de.adorsys.datasafe.business.api.types.privatespace.PrivateWriteRequest;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.profile.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.profile.CreateUserPublicProfile;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import de.adorsys.datasafe.business.impl.BaseMockitoTest;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
+import de.adorsys.datasafe.business.impl.types.DefaultPrivateResource;
+import de.adorsys.datasafe.business.impl.types.DefaultPublicResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.adorsys.datasafe.business.impl.profile.DFSSystem.CREDS_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -53,13 +51,13 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
         writeDataToPrivate(jane, "./secret.txt", MESSAGE_ONE);
 
-        URI privateJane = getFirstFileInPrivate(jane);
+        PrivateResource privateJane = getFirstFileInPrivate(jane);
 
         String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane);
 
         sendToInbox(jane.getUserID(), john.getUserID(), "./hello.txt", privateContentJane);
 
-        URI inboxJohn = getFirstFileInInbox(john);
+        PrivateResource inboxJohn = getFirstFileInInbox(john);
 
         String result = readInboxUsingPrivateKey(john, inboxJohn);
         assertThat(result).isEqualTo(MESSAGE_ONE);
@@ -68,9 +66,10 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     @SneakyThrows
     private void writeDataToPrivate(UserIDAuth auth, String path, String data) {
         OutputStream stream = docusafeService.privateService().write(
-            new PrivateWriteRequest(
-                auth,
-                new FileIn(new URI(path)))
+                WriteRequest.<UserIDAuth>builder()
+                        .owner(auth)
+                        .location(new DefaultPrivateResource(new URI(path)))
+                        .build()
         );
 
         stream.write(data.getBytes());
@@ -78,24 +77,25 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     }
 
     @SneakyThrows
-    private URI getFirstFileInPrivate(UserIDAuth inboxOwner) {
-        List<URI> files = docusafeService.privateService().list(inboxOwner).collect(Collectors.toList());
+    private PrivateResource getFirstFileInPrivate(UserIDAuth inboxOwner) {
+        List<PrivateResource> files = docusafeService.privateService().list(
+                ListRequest.<UserIDAuth>builder()
+                        .owner(inboxOwner)
+                        .location(new DefaultPrivateResource(new URI("./")))
+                        .build()
+        ).collect(Collectors.toList());
         log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);
         return files.get(0);
     }
 
     @SneakyThrows
-    private String readPrivateUsingPrivateKey(UserIDAuth user, URI location) {
-        FileOut out = new FileOut(
-            new URI(""));
-
+    private String readPrivateUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         InputStream dataStream = docusafeService.privateService()
-            .read(PrivateReadRequest.builder()
-                .owner(user)
-                .path(location)
-                .response(out)
-                .build()
+            .read(ReadRequest.<UserIDAuth>builder()
+                    .location(location)
+                    .owner(user)
+                    .build()
             );
 
         ByteStreams.copy(dataStream, outputStream);
@@ -106,18 +106,13 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     }
 
     @SneakyThrows
-    private String readInboxUsingPrivateKey(UserIDAuth user, URI location) {
-        FileOut out = new FileOut(
-            new URI("")
-        );
-
+    private String readInboxUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         InputStream dataStream = docusafeService.inboxService()
-            .read(InboxReadRequest.builder()
-                .owner(user)
-                .path(location)
-                .response(out)
-                .build()
+            .read(ReadRequest.<UserIDAuth>builder()
+                    .owner(user)
+                    .location(location)
+                    .build()
             );
 
         ByteStreams.copy(dataStream, outputStream);
@@ -127,8 +122,13 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
         return data;
     }
 
-    private URI getFirstFileInInbox(UserIDAuth inboxOwner) {
-        List<URI> files = docusafeService.inboxService().list(inboxOwner).collect(Collectors.toList());
+    @SneakyThrows
+    private PrivateResource getFirstFileInInbox(UserIDAuth inboxOwner) {
+        List<PrivateResource> files = docusafeService.inboxService().list(ListRequest.<UserIDAuth>builder()
+                .owner(inboxOwner)
+                .location(new DefaultPrivateResource(new URI("./")))
+                .build()
+        ).collect(Collectors.toList());
         log.info("{} has {} in INBOX", inboxOwner.getUserID().getValue(), files);
         return files.get(0);
     }
@@ -141,11 +141,10 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     @SneakyThrows
     private void sendToInbox(UserID from, UserID to, String filename, String data) {
         OutputStream stream = docusafeService.inboxService().write(
-            new InboxWriteRequest(
-                from,
-                to,
-                new FileIn(new URI(filename))
-            )
+            WriteRequest.<UserID>builder()
+                    .location(new DefaultPrivateResource(new URI("./" + filename)))
+                    .owner(to)
+                    .build()
         );
 
         stream.write(data.getBytes());
@@ -167,8 +166,8 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
         docusafeService.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
             .id(auth)
-            .privateStorage(access(new URI("s3://bucket/" + userName + "/").resolve("./private/")))
-            .keystore(access(new URI("s3://bucket/" + userName + "/").resolve("./keystore")))
+            .privateStorage(accessPrivate(new URI("s3://bucket/" + userName + "/").resolve("./private/")))
+            .keystore(accessPrivate(new URI("s3://bucket/" + userName + "/").resolve("./keystore")))
             .build()
         );
 
@@ -176,11 +175,11 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
         return auth;
     }
 
-    private DFSAccess access(URI path) {
-        return DFSAccess.builder()
-            .physicalPath(path)
-            .logicalPath(path)
-            .credentials(SystemCredentials.builder().id(CREDS_ID).build())
-            .build();
+    private PublicResource access(URI path) {
+        return new DefaultPublicResource(path);
+    }
+
+    private PrivateResource accessPrivate(URI path) {
+        return new DefaultPrivateResource(path);
     }
 }

@@ -1,11 +1,9 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
 import de.adorsys.datasafe.business.api.directory.inbox.actions.ListInbox;
-import de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.encryption.document.DocumentListService;
-import de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService;
-import de.adorsys.datasafe.business.api.storage.document.DocumentListService;
+import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentListService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.types.DefaultPrivateResource;
 
@@ -14,27 +12,15 @@ import java.util.stream.Stream;
 
 public class ListInboxImpl implements ListInbox {
 
-    private final BucketAccessService accessService;
-    private final DocumentListService listService;
-    private final ProfileRetrievalService profiles;
-
-    public ListInboxImpl(BucketAccessService accessService, DocumentListService listService,
-                         ProfileRetrievalService profiles) {
-        this.accessService = accessService;
-        this.listService = listService;
-        this.profiles = profiles;
-    }
+    private final EncryptedDocumentListService listService;
 
     @Inject
-
+    public ListInboxImpl(EncryptedDocumentListService listService) {
+        this.listService = listService;
+    }
 
     @Override
-    public Stream<PrivateResource> list(UserIDAuth forUser) {
-        PrivateResource userInbox = accessService.privateAccessFor(
-                forUser,
-                profiles.publicProfile(forUser.getUserID()).getInbox()
-        );
-
-        return listService.list(userInbox).map(it -> new DefaultPrivateResource(it.locationWithAccess()));
+    public Stream<PrivateResource> list(ListRequest<UserIDAuth> forUser) {
+        return listService.list(forUser).map(it -> new DefaultPrivateResource(it.locationWithAccess()));
     }
 }

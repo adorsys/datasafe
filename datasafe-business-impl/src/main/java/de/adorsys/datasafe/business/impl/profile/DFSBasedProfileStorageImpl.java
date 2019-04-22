@@ -4,13 +4,13 @@ import de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRegi
 import de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
 import de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
 import de.adorsys.datasafe.business.api.types.profile.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.profile.CreateUserPublicProfile;
 import de.adorsys.datasafe.business.api.types.profile.UserPrivateProfile;
@@ -39,7 +39,6 @@ public class DFSBasedProfileStorageImpl implements
     private static final BucketPath PUBLIC = new BucketPath("profiles/public");
 
     private final KeyStoreService keyStoreService;
-    private final DFSConnectionService dfsConnectionService;
     private final DFSSystem dfsSystem;
     private final GsonSerde serde;
 
