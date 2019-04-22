@@ -1,5 +1,18 @@
 package de.adorsys.datasafe.business.impl.keystore.service;
 
+import de.adorsys.common.exceptions.BaseException;
+import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreCreationConfigImpl;
+import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
+import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
+import de.adorsys.datasafe.business.impl.keystore.generator.ProviderUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import javax.crypto.SecretKey;
+import javax.security.auth.callback.CallbackHandler;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Provider;
@@ -7,31 +20,6 @@ import java.security.Security;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import javax.crypto.SecretKey;
-import javax.security.auth.callback.CallbackHandler;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import de.adorsys.common.exceptions.BaseException;
-import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyPairEntry;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyPairGenerator;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreType;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadStorePassword;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.SecretKeyIDWithKey;
-import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreCreationConfigImpl;
-import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
-import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
-import de.adorsys.datasafe.business.impl.keystore.generator.ProviderUtils;
 
 public class KeyStoreServiceTest {
 
@@ -53,7 +41,7 @@ public class KeyStoreServiceTest {
         Assertions.assertNotNull(keyStore);
 
         List<String> list = Collections.list(keyStore.aliases());
-        // One additional secret key being generated for path encryption.
+        // One additional secret key being generated for path pathencryption.
         Assertions.assertEquals(3, list.size());
 
         Assertions.assertEquals("UBER", keyStore.getType());
@@ -65,7 +53,7 @@ public class KeyStoreServiceTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
-        // One additional secret key being generated for path encryption.
+        // One additional secret key being generated for path pathencryption.
         Assertions.assertEquals(16, list.size());
     }
 

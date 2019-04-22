@@ -1,13 +1,17 @@
 package de.adorsys.datasafe.business.impl.credentials;
 
-import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
-import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
-import de.adorsys.datasafe.business.api.deployment.keystore.PrivateKeyService;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreType;
+import de.adorsys.datasafe.business.api.directory.profile.keys.PrivateKeyService;
+import de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.business.api.storage.document.DocumentReadService;
+import de.adorsys.datasafe.business.api.storage.document.DocumentWriteService;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.storage.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.business.impl.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.profile.DFSSystem;
@@ -25,34 +29,32 @@ import java.security.KeyStore;
 public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
     private final DFSSystem dfsSystem;
-    private final DFSConnectionService dfsConnectionService;
     private final BucketAccessService bucketAccessService;
+    private final ProfileRetrievalService profile;
+    private final DocumentReadService readService;
 
     @Inject
-    public DFSPrivateKeyServiceImpl(DFSSystem dfsSystem, DFSConnectionService dfsConnectionService,
-                                    BucketAccessService bucketAccessService) {
+    public DFSPrivateKeyServiceImpl(DFSSystem dfsSystem,
+                                    BucketAccessService bucketAccessService, ProfileRetrievalService profile) {
         this.dfsSystem = dfsSystem;
-        this.dfsConnectionService = dfsConnectionService;
         this.bucketAccessService = bucketAccessService;
+        this.profile = profile;
     }
 
     @Override
     public KeyStoreAccess keystore(UserIDAuth forUser) {
-        DFSAccess access = bucketAccessService.privateAccessFor(
+        PrivateResource access = bucketAccessService.privateAccessFor(
             forUser,
-            profile -> profile.privateProfile(forUser).getKeystore()
+            profile.privateProfile(forUser).getKeystore()
         );
 
-        DFSConnection connection = dfsConnectionService.obtain(access);
-        KeyStoreAuth privateAuth = dfsSystem.privateKeyStoreAuth(forUser);
-
-        Payload payload = connection.getBlob(new BucketPath(access.getPhysicalPath().toString()));
+        Payload payload = readService.read(access);
 
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.loadKeyStore(
             payload.getData(),
             forUser.getUserID().getValue(),
             KeyStoreType.DEFAULT,
-            new PasswordCallbackHandler(privateAuth.getReadStorePassword().getValue().toCharArray())
+            new PasswordCallbackHandler(dfsSystem.systemDfs().getReadStorePassword().getValue().toCharArray())
         );
 
         return new KeyStoreAccess(keyStore, dfsSystem.privateKeyStoreAuth(forUser));

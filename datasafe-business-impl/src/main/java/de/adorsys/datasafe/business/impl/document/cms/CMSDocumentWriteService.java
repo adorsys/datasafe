@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.impl.document.cms;
 
 import com.google.common.collect.ImmutableList;
-import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
-import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.storage.document.DocumentWriteService;
+import de.adorsys.datasafe.business.api.types.action.PrivateWriteRequest;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.service.api.DFSConnection;
 import de.adorsys.dfs.connection.api.service.impl.SimplePayloadImpl;
@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,7 +33,7 @@ public class CMSDocumentWriteService implements DocumentWriteService {
 
     @Override
     @SneakyThrows
-    public OutputStream write(WriteRequest request) {
+    public OutputStream write(PrivateWriteRequest request) {
         DFSConnection connection = dfs.obtain(request.getTo());
 
         // FIXME Streaming DFS https://github.com/adorsys/docusafe2/issues/5

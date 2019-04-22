@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.impl.profile;
 
-import de.adorsys.datasafe.business.api.deployment.credentials.dto.SystemCredentials;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadStorePassword;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
+import de.adorsys.datasafe.business.api.types.SystemCredentials;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import lombok.SneakyThrows;
 

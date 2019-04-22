@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.business.impl.impl;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.business.api.deployment.credentials.dto.SystemCredentials;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
+import de.adorsys.datasafe.business.api.types.SystemCredentials;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.file.FileIn;
@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;

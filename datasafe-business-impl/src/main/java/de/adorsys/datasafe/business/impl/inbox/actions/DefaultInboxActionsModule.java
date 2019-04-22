@@ -2,9 +2,9 @@ package de.adorsys.datasafe.business.impl.inbox.actions;
 
 import dagger.Binds;
 import dagger.Module;
-import de.adorsys.datasafe.business.api.deployment.inbox.actions.ListInbox;
-import de.adorsys.datasafe.business.api.deployment.inbox.actions.ReadFromInbox;
-import de.adorsys.datasafe.business.api.deployment.inbox.actions.WriteToInbox;
+import de.adorsys.datasafe.business.api.directory.inbox.actions.ListInbox;
+import de.adorsys.datasafe.business.api.directory.inbox.actions.ReadFromInbox;
+import de.adorsys.datasafe.business.api.directory.inbox.actions.WriteToInbox;
 
 /**
  * This module is responsible for providing default actions on INBOX folder.

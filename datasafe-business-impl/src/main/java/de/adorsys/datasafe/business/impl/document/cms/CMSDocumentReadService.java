@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.impl.document.cms;
 
-import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
-import de.adorsys.datasafe.business.api.deployment.document.DocumentReadService;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService;
+import de.adorsys.datasafe.business.api.storage.document.DocumentReadService;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.dfs.connection.api.complextypes.BucketPath;
 import de.adorsys.dfs.connection.api.domain.Payload;
@@ -18,7 +18,7 @@ import java.io.InputStream;
  */
 public class CMSDocumentReadService implements DocumentReadService {
 
-    private final DFSConnectionService dfs;
+    private final DocumentReadService readService;
     private final CMSEncryptionService cms;
 
     @Inject
@@ -30,12 +30,9 @@ public class CMSDocumentReadService implements DocumentReadService {
     @Override
     @SneakyThrows
     public InputStream read(ReadRequest request) {
-        DFSConnection connection = dfs.obtain(request.getFrom());
-        // FIXME DFS connection streaming https://github.com/adorsys/docusafe2/issues/5
-        Payload payload = connection.getBlob(new BucketPath(request.getFrom().getPhysicalPath().toString()));
 
         return cms.buildDecryptionInputStream(
-                new ByteArrayInputStream(payload.getData()),
+                readService.read(request.getFrom()),
                 request.getKeyStore()
         );
     }

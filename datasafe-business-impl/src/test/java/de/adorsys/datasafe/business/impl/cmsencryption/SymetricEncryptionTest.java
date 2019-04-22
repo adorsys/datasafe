@@ -1,7 +1,16 @@
 package de.adorsys.datasafe.business.impl.cmsencryption;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
+import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.bouncycastle.cms.CMSException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,24 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 
-import org.apache.commons.io.IOUtils;
-import org.bouncycastle.cms.CMSException;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreType;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadStorePassword;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.SecretKeyIDWithKey;
-import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
-import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class SymetricEncryptionTest {

@@ -1,13 +1,13 @@
 package de.adorsys.datasafe.business.impl.profile;
 
-import de.adorsys.datasafe.business.api.deployment.dfs.DFSConnectionService;
-import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreType;
-import de.adorsys.datasafe.business.api.deployment.profile.ProfileRegistrationService;
-import de.adorsys.datasafe.business.api.deployment.profile.ProfileRemovalService;
-import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
+import de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRegistrationService;
+import de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRemovalService;
+import de.adorsys.datasafe.business.api.directory.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.business.api.storage.dfs.DFSConnectionService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;

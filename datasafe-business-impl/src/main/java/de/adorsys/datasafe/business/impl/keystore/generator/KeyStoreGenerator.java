@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.impl.keystore.generator;
 
 import de.adorsys.common.exceptions.BaseExceptionHandler;
-import de.adorsys.datasafe.business.api.deployment.keystore.exceptions.KeyStoreConfigException;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
+import de.adorsys.datasafe.business.api.types.keystore.exceptions.KeyStoreConfigException;
+import de.adorsys.datasafe.business.api.types.keystore.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

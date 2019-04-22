@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.pathencryption;
 
 import de.adorsys.common.exceptions.BaseExceptionHandler;
-import de.adorsys.datasafe.business.api.encryption.bucketpathencryption.BucketPathEncryptionService;
+import de.adorsys.datasafe.business.api.encryption.pathencryption.encryption.SymmetricPathEncryptionService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,12 +16,12 @@ import java.util.Base64;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
-public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionService {
+public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncryptionService {
 
     private static final String PATH_SEPARATOR = "/";
 
     @Inject
-    public BucketPathEncryptionServiceImpl() {
+    public SymmetricPathEncryptionServiceImpl() {
     }
 
     @Override
