@@ -12,7 +12,7 @@ public interface CMSEncryptionService {
 
     OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey, KeyID publicKeyID);
 
-    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID keyID);
+    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID secretKeyID);
     
     InputStream buildDecryptionInputStream(InputStream inputStream, KeyStoreAccess keyStoreAccess);
 }
