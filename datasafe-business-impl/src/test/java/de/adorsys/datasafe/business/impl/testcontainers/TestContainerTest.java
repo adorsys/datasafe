@@ -14,15 +14,14 @@ import de.adorsys.datasafe.business.api.types.privatespace.PrivateReadRequest;
 import de.adorsys.datasafe.business.api.types.privatespace.PrivateWriteRequest;
 import de.adorsys.datasafe.business.api.types.profile.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.profile.CreateUserPublicProfile;
-import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
-import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
+import de.adorsys.datasafe.business.impl.privatestore.impl.PrivateSpaceServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,24 +33,27 @@ import java.util.stream.Collectors;
 
 import static de.adorsys.datasafe.business.impl.profile.DFSSystem.CREDS_ID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
-@Testcontainers
 @Slf4j
 public class TestContainerTest {
 
-    private DefaultDocusafeServices docusafeService = DaggerDefaultDocusafeServices
+    private TestDocusafeServices docusafeService = DaggerTestDocusafeServices
             .builder()
             .build();
 
     private static final String dockerComposePath = "src/test/resources/docker-compose.yml";
     private static DockerComposeContainer compose = new DockerComposeContainer(new File(dockerComposePath))
             .withExposedService("minio", 9000, Wait.forListeningPort());
-    static {
+
+    @BeforeAll
+    static void beforeAll() {
         compose.start();
     }
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         System.setProperty("SC-AMAZONS3", "http://127.0.0.1:9000,admin,password,us-east-1,home");
     }
 
@@ -67,20 +69,21 @@ public class TestContainerTest {
 //        URI path = new URI("./path/to/file.txt");
         URI path = new URI("./file.txt");
         PrivateWriteRequest writeRequest = new PrivateWriteRequest(john, new FileIn(path));
-        OutputStream stream = docusafeService.privateService().write(writeRequest);
-
+        PrivateSpaceServiceImpl privateSpaceService = docusafeService.privateService();
+        OutputStream stream = privateSpaceService.write(writeRequest);
         stream.write(originalMessage.getBytes());
         stream.close();
 
+        verify(docusafeService.pathEncryption()).encrypt(any(), any());
+
         // read from private
-        List<URI> files = docusafeService.privateService().list(john).collect(Collectors.toList());
+        List<URI> files = privateSpaceService.list(john).collect(Collectors.toList());
         log.info("{} has {} in PRIVATE", john.getUserID().getValue(), files);
         URI location = files.get(0);
 
         FileOut out = new FileOut(new URI(""));
-
         PrivateReadRequest readRequest = PrivateReadRequest.builder().owner(john).path(location).response(out).build();
-        InputStream dataStream = docusafeService.privateService().read(readRequest);
+        InputStream dataStream = privateSpaceService.read(readRequest);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteStreams.copy(dataStream, outputStream);
@@ -88,7 +91,6 @@ public class TestContainerTest {
         log.info("{} has {} in PRIVATE", john.getUserID().getValue(), readMessage);
 
         assertThat(readMessage).isEqualTo(originalMessage);
-
     }
 
     @Test
@@ -107,7 +109,6 @@ public class TestContainerTest {
 
         stream.write(originalMessage.getBytes());
         stream.close();
-
 
         List<URI> files = docusafeService.inboxService().list(to).collect(Collectors.toList());
         log.info("{} has {} in INBOX", to.getUserID().getValue(), files);
@@ -158,5 +159,4 @@ public class TestContainerTest {
                 .credentials(SystemCredentials.builder().id(CREDS_ID).build())
                 .build();
     }
-
 }
