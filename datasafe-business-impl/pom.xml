@@ -58,5 +58,11 @@
             <version>${minio.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpcomponents}</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>

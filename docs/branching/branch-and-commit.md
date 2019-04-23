@@ -12,7 +12,7 @@ example:
 
 # Commit naming strategy:
 
-Always include **prefix** DOC2-**issue-id** in your commit message, so that valid commit message can be only:
+Always include prefix **DAT-issue-id** in your commit message, so that valid commit message can be only:
 ```
  git commit -a -m "DAT-17 Refactoring"
  git commit -a -m "DAT-17 Moving files"
