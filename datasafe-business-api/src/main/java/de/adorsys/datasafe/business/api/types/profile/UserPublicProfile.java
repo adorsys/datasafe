@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.api.types.profile;
 
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.Builder;
 import lombok.NonNull;

@@ -7,6 +7,7 @@ import java.io.OutputStream;
 /**
  * Raw file write operation at a given location.
  */
+@FunctionalInterface
 public interface StorageWriteService {
 
     OutputStream write(ResourceLocation location);

@@ -14,4 +14,7 @@ public class UserPrivateProfile {
 
     @NonNull
     private final PrivateResource privateStorage;
+
+    @NonNull
+    private final PrivateResource inboxWithWriteAccess;
 }

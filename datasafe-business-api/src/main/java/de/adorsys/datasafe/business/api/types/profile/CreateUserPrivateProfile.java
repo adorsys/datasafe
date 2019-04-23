@@ -19,11 +19,15 @@ public class CreateUserPrivateProfile {
     @NonNull
     private final PrivateResource privateStorage;
 
+    @NonNull
+    private final PrivateResource inboxWithWriteAccess;
+
     public UserPrivateProfile removeAccess() {
         return UserPrivateProfile.builder()
             // FIXME - remove access ?
             .keystore(keystore)
             .privateStorage(privateStorage)
+            .inboxWithWriteAccess(inboxWithWriteAccess)
             .build();
     }
 }

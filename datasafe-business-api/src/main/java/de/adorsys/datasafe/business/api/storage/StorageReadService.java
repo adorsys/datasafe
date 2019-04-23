@@ -7,6 +7,7 @@ import java.io.InputStream;
 /**
  * Raw file read operation at a given location.
  */
+@FunctionalInterface
 public interface StorageReadService {
 
     InputStream read(ResourceLocation location);

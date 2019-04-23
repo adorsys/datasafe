@@ -12,6 +12,9 @@ import de.adorsys.datasafe.business.api.directory.profile.keys.PublicKeyService;
 public abstract class DefaultCredentialsModule {
 
     @Binds
+    abstract BucketAccessService bucketAccessService(BucketAccessServiceImpl impl);
+
+    @Binds
     abstract PublicKeyService publicKeyService(DFSPublicKeyServiceImpl impl);
 
     @Binds

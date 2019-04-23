@@ -1,6 +1,10 @@
 package de.adorsys.datasafe.business.impl.service;
 
+import dagger.BindsInstance;
 import dagger.Component;
+import de.adorsys.datasafe.business.api.storage.StorageListService;
+import de.adorsys.datasafe.business.api.storage.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.StorageWriteService;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.credentials.DefaultCredentialsModule;
 import de.adorsys.datasafe.business.impl.dfs.DefaultDFSModule;
@@ -36,4 +40,20 @@ public interface DefaultDocusafeServices {
     PrivateSpaceServiceImpl privateService();
     InboxServiceImpl inboxService();
     DFSBasedProfileStorageImpl userProfile();
+
+    @Component.Builder
+    interface Builder {
+
+        @BindsInstance
+        Builder storageList(StorageListService listStorage);
+
+        @BindsInstance
+        Builder storageRead(StorageReadService listStorage);
+
+        @BindsInstance
+        Builder storageWrite(StorageWriteService listStorage);
+
+        DefaultDocusafeServices build();
+    }
+
 }

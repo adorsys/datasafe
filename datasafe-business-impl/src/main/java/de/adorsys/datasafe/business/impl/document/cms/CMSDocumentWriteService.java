@@ -8,6 +8,7 @@ import de.adorsys.datasafe.business.api.storage.StorageWriteService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -35,7 +36,7 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
     @Override
     @SneakyThrows
-    public OutputStream write(WriteRequest<UserID> request) {
+    public OutputStream write(WriteRequest<UserID, ResourceLocation> request) {
 
         OutputStream dfsSink = writeService.write(request.getLocation());
         PublicKeyIDWithPublicKey withId = publicKeyService.publicKey(request.getOwner());

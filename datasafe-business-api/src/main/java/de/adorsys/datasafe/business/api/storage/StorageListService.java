@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 /**
  * Raw list operation at a given location.
  */
+@FunctionalInterface
 public interface StorageListService {
 
     /**

@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.impl.dfs;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 
@@ -9,6 +10,6 @@ import dagger.Provides;
 @Module
 public abstract class DefaultDFSModule {
 
-    @Provides
+    @Binds
     abstract DFSConnectionServiceImpl dfsConnectionService(DFSConnectionServiceImpl impl);
 }
