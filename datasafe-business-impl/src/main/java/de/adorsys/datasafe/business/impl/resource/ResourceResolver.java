@@ -45,6 +45,6 @@ public class ResourceResolver {
             return resource;
         }
 
-        return resolveTo.get().resolve(resource);
+        return resource.applyRoot(resolveTo.get()).get();
     }
 }

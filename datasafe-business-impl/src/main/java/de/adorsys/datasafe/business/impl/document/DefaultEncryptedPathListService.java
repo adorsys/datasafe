@@ -5,7 +5,6 @@ import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.impl.types.DefaultPrivateResource;
 
 import javax.inject.Inject;
 import java.util.stream.Stream;
@@ -21,6 +20,6 @@ public class DefaultEncryptedPathListService implements EncryptedDocumentListSer
 
     @Override
     public Stream<PrivateResource> list(ListRequest<UserIDAuth> location) {
-        return listService.list(location.getLocation()).map(it -> new DefaultPrivateResource(it.locationWithAccess()));
+        return listService.list(location.getLocation());
     }
 }

@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.api.storage;
 
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 
 import java.util.stream.Stream;
@@ -15,5 +16,5 @@ public interface StorageListService {
      * @param location bucket descriptor, with credentials, where to list data
      * @return stream of available bucket paths
      */
-    Stream<ResourceLocation> list(ResourceLocation location);
+    Stream<PrivateResource> list(ResourceLocation location);
 }

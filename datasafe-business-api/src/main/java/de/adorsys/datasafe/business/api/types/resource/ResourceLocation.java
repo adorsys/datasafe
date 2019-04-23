@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.api.types.resource;
 
 import java.net.URI;
+import java.util.function.Supplier;
 
 /**
  * Interface for concrete class that may contain extra information like file metadata.
@@ -13,9 +14,9 @@ public interface ResourceLocation<T> {
     URI locationWithAccess();
 
     /**
-     * Resolves relative location.
-     * @param location uri to resolve
-     * @return path of resource relative to the given url
+     * Resolves relative uri - called when resolving relative path against absolute.
+     * @param absolute uri to resolve against
+     * @return path of resource relative to the absolute uri
      */
-    T resolve(ResourceLocation location);
+    Supplier<T> applyRoot(ResourceLocation absolute);
 }

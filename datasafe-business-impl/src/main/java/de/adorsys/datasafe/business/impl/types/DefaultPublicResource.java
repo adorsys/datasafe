@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.net.URI;
+import java.util.function.Supplier;
 
 @ToString
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class DefaultPublicResource implements PublicResource {
     }
 
     @Override
-    public PublicResource resolve(ResourceLocation location) {
-        return new DefaultPublicResource(uri.resolve(location.locationWithAccess()));
+    public Supplier<PublicResource> applyRoot(ResourceLocation location) {
+        return () -> new DefaultPublicResource(location.locationWithAccess().resolve(uri));
     }
 }

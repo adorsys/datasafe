@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.business.impl.impl;
 
-import com.google.common.io.ByteSink;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.business.api.types.UserID;
@@ -19,6 +18,7 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
 import de.adorsys.datasafe.business.impl.types.DefaultPrivateResource;
 import de.adorsys.datasafe.business.impl.types.DefaultPublicResource;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -28,8 +28,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     private static final String MESSAGE_ONE = "Hello here";
+    private static final String META_INFO = "This is metainfo here";
 
     private DefaultDocusafeServices docusafeService = DaggerDefaultDocusafeServices
             .builder()
@@ -57,9 +62,11 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
         registerJohnAndJane();
 
-        writeDataToPrivate(jane, "./secret.txt", MESSAGE_ONE);
+        writeDataToPrivate(jane, "./secret.txt", MESSAGE_ONE, META_INFO);
 
         PrivateResource privateJane = getFirstFileInPrivate(jane);
+
+        assertThat(((PrivateResourceWithMeta) privateJane).getMetaInformation()).isEqualTo(META_INFO);
 
         String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane);
 
@@ -72,11 +79,11 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     }
 
     @SneakyThrows
-    private void writeDataToPrivate(UserIDAuth auth, String path, String data) {
+    private void writeDataToPrivate(UserIDAuth auth, String path, String data, String meta) {
         OutputStream stream = docusafeService.privateService().write(
                 WriteRequest.<UserIDAuth, PrivateResource>builder()
                         .owner(auth)
-                        .location(new DefaultPrivateResource(new URI(path)))
+                        .location(new PrivateResourceWithMeta(new URI(path), meta))
                         .build()
         );
 
@@ -89,7 +96,7 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
         List<PrivateResource> files = docusafeService.privateService().list(
                 ListRequest.<UserIDAuth>builder()
                         .owner(inboxOwner)
-                        .location(new DefaultPrivateResource(new URI("./")))
+                        .location(DefaultPrivateResource.ROOT)
                         .build()
         ).collect(Collectors.toList());
         log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);
@@ -134,7 +141,7 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     private PrivateResource getFirstFileInInbox(UserIDAuth inboxOwner) {
         List<PrivateResource> files = docusafeService.inboxService().list(ListRequest.<UserIDAuth>builder()
                 .owner(inboxOwner)
-                .location(new DefaultPrivateResource(new URI("./")))
+                .location(DefaultPrivateResource.ROOT)
                 .build()
         ).collect(Collectors.toList());
         log.info("{} has {} in INBOX", inboxOwner.getUserID().getValue(), files);
@@ -193,11 +200,15 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     }
 
     @SneakyThrows
-    private Stream<ResourceLocation> listFiles(ResourceLocation path) {
+    private Stream<PrivateResource> listFiles(ResourceLocation path) {
         return Files.walk(resolve(path.locationWithAccess(), false))
                 .filter(it -> !it.startsWith("."))
                 .filter(it -> !it.toFile().isDirectory())
-                .map(it -> new DefaultPublicResource(it.toUri()));
+                .map(it -> {
+                    // since java on MacOS does not support meta info we will decode it from file name
+                    String[] parts = it.toString().split("_");
+                    return new PrivateResourceWithMeta(it.toUri(), parts[parts.length - 1]);
+                });
     }
 
     @SneakyThrows
@@ -207,7 +218,17 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     @SneakyThrows
     private OutputStream writeFile(ResourceLocation path) {
-        return MoreFiles.asByteSink(resolve(path.locationWithAccess(), true), StandardOpenOption.CREATE).openStream();
+        Path filePath = resolve(path.locationWithAccess(), true);
+
+        if (path instanceof PrivateResourceWithMeta) {
+            // since java on MacOS does not support meta info we will encode it in file name
+            filePath = Paths.get(
+                    filePath.getParent().toString(),
+                    filePath.getFileName().toString() + '_' + ((PrivateResourceWithMeta) path).metaInformation
+            );
+        }
+
+        return MoreFiles.asByteSink(filePath, StandardOpenOption.CREATE).openStream();
     }
 
     private Path resolve(URI uri, boolean mkDirs) {
@@ -217,5 +238,24 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
         }
 
         return Paths.get(tempDir.toUri().resolve(uri));
+    }
+
+    private static class PrivateResourceWithMeta extends DefaultPrivateResource {
+
+        @Getter
+        private final String metaInformation;
+
+        PrivateResourceWithMeta(URI uri, String meta) {
+            super(uri);
+            this.metaInformation = meta;
+        }
+
+        @Override
+        public Supplier<PrivateResource> applyRoot(ResourceLocation absolute) {
+            return () -> new PrivateResourceWithMeta(
+                    absolute.locationWithAccess().resolve(super.locationWithAccess()),
+                    metaInformation
+            );
+        }
     }
 }

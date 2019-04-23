@@ -6,10 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.net.URI;
+import java.util.function.Supplier;
 
 @ToString
 @RequiredArgsConstructor
 public class DefaultPrivateResource implements PrivateResource {
+
+    public static final DefaultPrivateResource ROOT = new DefaultPrivateResource(URI.create("./"));
 
     private final URI uri;
 
@@ -19,7 +22,7 @@ public class DefaultPrivateResource implements PrivateResource {
     }
 
     @Override
-    public PrivateResource resolve(ResourceLocation location) {
-        return new DefaultPrivateResource(uri.resolve(location.locationWithAccess()));
+    public Supplier<PrivateResource> applyRoot(ResourceLocation location) {
+        return () -> new DefaultPrivateResource(location.locationWithAccess().resolve(uri));
     }
 }
