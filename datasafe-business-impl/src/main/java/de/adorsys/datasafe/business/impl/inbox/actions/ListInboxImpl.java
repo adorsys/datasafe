@@ -1,18 +1,19 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
+import java.net.URI;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
 import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
 import de.adorsys.datasafe.business.api.deployment.document.DocumentListService;
 import de.adorsys.datasafe.business.api.deployment.inbox.actions.ListInbox;
 import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.DFSAccess;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.action.ListRecursiveFlag;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.dfs.connection.api.types.ListRecursiveFlag;
-
-import javax.inject.Inject;
-import java.net.URI;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class ListInboxImpl implements ListInbox {
 
