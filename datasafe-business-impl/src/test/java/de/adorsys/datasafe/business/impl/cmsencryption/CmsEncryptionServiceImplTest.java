@@ -8,6 +8,7 @@ import java.nio.channels.FileChannel;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 
+import de.adorsys.datasafe.business.impl.cmsencryption.services.DefaultCMSEncryptionConfig;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.Assertions;
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CmsEncryptionServiceImplTest {
 
-    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl();
+    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl();
     private static final String MESSAGE_CONTENT = "message content";
 

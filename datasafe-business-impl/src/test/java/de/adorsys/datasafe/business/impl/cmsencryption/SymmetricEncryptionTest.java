@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 
+import de.adorsys.datasafe.business.impl.cmsencryption.services.DefaultCMSEncryptionConfig;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.cms.CMSException;
 import org.junit.jupiter.api.Assertions;
@@ -29,11 +30,11 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SymetricEncryptionTest {
+public class SymmetricEncryptionTest {
 
     private static final String MESSAGE_CONTENT = "message content";
 
-    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl();
+    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl();
     ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
