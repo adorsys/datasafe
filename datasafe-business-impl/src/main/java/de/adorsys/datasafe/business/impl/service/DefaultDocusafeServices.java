@@ -7,7 +7,6 @@ import de.adorsys.datasafe.business.api.storage.StorageReadService;
 import de.adorsys.datasafe.business.api.storage.StorageWriteService;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.credentials.DefaultCredentialsModule;
-import de.adorsys.datasafe.business.impl.dfs.DefaultDFSModule;
 import de.adorsys.datasafe.business.impl.document.DefaultDocumentModule;
 import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule;
 import de.adorsys.datasafe.business.impl.inbox.impl.InboxServiceImpl;
@@ -28,7 +27,6 @@ import javax.inject.Singleton;
         DefaultCredentialsModule.class,
         DefaultKeyStoreModule.class,
         DefaultDocumentModule.class,
-        DefaultDFSModule.class,
         DefaultCMSEncryptionModule.class,
         DefaultPathEncryptionModule.class,
         DefaultInboxActionsModule.class,
