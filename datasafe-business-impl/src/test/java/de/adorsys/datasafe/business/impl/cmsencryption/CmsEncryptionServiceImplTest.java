@@ -9,6 +9,7 @@ import java.security.KeyStore;
 import java.security.MessageDigest;
 
 import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.DecryptionException;
+import de.adorsys.datasafe.business.impl.cmsencryption.services.DefaultCMSEncryptionConfig;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
@@ -44,7 +45,7 @@ public class CmsEncryptionServiceImplTest {
     private static KeyStoreAccess keyStoreAccess;
     private static KeyStoreService keyStoreService = new KeyStoreServiceImpl();
 
-    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl();
+    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
 
     @BeforeAll
     public static void setUp() {

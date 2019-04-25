@@ -61,7 +61,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         RecipientInfoGenerator rec = new JceKeyTransRecipientInfoGenerator(publicKeyID.getValue().getBytes(),
                 publicKey);
 
-		return streamEncrypt(dataContentStream, rec);
+		return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 	public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID keyID) {
 		RecipientInfoGenerator rec = new JceKEKRecipientInfoGenerator(keyID.getValue().getBytes(), secretKey);
 
-		return streamEncrypt(dataContentStream, rec);
+		return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
 	}
 
     @Override
