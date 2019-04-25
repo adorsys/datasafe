@@ -29,7 +29,7 @@
 		</dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-document-api</artifactId>
+            <artifactId>datasafe-storage-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         

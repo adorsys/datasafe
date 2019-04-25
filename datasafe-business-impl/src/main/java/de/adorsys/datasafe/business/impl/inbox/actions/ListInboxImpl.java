@@ -1,50 +1,37 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
-import java.net.URI;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import de.adorsys.datasafe.business.api.inbox.actions.ListInbox;
+import de.adorsys.datasafe.business.api.storage.StorageListService;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.impl.resource.ResourceResolver;
 
 import javax.inject.Inject;
-
-import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
-import de.adorsys.datasafe.business.api.deployment.document.DocumentListService;
-import de.adorsys.datasafe.business.api.deployment.inbox.actions.ListInbox;
-import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.types.DFSAccess;
-import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRecursiveFlag;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import java.util.stream.Stream;
 
 public class ListInboxImpl implements ListInbox {
 
-    private final BucketAccessService accessService;
-    private final DocumentListService listService;
+    private final ResourceResolver resolver;
+    private final StorageListService listService;
 
     @Inject
-    public ListInboxImpl(BucketAccessService accessService, DocumentListService listService) {
-        this.accessService = accessService;
+    public ListInboxImpl(ResourceResolver resolver, StorageListService listService) {
+        this.resolver = resolver;
         this.listService = listService;
     }
 
     @Override
-    public Stream<URI> list(UserIDAuth forUser) {
-        DFSAccess userInbox = accessService.privateAccessFor(
-                forUser,
-                resolveInboxLocation(forUser)
-        );
-
-        ListRequest listRequest = ListRequest.builder()
-                .location(userInbox)
-                .decryptPath(false)
-                .recursiveFlag(ListRecursiveFlag.FALSE)
-                .build();
-
-        return listService.list(listRequest);
+    public Stream<PrivateResource> list(ListRequest<UserIDAuth> forUser) {
+        return listService.list(resolveRelative(forUser).getLocation());
     }
 
-    private Function<ProfileRetrievalService, URI> resolveInboxLocation(UserIDAuth forUser) {
-        return profiles -> profiles
-                .publicProfile(forUser.getUserID())
-                .getInbox();
+    private ListRequest<UserIDAuth> resolveRelative(ListRequest<UserIDAuth> request) {
+        return request.toBuilder().location(
+                resolver.resolveRelativeToPrivateInbox(
+                        request.getOwner(),
+                        request.getLocation()
+                )
+        ).build();
     }
 }

@@ -1,59 +1,33 @@
 package de.adorsys.datasafe.business.impl.privatestore.actions;
 
-import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
-import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
-import de.adorsys.datasafe.business.api.deployment.keystore.PublicKeyService;
-import de.adorsys.datasafe.business.api.deployment.pathencryption.PathEncryption;
-import de.adorsys.datasafe.business.api.deployment.privatespace.actions.WriteToPrivate;
-import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.types.DFSAccess;
+import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.types.privatespace.PrivateWriteRequest;
+import de.adorsys.datasafe.business.api.types.privatespace.actions.WriteToPrivate;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 
 import javax.inject.Inject;
 import java.io.OutputStream;
-import java.net.URI;
-import java.util.function.Function;
 
 public class WriteToPrivateImpl implements WriteToPrivate {
 
-    private final PublicKeyService publicKeyService;
-    private final BucketAccessService accessService;
-    private final DocumentWriteService writer;
-    private final PathEncryption pathEncryption;
+    private final EncryptedResourceResolver resolver;
+    private final EncryptedDocumentWriteService writer;
 
     @Inject
-    public WriteToPrivateImpl(PublicKeyService publicKeyService, BucketAccessService accessService,
-                              DocumentWriteService writer, PathEncryption pathEncryption) {
-        this.publicKeyService = publicKeyService;
-        this.accessService = accessService;
+    public WriteToPrivateImpl(EncryptedResourceResolver resolver, EncryptedDocumentWriteService writer) {
+        this.resolver = resolver;
         this.writer = writer;
-        this.pathEncryption = pathEncryption;
     }
 
     @Override
-    public OutputStream write(PrivateWriteRequest request) {
-        DFSAccess userPrivate = accessService.privateAccessFor(
-                request.getOwner(),
-                resolveFileLocation(request)
+    public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
+        return writer.write(WriteRequest.<UserID, ResourceLocation>builder()
+                .location(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation()))
+                .owner(request.getOwner().getUserID())
+                .build()
         );
-
-        // TODO: Map from into file meta
-        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
-        WriteRequest writeRequest = WriteRequest.builder()
-                .to(userPrivate)
-                .keyWithId(publicKeyService.publicKey(request.getOwner().getUserID()))
-                .build();
-
-        return writer.write(writeRequest);
-    }
-
-    private Function<ProfileRetrievalService, URI> resolveFileLocation(PrivateWriteRequest request) {
-        return profiles -> profiles
-                .privateProfile(request.getOwner())
-                .getPrivateStorage()
-                .resolve(
-                        pathEncryption.encrypt(request.getOwner(), request.getRequest().getPath())
-                );
     }
 }
