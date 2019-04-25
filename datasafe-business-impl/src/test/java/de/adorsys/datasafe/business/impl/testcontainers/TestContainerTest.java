@@ -20,11 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -43,18 +42,23 @@ public class TestContainerTest {
             .builder()
             .build();
 
-    private static final String dockerComposePath = "src/test/resources/docker-compose.yml";
-    private static DockerComposeContainer compose = new DockerComposeContainer(new File(dockerComposePath))
-            .withExposedService("minio", 9000, Wait.forListeningPort());
+    private static GenericContainer minio = new GenericContainer("minio/minio")
+            .withExposedPorts(9000)
+            .withEnv("MINIO_ACCESS_KEY", "admin")
+            .withEnv("MINIO_SECRET_KEY", "password")
+            .withCommand("server /data")
+            .waitingFor(Wait.defaultWaitStrategy());
 
     @BeforeAll
     static void beforeAll() {
-        compose.start();
+        minio.start();
     }
 
     @BeforeEach
     void setup() {
-        System.setProperty("SC-AMAZONS3", "http://127.0.0.1:9000,admin,password,us-east-1,home");
+        Integer mappedPort = minio.getMappedPort(9000);
+        log.info("Mapped port: " + mappedPort);
+        System.setProperty("SC-AMAZONS3", "http://127.0.0.1:" + mappedPort + ",admin,password,us-east-1,home");
     }
 
     @Test
@@ -66,7 +70,6 @@ public class TestContainerTest {
         String originalMessage = "Hello here";
 
         // write to private
-//        URI path = new URI("./path/to/file.txt");
         URI path = new URI("./file.txt");
         PrivateWriteRequest writeRequest = new PrivateWriteRequest(john, new FileIn(path));
         PrivateSpaceServiceImpl privateSpaceService = docusafeService.privateService();
@@ -102,7 +105,6 @@ public class TestContainerTest {
         String originalMessage = "Hello here";
 
         // write to inbox
-//        URI path = new URI("./sub/dir/hello.txt");
         URI path = new URI("./hello.txt");
         InboxWriteRequest inboxWriteRequest = new InboxWriteRequest(from.getUserID(), to.getUserID(), new FileIn(path));
         OutputStream stream = docusafeService.inboxService().write(inboxWriteRequest);
