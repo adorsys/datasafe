@@ -8,10 +8,18 @@ import java.nio.channels.FileChannel;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 
-import de.adorsys.datasafe.business.impl.cmsencryption.services.DefaultCMSEncryptionConfig;
+import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.DecryptionException;
 import org.apache.commons.io.IOUtils;
+import org.bouncycastle.cms.CMSAlgorithm;
+import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.RecipientInfoGenerator;
+import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
+import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
@@ -31,21 +39,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CmsEncryptionServiceImplTest {
 
-    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl();
-    private static final String MESSAGE_CONTENT = "message content";
+    private static final String TEST_MESSAGE_CONTENT = "message content";
+
+    private static KeyStoreAccess keyStoreAccess;
+    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl();
+
+    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl();
+
+    @BeforeAll
+    public static void setUp() {
+        keyStoreAccess = getKeyStoreAccess();
+    }
 
     @Test
     @SneakyThrows
     public void cmsStreamEnvelopeEncryptAndDecryptTest() {
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
-        ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
-        KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 1);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
-
-        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+        KeyStoreAccess keyStoreAccess = getKeyStoreAccess();
 
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -53,7 +62,7 @@ public class CmsEncryptionServiceImplTest {
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
                 publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
 
-        encryptionStream.write(MESSAGE_CONTENT.getBytes());
+        encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
         byte[] byteArray = outputStream.toByteArray();
 
@@ -61,8 +70,83 @@ public class CmsEncryptionServiceImplTest {
         InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess);
         byte[] actualResult = IOUtils.toByteArray(decryptionStream);
 
-        assertThat(MESSAGE_CONTENT).isEqualTo(new String(actualResult));
-        log.debug("en and decrypted successfully");
+        assertThat(TEST_MESSAGE_CONTENT).isEqualTo(new String(actualResult));
+    }
+
+    @Test
+    @SneakyThrows
+    public void cmsStreamEnvelopeZeroKeyPairFailTest() {
+        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
+        gen.open(outputStream, new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC)
+                .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
+
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
+                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+
+        encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
+        IOUtils.closeQuietly(encryptionStream);
+        byte[] byteArray = outputStream.toByteArray();
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+        Assertions.assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess));
+    }
+
+    @Test
+    @SneakyThrows
+    public void cmsStreamEnvelopeTwoKeysPairFailTest() {
+        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        RecipientInfoGenerator recipientInfo1 = new JceKeyTransRecipientInfoGenerator("key1".getBytes(), publicKeyIDWithPublicKey.getPublicKey());
+        RecipientInfoGenerator recipientInfo2 = new JceKeyTransRecipientInfoGenerator("key2".getBytes(), publicKeyIDWithPublicKey.getPublicKey());
+
+        CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
+        gen.addRecipientInfoGenerator(recipientInfo1);
+        gen.addRecipientInfoGenerator(recipientInfo2);
+        gen.open(outputStream, new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC)
+                .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
+
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
+                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+
+        encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
+        IOUtils.closeQuietly(encryptionStream);
+        byte[] byteArray = outputStream.toByteArray();
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+        Assertions.assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess));
+    }
+
+    @Test
+    @SneakyThrows
+    public void cmsStreamEnvelopeOneKeyPairFailTest() {
+        KeyStoreAccess keyStoreAccess = getKeyStoreAccess();
+
+        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
+                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+        encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
+        encryptionStream.close();
+        byte[] byteArray = outputStream.toByteArray();
+
+        KeyStoreAccess newKeyStoreAccess = getKeyStoreAccess(); // new store access would be different from first even was generated similar
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+        Assertions.assertThrows(CMSException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, newKeyStoreAccess));
+    }
+
+    private static KeyStoreAccess getKeyStoreAccess() {
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
+        ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
+        KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
+
+        KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 1);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+
+        return new KeyStoreAccess(keyStore, keyStoreAuth);
     }
 
     @Test
@@ -73,7 +157,7 @@ public class CmsEncryptionServiceImplTest {
         String encryptedFilePath = folderPath + "test_encrypted.dat";
         String decryptedTestFilePath = folderPath + "test_decrypted.dat";
 
-        int _1MbInBytes = 1024 / 1024;
+        int _1MbInBytes = 1024 * 1024;
         int testFileSizeInBytes = 1024 * 1024 * 128; //128Mb
         double freeSpaceThresholdCoeff = 3.1;
 
@@ -86,15 +170,6 @@ public class CmsEncryptionServiceImplTest {
         generateTestFile(testFilePath, testFileSizeInBytes);
         log.info("Test file with size {}Mb generated: {}", testFileSizeInBytes / _1MbInBytes, testFilePath);
 
-
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
-        ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
-        KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 1);
-
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
-        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
 
         File testFile = new File(testFilePath);

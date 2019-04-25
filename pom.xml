@@ -6,6 +6,11 @@
     <modules>
         <module>datasafe-business-api</module>
         <module>datasafe-business-impl</module>
+        <module>datasafe-encryption-api</module>
+        <module>datasafe-inbox-api</module>
+        <module>datasafe-types-api</module>
+        <module>datasafe-directory-api</module>
+        <module>datasafe-document-api</module>
     </modules>
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
@@ -53,8 +58,6 @@
         </developer>
     </developers>
 
-
-
     <properties>
         <java.version>1.8</java.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
@@ -74,55 +77,62 @@
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+       	<slf4j-version>1.7.25</slf4j-version>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection-api</artifactId>
-            <version>${dfs-connection.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection-impl-factory</artifactId>
-            <version>${dfs-connection.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>common-basetypes</artifactId>
-            <version>${common-basetypes.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${common-lang3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${bcpkix-jdk15on.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.dagger</groupId>
-            <artifactId>dagger</artifactId>
-            <version>${dagger.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
-    </dependencies>
+	<dependencyManagement>
+	    <dependencies>
+	        <dependency>
+	            <groupId>de.adorsys</groupId>
+	            <artifactId>dfs-connection-api</artifactId>
+	            <version>${dfs-connection.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>de.adorsys</groupId>
+	            <artifactId>dfs-connection-impl-factory</artifactId>
+	            <version>${dfs-connection.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>de.adorsys</groupId>
+	            <artifactId>common-basetypes</artifactId>
+	            <version>${common-basetypes.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.projectlombok</groupId>
+	            <artifactId>lombok</artifactId>
+	            <version>${lombok.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.apache.commons</groupId>
+	            <artifactId>commons-lang3</artifactId>
+	            <version>${common-lang3.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.bouncycastle</groupId>
+	            <artifactId>bcpkix-jdk15on</artifactId>
+	            <version>${bcpkix-jdk15on.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>com.google.code.gson</groupId>
+	            <artifactId>gson</artifactId>
+	            <version>${gson.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>com.google.dagger</groupId>
+	            <artifactId>dagger</artifactId>
+	            <version>${dagger.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>com.google.guava</groupId>
+	            <artifactId>guava</artifactId>
+	            <version>${guava.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.slf4j</groupId>
+	            <artifactId>slf4j-simple</artifactId>
+	            <version>${slf4j-version}</version>
+	        </dependency>
+	    </dependencies>
+	</dependencyManagement>
 
     <build>
         <finalName>${project.artifactId}</finalName>
