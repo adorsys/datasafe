@@ -1,13 +1,18 @@
 package de.adorsys.datasafe.business.impl.cmsencryption;
 
+import static org.apache.commons.io.IOUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 
+import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.DecryptionException;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.cms.CMSAlgorithm;
@@ -68,7 +73,7 @@ public class CmsEncryptionServiceImplTest {
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess);
-        byte[] actualResult = IOUtils.toByteArray(decryptionStream);
+        byte[] actualResult = toByteArray(decryptionStream);
 
         assertThat(TEST_MESSAGE_CONTENT).isEqualTo(new String(actualResult));
     }
@@ -87,11 +92,11 @@ public class CmsEncryptionServiceImplTest {
                 publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
-        IOUtils.closeQuietly(encryptionStream);
+        closeQuietly(encryptionStream);
         byte[] byteArray = outputStream.toByteArray();
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        Assertions.assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess));
+        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess));
     }
 
     @Test
@@ -113,11 +118,11 @@ public class CmsEncryptionServiceImplTest {
                 publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
-        IOUtils.closeQuietly(encryptionStream);
+        closeQuietly(encryptionStream);
         byte[] byteArray = outputStream.toByteArray();
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        Assertions.assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess));
+        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess));
     }
 
     @Test
@@ -135,7 +140,7 @@ public class CmsEncryptionServiceImplTest {
 
         KeyStoreAccess newKeyStoreAccess = getKeyStoreAccess(); // new store access would be different from first even was generated similar
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        Assertions.assertThrows(CMSException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, newKeyStoreAccess));
+        assertThrows(CMSException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, newKeyStoreAccess));
     }
 
     private static KeyStoreAccess getKeyStoreAccess() {
@@ -162,32 +167,29 @@ public class CmsEncryptionServiceImplTest {
         double freeSpaceThresholdCoeff = 3.1;
 
         log.info("For the test, needed {}Mb free space", 3.1 * testFileSizeInBytes / _1MbInBytes);
+
         File testFilesDirectory = new File("target");
         if(testFilesDirectory.getFreeSpace() < testFileSizeInBytes * freeSpaceThresholdCoeff) {
             log.debug("Free disk space: {}, Size of one test file: {}", testFilesDirectory.getFreeSpace(), testFileSizeInBytes);
-            Assertions.fail("Free space on the disk isn't enough for test, encrypted and decrypted files");
+            fail("Free space on the disk isn't enough for test, encrypted and decrypted files");
         }
+
         generateTestFile(testFilePath, testFileSizeInBytes);
         log.info("Test file with size {}Mb generated: {}", testFileSizeInBytes / _1MbInBytes, testFilePath);
 
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
 
-        File testFile = new File(testFilePath);
-        FileInputStream fisTestFile = new FileInputStream(testFile);
-
         File encryptedFile = new File(encryptedFilePath);
         FileOutputStream fosEnFile = new FileOutputStream(encryptedFile);
-        log.debug("Total file size to read (in Mb) : " + fisTestFile.available() / _1MbInBytes);
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(
                 fosEnFile, publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
-        transferFromInputToOutputStream(fisTestFile, encryptionStream);
 
-        IOUtils.closeQuietly(encryptionStream);
-        IOUtils.closeQuietly(fisTestFile);
-        IOUtils.closeQuietly(fosEnFile);
+        Files.copy(Paths.get(testFilePath), encryptionStream);
+
+        closeQuietly(encryptionStream);
+        closeQuietly(fosEnFile);
         log.info("File encrypted");
-
 
         FileInputStream fisEnFile = new FileInputStream(encryptedFile);
         InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(fisEnFile, keyStoreAccess);
@@ -195,20 +197,20 @@ public class CmsEncryptionServiceImplTest {
         File decryptedFile = new File(decryptedTestFilePath);
         OutputStream osDecrypt = new FileOutputStream(decryptedFile);
 
-        transferFromInputToOutputStream(decryptionStream, osDecrypt);
+        ByteStreams.copy(decryptionStream, osDecrypt);
         log.info("File decrypted");
 
-        IOUtils.closeQuietly(osDecrypt);
-        IOUtils.closeQuietly(fisEnFile);
-        IOUtils.closeQuietly(decryptionStream);
+        closeQuietly(osDecrypt);
+        closeQuietly(fisEnFile);
+        closeQuietly(decryptionStream);
 
-
+        File testFile = new File(testFilePath);
         String checksumOfOriginTestFile = checksum(testFile);
         String checksumOfDecryptedTestFile = checksum(decryptedFile);
 
         log.info("Origin test file checksum hex: {}", checksumOfOriginTestFile);
         log.info("Decrypted test file checksum hex: {}", checksumOfDecryptedTestFile);
-        Assertions.assertEquals(checksumOfOriginTestFile, checksumOfDecryptedTestFile);
+        assertEquals(checksumOfOriginTestFile, checksumOfDecryptedTestFile);
 
         if(testFile.delete() && encryptedFile.delete() && decryptedFile.delete()) {
             log.trace("Test files were deleted");
@@ -222,14 +224,6 @@ public class CmsEncryptionServiceImplTest {
 
         for (int i = 0; i < testFileSizeInBytes; i++) {
             out.put((byte) 'x');
-        }
-    }
-
-    private void transferFromInputToOutputStream(InputStream fisTestFile, OutputStream encryptionStream) throws IOException {
-        int content;
-        byte[] buffer = new byte[8 * 1024]; //8kb
-        while ((content = fisTestFile.read(buffer)) != -1) {
-            encryptionStream.write(buffer, 0, content);
         }
     }
 
