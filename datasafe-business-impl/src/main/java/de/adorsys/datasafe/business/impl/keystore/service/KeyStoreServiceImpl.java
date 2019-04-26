@@ -50,7 +50,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
             if (config == null) {
                 config = new KeyStoreCreationConfig(5, 5, 5);
             }
-            // TODO, hier also statt der StoreID nun das
+            // TODO, so here instead of the StoreID
             String serverKeyPairAliasPrefix = HexUtil.convertBytesToHexString(UUID.randomUUID().toString().getBytes());
             log.debug("keystoreid = " + serverKeyPairAliasPrefix);
             {

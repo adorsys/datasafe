@@ -1,11 +1,11 @@
 package de.adorsys.datasafe.business.api.encryption.bucketpathencryption;
 
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
 import java.net.URI;
 
 public interface BucketPathEncryptionService {
 
-    URI encrypt(SecretKeySpec secretKey, URI bucketPath);
+    URI encrypt(SecretKey secretKey, URI bucketPath);
 
-    URI decrypt(SecretKeySpec secretKey, URI bucketPath);
+    URI decrypt(SecretKey secretKey, URI bucketPath);
 }

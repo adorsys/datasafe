@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.net.URI;
@@ -26,7 +27,7 @@ public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionServ
 
     @Override
     @SneakyThrows
-    public URI encrypt(SecretKeySpec secretKey, URI bucketPath) {
+    public URI encrypt(SecretKey secretKey, URI bucketPath) {
         validateUriIsRelative(bucketPath);
 
         Cipher cipher = createCipher(secretKey, Cipher.ENCRYPT_MODE);
@@ -45,7 +46,7 @@ public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionServ
 
     @Override
     @SneakyThrows
-    public URI decrypt(SecretKeySpec secretKey, URI bucketPath) {
+    public URI decrypt(SecretKey secretKey, URI bucketPath) {
         validateUriIsRelative(bucketPath);
 
         Cipher cipher = createCipher(secretKey, Cipher.DECRYPT_MODE);
@@ -60,14 +61,13 @@ public class BucketPathEncryptionServiceImpl implements BucketPathEncryptionServ
         return new URI(result.toString());
     }
 
-    private static Cipher createCipher(SecretKeySpec secretKey, int cipherMode) {
+    private static Cipher createCipher(SecretKey secretKey, int cipherMode) {
         try {
             byte[] key = secretKey.getEncoded();
             MessageDigest sha = MessageDigest.getInstance("SHA-256");
             key = sha.digest(key);
-            // nur die ersten 128 bit nutzen
+            // only use the first 128 bits
             key = Arrays.copyOf(key, 16);
-            // der fertige Schluessel
             SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
 
             Cipher cipher = Cipher.getInstance("AES");
