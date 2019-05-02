@@ -7,17 +7,15 @@
 		<artifactId>datasafe</artifactId>
 		<version>0.0.6-SNAPSHOT</version>
 	</parent>
-	<artifactId>datasafe-inbox-api</artifactId>
+	<artifactId>datasafe-types</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>de.adorsys</groupId>
-			<artifactId>datasafe-encryption-api</artifactId>
-			<version>${project.version}</version>
+			<artifactId>common-basetypes</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.adorsys</groupId>
-			<artifactId>datasafe-types-api</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
 	</dependencies>
 </project>

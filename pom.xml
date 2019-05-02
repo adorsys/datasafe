@@ -3,15 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
+
     <modules>
-        <module>datasafe-business-api</module>
-        <module>datasafe-business-impl</module>
-        <module>datasafe-encryption-api</module>
-        <module>datasafe-inbox-api</module>
-        <module>datasafe-types-api</module>
-        <module>datasafe-directory-api</module>
-        <module>datasafe-storage-api</module>
+        <module>datasafe-business</module>
+        <module>datasafe-directory</module>
+        <module>datasafe-encryption</module>
+        <module>datasafe-inbox</module>
+        <module>datasafe-storage</module>
+        <module>datasafe-types</module>
     </modules>
+
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
     <version>0.0.6-SNAPSHOT</version>

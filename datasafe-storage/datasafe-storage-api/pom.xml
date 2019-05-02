@@ -4,18 +4,20 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>de.adorsys</groupId>
-		<artifactId>datasafe</artifactId>
+		<artifactId>datasafe-storage</artifactId>
 		<version>0.0.6-SNAPSHOT</version>
 	</parent>
-	<artifactId>datasafe-types-api</artifactId>
+	<artifactId>datasafe-storage-api</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>de.adorsys</groupId>
-			<artifactId>common-basetypes</artifactId>
+			<artifactId>datasafe-types</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
+			<groupId>de.adorsys</groupId>
+			<artifactId>datasafe-encryption-api</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>
