@@ -2,8 +2,8 @@ package de.adorsys.datasafe.business.impl.profile;
 
 import dagger.Binds;
 import dagger.Module;
-import de.adorsys.datasafe.business.api.deployment.profile.ProfileRegistrationService;
-import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
+import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationService;
+import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 
 /**
  * This module is responsible for providing user profiles - his inbox, private storage, etc. locations.

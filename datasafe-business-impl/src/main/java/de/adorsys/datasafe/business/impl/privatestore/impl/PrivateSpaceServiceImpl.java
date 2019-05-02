@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.business.impl.privatestore.impl;
 
-import de.adorsys.datasafe.business.api.deployment.privatespace.PrivateSpaceService;
-import de.adorsys.datasafe.business.api.deployment.privatespace.actions.ListPrivate;
-import de.adorsys.datasafe.business.api.deployment.privatespace.actions.ReadFromPrivate;
-import de.adorsys.datasafe.business.api.deployment.privatespace.actions.WriteToPrivate;
+import de.adorsys.datasafe.business.api.types.privatespace.PrivateSpaceService;
+import de.adorsys.datasafe.business.api.types.privatespace.actions.ListPrivate;
+import de.adorsys.datasafe.business.api.types.privatespace.actions.ReadFromPrivate;
+import de.adorsys.datasafe.business.api.types.privatespace.actions.WriteToPrivate;
 import lombok.experimental.Delegate;
 
 import javax.inject.Inject;

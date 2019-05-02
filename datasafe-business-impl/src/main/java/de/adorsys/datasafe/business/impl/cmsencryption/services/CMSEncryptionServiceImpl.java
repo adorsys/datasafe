@@ -12,7 +12,7 @@ import java.security.UnrecoverableKeyException;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
-import org.bouncycastle.cms.CMSAlgorithm;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.cms.CMSEnvelopedDataParser;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
 import org.bouncycastle.cms.CMSException;
@@ -29,9 +29,8 @@ import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.types.CMSEncryptionConfig;
 import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.DecryptionException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +44,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
+    private CMSEncryptionConfig encryptionConfig;
+
     @Inject
-    public CMSEncryptionServiceImpl() {
+    public CMSEncryptionServiceImpl(CMSEncryptionConfig encryptionConfig) {
+        this.encryptionConfig = encryptionConfig;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         RecipientInfoGenerator rec = new JceKeyTransRecipientInfoGenerator(publicKeyID.getValue().getBytes(),
                 publicKey);
 
-        return streamEncrypt(dataContentStream, rec);
+        return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
     }
 
     @Override
@@ -64,7 +66,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID keyID) {
         RecipientInfoGenerator rec = new JceKEKRecipientInfoGenerator(keyID.getValue().getBytes(), secretKey);
 
-        return streamEncrypt(dataContentStream, rec);
+        return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
     }
 
     @Override
@@ -109,11 +111,11 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
                 keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
     }
 
-    private OutputStream streamEncrypt(OutputStream dataContentStream, RecipientInfoGenerator rec)
+    private OutputStream streamEncrypt(OutputStream dataContentStream, RecipientInfoGenerator rec, ASN1ObjectIdentifier algorithm)
             throws CMSException, IOException {
         CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
         gen.addRecipientInfoGenerator(rec);
-        return gen.open(dataContentStream, new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC)
+        return gen.open(dataContentStream, new JceCMSContentEncryptorBuilder(algorithm)
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
     }
 }

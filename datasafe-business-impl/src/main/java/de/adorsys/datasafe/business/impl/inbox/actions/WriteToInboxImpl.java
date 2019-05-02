@@ -1,57 +1,36 @@
 package de.adorsys.datasafe.business.impl.inbox.actions;
 
-import de.adorsys.datasafe.business.api.deployment.credentials.BucketAccessService;
-import de.adorsys.datasafe.business.api.deployment.document.DocumentWriteService;
-import de.adorsys.datasafe.business.api.deployment.inbox.actions.WriteToInbox;
-import de.adorsys.datasafe.business.api.deployment.keystore.PublicKeyService;
-import de.adorsys.datasafe.business.api.deployment.profile.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.types.DFSAccess;
+import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
+import de.adorsys.datasafe.business.api.inbox.actions.WriteToInbox;
+import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.types.inbox.InboxWriteRequest;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
+import de.adorsys.datasafe.business.impl.resource.ResourceResolver;
 
 import javax.inject.Inject;
 import java.io.OutputStream;
-import java.net.URI;
-import java.util.function.Function;
 
 public class WriteToInboxImpl implements WriteToInbox {
 
-    private final PublicKeyService publicKeyService;
-    private final BucketAccessService accessService;
-    private final DocumentWriteService writer;
+    private final ResourceResolver resolver;
+    private final EncryptedDocumentWriteService writer;
 
     @Inject
-    public WriteToInboxImpl(
-            PublicKeyService publicKeyService, BucketAccessService accessService, DocumentWriteService writer
-    ) {
-        this.publicKeyService = publicKeyService;
-        this.accessService = accessService;
+    public WriteToInboxImpl(ResourceResolver resolver, EncryptedDocumentWriteService writer) {
+        this.resolver = resolver;
         this.writer = writer;
     }
 
     @Override
-    public OutputStream write(InboxWriteRequest request) {
-        DFSAccess userInbox = accessService.publicAccessFor(
-                request.getTo(),
-                resolveFileLocation(request)
+    public OutputStream write(WriteRequest<UserID, PublicResource> request) {
+        return writer.write(WriteRequest.<UserID, ResourceLocation>builder()
+                .location(resolver.resolveRelativeToPublicInbox(
+                        request.getOwner(),
+                        request.getLocation())
+                )
+                .owner(request.getOwner())
+                .build()
         );
-
-        // TODO: Map from into file meta
-        // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
-        WriteRequest writeRequest = WriteRequest.builder()
-                .to(userInbox)
-                .keyWithId(publicKeyService.publicKey(request.getTo()))
-                .build();
-
-        return writer.write(writeRequest);
-    }
-
-    private Function<ProfileRetrievalService, URI> resolveFileLocation(InboxWriteRequest request) {
-        return profiles -> profiles
-                .publicProfile(request.getTo())
-                .getInbox()
-                // TODO: UUID based unique filename
-                // FIXME "https://github.com/adorsys/datasafe2/issues/<>"
-                .resolve(request.getRequest().getPath());
     }
 }

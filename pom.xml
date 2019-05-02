@@ -10,7 +10,7 @@
         <module>datasafe-inbox-api</module>
         <module>datasafe-types-api</module>
         <module>datasafe-directory-api</module>
-        <module>datasafe-document-api</module>
+        <module>datasafe-storage-api</module>
     </modules>
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>

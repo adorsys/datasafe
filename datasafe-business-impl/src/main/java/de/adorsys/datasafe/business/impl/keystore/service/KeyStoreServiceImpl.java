@@ -1,38 +1,20 @@
 	package de.adorsys.datasafe.business.impl.keystore.service;
 
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.UUID;
+    import de.adorsys.common.exceptions.BaseException;
+    import de.adorsys.common.exceptions.BaseExceptionHandler;
+    import de.adorsys.common.utils.HexUtil;
+    import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
+    import de.adorsys.datasafe.business.api.types.keystore.*;
+    import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreGenerator;
+    import lombok.extern.slf4j.Slf4j;
+    import org.apache.commons.lang3.RandomUtils;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.RandomUtils;
-
-import de.adorsys.common.exceptions.BaseException;
-import de.adorsys.common.exceptions.BaseExceptionHandler;
-import de.adorsys.common.utils.HexUtil;
-import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreType;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.SecretKeyIDWithKey;
-import de.adorsys.datasafe.business.impl.keystore.generator.KeyStoreGenerator;
-import lombok.extern.slf4j.Slf4j;
+    import javax.crypto.SecretKey;
+    import javax.crypto.spec.SecretKeySpec;
+    import javax.inject.Inject;
+    import java.security.*;
+    import java.security.cert.X509Certificate;
+    import java.util.*;
 
 @Slf4j
 public class KeyStoreServiceImpl implements KeyStoreService {
