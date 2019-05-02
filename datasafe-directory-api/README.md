@@ -8,3 +8,5 @@ Module designed to provide lookup information to user and guest.  Use this modul
 - Obtain credential to access to use dfs private space, and corresponding bucket access credentials
 
 Directory service can either be implemented using a DFS based or an RDBMS based backend.
+
+![](.images/long-term-view-architecture.JPG)

@@ -12,11 +12,11 @@
     <artifactId>datasafe-business-api</artifactId>
     <packaging>jar</packaging>
     <dependencies>
-		<dependency>
-			<groupId>de.adorsys</groupId>
-			<artifactId>datasafe-types-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>    
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-types-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-encryption-api</artifactId>

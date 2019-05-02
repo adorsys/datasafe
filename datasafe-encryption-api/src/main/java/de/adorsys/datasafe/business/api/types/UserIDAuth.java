@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.types;
 
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import lombok.Getter;
 import lombok.Setter;
 

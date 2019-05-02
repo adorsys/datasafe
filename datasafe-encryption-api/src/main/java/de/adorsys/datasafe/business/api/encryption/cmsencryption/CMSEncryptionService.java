@@ -6,9 +6,9 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import de.adorsys.datasafe.business.api.types.keystore.KeyID;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
+
 
 public interface CMSEncryptionService {
 

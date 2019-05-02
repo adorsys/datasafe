@@ -12,9 +12,7 @@ import java.security.UnrecoverableKeyException;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
-import de.adorsys.datasafe.business.api.types.CMSEncryptionConfig;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataParser;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
 import org.bouncycastle.cms.CMSException;
@@ -31,9 +29,10 @@ import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyID;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.types.CMSEncryptionConfig;
+import de.adorsys.datasafe.business.api.types.keystore.KeyID;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.DecryptionException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -61,16 +60,16 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         RecipientInfoGenerator rec = new JceKeyTransRecipientInfoGenerator(publicKeyID.getValue().getBytes(),
                 publicKey);
 
-		return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
-	}
+        return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
+    }
 
-	@Override
-	@SneakyThrows
-	public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID keyID) {
-		RecipientInfoGenerator rec = new JceKEKRecipientInfoGenerator(keyID.getValue().getBytes(), secretKey);
+    @Override
+    @SneakyThrows
+    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID keyID) {
+        RecipientInfoGenerator rec = new JceKEKRecipientInfoGenerator(keyID.getValue().getBytes(), secretKey);
 
-		return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
-	}
+        return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
+    }
 
     @Override
     @SneakyThrows

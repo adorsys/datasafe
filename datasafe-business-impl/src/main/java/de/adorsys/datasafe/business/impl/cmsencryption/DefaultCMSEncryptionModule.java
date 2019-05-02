@@ -8,7 +8,7 @@ import de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionSer
 import de.adorsys.datasafe.business.impl.cmsencryption.services.DefaultCMSEncryptionConfig;
 
 /**
- * This module is responsible for providing CMS encryption of document.
+ * This module is responsible for providing CMS pathencryption of document.
  */
 @Module
 public abstract class DefaultCMSEncryptionModule {
