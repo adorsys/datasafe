@@ -1,8 +1,24 @@
 package de.adorsys.datasafe.business.impl.cmsencryption;
 
-import static org.apache.commons.io.IOUtils.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
+import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
+import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.DecryptionException;
+import de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
+import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.cms.CMSAlgorithm;
+import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.RecipientInfoGenerator;
+import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
+import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.encoders.Hex;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.MappedByteBuffer;
@@ -12,34 +28,10 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 
-import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.business.impl.cmsencryption.exceptions.DecryptionException;
-import org.apache.commons.io.IOUtils;
-import org.bouncycastle.cms.CMSAlgorithm;
-import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.RecipientInfoGenerator;
-import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
-import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.encoders.Hex;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import de.adorsys.datasafe.business.api.deployment.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.KeyStoreType;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.ReadStorePassword;
-import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionServiceImpl;
-import de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.toByteArray;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class CmsEncryptionServiceImplTest {

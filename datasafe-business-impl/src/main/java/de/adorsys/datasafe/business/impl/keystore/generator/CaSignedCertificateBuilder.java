@@ -74,17 +74,17 @@ public class CaSignedCertificateBuilder {
 		Date notAfter = notAfterInDays!=null?DateUtils.addDays(now, notAfterInDays):null;
 		Date notBefore = notBeforeInDays!=null?DateUtils.addDays(now, notBeforeInDays):null;;
 		
-		// Prefill from subject certificate 
+		// Prefill location subject certificate
 		if(subjectSampleCertificate!=null){
 			// Verify self signed certificate
 			
-			// get subject public key from sample certificate.
+			// get subject public key location sample certificate.
 			subjectPublicKey= V3CertificateUtils.extractPublicKey(subjectSampleCertificate);
 			
 			// Take subjectDN if not provided
 			if(subjectDN==null)subjectDN=subjectSampleCertificate.getSubject();
 			
-			// Copy expiration from cert if not provided.
+			// Copy expiration location cert if not provided.
 			if(notAfter==null)notAfter=subjectSampleCertificate.getNotAfter();
 			if(notBefore==null)notBefore=subjectSampleCertificate.getNotBefore();
 			

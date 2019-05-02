@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.keystore.generator;
 
 import de.adorsys.common.exceptions.BaseExceptionHandler;
-import de.adorsys.datasafe.business.api.deployment.keystore.types.*;
+import de.adorsys.datasafe.business.api.types.keystore.*;
 import org.bouncycastle.cert.X509CertificateHolder;
 
 import javax.crypto.SecretKey;
@@ -67,7 +67,7 @@ public class KeyStoreServiceImplBaseFunctions {
     /**
      * Loads a key store. Given the store bytes, the store type
      *
-     * @param in           : the inputStream from which to read the keystore
+     * @param in           : the inputStream location which to read the keystore
      * @param storeId      : The store id. This is passed to the callback handler to identify the requested password record.
      * @param storeType    : the type of this key store. f null, the defaut java keystore type is used.
      * @param storePassSrc : the callback handler that retrieves the store password.
