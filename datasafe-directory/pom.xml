@@ -13,5 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>datasafe-directory-api</module>
+        <module>datasafe-directory-impl</module>
     </modules>
 </project>

@@ -13,5 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>datasafe-inbox-api</module>
+        <module>datasafe-inbox-impl</module>
     </modules>
 </project>

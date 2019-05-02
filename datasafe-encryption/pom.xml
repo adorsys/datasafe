@@ -13,5 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>datasafe-encryption-api</module>
+        <module>datasafe-encryption-impl</module>
     </modules>
 </project>
