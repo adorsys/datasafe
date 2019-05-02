@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.api.types;
+package de.adorsys.datasafe.business.impl.encryption.cmsencryption;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;

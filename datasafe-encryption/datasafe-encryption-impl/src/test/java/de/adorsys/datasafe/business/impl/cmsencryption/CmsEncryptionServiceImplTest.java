@@ -5,7 +5,7 @@ import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionSe
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl;
-import de.adorsys.datasafe.business.impl.cmsencryption.services.DefaultCMSEncryptionConfig;
+import de.adorsys.datasafe.business.impl.encryption.cmsencryption.DefaultCMSEncryptionConfig;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl;
 import lombok.SneakyThrows;

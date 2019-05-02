@@ -3,9 +3,9 @@ package de.adorsys.datasafe.business.impl.cmsencryption;
 import dagger.Binds;
 import dagger.Module;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.api.types.CMSEncryptionConfig;
+import de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionConfig;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl;
-import de.adorsys.datasafe.business.impl.cmsencryption.services.DefaultCMSEncryptionConfig;
+import de.adorsys.datasafe.business.impl.encryption.cmsencryption.DefaultCMSEncryptionConfig;
 
 /**
  * This module is responsible for providing CMS pathencryption of document.

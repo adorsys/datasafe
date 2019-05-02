@@ -4,6 +4,7 @@ import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionSe
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl;
+import de.adorsys.datasafe.business.impl.encryption.cmsencryption.DefaultCMSEncryptionConfig;
 import de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class SymetricEncryptionTest {
 
     private static final String MESSAGE_CONTENT = "message content";
 
-    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl();
+    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl();
     ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
