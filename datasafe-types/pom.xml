@@ -10,10 +10,6 @@
 	<artifactId>datasafe-types</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>de.adorsys</groupId>
-			<artifactId>common-basetypes</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>

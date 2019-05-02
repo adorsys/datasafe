@@ -1,21 +1,22 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore;
 
-import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.api.types.keystore.exceptions.KeyStoreConfigException;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeystoreBuilder;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
+import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairGenerator;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.security.auth.callback.CallbackHandler;
 import java.security.KeyStore;
 import java.util.Date;
 import java.util.UUID;
 
+@Slf4j
 public class KeyStoreGenerator {
-    private final static Logger LOGGER = LoggerFactory.getLogger(KeyStoreGenerator.class);
+
     private final KeyStoreType keyStoreType;
     private final String serverKeyPairAliasPrefix;
     private final KeyStoreCreationConfigImpl config;
@@ -31,7 +32,7 @@ public class KeyStoreGenerator {
         this.keyStoreType = keyStoreType;
         this.serverKeyPairAliasPrefix = "KEYSTORE-ID-0";
         this.readKeyPassword = readKeyPassword;
-        LOGGER.debug("Keystore ID ignored " + serverKeyPairAliasPrefix);
+        log.debug("Keystore ID ignored " + serverKeyPairAliasPrefix);
     }
     
     public KeyStore generate() {
@@ -92,12 +93,10 @@ public class KeyStoreGenerator {
             }
             keyStore = keystoreBuilder.build();
             return keyStore;
-        } catch (Exception e) {
-            throw BaseExceptionHandler.handle(e);
         } finally {
             Date stopTime = new Date();
             long duration = stopTime.getTime() - startTime.getTime();
-            LOGGER.debug("KeyStoreGeneration (milliseconds) DURATION WAS " + duration);
+            log.debug("KeyStoreGeneration (milliseconds) DURATION WAS " + duration);
         }
     }
 

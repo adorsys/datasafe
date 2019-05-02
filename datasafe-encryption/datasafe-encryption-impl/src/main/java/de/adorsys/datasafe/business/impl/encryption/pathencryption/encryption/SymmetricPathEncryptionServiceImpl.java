@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.business.impl.encryption.pathencryption.encryption;
 
-import de.adorsys.common.exceptions.BaseExceptionHandler;
 import de.adorsys.datasafe.business.api.encryption.pathencryption.encryption.SymmetricPathEncryptionService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -89,23 +88,19 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         return Base64.getUrlEncoder().encodeToString(cipher.doFinal(str.getBytes(UTF_8)));
     }
 
-
+    @SneakyThrows
     private static Cipher createCipher(SecretKeySpec secretKey, int cipherMode) {
-        try {
-            byte[] key = secretKey.getEncoded();
-            MessageDigest sha = MessageDigest.getInstance("SHA-256");
-            key = sha.digest(key);
-            // nur die ersten 128 bit nutzen
-            key = Arrays.copyOf(key, 16);
-            // der fertige Schluessel
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        byte[] key = secretKey.getEncoded();
+        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        key = sha.digest(key);
+        // nur die ersten 128 bit nutzen
+        key = Arrays.copyOf(key, 16);
+        // der fertige Schluessel
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
 
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(cipherMode, secretKeySpec);
-            return cipher;
-        } catch (Exception e) {
-            throw BaseExceptionHandler.handle(e);
-        }
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(cipherMode, secretKeySpec);
+        return cipher;
     }
 
     private void validateUriIsRelative(URI uri) {

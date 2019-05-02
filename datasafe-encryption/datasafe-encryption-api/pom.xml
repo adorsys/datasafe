@@ -9,27 +9,10 @@
 	</parent>
 	<artifactId>datasafe-encryption-api</artifactId>
 	<dependencies>
-		<dependency>
-			<groupId>de.adorsys</groupId>
-			<artifactId>common-basetypes</artifactId>
-		</dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-        </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-types</artifactId>
-            <version>0.0.6-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

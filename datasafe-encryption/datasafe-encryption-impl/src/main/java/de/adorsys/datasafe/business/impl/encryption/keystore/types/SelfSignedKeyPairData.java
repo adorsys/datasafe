@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.api.types.keystore;
+package de.adorsys.datasafe.business.impl.encryption.keystore.types;
 
 import org.bouncycastle.cert.X509CertificateHolder;
 

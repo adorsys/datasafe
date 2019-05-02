@@ -6,16 +6,16 @@ import de.adorsys.datasafe.business.api.inbox.InboxServiceImpl;
 import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
 import de.adorsys.datasafe.business.api.storage.StorageWriteService;
-import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultCredentialsModule;
+import de.adorsys.datasafe.business.impl.directory.DefaultProfileModule;
 import de.adorsys.datasafe.business.impl.document.DefaultDocumentModule;
 import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule;
 import de.adorsys.datasafe.business.impl.keystore.DefaultKeyStoreModule;
 import de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionModule;
+import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl;
-import de.adorsys.datasafe.business.impl.directory.DefaultProfileModule;
 
 import javax.inject.Singleton;
 

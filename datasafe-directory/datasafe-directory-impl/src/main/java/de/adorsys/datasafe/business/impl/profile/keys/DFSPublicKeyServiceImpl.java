@@ -8,7 +8,6 @@ import de.adorsys.datasafe.business.api.storage.StorageReadService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;

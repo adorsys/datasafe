@@ -1,24 +1,16 @@
 package de.adorsys.datasafe.business.api.types.keystore;
 
-import de.adorsys.common.utils.HexUtil;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.security.PublicKey;
 
-@AllArgsConstructor
 @Getter
+@ToString
+@RequiredArgsConstructor
 public class PublicKeyIDWithPublicKey {
-    private KeyID keyID;
-    private PublicKey publicKey;
 
-    @Override
-    public String toString() {
-        return "PublicKeyIDWithPublicKey{" +
-                "keyID=" + keyID +
-                ", publicKey.algorithm = " + publicKey.getAlgorithm() +
-                ", publicKey.format = " + publicKey.getFormat() +
-                ", publicKey.encoded = " + HexUtil.convertBytesToHexString(publicKey.getEncoded()) +
-                '}';
-    }
+    private final KeyID keyID;
+    private final PublicKey publicKey;
 }

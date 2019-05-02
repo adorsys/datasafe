@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
-import de.adorsys.datasafe.business.api.types.keystore.SelfSignedKeyPairData;
+import de.adorsys.datasafe.business.impl.encryption.keystore.types.SelfSignedKeyPairData;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.cert.X509CertificateHolder;

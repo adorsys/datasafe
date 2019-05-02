@@ -22,18 +22,7 @@
             <artifactId>datasafe-encryption-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection-impl-factory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>common-basetypes</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

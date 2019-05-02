@@ -1,7 +1,12 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
-import de.adorsys.common.exceptions.BaseExceptionHandler;
-import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.api.types.keystore.KeyEntry;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.business.api.types.keystore.SecretKeyEntry;
+import de.adorsys.datasafe.business.impl.encryption.keystore.types.CertificationResult;
+import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
+import de.adorsys.datasafe.business.impl.encryption.keystore.types.SelfSignedKeyPairData;
+import lombok.SneakyThrows;
 import org.bouncycastle.cert.X509CertificateHolder;
 
 import javax.crypto.SecretKey;
@@ -33,17 +38,14 @@ public class KeyStoreServiceImplBaseFunctions {
      * @param keyStoreType storeType
      * @return KeyStore keyStore
      */
+    @SneakyThrows
     public static KeyStore newKeyStore(KeyStoreType keyStoreType) {
-        try {
-            if (keyStoreType == null) {
-                keyStoreType = KeyStoreType.DEFAULT;
-            }
-            KeyStore ks = KeyStore.getInstance(keyStoreType.getValue());
-            ks.load(null, null);
-            return ks;
-        } catch (Exception e) {
-            throw BaseExceptionHandler.handle(e);
+        if (keyStoreType == null) {
+            keyStoreType = KeyStoreType.DEFAULT;
         }
+        KeyStore ks = KeyStore.getInstance(keyStoreType.getValue());
+        ks.load(null, null);
+        return ks;
     }
 
     /**
@@ -54,14 +56,11 @@ public class KeyStoreServiceImplBaseFunctions {
      * @param storePassSrc storePassSrc
      * @return key store byte array
      */
+    @SneakyThrows
     public static byte[] toByteArray(KeyStore keystore, String storeId, CallbackHandler storePassSrc) {
-        try {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            keystore.store(stream, PasswordCallbackUtils.getPassword(storePassSrc, storeId));
-            return stream.toByteArray();
-        } catch (Exception e) {
-            throw BaseExceptionHandler.handle(e);
-        }
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        keystore.store(stream, PasswordCallbackUtils.getPassword(storePassSrc, storeId));
+        return stream.toByteArray();
     }
 
     /**
@@ -73,37 +72,28 @@ public class KeyStoreServiceImplBaseFunctions {
      * @param storePassSrc : the callback handler that retrieves the store password.
      * @return KeyStore
      */
+    @SneakyThrows
     public static KeyStore loadKeyStore(InputStream in, String storeId, KeyStoreType storeType, CallbackHandler storePassSrc) {
-        try {
+        // Use default type if blank.
+        if (storeType == null) storeType = KeyStoreType.DEFAULT;
 
-            // Use default type if blank.
-            if (storeType == null) storeType = KeyStoreType.DEFAULT;
+        KeyStore ks = KeyStore.getInstance(storeType.getValue());
 
-            KeyStore ks = KeyStore.getInstance(storeType.getValue());
-
-            ks.load(in, PasswordCallbackUtils.getPassword(storePassSrc, storeId));
-            return ks;
-
-        } catch (Exception e) {
-            throw BaseExceptionHandler.handle(e);
-        }
+        ks.load(in, PasswordCallbackUtils.getPassword(storePassSrc, storeId));
+        return ks;
     }
 
+    @SneakyThrows
     public static KeyStore loadKeyStore(KeyStoreType keyStoreType, KeyStore.LoadStoreParameter loadStoreParameter) {
-        try {
-
-            // Use default type if blank.
-            if (keyStoreType == null) {
-                keyStoreType = KeyStoreType.DEFAULT;
-            }
-
-            KeyStore ks = KeyStore.getInstance(keyStoreType.getValue());
-
-            ks.load(loadStoreParameter);
-            return ks;
-        } catch (Exception e) {
-            throw BaseExceptionHandler.handle(e);
+        // Use default type if blank.
+        if (keyStoreType == null) {
+            keyStoreType = KeyStoreType.DEFAULT;
         }
+
+        KeyStore ks = KeyStore.getInstance(keyStoreType.getValue());
+
+        ks.load(loadStoreParameter);
+        return ks;
     }
 
     /**
@@ -145,24 +135,21 @@ public class KeyStoreServiceImplBaseFunctions {
         }
     }
 
+    @SneakyThrows
     private static void addToKeyStore(final KeyStore ks, KeyPairEntry keyPairHolder) {
-        try {
-            List<Certificate> chainList = new ArrayList<>();
-            CertificationResult certification = keyPairHolder.getCertification();
-            X509CertificateHolder subjectCert = certification != null ? certification.getSubjectCert() : keyPairHolder.getKeyPair().getSubjectCert();
-            chainList.add(V3CertificateUtils.getX509JavaCertificate(subjectCert));
-            if (certification != null) {
-                List<X509CertificateHolder> issuerChain = certification.getIssuerChain();
-                for (X509CertificateHolder x509CertificateHolder : issuerChain) {
-                    chainList.add(V3CertificateUtils.getX509JavaCertificate(x509CertificateHolder));
-                }
+        List<Certificate> chainList = new ArrayList<>();
+        CertificationResult certification = keyPairHolder.getCertification();
+        X509CertificateHolder subjectCert = certification != null ? certification.getSubjectCert() : keyPairHolder.getKeyPair().getSubjectCert();
+        chainList.add(V3CertificateUtils.getX509JavaCertificate(subjectCert));
+        if (certification != null) {
+            List<X509CertificateHolder> issuerChain = certification.getIssuerChain();
+            for (X509CertificateHolder x509CertificateHolder : issuerChain) {
+                chainList.add(V3CertificateUtils.getX509JavaCertificate(x509CertificateHolder));
             }
-            Certificate[] chain = chainList.toArray(new Certificate[chainList.size()]);
-            ks.setKeyEntry(keyPairHolder.getAlias(), keyPairHolder.getKeyPair().getKeyPair().getPrivate(),
-                    PasswordCallbackUtils.getPassword(keyPairHolder.getPasswordSource(), keyPairHolder.getAlias()), chain);
-        } catch (Exception e) {
-            throw BaseExceptionHandler.handle(e);
         }
+        Certificate[] chain = chainList.toArray(new Certificate[chainList.size()]);
+        ks.setKeyEntry(keyPairHolder.getAlias(), keyPairHolder.getKeyPair().getKeyPair().getPrivate(),
+                PasswordCallbackUtils.getPassword(keyPairHolder.getPasswordSource(), keyPairHolder.getAlias()), chain);
     }
 
     public static void addToKeyStore(final KeyStore ks, SecretKeyEntry secretKeyData) {
@@ -180,12 +167,9 @@ public class KeyStoreServiceImplBaseFunctions {
         return new KeyStore.PasswordProtection(PasswordCallbackUtils.getPassword(passwordSource, alias));
     }
 
+    @SneakyThrows
     private static void addToKeyStore(final KeyStore ks, TrustedCertEntry trustedCertHolder) {
-        try {
-            ks.setCertificateEntry(trustedCertHolder.getAlias(), V3CertificateUtils.getX509JavaCertificate(trustedCertHolder.getCertificate()));
-        } catch (Exception e) {
-            throw BaseExceptionHandler.handle(e);
-        }
+        ks.setCertificateEntry(trustedCertHolder.getAlias(), V3CertificateUtils.getX509JavaCertificate(trustedCertHolder.getCertificate()));
     }
 
     public static List<KeyEntry> loadEntries(KeyStore keyStore, PasswordProvider passwordProvider) {

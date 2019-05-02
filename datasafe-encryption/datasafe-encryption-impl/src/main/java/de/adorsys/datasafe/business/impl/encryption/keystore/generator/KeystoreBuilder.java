@@ -4,10 +4,7 @@ import de.adorsys.datasafe.business.api.types.keystore.KeyEntry;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
 
 import javax.security.auth.callback.CallbackHandler;
-import java.io.IOException;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,14 +26,14 @@ public class KeystoreBuilder {
 		return this;
 	}
 	
-	public byte[] build(CallbackHandler storePassSrc) throws IOException, NoSuchAlgorithmException, CertificateException{
+	public byte[] build(CallbackHandler storePassSrc) {
 		KeyStore ks = KeyStoreServiceImplBaseFunctions.newKeyStore(storeType);
 		KeyStoreServiceImplBaseFunctions.fillKeyStore(ks, keyEntries.values());
 
 		return KeyStoreServiceImplBaseFunctions.toByteArray(ks, storeId, storePassSrc);
 	}
 
-	public KeyStore build() throws IOException, NoSuchAlgorithmException, CertificateException{
+	public KeyStore build() {
 		KeyStore ks = KeyStoreServiceImplBaseFunctions.newKeyStore(storeType);
 		KeyStoreServiceImplBaseFunctions.fillKeyStore(ks, keyEntries.values());
 
