@@ -68,7 +68,7 @@ public final class DefaultPrivateResource implements PrivateResource {
     }
 
     @Override
-    public PrivateResource applyRoot(ResourceLocation absolute) {
+    public PrivateResource resolve(ResourceLocation absolute) {
         if (!container.isAbsolute()) {
             return new DefaultPrivateResource(
                     absolute.location().resolve(container), encryptedPath, decryptedPath

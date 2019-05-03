@@ -10,6 +10,10 @@ import java.io.OutputStream;
 @FunctionalInterface
 public interface StorageWriteService {
 
+    /**
+     * @param location absolute bucket path with access credentials
+     * @return data stream of resource to write to
+     */
     OutputStream write(ResourceLocation location);
 }
 

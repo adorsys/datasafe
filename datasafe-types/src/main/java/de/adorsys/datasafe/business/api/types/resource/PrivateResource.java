@@ -16,5 +16,11 @@ public interface PrivateResource extends ResourceLocation<PrivateResource> {
      */
     URI decryptedPath();
 
+    /**
+     * Rebases/resolves decrypted/encrypted path against new resource root.
+     * @param encryptedPath encrypted URI value, should be used to construct absolute URI.
+     * @param decryptedPath decrypted URI value, used for easy navigation
+     * @return new private resource that points to resource identified by encryptedPath
+     */
     PrivateResource resolve(URI encryptedPath, URI decryptedPath);
 }

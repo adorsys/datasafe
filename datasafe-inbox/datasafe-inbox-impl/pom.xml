@@ -31,11 +31,6 @@
 		</dependency>
 		<dependency>
 			<groupId>de.adorsys</groupId>
-			<artifactId>datasafe-privatestore-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.adorsys</groupId>
 			<artifactId>datasafe-directory-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>

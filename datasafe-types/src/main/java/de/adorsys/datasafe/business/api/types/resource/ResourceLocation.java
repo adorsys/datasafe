@@ -17,5 +17,5 @@ public interface ResourceLocation<T> {
      * @param absolute uri to resolve against
      * @return path of resource relative to the absolute uri
      */
-    T applyRoot(ResourceLocation absolute);
+    T resolve(ResourceLocation absolute);
 }

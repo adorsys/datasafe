@@ -14,10 +14,5 @@
 			<artifactId>datasafe-types</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>de.adorsys</groupId>
-			<artifactId>datasafe-encryption-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 </project>
