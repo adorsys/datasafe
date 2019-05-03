@@ -9,19 +9,18 @@ import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.storage.S3StorageListService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageReadService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageWriteService;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.PublicResource;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -40,14 +39,15 @@ import static org.mockito.Mockito.verify;
 @Slf4j
 class AWSTest {
 
-    private String accessKeyID = "secret";
-    private String secretAccessKey = "secret";
+    private String accessKeyID = "*";
+    private String secretAccessKey = "*";
     private String region = "eu-central-1";
     private String bucketName = "adorsys-docusafe";
     private BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
     private AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .withCredentials(new AWSStaticCredentialsProvider(creds))
             .withRegion(region)
+            .enablePathStyleAccess()
             .build();
 
     private TestDocusafeServices docusafeService = DaggerTestDocusafeServices.builder()
@@ -151,16 +151,16 @@ class AWSTest {
 
         CreateUserPublicProfile userPublicProfile = CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
-                .inbox(access(new URI("./bucket/" + userName + "/").resolve("./inbox/")))
-                .publicKeys(access(new URI("./bucket/" + userName + "/").resolve("./keystore")))
+                .inbox(access(new URI("s3://bucket/" + userName + "/").resolve("./inbox/")))
+                .publicKeys(access(new URI("s3://bucket/" + userName + "/").resolve("./keystore")))
                 .build();
         docusafeService.userProfile().registerPublic(userPublicProfile);
 
         CreateUserPrivateProfile userPrivateProfile = CreateUserPrivateProfile.builder()
                 .id(auth)
-                .privateStorage(accessPrivate(new URI("./bucket/" + userName + "/").resolve("./private/")))
-                .keystore(accessPrivate(new URI("./bucket/" + userName + "/").resolve("./keystore")))
-                .inboxWithWriteAccess(accessPrivate(new URI("./bucket/" + userName + "/").resolve("./inbox/")))
+                .privateStorage(accessPrivate(new URI("s3://bucket/" + userName + "/").resolve("./private/")))
+                .keystore(accessPrivate(new URI("s3://bucket/" + userName + "/").resolve("./keystore")))
+                .inboxWithWriteAccess(accessPrivate(new URI("s3://bucket/" + userName + "/").resolve("./inbox/")))
                 .build();
         docusafeService.userProfile().registerPrivate(userPrivateProfile);
 
