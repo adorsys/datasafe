@@ -13,5 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>datasafe-storage-api</module>
+        <module>datasafe-storage-impl-fs</module>
+        <module>datasafe-storage-impl-s3</module>
     </modules>
 </project>
