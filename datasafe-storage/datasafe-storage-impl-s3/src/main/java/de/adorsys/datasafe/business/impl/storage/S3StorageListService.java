@@ -9,12 +9,14 @@ import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 public class S3StorageListService implements StorageListService {
 
     private final AmazonS3 s3;
@@ -29,11 +31,18 @@ public class S3StorageListService implements StorageListService {
     @SneakyThrows
     @Override
     public Stream<PrivateResource> list(ResourceLocation location) {
+        log.debug("List at {}", location.location());
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
         listObjectsV2Request.setBucketName(bucketName);
-        listObjectsV2Request.setPrefix(location.location().getPath());
+        String prefix = location.location().getPath().replaceFirst("^/", "");
+        int len = prefix.length();
+        listObjectsV2Request.setPrefix(prefix);
         ListObjectsV2Result listObjectsV2Result = s3.listObjectsV2(listObjectsV2Request);
         List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-        return objectSummaries.stream().map(os -> new DefaultPrivateResource(location.location().relativize(URI.create(os.getKey()))));
+        return objectSummaries.stream()
+                .map(os -> {
+                    URI uri = URI.create(os.getKey().substring(len));
+                    return new DefaultPrivateResource(uri).applyRoot(location);
+                });
     }
 }

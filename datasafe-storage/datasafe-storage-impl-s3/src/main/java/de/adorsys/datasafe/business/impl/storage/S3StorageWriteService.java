@@ -6,10 +6,12 @@ import de.adorsys.datasafe.business.api.storage.StorageWriteService;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.*;
 
+@Slf4j
 public class S3StorageWriteService implements StorageWriteService {
 
     private final AmazonS3 s3;
@@ -27,6 +29,7 @@ public class S3StorageWriteService implements StorageWriteService {
         return new PutBlobOnClose(s3, bucketName, location);
     }
 
+    @Slf4j
     @RequiredArgsConstructor
     private static final class PutBlobOnClose extends ByteArrayOutputStream {
 
@@ -37,6 +40,7 @@ public class S3StorageWriteService implements StorageWriteService {
         @Override
         public void close() throws IOException {
 
+            log.debug("Write to {}", resource.location());
             ObjectMetadata metadata = new ObjectMetadata();
             byte[] data = super.toByteArray();
             metadata.setContentLength(data.length);
@@ -45,7 +49,7 @@ public class S3StorageWriteService implements StorageWriteService {
 
             s3.putObject(
                     bucketName,
-                    resource.location().getPath(),
+                    resource.location().getPath().replaceFirst("^/", ""),
                     is,
                     metadata
             );
