@@ -13,8 +13,8 @@ public interface StorageListService {
 
     /**
      * Lists bucket contents.
-     * @param location bucket descriptor, with credentials, where to list data
-     * @return stream of available bucket paths
+     * @param location absolute bucket path, with credentials, where to list data
+     * @return stream of available absolute bucket paths
      */
     Stream<PrivateResource> list(ResourceLocation location);
 }
