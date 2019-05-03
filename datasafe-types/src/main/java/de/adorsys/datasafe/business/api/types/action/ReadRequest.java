@@ -14,4 +14,9 @@ public class ReadRequest<T> {
 
     @NonNull
     private final PrivateResource location;
+
+    public ReadRequest(T owner, PrivateResource path) {
+        this.owner = owner;
+        this.location = path;
+    }
 }

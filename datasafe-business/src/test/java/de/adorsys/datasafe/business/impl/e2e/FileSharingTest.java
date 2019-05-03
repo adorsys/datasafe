@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.impl;
+package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.MoreFiles;
@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
+class FileSharingTest extends BaseMockitoTest {
 
     private static final String MESSAGE_ONE = "Hello here";
 
@@ -71,25 +71,16 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     @SneakyThrows
     private void writeDataToPrivate(UserIDAuth auth, String path, String data) {
-        OutputStream stream = docusafeService.privateService().write(
-                WriteRequest.<UserIDAuth, PrivateResource>builder()
-                        .owner(auth)
-                        .location(DefaultPrivateResource.forPrivate(new URI(path)))
-                        .build()
-        );
-
+        OutputStream stream = docusafeService.privateService().write(WriteRequest.forPrivate(auth, path));
         stream.write(data.getBytes());
         stream.close();
     }
 
     @SneakyThrows
     private PrivateResource getFirstFileInPrivate(UserIDAuth inboxOwner) {
-        List<PrivateResource> files = docusafeService.privateService().list(
-                ListRequest.<UserIDAuth>builder()
-                        .owner(inboxOwner)
-                        .location(DefaultPrivateResource.ROOT)
-                        .build()
-        ).collect(Collectors.toList());
+        List<PrivateResource> files = docusafeService.privateService().list(new ListRequest<>(inboxOwner, "./"))
+                .collect(Collectors.toList());
+
         log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);
         return files.get(0);
     }
@@ -97,12 +88,7 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     @SneakyThrows
     private String readPrivateUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        InputStream dataStream = docusafeService.privateService()
-            .read(ReadRequest.<UserIDAuth>builder()
-                    .location(location)
-                    .owner(user)
-                    .build()
-            );
+        InputStream dataStream = docusafeService.privateService().read(new ReadRequest<>(user, location));
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
@@ -114,12 +100,7 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
     @SneakyThrows
     private String readInboxUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        InputStream dataStream = docusafeService.inboxService()
-            .read(ReadRequest.<UserIDAuth>builder()
-                    .owner(user)
-                    .location(location)
-                    .build()
-            );
+        InputStream dataStream = docusafeService.inboxService().read(new ReadRequest<>(user, location));
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
@@ -130,11 +111,9 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     @SneakyThrows
     private PrivateResource getFirstFileInInbox(UserIDAuth inboxOwner) {
-        List<PrivateResource> files = docusafeService.inboxService().list(ListRequest.<UserIDAuth>builder()
-                .owner(inboxOwner)
-                .location(DefaultPrivateResource.ROOT)
-                .build()
-        ).collect(Collectors.toList());
+        List<PrivateResource> files = docusafeService.inboxService().list(new ListRequest<>(inboxOwner, "./"))
+                .collect(Collectors.toList());
+
         log.info("{} has {} in INBOX", inboxOwner.getUserID().getValue(), files);
         return files.get(0);
     }
@@ -146,13 +125,7 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     @SneakyThrows
     private void sendToInbox(UserID from, UserID to, String filename, String data) {
-        OutputStream stream = docusafeService.inboxService().write(
-            WriteRequest.<UserID, PublicResource>builder()
-                    .location(new DefaultPublicResource(new URI("./" + filename)))
-                    .owner(to)
-                    .build()
-        );
-
+        OutputStream stream = docusafeService.inboxService().write(WriteRequest.forPublic(to, "./" + filename));
         stream.write(data.getBytes());
         stream.close();
     }
