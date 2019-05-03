@@ -54,6 +54,6 @@ public class ResourceResolverImpl implements ResourceResolver {
             return resource;
         }
 
-        return resource.applyRoot(resolveTo.get());
+        return resource.resolve(resolveTo.get());
     }
 }
