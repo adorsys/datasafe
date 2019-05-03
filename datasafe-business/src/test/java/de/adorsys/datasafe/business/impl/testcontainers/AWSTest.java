@@ -39,8 +39,8 @@ import static org.mockito.Mockito.verify;
 @Slf4j
 class AWSTest {
 
-    private String accessKeyID = "*";
-    private String secretAccessKey = "*";
+    private String accessKeyID = System.getProperty("AWS_ACCESS_KEY");
+    private String secretAccessKey = System.getProperty("AWS_SECRET_KEY");
     private String region = "eu-central-1";
     private String bucketName = "adorsys-docusafe";
     private BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
