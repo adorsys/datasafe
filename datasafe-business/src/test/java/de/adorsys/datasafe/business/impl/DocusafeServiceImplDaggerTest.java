@@ -1,7 +1,6 @@
-package de.adorsys.datasafe.business.impl.impl;
+package de.adorsys.datasafe.business.impl;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.business.api.types.UserID;
@@ -10,10 +9,14 @@ import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import de.adorsys.datasafe.business.api.types.resource.*;
-import de.adorsys.datasafe.business.impl.BaseMockitoTest;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
+import de.adorsys.datasafe.business.impl.storage.FsStorageListService;
+import de.adorsys.datasafe.business.impl.storage.FsStorageReadService;
+import de.adorsys.datasafe.business.impl.storage.FsStorageWriteService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -23,13 +26,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,20 +37,18 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     private static final String MESSAGE_ONE = "Hello here";
 
-    private DefaultDocusafeServices docusafeService = DaggerDefaultDocusafeServices
-            .builder()
-            .storageList(this::listFiles)
-            .storageRead(this::readFile)
-            .storageWrite(this::writeFile)
-            .build();
-
     private UserIDAuth john;
     private UserIDAuth jane;
-    private Path tempDir;
+
+    private DefaultDocusafeServices docusafeService;
 
     @Test
-    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(@TempDir Path dfsLocation) {
-        tempDir = dfsLocation;
+    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(@TempDir Path tempDir) {
+        docusafeService = DaggerDefaultDocusafeServices.builder()
+                .storageList(new FsStorageListService(tempDir))
+                .storageRead(new FsStorageReadService(tempDir))
+                .storageWrite(new FsStorageWriteService(tempDir))
+                .build();
 
         registerJohnAndJane();
 
@@ -188,33 +185,5 @@ class DocusafeServiceImplDaggerTest extends BaseMockitoTest {
 
     private PrivateResource accessPrivate(URI path) {
         return new DefaultPrivateResource(path, URI.create(""), URI.create(""));
-    }
-
-    @SneakyThrows
-    private Stream<PrivateResource> listFiles(ResourceLocation path) {
-        return Files.walk(resolve(path.location(), false))
-                .filter(it -> !it.startsWith("."))
-                .filter(it -> !it.toFile().isDirectory())
-                .map(it -> new DefaultPrivateResource(it.toUri()));
-    }
-
-    @SneakyThrows
-    private InputStream readFile(ResourceLocation path) {
-        return MoreFiles.asByteSource(resolve(path.location(), false), StandardOpenOption.READ).openStream();
-    }
-
-    @SneakyThrows
-    private OutputStream writeFile(ResourceLocation path) {
-        Path filePath = resolve(path.location(), true);
-        return MoreFiles.asByteSink(filePath, StandardOpenOption.CREATE).openStream();
-    }
-
-    private Path resolve(URI uri, boolean mkDirs) {
-        Path path = Paths.get(tempDir.toUri().resolve(uri));
-        if (!path.getParent().toFile().exists() && mkDirs) {
-            path.getParent().toFile().mkdirs();
-        }
-
-        return Paths.get(tempDir.toUri().resolve(uri));
     }
 }
