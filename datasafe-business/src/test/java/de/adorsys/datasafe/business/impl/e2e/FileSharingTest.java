@@ -63,6 +63,8 @@ class FileSharingTest extends BaseE2ETest {
         String result = readInboxUsingPrivateKey(john, inboxJohn);
 
         assertThat(result).isEqualTo(MESSAGE_ONE);
+        assertThat(privateJane.decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
+        assertThat(privateJane.encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
         validateInboxEncrypted();
         validatePrivateEncrypted();
     }
