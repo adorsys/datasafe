@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.net.URI;
@@ -26,7 +27,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
     @Override
     @SneakyThrows
-    public URI encrypt(SecretKeySpec secretKey, URI bucketPath) {
+    public URI encrypt(SecretKey secretKey, URI bucketPath) {
+        validateArgs(secretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
         Cipher cipher = createCipher(secretKey, Cipher.ENCRYPT_MODE);
@@ -39,7 +41,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
     @Override
     @SneakyThrows
-    public URI decrypt(SecretKeySpec secretKey, URI bucketPath) {
+    public URI decrypt(SecretKey secretKey, URI bucketPath) {
+        validateArgs(secretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
         Cipher cipher = createCipher(secretKey, Cipher.DECRYPT_MODE);
@@ -89,7 +92,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     @SneakyThrows
-    private static Cipher createCipher(SecretKeySpec secretKey, int cipherMode) {
+    private static Cipher createCipher(SecretKey secretKey, int cipherMode) {
         byte[] key = secretKey.getEncoded();
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         key = sha.digest(key);
@@ -103,7 +106,17 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         return cipher;
     }
 
-    private void validateUriIsRelative(URI uri) {
+    private static void validateArgs(SecretKey secretKey, URI bucketPath) {
+        if (null == secretKey) {
+            throw new IllegalArgumentException("Secret key should not be null");
+        }
+
+        if (null == bucketPath) {
+            throw new IllegalArgumentException("Bucket path should not be null");
+        }
+    }
+
+    private static void validateUriIsRelative(URI uri) {
         if (uri.isAbsolute()) {
             throw new IllegalArgumentException("URI should be relative");
         }
