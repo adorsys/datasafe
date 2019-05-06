@@ -6,6 +6,7 @@ import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationSe
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.StorageRemoveService;
 import de.adorsys.datasafe.business.api.storage.StorageWriteService;
 import de.adorsys.datasafe.business.api.types.*;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
@@ -36,15 +37,19 @@ public class DFSBasedProfileStorageImpl implements
 
     private final StorageReadService readService;
     private final StorageWriteService writeService;
+    private final StorageRemoveService removeService;
     private final KeyStoreService keyStoreService;
     private final DFSSystem dfsSystem;
     private final GsonSerde serde;
 
     @Inject
-    public DFSBasedProfileStorageImpl(StorageReadService readService, StorageWriteService writeService,
+    public DFSBasedProfileStorageImpl(StorageReadService readService,
+                                      StorageWriteService writeService,
+                                      StorageRemoveService removeService,
                                       KeyStoreService keyStoreService, DFSSystem dfsSystem, GsonSerde serde) {
         this.readService = readService;
         this.writeService = writeService;
+        this.removeService = removeService;
         this.keyStoreService = keyStoreService;
         this.dfsSystem = dfsSystem;
         this.serde = serde;
@@ -79,7 +84,8 @@ public class DFSBasedProfileStorageImpl implements
 
     @Override
     public void deregister(UserIDAuth userID) {
-        throw new UnsupportedOperationException("Not implemented");
+        removeService.remove(new DefaultPrivateResource(locatePrivateProfile(userID.getUserID())));
+        removeService.remove(new DefaultPublicResource(locatePublicProfile(userID.getUserID())));
     }
 
     @Override
