@@ -3,6 +3,7 @@ package de.adorsys.datasafe.business.impl.storage;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.business.api.storage.StorageService;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
@@ -28,7 +29,7 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public Stream<PrivateResource> list(ResourceLocation location) {
+    public Stream<AbsoluteResourceLocation<PrivateResource>> list(AbsoluteResourceLocation location) {
         log.debug("List at {}", location.location());
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
         listObjectsV2Request.setBucketName(bucketName);
@@ -40,12 +41,12 @@ public class S3StorageService implements StorageService {
         return objectSummaries.stream()
                 .map(os -> {
                     URI uri = URI.create(os.getKey().substring(len));
-                    return new DefaultPrivateResource(uri).resolve(location);
+                    return new AbsoluteResourceLocation<>(new DefaultPrivateResource(uri).resolve(location));
                 });
     }
 
     @Override
-    public InputStream read(ResourceLocation location) {
+    public InputStream read(AbsoluteResourceLocation location) {
         log.debug("Read from {}", location.location());
         GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, location.location().getPath().replaceFirst("^/", ""));
         S3Object fullObject = s3.getObject(getObjectRequest);
@@ -53,12 +54,12 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public OutputStream write(ResourceLocation location) {
+    public OutputStream write(AbsoluteResourceLocation location) {
         return new PutBlobOnClose(s3, bucketName, location);
     }
 
     @Override
-    public void remove(ResourceLocation location) {
+    public void remove(AbsoluteResourceLocation location) {
         String path = location.location().getPath();
         log.debug("Remove path {}", path);
         s3.deleteObject(bucketName, path.replaceFirst("^/", "").replaceFirst("/$", ""));

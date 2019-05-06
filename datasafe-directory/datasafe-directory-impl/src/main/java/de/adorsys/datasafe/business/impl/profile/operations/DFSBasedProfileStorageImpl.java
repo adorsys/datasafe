@@ -84,17 +84,21 @@ public class DFSBasedProfileStorageImpl implements
 
     @Override
     public void deregister(UserIDAuth userID) {
-        ListRequest<UserIDAuth> privateRequest = new ListRequest<>(userID, privateProfile(userID).getPrivateStorage());
-        List<PrivateResource> privateFiles = listService.list(privateRequest.getLocation()).collect(Collectors.toList());
-        for (PrivateResource file : privateFiles) {
+        ListRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> privateRequest =
+                new ListRequest<>(userID, privateProfile(userID).getPrivateStorage());
+
+        List<AbsoluteResourceLocation<PrivateResource>> privateFiles =
+                listService.list(privateRequest.getLocation()).collect(Collectors.toList());
+
+        for (AbsoluteResourceLocation<PrivateResource> file : privateFiles) {
             removeService.remove(file);
         }
 
         removeService.remove(privateProfile(userID).getKeystore());
         removeService.remove(privateProfile(userID).getPrivateStorage());
         removeService.remove(privateProfile(userID).getInboxWithWriteAccess());
-        removeService.remove(new DefaultPrivateResource(locatePrivateProfile(userID.getUserID())));
-        removeService.remove(new DefaultPublicResource(locatePublicProfile(userID.getUserID())));
+        removeService.remove(locatePrivateProfile(userID.getUserID()));
+        removeService.remove(locatePublicProfile(userID.getUserID()));
     }
 
     @Override

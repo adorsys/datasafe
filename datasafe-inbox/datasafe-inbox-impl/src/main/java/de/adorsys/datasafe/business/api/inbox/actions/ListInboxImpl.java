@@ -24,7 +24,7 @@ public class ListInboxImpl implements ListInbox {
 
     @Override
     public Stream<AbsoluteResourceLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> forUser) {
-        return listService.list(resolveRelative(forUser)).map(AbsoluteResourceLocation::new);
+        return listService.list(resolveRelative(forUser));
     }
 
     private AbsoluteResourceLocation<PrivateResource> resolveRelative(

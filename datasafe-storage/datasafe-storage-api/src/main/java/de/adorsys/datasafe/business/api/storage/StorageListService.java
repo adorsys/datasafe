@@ -16,5 +16,5 @@ public interface StorageListService {
      * @param location absolute bucket path, with credentials, where to list data
      * @return stream of available absolute bucket paths
      */
-    Stream<PrivateResource> list(AbsoluteResourceLocation location);
+    Stream<AbsoluteResourceLocation<PrivateResource>> list(AbsoluteResourceLocation location);
 }

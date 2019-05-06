@@ -27,6 +27,6 @@ public class ListPrivateImpl implements ListPrivate {
 
         return listService
                 .list(listDir)
-                .map(it -> resolver.decryptAndResolvePath(request.getOwner(), it, listDir.getResource()));
+                .map(it -> resolver.decryptAndResolvePath(request.getOwner(), it.getResource(), listDir.getResource()));
     }
 }

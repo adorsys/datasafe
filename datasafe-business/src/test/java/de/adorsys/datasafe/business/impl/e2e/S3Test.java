@@ -4,6 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +29,19 @@ public class S3Test extends StorageTest {
         this.location = URI.create("s3://" +  bucketName + "/");
         this.storage = new S3StorageService(s3, bucketName);
 
-        this.services = DaggerTestDocusafeServices.builder()
+        this.services = DaggerTestDocusafeServices
+                .builder()
+                .config(new DFSConfig() {
+                    @Override
+                    public String keystorePassword() {
+                        return "PAZZWORD";
+                    }
+
+                    @Override
+                    public URI systemRoot() {
+                        return location;
+                    }
+                })
                 .storageList(new S3StorageService(s3, bucketName))
                 .storageRead(new S3StorageService(s3, bucketName))
                 .storageWrite(new S3StorageService(s3, bucketName))
