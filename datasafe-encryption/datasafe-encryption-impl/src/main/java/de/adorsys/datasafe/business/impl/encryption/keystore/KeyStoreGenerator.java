@@ -14,6 +14,7 @@ import java.security.KeyStore;
 import java.util.Date;
 import java.util.UUID;
 
+// TODO: Refactor it - we need to use named keys
 @Slf4j
 public class KeyStoreGenerator {
 
