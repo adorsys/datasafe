@@ -16,7 +16,7 @@ import de.adorsys.datasafe.business.impl.keystore.DefaultKeyStoreModule;
 import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl;
-
+import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
 
 import javax.inject.Singleton;
 
@@ -35,7 +35,7 @@ import javax.inject.Singleton;
         DefaultPrivateActionsModule.class,
         DefaultProfileModule.class
 })
-public interface TestDocusafeServices {
+public interface TestDocusafeServices extends DefaultDocusafeServices {
 
     PrivateSpaceServiceImpl privateService();
     InboxServiceImpl inboxService();

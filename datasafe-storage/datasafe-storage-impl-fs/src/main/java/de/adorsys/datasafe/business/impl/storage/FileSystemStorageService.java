@@ -1,6 +1,7 @@
-package de.adorsys.datasafe.business.impl.e2e;
+package de.adorsys.datasafe.business.impl.storage;
 
 import com.google.common.io.MoreFiles;
+import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
@@ -19,12 +20,13 @@ import java.util.stream.Stream;
 
 @Slf4j
 @RequiredArgsConstructor
-public class FileSystemStorage {
+public class FileSystemStorageService implements StorageService {
 
     private final Path dir;
 
     @SneakyThrows
-    protected Stream<PrivateResource> listFiles(ResourceLocation path) {
+    @Override
+    public Stream<PrivateResource> list(ResourceLocation path) {
         log.debug("List file request: {}", path.location());
         Path filePath = resolve(path.location(), false);
         log.debug("List file: {}", filePath);
@@ -36,7 +38,8 @@ public class FileSystemStorage {
     }
 
     @SneakyThrows
-    protected InputStream readFile(ResourceLocation path) {
+    @Override
+    public InputStream read(ResourceLocation path) {
         log.debug("Read file request: {}", path.location());
         Path filePath = resolve(path.location(), false);
         log.debug("Read file: {}", filePath);
@@ -44,7 +47,8 @@ public class FileSystemStorage {
     }
 
     @SneakyThrows
-    protected OutputStream writeFile(ResourceLocation path) {
+    @Override
+    public OutputStream write(ResourceLocation path) {
         log.debug("Write file request: {}", path.location());
         Path filePath = resolve(path.location(), true);
         log.debug("Write file: {}", filePath);
