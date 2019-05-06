@@ -5,7 +5,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
-import de.adorsys.datasafe.business.impl.testcontainers.DaggerTestDocusafeServices;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 

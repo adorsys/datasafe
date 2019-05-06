@@ -6,7 +6,6 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
-import de.adorsys.datasafe.business.impl.testcontainers.DaggerTestDocusafeServices;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

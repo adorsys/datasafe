@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class BaseE2ETest extends BaseMockitoTest {
 
-    protected static String BUCKET_COMPONENT = "bucket";
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
@@ -88,8 +87,8 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     protected void registerJohnAndJane(URI rootLocation) {
-        john = registerUser("john5", rootLocation);
-        jane = registerUser("jane5", rootLocation);
+        john = registerUser("john", rootLocation);
+        jane = registerUser("jane", rootLocation);
     }
 
     @SneakyThrows
