@@ -9,6 +9,7 @@ import lombok.Value;
 @Builder(toBuilder = true)
 public class ListRequest<T> {
 
+    //TODO: Add ROOT bucket path constant
     @NonNull
     private final T owner;
 

@@ -19,9 +19,9 @@ public class PathEncryptionImpl implements PathEncryption {
     private final KeyStoreService keyStoreService;
 
     @Inject
-    public PathEncryptionImpl(SymmetricPathEncryptionService bucketPathEncryptionService,
+    public PathEncryptionImpl(SymmetricPathEncryptionService symmetricPathEncryptionService,
                               PrivateKeyService privateKeyService, KeyStoreService keyStoreService) {
-        this.bucketPathEncryptionService = bucketPathEncryptionService;
+        this.bucketPathEncryptionService = symmetricPathEncryptionService;
         this.privateKeyService = privateKeyService;
         this.keyStoreService = keyStoreService;
     }
