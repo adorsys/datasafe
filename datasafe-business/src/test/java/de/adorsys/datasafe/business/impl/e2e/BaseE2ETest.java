@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,15 +27,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class BaseE2ETest extends BaseMockitoTest {
 
-    protected static final String BUCKET_COMPONENT = "bucket";
     protected static final String PRIVATE_COMPONENT = "private";
+    protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
 
     protected DefaultDocusafeServices services;
 
     protected UserIDAuth john;
     protected UserIDAuth jane;
-    protected Path tempDir;
 
     @SneakyThrows
     protected void writeDataToPrivate(UserIDAuth auth, String path, String data) {
@@ -45,7 +43,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         stream.close();
     }
 
-    @SneakyThrows
     protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.privateService().list(
                 ListRequest.forPrivate(inboxOwner, "./")
@@ -79,7 +76,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return data;
     }
 
-    @SneakyThrows
     protected AbsoluteResourceLocation<PrivateResource>  getFirstFileInInbox(UserIDAuth inboxOwner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.inboxService().list(
                ListRequest.forPrivate(inboxOwner, "./")
@@ -89,9 +85,9 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return files.get(0);
     }
 
-    protected void registerJohnAndJane() {
-        john = registerUser("john");
-        jane = registerUser("jane");
+    protected void registerJohnAndJane(URI rootLocation) {
+        john = registerUser("john", rootLocation);
+        jane = registerUser("jane", rootLocation);
     }
 
     @SneakyThrows
@@ -101,39 +97,41 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         stream.close();
     }
 
-    @SneakyThrows
-    protected UserIDAuth registerUser(String userName) {
+    protected UserIDAuth registerUser(String userName, URI rootLocation) {
         UserIDAuth auth = new UserIDAuth();
         auth.setUserID(new UserID(userName));
         auth.setReadKeyPassword(new ReadKeyPassword("secure-password " + userName));
 
-        String userPath = "./" + BUCKET_COMPONENT + "/" + userName + "/";
+        rootLocation = rootLocation.resolve(userName + "/");
 
         services.userProfile().registerPublic(CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
-                .inbox(access(new URI(userPath).resolve("./" + INBOX_COMPONENT + "/")))
-                .publicKeys(access(new URI(userPath).resolve("./keystore")))
+                .inbox(access(rootLocation.resolve("./" + INBOX_COMPONENT + "/")))
+                .publicKeys(access(rootLocation.resolve("./"+ PRIVATE_COMPONENT + "/keystore")))
                 .build()
         );
 
         services.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
                 .id(auth)
-                .privateStorage(accessPrivate(new URI(userPath).resolve("./" + PRIVATE_COMPONENT + "/")))
-                .keystore(accessPrivate(new URI(userPath).resolve("./keystore")))
-                .inboxWithWriteAccess(accessPrivate(new URI(userPath).resolve("./" + INBOX_COMPONENT + "/")))
+                .privateStorage(accessPrivate(rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/")))
+                .keystore(accessPrivate(rootLocation.resolve("./"+ PRIVATE_COMPONENT + "/keystore")))
+                .inboxWithWriteAccess(accessPrivate(rootLocation.resolve("./" + INBOX_COMPONENT + "/")))
                 .build()
         );
 
         return auth;
     }
 
+    protected void removeUser(UserIDAuth userIDAuth) {
+        services.userProfile().deregister(userIDAuth);
+        log.info("user deleted: {}", userIDAuth.getUserID().getValue());
+    }
+
     private AbsoluteResourceLocation<PublicResource> access(URI path) {
-        return new AbsoluteResourceLocation<>(new DefaultPublicResource(tempDir.toUri().resolve(path)));
+        return new AbsoluteResourceLocation<>(new DefaultPublicResource(path));
     }
 
     private AbsoluteResourceLocation<PrivateResource> accessPrivate(URI path) {
-        return new AbsoluteResourceLocation<>(new DefaultPrivateResource(
-                tempDir.toUri().resolve(path), URI.create(""), URI.create(""))
-        );
+        return new AbsoluteResourceLocation<>(new DefaultPrivateResource(path, URI.create(""), URI.create("")));
     }
 }

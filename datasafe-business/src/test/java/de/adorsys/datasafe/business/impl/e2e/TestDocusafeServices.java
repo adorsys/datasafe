@@ -1,8 +1,8 @@
-package de.adorsys.datasafe.business.impl.service;
+package de.adorsys.datasafe.business.impl.e2e;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import de.adorsys.datasafe.business.api.config.DFSConfig;
+import de.adorsys.datasafe.business.api.encryption.pathencryption.PathEncryption;
 import de.adorsys.datasafe.business.api.inbox.InboxServiceImpl;
 import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
@@ -14,15 +14,16 @@ import de.adorsys.datasafe.business.impl.directory.DefaultProfileModule;
 import de.adorsys.datasafe.business.impl.document.DefaultDocumentModule;
 import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule;
 import de.adorsys.datasafe.business.impl.keystore.DefaultKeyStoreModule;
-import de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionModule;
 import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl;
+import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
 
 import javax.inject.Singleton;
 
 /**
- * This is user Docusafe services default implementation.
+ * This is user Datasafe service test implementation.
+ * With fake path module for verifying that encryption is used
  */
 @Singleton
 @Component(modules = {
@@ -30,12 +31,12 @@ import javax.inject.Singleton;
         DefaultKeyStoreModule.class,
         DefaultDocumentModule.class,
         DefaultCMSEncryptionModule.class,
-        DefaultPathEncryptionModule.class,
+        FakePathEncryptionModule.class,
         DefaultInboxActionsModule.class,
         DefaultPrivateActionsModule.class,
         DefaultProfileModule.class
 })
-public interface DefaultDocusafeServices {
+public interface TestDocusafeServices extends DefaultDocusafeServices {
 
     PrivateSpaceServiceImpl privateService();
     InboxServiceImpl inboxService();
@@ -43,9 +44,6 @@ public interface DefaultDocusafeServices {
 
     @Component.Builder
     interface Builder {
-
-        @BindsInstance
-        Builder config(DFSConfig config);
 
         @BindsInstance
         Builder storageList(StorageListService listService);
@@ -59,7 +57,8 @@ public interface DefaultDocusafeServices {
         @BindsInstance
         Builder storageRemove(StorageRemoveService removeService);
 
-        DefaultDocusafeServices build();
+        TestDocusafeServices build();
     }
 
+    PathEncryption pathEncryption();
 }
