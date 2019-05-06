@@ -4,8 +4,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn --settings .travis/settings.xml clean verify -B -V
-  - mvn --settings .travis/settings.xml test -DSC-AMAZONS3=http://minio-psp-docusafe-performancetest.cloud.adorsys.de,simpleAccessKey,simpleSecretKey,us-east-1,travis.crypto.${TRAVIS_BRANCH}
+  - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_ACCESS_KEY=${AWS_ACCESS_KEY} -DAWS_SECRET_KEY=${AWS_SECRET_KEY}
 
 before_deploy:
   - echo $GPG_SECRET_KEY | base64 --decode | $GPG_EXECUTABLE --import
