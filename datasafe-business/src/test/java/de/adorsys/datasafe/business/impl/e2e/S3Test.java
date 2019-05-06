@@ -7,16 +7,24 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 import java.net.URI;
 
+import static de.adorsys.datasafe.business.impl.e2e.S3Test.KEY;
+
+@EnabledIfEnvironmentVariable(named = KEY, matches = ".+")
 public class S3Test extends StorageTest {
 
-    private String accessKeyID = System.getProperty("AWS_ACCESS_KEY");
+    public static final String KEY = "AWS_ACCESS_KEY";
+
+    private String accessKeyID = System.getProperty(KEY);
     private String secretAccessKey = System.getProperty("AWS_SECRET_KEY");
     private String region = "eu-central-1";
     private String bucketName = "adorsys-docusafe";
+
     private BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
+
     private AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .withCredentials(new AWSStaticCredentialsProvider(creds))
             .withRegion(region)
