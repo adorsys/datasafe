@@ -85,6 +85,13 @@ public class KeyStoreGenerator {
                 }
 
                 keystoreBuilder = buildSecretKey(
+                        KeyStoreCreationConfig.SYMM_KEY_ID.getValue(),
+                        secretKeyGenerator,
+                        readKeyHandler,
+                        keystoreBuilder
+                );
+
+                keystoreBuilder = buildSecretKey(
                         KeyStoreCreationConfig.PATH_KEY_ID.getValue(),
                         secretKeyGenerator,
                         readKeyHandler,

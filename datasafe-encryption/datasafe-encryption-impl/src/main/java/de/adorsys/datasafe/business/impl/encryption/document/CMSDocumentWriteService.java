@@ -3,12 +3,11 @@ package de.adorsys.datasafe.business.impl.encryption.document;
 import com.google.common.collect.ImmutableList;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
-import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.storage.StorageWriteService;
-import de.adorsys.datasafe.business.api.types.UserID;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
+import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -23,28 +22,37 @@ import java.util.List;
 public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
     private final StorageWriteService writeService;
-    private final PublicKeyService publicKeyService;
     private final CMSEncryptionService cms;
 
     @Inject
-    public CMSDocumentWriteService(StorageWriteService writeService, PublicKeyService publicKeyService,
+    public CMSDocumentWriteService(StorageWriteService writeService,
                                    CMSEncryptionService cms) {
         this.writeService = writeService;
-        this.publicKeyService = publicKeyService;
         this.cms = cms;
     }
 
     @Override
-    @SneakyThrows
-    public OutputStream write(WriteRequest<UserID, ResourceLocation> request) {
+    public OutputStream write(PublicResource location, PublicKeyIDWithPublicKey publicKey) {
 
-        OutputStream dfsSink = writeService.write(request.getLocation());
-        PublicKeyIDWithPublicKey withId = publicKeyService.publicKey(request.getOwner());
+        OutputStream dfsSink = writeService.write(location);
+        OutputStream encryptionSink = cms.buildEncryptionOutputStream(
+                dfsSink,
+                publicKey.getPublicKey(),
+                publicKey.getKeyID()
+        );
+
+        return new CloseCoordinatingStream(encryptionSink, ImmutableList.of(encryptionSink, dfsSink));
+    }
+
+    @Override
+    public OutputStream write(PrivateResource location, SecretKeyIDWithKey secretKey) {
+
+        OutputStream dfsSink = writeService.write(location);
 
         OutputStream encryptionSink = cms.buildEncryptionOutputStream(
                 dfsSink,
-                withId.getPublicKey(),
-                withId.getKeyID()
+                secretKey.getSecretKey(),
+                secretKey.getKeyID()
         );
 
         return new CloseCoordinatingStream(encryptionSink, ImmutableList.of(encryptionSink, dfsSink));
