@@ -10,5 +10,9 @@ import java.io.InputStream;
 @FunctionalInterface
 public interface StorageReadService {
 
+    /**
+     * @param location absolute bucket path with access credentials
+     * @return data stream of resource to read from
+     */
     InputStream read(ResourceLocation location);
 }

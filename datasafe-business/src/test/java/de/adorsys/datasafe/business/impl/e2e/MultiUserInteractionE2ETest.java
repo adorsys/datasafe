@@ -20,11 +20,7 @@ import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
-import de.adorsys.datasafe.business.impl.storage.FsStorageListService;
-import de.adorsys.datasafe.business.impl.storage.FsStorageReadService;
-import de.adorsys.datasafe.business.impl.storage.FsStorageWriteService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author yatsenko-ihor
  */
-public class MultiUserInteractionE2ETest extends BaseE2ETest {
+public class MultiUserInteractionE2ETest extends FsTest {
 
     private static final String PRIVATE_FILE_PATH = "./";
     private static final String MESSAGE_ONE = "hello";
@@ -61,9 +57,9 @@ public class MultiUserInteractionE2ETest extends BaseE2ETest {
 
         this.services = DaggerDefaultDocusafeServices
                 .builder()
-                .storageList(new FsStorageListService(location))
-                .storageRead(new FsStorageReadService(location))
-                .storageWrite(new FsStorageWriteService(location))
+                .storageList(storage::list)
+                .storageRead(storage::read)
+                .storageWrite(storage::write)
                 .build();
     }
 

@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class BaseE2ETest extends BaseMockitoTest {
 
-    protected static final String BUCKET_COMPONENT = "bucket";
+    protected static String BUCKET_COMPONENT = "bucket";
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String INBOX_COMPONENT = "inbox";
 
@@ -107,7 +106,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         auth.setUserID(new UserID(userName));
         auth.setReadKeyPassword(new ReadKeyPassword("secure-password " + userName));
 
-        String userPath = "./" + BUCKET_COMPONENT + "/" + userName + "/";
+        String userPath = "s3://" + BUCKET_COMPONENT + "/" + userName + "/";
 
         services.userProfile().registerPublic(CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
