@@ -5,10 +5,12 @@ import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
 import de.adorsys.datasafe.business.api.storage.StorageRemoveService;
 import de.adorsys.datasafe.business.api.storage.StorageWriteService;
 import de.adorsys.datasafe.business.api.types.*;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
@@ -23,6 +25,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.security.KeyStore;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This is approximation of real implementation - should be broken down.
@@ -38,6 +42,7 @@ public class DFSBasedProfileStorageImpl implements
     private final StorageReadService readService;
     private final StorageWriteService writeService;
     private final StorageRemoveService removeService;
+    private final StorageListService listService;
     private final KeyStoreService keyStoreService;
     private final DFSSystem dfsSystem;
     private final GsonSerde serde;
@@ -46,10 +51,12 @@ public class DFSBasedProfileStorageImpl implements
     public DFSBasedProfileStorageImpl(StorageReadService readService,
                                       StorageWriteService writeService,
                                       StorageRemoveService removeService,
+                                      StorageListService listService,
                                       KeyStoreService keyStoreService, DFSSystem dfsSystem, GsonSerde serde) {
         this.readService = readService;
         this.writeService = writeService;
         this.removeService = removeService;
+        this.listService = listService;
         this.keyStoreService = keyStoreService;
         this.dfsSystem = dfsSystem;
         this.serde = serde;
@@ -84,6 +91,15 @@ public class DFSBasedProfileStorageImpl implements
 
     @Override
     public void deregister(UserIDAuth userID) {
+        ListRequest<UserIDAuth> privateRequest = new ListRequest<>(userID, privateProfile(userID).getPrivateStorage());
+        List<PrivateResource> privateFiles = listService.list(privateRequest.getLocation()).collect(Collectors.toList());
+        for (PrivateResource file : privateFiles) {
+            removeService.remove(file);
+        }
+
+        removeService.remove(privateProfile(userID).getKeystore());
+        removeService.remove(privateProfile(userID).getPrivateStorage());
+        removeService.remove(privateProfile(userID).getInboxWithWriteAccess());
         removeService.remove(new DefaultPrivateResource(locatePrivateProfile(userID.getUserID())));
         removeService.remove(new DefaultPublicResource(locatePublicProfile(userID.getUserID())));
     }

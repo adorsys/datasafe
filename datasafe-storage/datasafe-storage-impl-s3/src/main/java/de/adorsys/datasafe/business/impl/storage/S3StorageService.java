@@ -61,7 +61,7 @@ public class S3StorageService implements StorageService {
     public void remove(ResourceLocation location) {
         String path = location.location().getPath();
         log.debug("Remove path {}", path);
-        s3.deleteObject(bucketName, path);
+        s3.deleteObject(bucketName, path.replaceFirst("^/", "").replaceFirst("/$", ""));
     }
 
     @Slf4j

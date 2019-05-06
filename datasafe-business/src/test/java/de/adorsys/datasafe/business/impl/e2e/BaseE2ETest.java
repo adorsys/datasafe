@@ -109,7 +109,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         services.userProfile().registerPublic(CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
                 .inbox(access(rootLocation.resolve("./" + INBOX_COMPONENT + "/")))
-                .publicKeys(access(rootLocation.resolve("./keystore")))
+                .publicKeys(access(rootLocation.resolve("./"+ PRIVATE_COMPONENT + "/keystore")))
                 .build()
         );
 
