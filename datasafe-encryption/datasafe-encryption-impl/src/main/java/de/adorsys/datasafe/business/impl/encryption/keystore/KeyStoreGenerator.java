@@ -73,6 +73,7 @@ public class KeyStoreGenerator {
                 }
             }
             {
+                // FIXME: We do not really need random ids
                 SecretKeyGenerator secretKeyGenerator = config.getSecretKeyGenerator(keyStoreID);
                 int numberOfSecretKeys = config.getSecretKeyNumber();
                 for (int i = 0; i < numberOfSecretKeys; i++) {
