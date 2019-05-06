@@ -1,6 +1,8 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.base.Predicate;
+import de.adorsys.datasafe.business.api.config.DFSConfig;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
 import lombok.SneakyThrows;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -38,6 +41,18 @@ class FileSharingTest extends BaseE2ETest {
 
         this.services = DaggerDefaultDocusafeServices
                 .builder()
+                .config(new DFSConfig() {
+
+                    @Override
+                    public String keystorePassword() {
+                        return "PAZZWORD";
+                    }
+
+                    @Override
+                    public URI systemRoot() {
+                        return location.toUri();
+                    }
+                })
                 .storageList(storage::listFiles)
                 .storageRead(storage::readFile)
                 .storageWrite(storage::writeFile)
@@ -52,19 +67,19 @@ class FileSharingTest extends BaseE2ETest {
 
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
 
-        PrivateResource privateJane = getFirstFileInPrivate(jane);
+        AbsoluteResourceLocation<PrivateResource> privateJane = getFirstFileInPrivate(jane);
 
-        String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane);
+        String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource());
 
         sendToInbox(jane.getUserID(), john.getUserID(), SHARED_FILE_PATH, privateContentJane);
 
-        PrivateResource inboxJohn = getFirstFileInInbox(john);
+        AbsoluteResourceLocation<PrivateResource> inboxJohn = getFirstFileInInbox(john);
 
-        String result = readInboxUsingPrivateKey(john, inboxJohn);
+        String result = readInboxUsingPrivateKey(john, inboxJohn.getResource());
 
         assertThat(result).isEqualTo(MESSAGE_ONE);
-        assertThat(privateJane.decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
-        assertThat(privateJane.encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
+        assertThat(privateJane.getResource().decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
+        assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
         validateInboxEncrypted();
         validatePrivateEncrypted();
     }

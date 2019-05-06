@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.service;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.inbox.InboxServiceImpl;
 import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
@@ -41,6 +42,9 @@ public interface DefaultDocusafeServices {
 
     @Component.Builder
     interface Builder {
+
+        @BindsInstance
+        Builder config(DFSConfig config);
 
         @BindsInstance
         Builder storageList(StorageListService listStorage);

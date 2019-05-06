@@ -9,10 +9,7 @@ import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.BaseMockitoTest;
 import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
 import lombok.RequiredArgsConstructor;
@@ -49,9 +46,10 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     @SneakyThrows
-    protected PrivateResource getFirstFileInPrivate(UserIDAuth inboxOwner) {
-        List<PrivateResource> files = services.privateService().list(new ListRequest<>(inboxOwner, "./"))
-                .collect(Collectors.toList());
+    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
+        List<AbsoluteResourceLocation<PrivateResource>> files = services.privateService().list(
+                ListRequest.forPrivate(inboxOwner, "./")
+        ).collect(Collectors.toList());
 
         log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);
         return files.get(0);
@@ -60,7 +58,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     @SneakyThrows
     protected String readPrivateUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        InputStream dataStream = services.privateService().read(new ReadRequest<>(user, location));
+        InputStream dataStream = services.privateService().read(ReadRequest.forPrivate(user, location));
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
@@ -72,7 +70,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     @SneakyThrows
     protected String readInboxUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        InputStream dataStream = services.inboxService().read(new ReadRequest<>(user, location));
+        InputStream dataStream = services.inboxService().read(ReadRequest.forPrivate(user, location));
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
@@ -82,9 +80,10 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     @SneakyThrows
-    protected PrivateResource getFirstFileInInbox(UserIDAuth inboxOwner) {
-        List<PrivateResource> files = services.inboxService().list(new ListRequest<>(inboxOwner, "./"))
-                .collect(Collectors.toList());
+    protected AbsoluteResourceLocation<PrivateResource>  getFirstFileInInbox(UserIDAuth inboxOwner) {
+        List<AbsoluteResourceLocation<PrivateResource>> files = services.inboxService().list(
+               ListRequest.forPrivate(inboxOwner, "./")
+        ).collect(Collectors.toList());
 
         log.info("{} has {} in INBOX", inboxOwner.getUserID().getValue(), files);
         return files.get(0);
@@ -128,11 +127,13 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return auth;
     }
 
-    private PublicResource access(URI path) {
-        return new DefaultPublicResource(path);
+    private AbsoluteResourceLocation<PublicResource> access(URI path) {
+        return new AbsoluteResourceLocation<>(new DefaultPublicResource(tempDir.toUri().resolve(path)));
     }
 
-    private PrivateResource accessPrivate(URI path) {
-        return new DefaultPrivateResource(path, URI.create(""), URI.create(""));
+    private AbsoluteResourceLocation<PrivateResource> accessPrivate(URI path) {
+        return new AbsoluteResourceLocation<>(new DefaultPrivateResource(
+                tempDir.toUri().resolve(path), URI.create(""), URI.create(""))
+        );
     }
 }

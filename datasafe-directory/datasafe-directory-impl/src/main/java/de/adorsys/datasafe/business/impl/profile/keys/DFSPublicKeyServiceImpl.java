@@ -9,6 +9,7 @@ import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;
 
@@ -43,7 +44,7 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
 
     @Override
     public PublicKeyIDWithPublicKey publicKey(UserID forUser) {
-        PublicResource accessiblePublicKey = bucketAccessService.publicAccessFor(
+        AbsoluteResourceLocation<PublicResource> accessiblePublicKey = bucketAccessService.publicAccessFor(
             forUser,
             profiles.publicProfile(forUser).getPublicKeys()
         );

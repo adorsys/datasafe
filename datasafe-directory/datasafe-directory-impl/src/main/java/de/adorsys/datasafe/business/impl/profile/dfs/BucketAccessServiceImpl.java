@@ -17,14 +17,12 @@ public class BucketAccessServiceImpl implements BucketAccessService {
     }
 
     @Override
-    public PrivateResource privateAccessFor(UserIDAuth user, ResourceLocation bucket) {
-        return new DefaultPrivateResource(bucket.location());
+    public AbsoluteResourceLocation<PrivateResource> privateAccessFor(UserIDAuth user, ResourceLocation bucket) {
+        return new AbsoluteResourceLocation<>(new DefaultPrivateResource(bucket.location()));
     }
 
     @Override
-    public PublicResource publicAccessFor(UserID user, ResourceLocation bucket) {
-        return new DefaultPublicResource(
-                bucket.location()
-        );
+    public AbsoluteResourceLocation<PublicResource> publicAccessFor(UserID user, ResourceLocation bucket) {
+        return new AbsoluteResourceLocation<>(new DefaultPublicResource(bucket.location()));
     }
 }
