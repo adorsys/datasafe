@@ -57,6 +57,13 @@ public class S3StorageService implements StorageService {
         return new PutBlobOnClose(s3, bucketName, location);
     }
 
+    @Override
+    public void remove(ResourceLocation location) {
+        String path = location.location().getPath();
+        log.debug("Remove path {}", path);
+        s3.deleteObject(bucketName, path.replaceFirst("^/", "").replaceFirst("/$", ""));
+    }
+
     @Slf4j
     @RequiredArgsConstructor
     private static final class PutBlobOnClose extends ByteArrayOutputStream {

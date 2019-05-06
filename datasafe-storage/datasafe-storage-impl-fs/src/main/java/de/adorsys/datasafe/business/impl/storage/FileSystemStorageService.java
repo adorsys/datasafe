@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class FileSystemStorageService implements StorageService {
 
-    private final Path dir;
+    private final URI dir;
 
     @SneakyThrows
     @Override
@@ -55,13 +55,20 @@ public class FileSystemStorageService implements StorageService {
         return MoreFiles.asByteSink(filePath, StandardOpenOption.CREATE).openStream();
     }
 
+    @SneakyThrows
+    @Override
+    public void remove(ResourceLocation location) {
+        Files.delete(resolve(location.location(), false));
+        log.debug("deleted directory at: {}", location.location().getPath());
+    }
+
     protected Path resolve(URI uri, boolean mkDirs) {
-        Path path = Paths.get(dir.toUri().resolve(uri));
+        Path path = Paths.get(dir.resolve(uri));
         if (!path.getParent().toFile().exists() && mkDirs) {
             log.debug("Creating directories at: {}", path);
             path.getParent().toFile().mkdirs();
         }
 
-        return Paths.get(dir.toUri().resolve(uri));
+        return Paths.get(dir.resolve(uri));
     }
 }

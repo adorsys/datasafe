@@ -5,6 +5,7 @@ import dagger.Component;
 import de.adorsys.datasafe.business.api.inbox.InboxServiceImpl;
 import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.StorageRemoveService;
 import de.adorsys.datasafe.business.api.storage.StorageWriteService;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultCredentialsModule;
@@ -43,13 +44,16 @@ public interface DefaultDocusafeServices {
     interface Builder {
 
         @BindsInstance
-        Builder storageList(StorageListService listStorage);
+        Builder storageList(StorageListService listService);
 
         @BindsInstance
-        Builder storageRead(StorageReadService listStorage);
+        Builder storageRead(StorageReadService readService);
 
         @BindsInstance
-        Builder storageWrite(StorageWriteService listStorage);
+        Builder storageWrite(StorageWriteService writeService);
+
+        @BindsInstance
+        Builder storageRemove(StorageRemoveService removeService);
 
         DefaultDocusafeServices build();
     }

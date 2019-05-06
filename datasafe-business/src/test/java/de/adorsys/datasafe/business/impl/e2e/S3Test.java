@@ -5,8 +5,10 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
-import de.adorsys.datasafe.business.impl.testcontainers.DaggerTestDocusafeServices;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.net.URI;
 
 public class S3Test extends StorageTest {
 
@@ -23,13 +25,20 @@ public class S3Test extends StorageTest {
 
     @BeforeEach
     void init() {
-        this.location = location;
+        this.location = URI.create("s3://" +  bucketName + "/");
         this.storage = new S3StorageService(s3, bucketName);
 
         this.services = DaggerTestDocusafeServices.builder()
                 .storageList(new S3StorageService(s3, bucketName))
                 .storageRead(new S3StorageService(s3, bucketName))
                 .storageWrite(new S3StorageService(s3, bucketName))
+                .storageRemove(new S3StorageService(s3, bucketName))
                 .build();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        removeUser(john);
+        removeUser(jane);
     }
 }

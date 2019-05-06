@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.testcontainers;
+package de.adorsys.datasafe.business.impl.e2e;
 
 import dagger.Binds;
 import dagger.Module;

@@ -5,14 +5,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
-import de.adorsys.datasafe.business.impl.testcontainers.DaggerTestDocusafeServices;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+
+import java.net.URI;
 
 @Slf4j
 public class MinioTest extends StorageTest {
@@ -45,15 +45,18 @@ public class MinioTest extends StorageTest {
         s3.createBucket(bucketName);
 
     }
+
     @BeforeEach
     void init() {
-        this.location = location;
-        this.storage = new FileSystemStorageService(location);
+
+        location = URI.create("s3://" +  bucketName + "/");
+        this.storage = new S3StorageService(s3, bucketName);
 
         this.services = DaggerTestDocusafeServices.builder()
                 .storageList(new S3StorageService(s3, bucketName))
                 .storageRead(new S3StorageService(s3, bucketName))
                 .storageWrite(new S3StorageService(s3, bucketName))
+                .storageRemove(new S3StorageService(s3, bucketName))
                 .build();
     }
 }

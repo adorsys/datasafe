@@ -8,16 +8,18 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
 
 public class FsTest extends StorageTest {
+
     @BeforeEach
     void init(@TempDir Path location) {
-        this.location = location;
-        this.storage = new FileSystemStorageService(location);
+        this.location = location.toUri();
+        this.storage = new FileSystemStorageService(this.location);
 
         this.services = DaggerDefaultDocusafeServices
                 .builder()
                 .storageList(storage)
                 .storageRead(storage)
                 .storageWrite(storage)
+                .storageRemove(storage)
                 .build();
     }
 }
