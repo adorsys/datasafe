@@ -142,6 +142,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <configuration>
+                    <append>true</append>
+                    <destFile>${jacoco.e2e.reportPath}</destFile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

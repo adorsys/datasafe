@@ -61,6 +61,10 @@
     </developers>
 
     <properties>
+        <!-- TODO: should be maven.multiModuleProjectDirectory but not using it because Intellij does not support it -->
+        <jacoco.reportPath>${basedir}/../../target/jacoco.exec</jacoco.reportPath>
+        <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
+
         <java.version>1.8</java.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
@@ -80,6 +84,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
        	<slf4j-version>1.7.25</slf4j-version>
         <testcontainers.version>1.11.2</testcontainers.version>
+        <jacoco.version>0.8.3</jacoco.version>
     </properties>
 
     <dependencies>
@@ -197,6 +202,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
+                <configuration>
+                    <argLine>${surefireArgLine}</argLine>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -220,6 +228,30 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <append>true</append>
+                    <destFile>${jacoco.reportPath}</destFile>
+                    <propertyName>surefireArgLine</propertyName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
