@@ -14,9 +14,7 @@ import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;
 import lombok.SneakyThrows;
 
@@ -65,10 +63,7 @@ public class DFSBasedProfileStorageImpl implements
     @Override
     @SneakyThrows
     public void registerPublic(CreateUserPublicProfile profile) {
-
-        try (OutputStream os = writeService.write(
-                new DefaultPrivateResource(locatePublicProfile(profile.getId())))
-        ) {
+        try (OutputStream os = writeService.write(locatePublicProfile(profile.getId()))) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
     }
@@ -76,40 +71,40 @@ public class DFSBasedProfileStorageImpl implements
     @Override
     @SneakyThrows
     public void registerPrivate(CreateUserPrivateProfile profile) {
-        try (OutputStream os = writeService.write(
-                new DefaultPrivateResource(locatePrivateProfile(profile.getId().getUserID())))
-        ) {
+        try (OutputStream os = writeService.write(locatePrivateProfile(profile.getId().getUserID()))) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
 
         // TODO: check if we need to create it
         createKeyStore(
             profile.getId(),
-            profile.getKeystore()
+            profile.getKeystore().getResource()
         );
     }
 
     @Override
     public void deregister(UserIDAuth userID) {
-        ListRequest<UserIDAuth> privateRequest = new ListRequest<>(userID, privateProfile(userID).getPrivateStorage());
-        List<PrivateResource> privateFiles = listService.list(privateRequest.getLocation()).collect(Collectors.toList());
-        for (PrivateResource file : privateFiles) {
+        ListRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> privateRequest =
+                new ListRequest<>(userID, privateProfile(userID).getPrivateStorage());
+
+        List<AbsoluteResourceLocation<PrivateResource>> privateFiles =
+                listService.list(privateRequest.getLocation()).collect(Collectors.toList());
+
+        for (AbsoluteResourceLocation<PrivateResource> file : privateFiles) {
             removeService.remove(file);
         }
 
         removeService.remove(privateProfile(userID).getKeystore());
         removeService.remove(privateProfile(userID).getPrivateStorage());
         removeService.remove(privateProfile(userID).getInboxWithWriteAccess());
-        removeService.remove(new DefaultPrivateResource(locatePrivateProfile(userID.getUserID())));
-        removeService.remove(new DefaultPublicResource(locatePublicProfile(userID.getUserID())));
+        removeService.remove(locatePrivateProfile(userID.getUserID()));
+        removeService.remove(locatePublicProfile(userID.getUserID()));
     }
 
     @Override
     @SneakyThrows
     public UserPublicProfile publicProfile(UserID ofUser) {
-        try (InputStream is =  readService.read(
-                new DefaultPublicResource(locatePublicProfile(ofUser)))
-        ) {
+        try (InputStream is =  readService.read(locatePublicProfile(ofUser))) {
             return serde.fromJson(new String(ByteStreams.toByteArray(is)), UserPublicProfile.class);
         }
     }
@@ -117,9 +112,7 @@ public class DFSBasedProfileStorageImpl implements
     @Override
     @SneakyThrows
     public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
-        try (InputStream is =  readService.read(
-                new DefaultPrivateResource(locatePrivateProfile(ofUser.getUserID())))
-        ) {
+        try (InputStream is =  readService.read(locatePrivateProfile(ofUser.getUserID()))) {
             return serde.fromJson(new String(ByteStreams.toByteArray(is)), UserPrivateProfile.class);
         }
     }
@@ -139,16 +132,20 @@ public class DFSBasedProfileStorageImpl implements
             new KeyStoreCreationConfig(1, 1, 1)
         );
 
-        try (OutputStream os = writeService.write(keystore)) {
+        try (OutputStream os = writeService.write(new AbsoluteResourceLocation<>(keystore))) {
             os.write(keyStoreService.serialize(store, forUser.getUserID().getValue(), auth.getReadStorePassword()));
         }
     }
 
-    private static URI locatePrivateProfile(UserID ofUser) {
-        return PRIVATE.resolve(ofUser.getValue());
+    private AbsoluteResourceLocation<PrivateResource> locatePrivateProfile(UserID ofUser) {
+        return new AbsoluteResourceLocation<>(
+                new DefaultPrivateResource(PRIVATE.resolve(ofUser.getValue())).resolve(dfsSystem.dfsRoot())
+        );
     }
 
-    private static URI locatePublicProfile(UserID ofUser) {
-        return PUBLIC.resolve(ofUser.getValue());
+    private AbsoluteResourceLocation<PublicResource> locatePublicProfile(UserID ofUser) {
+        return new AbsoluteResourceLocation<>(
+                new DefaultPublicResource(PUBLIC.resolve(ofUser.getValue())).resolve(dfsSystem.dfsRoot())
+        );
     }
 }
