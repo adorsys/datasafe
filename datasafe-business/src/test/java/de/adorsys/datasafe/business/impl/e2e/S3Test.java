@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +39,7 @@ public class S3Test extends StorageTest {
         this.location = URI.create("s3://" +  bucketName + "/" + System.currentTimeMillis() + "/");
         this.storage = new S3StorageService(s3, bucketName);
 
-        this.services = DaggerTestDocusafeServices
+        this.services = DaggerDefaultDocusafeServices
                 .builder()
                 .config(new DFSConfig() {
                     @Override

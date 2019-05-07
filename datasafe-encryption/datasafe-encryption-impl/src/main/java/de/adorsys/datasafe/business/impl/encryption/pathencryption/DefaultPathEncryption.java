@@ -12,18 +12,21 @@ import java.util.Base64;
 
 public class DefaultPathEncryption implements PathEncryptionConfig {
 
+    private final DefaultPathDigestConfig digestConfig;
+
     @Inject
-    public DefaultPathEncryption() {
+    public DefaultPathEncryption(DefaultPathDigestConfig config) {
+        this.digestConfig = config;
     }
 
     @Override
     public Cipher encryptionCipher(SecretKey secretKey) {
-        return createCipher(secretKey, Cipher.ENCRYPT_MODE);
+        return createCipher(secretKey, digestConfig, Cipher.ENCRYPT_MODE);
     }
 
     @Override
     public Cipher decryptionCipher(SecretKey secretKey) {
-        return createCipher(secretKey, Cipher.DECRYPT_MODE);
+        return createCipher(secretKey, digestConfig, Cipher.DECRYPT_MODE);
     }
 
     @Override
@@ -37,16 +40,16 @@ public class DefaultPathEncryption implements PathEncryptionConfig {
     }
 
     @SneakyThrows
-    private static Cipher createCipher(SecretKey secretKey, int cipherMode) {
+    private static Cipher createCipher(SecretKey secretKey, DefaultPathDigestConfig config, int cipherMode) {
         byte[] key = secretKey.getEncoded();
-        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        MessageDigest sha = MessageDigest.getInstance(config.getMessageDigest());
         key = sha.digest(key);
-        // nur die ersten 128 bit nutzen
-        key = Arrays.copyOf(key, 16);
-        // der fertige Schluessel
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
 
-        Cipher cipher = Cipher.getInstance("AES");
+        key = Arrays.copyOf(key, config.getShaKeyPartSize());
+        
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, config.getAlgorithm());
+
+        Cipher cipher = Cipher.getInstance(config.getAlgorithm());
         cipher.init(cipherMode, secretKeySpec);
         return cipher;
     }
