@@ -24,13 +24,13 @@ public class KeyStoreCreationConfigImpl {
         return new SecretKeyGeneratorImpl("AES", 256);
     }
 
-    public Integer getEncKeyNumber() {
+    public int getEncKeyNumber() {
         return config.getEncKeyNumber();
     }
-    public Integer getSignKeyNumber() {
+    public int getSignKeyNumber() {
         return config.getSignKeyNumber();
     }
-    public Integer getSecretKeyNumber() {
+    public int getSecretKeyNumber() {
         return config.getSecretKeyNumber();
     }
 }

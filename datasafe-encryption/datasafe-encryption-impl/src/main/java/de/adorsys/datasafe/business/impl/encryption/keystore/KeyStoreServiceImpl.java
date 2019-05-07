@@ -6,16 +6,16 @@ import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreS
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
 
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 public class KeyStoreServiceImpl implements KeyStoreService {
@@ -84,35 +84,6 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
         key = (SecretKeySpec) keyStore.getKey(keyID.getValue(), password);
         return key;
-    }
-
-    @Override
-    @SneakyThrows
-    public SecretKeyIDWithKey getRandomSecretKeyID(KeyStoreAccess keyStoreAccess) {
-        KeyStore keyStore = keyStoreAccess.getKeyStore();
-        Key key = null;
-        String randomAlias = null;
-        Enumeration<String> aliases = keyStore.aliases();
-        // Do not return the Path encryption key
-
-        List<String> keyIDs = new ArrayList<>();
-        for (String keyAlias : Collections.list(aliases)) {
-            if (keyStore.entryInstanceOf(keyAlias, KeyStore.SecretKeyEntry.class)) {
-                // DO not use the path encryption key for content encryption.
-                if (KeyStoreCreationConfig.PATH_KEY_ID.getValue().equals(keyAlias)) {
-                    continue;
-                }
-                keyIDs.add(keyAlias);
-            }
-        }
-        if (keyIDs.size() == 0) {
-            throw new IllegalArgumentException("No secret keys in the keystore");
-        }
-        int randomIndex = RandomUtils.nextInt(0, keyIDs.size());
-        randomAlias = keyIDs.get(randomIndex);
-        char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
-            key = keyStore.getKey(randomAlias, password);
-        return new SecretKeyIDWithKey(new KeyID(randomAlias), (SecretKey) key);
     }
 
     @Override

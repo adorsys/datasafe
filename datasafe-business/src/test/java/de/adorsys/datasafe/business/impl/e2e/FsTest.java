@@ -9,7 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.net.URI;
 import java.nio.file.Path;
 
-public class FsTest extends StorageTest {
+public class FsTest extends BaseStorageTest {
 
     @BeforeEach
     void init(@TempDir Path location) {

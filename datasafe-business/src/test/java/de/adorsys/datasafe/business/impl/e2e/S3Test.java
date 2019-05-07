@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,15 +16,17 @@ import java.net.URI;
 import static de.adorsys.datasafe.business.impl.e2e.S3Test.KEY;
 
 @EnabledIfEnvironmentVariable(named = KEY, matches = ".+")
-public class S3Test extends StorageTest {
+public class S3Test extends BaseStorageTest {
 
-    public static final String KEY = "AWS_ACCESS_KEY";
+    static final String KEY = "AWS_ACCESS_KEY";
 
     private String accessKeyID = System.getProperty(KEY);
     private String secretAccessKey = System.getProperty("AWS_SECRET_KEY");
-    private String region = "eu-central-1";
-    private String bucketName = "adorsys-docusafe";
+    private String region = System.getProperty("AWS_REGION", "eu-central-1");
+    private String bucketName = System.getProperty("AWS_BUCKET", "adorsys-docusafe");
+
     private BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
+
     private AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .withCredentials(new AWSStaticCredentialsProvider(creds))
             .withRegion(region)
@@ -36,7 +39,7 @@ public class S3Test extends StorageTest {
         this.location = URI.create("s3://" +  bucketName + "/" + System.currentTimeMillis() + "/");
         this.storage = new S3StorageService(s3, bucketName);
 
-        this.services = DaggerTestDocusafeServices
+        this.services = DaggerDefaultDocusafeServices
                 .builder()
                 .config(new DFSConfig() {
                     @Override
