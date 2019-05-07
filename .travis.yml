@@ -20,4 +20,5 @@ deploy:
       condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests
+  - bash <(curl -s https://codecov.io/bash) -f 'datasafe-business*' -F e2e_tests
