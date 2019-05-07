@@ -5,9 +5,7 @@ import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
-import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
@@ -17,19 +15,17 @@ import lombok.SneakyThrows;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import java.security.Key;
-import java.util.concurrent.ConcurrentMap;
+import java.security.KeyStore;
 
 import static de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
 import static de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
 
-// DEPLOYMENT
 /**
  * Retrieves and opens private keystore associated with user location DFS storage.
  */
 public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
-    private final ConcurrentMap<UserID, KeyStoreAccess> keystoreCache;
-
+    private final KeyStoreCache keystoreCache;
     private final KeyStoreService keyStoreService;
     private final DFSSystem dfsSystem;
     private final BucketAccessService bucketAccessService;
@@ -38,7 +34,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     private final StorageReadService readService;
 
     @Inject
-    public DFSPrivateKeyServiceImpl(ConcurrentMap<UserID, KeyStoreAccess> keystoreCache,
+    public DFSPrivateKeyServiceImpl(KeyStoreCache keystoreCache,
                                     KeyStoreService keyStoreService, DFSSystem dfsSystem,
                                     BucketAccessService bucketAccessService, ProfileRetrievalService profile,
                                     StreamReadUtil streamReadUtil, StorageReadService readService) {
@@ -70,18 +66,18 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     @Override
     @SneakyThrows
     public Key keyById(UserIDAuth forUser, String keyId) {
-        KeyStoreAccess access = keystoreCache.computeIfAbsent(
+        KeyStore keyStore = keystoreCache.getPrivateKeys().computeIfAbsent(
                 forUser.getUserID(),
                 userId -> keystore(forUser)
         );
 
-        return access.getKeyStore().getKey(
+        return keyStore.getKey(
                 keyId,
-                access.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray()
+                forUser.getReadKeyPassword().getValue().toCharArray()
         );
     }
 
-    private KeyStoreAccess keystore(UserIDAuth forUser) {
+    private KeyStore keystore(UserIDAuth forUser) {
         AbsoluteResourceLocation<PrivateResource> access = bucketAccessService.privateAccessFor(
                 forUser,
                 profile.privateProfile(forUser).getKeystore()
@@ -89,13 +85,10 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
         byte[] payload = streamReadUtil.readStream(readService.read(access));
 
-        return new KeyStoreAccess(
-                keyStoreService.deserialize(
-                        payload,
-                        forUser.getUserID().getValue(),
-                        dfsSystem.systemKeystoreAuth()
-                ),
-                dfsSystem.privateKeyStoreAuth(forUser)
+        return keyStoreService.deserialize(
+                payload,
+                forUser.getUserID().getValue(),
+                dfsSystem.systemKeystoreAuth()
         );
     }
 }

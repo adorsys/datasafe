@@ -9,12 +9,15 @@ import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.types.UserID;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.business.impl.profile.keys.DFSPrivateKeyServiceImpl;
 import de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl;
+import de.adorsys.datasafe.business.impl.profile.keys.DefaultKeyStoreCache;
+import de.adorsys.datasafe.business.impl.profile.keys.KeyStoreCache;
 
-import java.util.concurrent.ConcurrentMap;
+import javax.inject.Singleton;
+import java.security.KeyStore;
+import java.util.function.Supplier;
 
 /**
  * This module is responsible for credentials access - either user or dfs.
@@ -23,12 +26,13 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class DefaultCredentialsModule {
 
     @Provides
-    static ConcurrentMap<UserID, KeyStoreAccess> keyStoreCache() {
-        Cache<UserID, KeyStoreAccess> cache = CacheBuilder.newBuilder()
+    @Singleton
+    static KeyStoreCache keyStoreCache() {
+        Supplier<Cache<UserID, KeyStore>> cache = () -> CacheBuilder.newBuilder()
                 .initialCapacity(1000)
                 .build();
 
-        return cache.asMap();
+        return new DefaultKeyStoreCache(cache.get().asMap(), cache.get().asMap());
     }
 
     @Binds
