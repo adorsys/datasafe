@@ -6,6 +6,8 @@ import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
@@ -30,7 +32,7 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
 
     @Override
     @SneakyThrows
-    public InputStream read(ReadRequest<UserIDAuth> request) {
+    public InputStream read(ReadRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> request) {
         return cms.buildDecryptionInputStream(
                 readService.read(request.getLocation()),
                 privateKeyService.keystore(request.getOwner())

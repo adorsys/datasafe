@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.storage.StorageService;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,18 +33,18 @@ abstract class StorageTest extends BaseE2ETest {
 
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
 
-        PrivateResource privateJane = getFirstFileInPrivate(jane);
+        AbsoluteResourceLocation<PrivateResource> privateJane = getFirstFileInPrivate(jane);
 
-        String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane);
+        String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource());
 
         sendToInbox(jane.getUserID(), john.getUserID(), SHARED_FILE_PATH, privateContentJane);
 
-        PrivateResource inboxJohn = getFirstFileInInbox(john);
+        AbsoluteResourceLocation<PrivateResource> inboxJohn = getFirstFileInInbox(john);
 
-        String result = readInboxUsingPrivateKey(john, inboxJohn);
+        String result = readInboxUsingPrivateKey(john, inboxJohn.getResource());
 
         assertThat(result).isEqualTo(MESSAGE_ONE);
-        assertThat(privateJane.decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
-        assertThat(privateJane.encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
+        assertThat(privateJane.getResource().decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
+        assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
     }
 }

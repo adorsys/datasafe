@@ -7,6 +7,7 @@ import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalServi
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;
 
@@ -39,7 +40,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
     @Override
     public KeyStoreAccess keystore(UserIDAuth forUser) {
-        PrivateResource access = bucketAccessService.privateAccessFor(
+        AbsoluteResourceLocation<PrivateResource> access = bucketAccessService.privateAccessFor(
             forUser,
             profile.privateProfile(forUser).getKeystore()
         );

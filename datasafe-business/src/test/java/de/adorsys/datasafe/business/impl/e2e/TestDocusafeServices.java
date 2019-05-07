@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.encryption.pathencryption.PathEncryption;
 import de.adorsys.datasafe.business.api.inbox.InboxServiceImpl;
 import de.adorsys.datasafe.business.api.storage.StorageListService;
@@ -44,6 +45,9 @@ public interface TestDocusafeServices extends DefaultDocusafeServices {
 
     @Component.Builder
     interface Builder {
+
+        @BindsInstance
+        Builder config(DFSConfig config);
 
         @BindsInstance
         Builder storageList(StorageListService listService);

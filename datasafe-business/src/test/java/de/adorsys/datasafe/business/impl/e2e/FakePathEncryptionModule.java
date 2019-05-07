@@ -15,7 +15,6 @@ import static org.mockito.Mockito.spy;
 @Module
 public abstract class FakePathEncryptionModule {
 
-
     @Provides
     @Singleton
     static PathEncryption pathEncryption(PathEncryptionImpl impl) {
