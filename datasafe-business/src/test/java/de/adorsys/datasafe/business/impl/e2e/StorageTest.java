@@ -1,13 +1,20 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
+import com.google.common.io.CharStreams;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,5 +53,39 @@ abstract class StorageTest extends BaseE2ETest {
         assertThat(result).isEqualTo(MESSAGE_ONE);
         assertThat(privateJane.getResource().decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
         assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
+        validateInboxEncrypted();
+        validatePrivateEncrypted();
+    }
+
+    @SneakyThrows
+    private void validateInboxEncrypted() {
+        List<AbsoluteResourceLocation<PrivateResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));
+
+        assertThat(inbox).hasSize(1);
+        assertThat(inbox.get(0).toString()).contains(SHARED_FILE);
+        assertThat(
+                CharStreams.toString(new InputStreamReader(storage.read(inbox.get(0))))
+        ).doesNotContain(MESSAGE_ONE);
+    }
+
+    @SneakyThrows
+    private void validatePrivateEncrypted() {
+        List<AbsoluteResourceLocation<PrivateResource>> privateFiles = listFiles(
+                it -> it.contains(PRIVATE_FILES_COMPONENT));
+
+        assertThat(privateFiles).hasSize(1);
+        assertThat(privateFiles.get(0).toString()).doesNotContain(PRIVATE_FILE);
+        assertThat(privateFiles.get(0).toString()).doesNotContain(FOLDER);
+        assertThat(
+                CharStreams.toString(new InputStreamReader(storage.read(privateFiles.get(0))))
+        ).doesNotContain(MESSAGE_ONE);
+    }
+
+    @SneakyThrows
+    private List<AbsoluteResourceLocation<PrivateResource>> listFiles(Predicate<String> pattern) {
+        return storage.list(new AbsoluteResourceLocation<>(DefaultPrivateResource.forPrivate(location)))
+                .filter(it -> !it.location().toString().startsWith("."))
+                .filter(it -> pattern.test(it.location().toString()))
+                .collect(Collectors.toList());
     }
 }

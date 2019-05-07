@@ -6,6 +6,7 @@ import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWri
 import de.adorsys.datasafe.business.api.storage.StorageWriteService;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     }
 
     @Override
-    public OutputStream write(PublicResource location, PublicKeyIDWithPublicKey publicKey) {
+    public OutputStream write(AbsoluteResourceLocation<PublicResource> location, PublicKeyIDWithPublicKey publicKey) {
 
         OutputStream dfsSink = writeService.write(location);
         OutputStream encryptionSink = cms.buildEncryptionOutputStream(
@@ -45,7 +46,7 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     }
 
     @Override
-    public OutputStream write(PrivateResource location, SecretKeyIDWithKey secretKey) {
+    public OutputStream write(AbsoluteResourceLocation<PrivateResource> location, SecretKeyIDWithKey secretKey) {
 
         OutputStream dfsSink = writeService.write(location);
 

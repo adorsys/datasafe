@@ -17,12 +17,12 @@ import static de.adorsys.datasafe.business.impl.e2e.S3Test.KEY;
 @EnabledIfEnvironmentVariable(named = KEY, matches = ".+")
 public class S3Test extends StorageTest {
 
-    public static final String KEY = "AWS_ACCESS_KEY";
+    static final String KEY = "AWS_ACCESS_KEY";
 
     private String accessKeyID = System.getProperty(KEY);
     private String secretAccessKey = System.getProperty("AWS_SECRET_KEY");
-    private String region = "eu-central-1";
-    private String bucketName = "adorsys-docusafe";
+    private String region = System.getProperty("AWS_REGION", "eu-central-1");
+    private String bucketName = System.getProperty("AWS_BUCKET", "adorsys-docusafe");
 
     private BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
 
