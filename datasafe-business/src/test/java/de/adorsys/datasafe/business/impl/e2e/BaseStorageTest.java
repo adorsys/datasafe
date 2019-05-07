@@ -51,24 +51,25 @@ abstract class BaseStorageTest extends BaseE2ETest {
         assertThat(result).isEqualTo(MESSAGE_ONE);
         assertThat(privateJane.getResource().decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
         assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
-        validateInboxEncrypted(inboxJohn);
-        validatePrivateEncrypted(privateJane);
+        validateInboxStructAndEncryption(inboxJohn);
+        validatePrivateStructAndEncryption(privateJane);
     }
 
     @SneakyThrows
-    private void validateInboxEncrypted(AbsoluteResourceLocation<PrivateResource> expectedInboxResource) {
+    private void validateInboxStructAndEncryption(AbsoluteResourceLocation<PrivateResource> expectedInboxResource) {
         List<AbsoluteResourceLocation<PrivateResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));
 
         assertThat(inbox).hasSize(1);
         AbsoluteResourceLocation<PrivateResource> foundResource = inbox.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedInboxResource.location());
+        // no path encryption for inbox:
         assertThat(foundResource.toString()).contains(SHARED_FILE);
         // validate encryption on high-level:
         assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
     }
 
     @SneakyThrows
-    private void validatePrivateEncrypted(AbsoluteResourceLocation<PrivateResource> expectedPrivateResource) {
+    private void validatePrivateStructAndEncryption(AbsoluteResourceLocation<PrivateResource> expectedPrivateResource) {
         List<AbsoluteResourceLocation<PrivateResource>> privateFiles = listFiles(
                 it -> it.contains(PRIVATE_FILES_COMPONENT));
 
