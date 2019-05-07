@@ -1,8 +1,15 @@
 package de.adorsys.datasafe.business.api.types;
 
-public class UserID extends BaseTypeString {
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Delegate;
+
+@EqualsAndHashCode(of = "value")
+public class UserID {
+
+    @Delegate
+    private final BaseTypeString value;
 
     public UserID(String value) {
-        super(value);
+        this.value = new BaseTypeString(value);
     }
 }

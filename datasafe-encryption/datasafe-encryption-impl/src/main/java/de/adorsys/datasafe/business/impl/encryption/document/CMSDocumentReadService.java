@@ -35,7 +35,7 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
     public InputStream read(ReadRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> request) {
         return cms.buildDecryptionInputStream(
                 readService.read(request.getLocation()),
-                privateKeyService.keystore(request.getOwner())
+                keyId -> privateKeyService.keyById(request.getOwner(), keyId)
         );
     }
 }

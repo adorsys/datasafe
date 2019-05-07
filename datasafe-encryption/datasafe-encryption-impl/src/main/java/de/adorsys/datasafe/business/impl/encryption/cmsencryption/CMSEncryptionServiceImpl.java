@@ -2,7 +2,6 @@ package de.adorsys.datasafe.business.impl.encryption.cmsencryption;
 
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.api.types.keystore.KeyID;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.exceptions.DecryptionException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,10 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.*;
+import java.security.Key;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.function.Function;
 
 /**
  * Cryptographic message syntax document encoder/decoder - see
@@ -54,7 +56,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
     @Override
     @SneakyThrows
-    public InputStream buildDecryptionInputStream(InputStream inputStream, KeyStoreAccess keyStoreAccess) {
+    public InputStream buildDecryptionInputStream(InputStream inputStream, Function<String, Key> keyById) {
         RecipientInformationStore recipientInfoStore = new CMSEnvelopedDataParser(inputStream).getRecipientInfos();
 
         if (recipientInfoStore.size() == 0) {
@@ -68,34 +70,30 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
         switch (rid.getType()) {
             case RecipientId.keyTrans:
-                return recipientInfo.getContentStream(new JceKeyTransEnvelopedRecipient(privateKey(keyStoreAccess, rid)))
+                return recipientInfo.getContentStream(new JceKeyTransEnvelopedRecipient(privateKey(keyById, rid)))
                         .getContentStream();
             case RecipientId.kek:
-                return recipientInfo.getContentStream(new JceKEKEnvelopedRecipient(secretKey(keyStoreAccess, rid)))
+                return recipientInfo.getContentStream(new JceKEKEnvelopedRecipient(secretKey(keyById, rid)))
                         .getContentStream();
             default:
                 throw new DecryptionException("Programming error. Handling of more that one recipient not done yet");
         }
     }
 
-    private SecretKey secretKey(KeyStoreAccess keyStoreAccess, RecipientId rid)
-            throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    private SecretKey secretKey(Function<String, Key> keyById, RecipientId rid) {
         String keyIdentifier = new String(((KEKRecipientId) rid).getKeyIdentifier());
         log.debug("Secret key ID from envelope: {}", keyIdentifier);
-        return (SecretKey) keyStoreAccess.getKeyStore().getKey(keyIdentifier,
-                keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
+        return (SecretKey) keyById.apply(keyIdentifier);
     }
 
-    private PrivateKey privateKey(KeyStoreAccess keyStoreAccess, RecipientId rid)
-            throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    private PrivateKey privateKey(Function<String, Key> keyById, RecipientId rid) {
         String subjectKeyIdentifier = new String(((KeyTransRecipientId) rid).getSubjectKeyIdentifier());
         log.debug("Private key ID from envelope: {}", subjectKeyIdentifier);
-        return (PrivateKey) keyStoreAccess.getKeyStore().getKey(subjectKeyIdentifier,
-                keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
+        return (PrivateKey) keyById.apply(subjectKeyIdentifier);
     }
 
-    private OutputStream streamEncrypt(OutputStream dataContentStream, RecipientInfoGenerator rec, ASN1ObjectIdentifier algorithm)
-            throws CMSException, IOException {
+    private OutputStream streamEncrypt(OutputStream dataContentStream, RecipientInfoGenerator rec,
+                                       ASN1ObjectIdentifier algorithm) throws CMSException, IOException {
         CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
         gen.addRecipientInfoGenerator(rec);
         return gen.open(dataContentStream, new JceCMSContentEncryptorBuilder(algorithm)
