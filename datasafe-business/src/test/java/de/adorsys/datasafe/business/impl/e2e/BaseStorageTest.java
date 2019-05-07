@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RequiredArgsConstructor
-abstract class StorageTest extends BaseE2ETest {
+abstract class BaseStorageTest extends BaseE2ETest {
 
     private static final String MESSAGE_ONE = "Hello here";
     private static final String FOLDER = "folder1";
@@ -53,15 +53,16 @@ abstract class StorageTest extends BaseE2ETest {
         assertThat(result).isEqualTo(MESSAGE_ONE);
         assertThat(privateJane.getResource().decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
         assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
-        validateInboxEncrypted();
-        validatePrivateEncrypted();
+        validateInboxEncrypted(inboxJohn);
+        validatePrivateEncrypted(privateJane);
     }
 
     @SneakyThrows
-    private void validateInboxEncrypted() {
+    private void validateInboxEncrypted(AbsoluteResourceLocation<PrivateResource> expectedInboxResource) {
         List<AbsoluteResourceLocation<PrivateResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));
 
         assertThat(inbox).hasSize(1);
+        assertThat(inbox.get(0).location()).isEqualTo(expectedInboxResource.location());
         assertThat(inbox.get(0).toString()).contains(SHARED_FILE);
         assertThat(
                 CharStreams.toString(new InputStreamReader(storage.read(inbox.get(0))))
@@ -69,11 +70,12 @@ abstract class StorageTest extends BaseE2ETest {
     }
 
     @SneakyThrows
-    private void validatePrivateEncrypted() {
+    private void validatePrivateEncrypted(AbsoluteResourceLocation<PrivateResource> expectedPrivateResource) {
         List<AbsoluteResourceLocation<PrivateResource>> privateFiles = listFiles(
                 it -> it.contains(PRIVATE_FILES_COMPONENT));
 
         assertThat(privateFiles).hasSize(1);
+        assertThat(privateFiles.get(0).location()).isEqualTo(expectedPrivateResource.location());
         assertThat(privateFiles.get(0).toString()).doesNotContain(PRIVATE_FILE);
         assertThat(privateFiles.get(0).toString()).doesNotContain(FOLDER);
         assertThat(

@@ -16,7 +16,7 @@ import java.net.URI;
 import static de.adorsys.datasafe.business.impl.e2e.S3Test.KEY;
 
 @EnabledIfEnvironmentVariable(named = KEY, matches = ".+")
-public class S3Test extends StorageTest {
+public class S3Test extends BaseStorageTest {
 
     static final String KEY = "AWS_ACCESS_KEY";
 

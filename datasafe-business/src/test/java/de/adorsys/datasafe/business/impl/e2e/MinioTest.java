@@ -17,7 +17,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.net.URI;
 
 @Slf4j
-public class MinioTest extends StorageTest {
+public class MinioTest extends BaseStorageTest {
 
     private static String accessKeyID = "admin";
     private static String secretAccessKey = "password";

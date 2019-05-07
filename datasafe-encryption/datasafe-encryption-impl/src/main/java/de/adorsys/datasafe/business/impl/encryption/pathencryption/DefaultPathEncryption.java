@@ -46,7 +46,7 @@ public class DefaultPathEncryption implements PathEncryptionConfig {
         key = sha.digest(key);
 
         key = Arrays.copyOf(key, config.getShaKeyPartSize());
-        
+
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, config.getAlgorithm());
 
         Cipher cipher = Cipher.getInstance(config.getAlgorithm());
