@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.security.KeyStore;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * FIXME: it should be broken down.
@@ -88,12 +86,7 @@ public class DFSBasedProfileStorageImpl implements
         ListRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> privateRequest =
                 new ListRequest<>(userID, privateProfile(userID).getPrivateStorage());
 
-        List<AbsoluteResourceLocation<PrivateResource>> privateFiles =
-                listService.list(privateRequest.getLocation()).collect(Collectors.toList());
-
-        for (AbsoluteResourceLocation<PrivateResource> file : privateFiles) {
-            removeService.remove(file);
-        }
+        listService.list(privateRequest.getLocation()).forEach(removeService::remove);
 
         removeService.remove(privateProfile(userID).getKeystore());
         removeService.remove(privateProfile(userID).getPrivateStorage());

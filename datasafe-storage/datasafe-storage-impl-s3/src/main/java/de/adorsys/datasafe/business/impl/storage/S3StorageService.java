@@ -40,16 +40,16 @@ public class S3StorageService implements StorageService {
         ListObjectsV2Result listObjectsV2Result = s3.listObjectsV2(listObjectsV2Request);
         List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
         return objectSummaries.stream()
-                .map(os -> {
-                    URI uri = URI.create(os.getKey().substring(len));
-                    return new AbsoluteResourceLocation<>(new DefaultPrivateResource(uri).resolve(location));
-                });
+                .map(os -> URI.create(os.getKey().substring(len)))
+                .map(uri -> new DefaultPrivateResource(uri).resolve(location))
+                .map(AbsoluteResourceLocation::new);
     }
 
     @Override
     public InputStream read(AbsoluteResourceLocation location) {
-        log.debug("Read from {}", LogHelper.encryptIdNeeded(location.location()));
-        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, location.location().getPath().replaceFirst("^/", ""));
+        String key = location.location().getPath().replaceFirst("^/", "");
+        log.debug("Read from {}", LogHelper.encryptIdNeeded(key));
+        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
         S3Object fullObject = s3.getObject(getObjectRequest);
         return fullObject.getObjectContent();
     }
@@ -62,8 +62,9 @@ public class S3StorageService implements StorageService {
     @Override
     public void remove(AbsoluteResourceLocation location) {
         String path = location.location().getPath();
-        log.debug("Remove path {}", LogHelper.encryptIdNeeded(path));
-        s3.deleteObject(bucketName, path.replaceFirst("^/", "").replaceFirst("/$", ""));
+        String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
+        log.debug("Remove path {}", LogHelper.encryptIdNeeded(key));
+        s3.deleteObject(bucketName, key);
     }
 
     @Slf4j
@@ -77,19 +78,15 @@ public class S3StorageService implements StorageService {
         @Override
         public void close() throws IOException {
 
-            log.debug("Write to {}", LogHelper.encryptIdNeeded(resource.location()));
             ObjectMetadata metadata = new ObjectMetadata();
             byte[] data = super.toByteArray();
             metadata.setContentLength(data.length);
 
             InputStream is = new ByteArrayInputStream(data);
 
-            s3.putObject(
-                    bucketName,
-                    resource.location().getPath().replaceFirst("^/", ""),
-                    is,
-                    metadata
-            );
+            String key = resource.location().getPath().replaceFirst("^/", "");
+            log.debug("Write to {}", LogHelper.encryptIdNeeded(key));
+            s3.putObject(bucketName, key, is, metadata);
 
             super.close();
         }

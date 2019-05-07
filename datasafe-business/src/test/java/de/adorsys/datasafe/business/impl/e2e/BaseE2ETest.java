@@ -42,6 +42,8 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         OutputStream stream = services.privateService().write(WriteRequest.forDefaultPrivate(auth, path));
         stream.write(data.getBytes());
         stream.close();
+        log.info("File {} of user {} saved to {}", LogHelper.encryptIdNeeded(data),
+                LogHelper.encryptIdNeeded(auth.getUserID()), LogHelper.encryptIdNeeded(path));
     }
 
     protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
@@ -92,10 +94,11 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     @SneakyThrows
-    protected void sendToInbox(UserID from, UserID to, String filename, String data) {
+    protected void sendToInbox(UserID to, String filename, String data) {
         OutputStream stream = services.inboxService().write(WriteRequest.forDefaultPublic(to, "./" + filename));
         stream.write(data.getBytes());
         stream.close();
+        log.info("File {} sent to INBOX of user {}", LogHelper.encryptIdNeeded(filename), LogHelper.encryptIdNeeded(to));
     }
 
     protected UserIDAuth registerUser(String userName, URI rootLocation) {
@@ -103,27 +106,36 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
         rootLocation = rootLocation.resolve(userName + "/");
 
+        URI keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
+        log.info("User's keystore location: {}", LogHelper.encryptIdNeeded(keyStoreUri));
+        URI inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
+        log.info("User's inbox location: {}", LogHelper.encryptIdNeeded(inboxUri));
+
         services.userProfile().registerPublic(CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
-                .inbox(access(rootLocation.resolve("./" + INBOX_COMPONENT + "/")))
-                .publicKeys(access(rootLocation.resolve("./"+ PRIVATE_COMPONENT + "/keystore")))
+                .inbox(access(inboxUri))
+                .publicKeys(access(keyStoreUri))
                 .build()
         );
+
+        URI filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
+        log.info("User's files location: {}", LogHelper.encryptIdNeeded(filesUri));
 
         services.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
                 .id(auth)
-                .privateStorage(accessPrivate(rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/")))
-                .keystore(accessPrivate(rootLocation.resolve("./"+ PRIVATE_COMPONENT + "/keystore")))
-                .inboxWithWriteAccess(accessPrivate(rootLocation.resolve("./" + INBOX_COMPONENT + "/")))
+                .privateStorage(accessPrivate(filesUri))
+                .keystore(accessPrivate(keyStoreUri))
+                .inboxWithWriteAccess(accessPrivate(inboxUri))
                 .build()
         );
 
+        log.info("Created user: {}", LogHelper.encryptIdNeeded(userName));
         return auth;
     }
 
     protected void removeUser(UserIDAuth userIDAuth) {
         services.userProfile().deregister(userIDAuth);
-        log.info("user deleted: {}", LogHelper.encryptIdNeeded(userIDAuth.getUserID().getValue()));
+        log.info("User deleted: {}", LogHelper.encryptIdNeeded(userIDAuth.getUserID().getValue()));
     }
 
     private AbsoluteResourceLocation<PublicResource> access(URI path) {

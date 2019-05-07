@@ -42,7 +42,7 @@ abstract class BaseStorageTest extends BaseE2ETest {
 
         String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource());
 
-        sendToInbox(jane.getUserID(), john.getUserID(), SHARED_FILE_PATH, privateContentJane);
+        sendToInbox(john.getUserID(), SHARED_FILE_PATH, privateContentJane);
 
         AbsoluteResourceLocation<PrivateResource> inboxJohn = getFirstFileInInbox(john);
 
