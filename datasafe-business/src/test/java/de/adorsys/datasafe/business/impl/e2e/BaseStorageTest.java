@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
-import com.google.common.io.CharStreams;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
@@ -10,7 +9,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.List;
 import java.util.function.Predicate;
@@ -53,34 +51,35 @@ abstract class BaseStorageTest extends BaseE2ETest {
         assertThat(result).isEqualTo(MESSAGE_ONE);
         assertThat(privateJane.getResource().decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
         assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
-        validateInboxEncrypted(inboxJohn);
-        validatePrivateEncrypted(privateJane);
+        validateInboxStructAndEncryption(inboxJohn);
+        validatePrivateStructAndEncryption(privateJane);
     }
 
     @SneakyThrows
-    private void validateInboxEncrypted(AbsoluteResourceLocation<PrivateResource> expectedInboxResource) {
+    private void validateInboxStructAndEncryption(AbsoluteResourceLocation<PrivateResource> expectedInboxResource) {
         List<AbsoluteResourceLocation<PrivateResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));
 
         assertThat(inbox).hasSize(1);
-        assertThat(inbox.get(0).location()).isEqualTo(expectedInboxResource.location());
-        assertThat(inbox.get(0).toString()).contains(SHARED_FILE);
-        assertThat(
-                CharStreams.toString(new InputStreamReader(storage.read(inbox.get(0))))
-        ).doesNotContain(MESSAGE_ONE);
+        AbsoluteResourceLocation<PrivateResource> foundResource = inbox.get(0);
+        assertThat(foundResource.location()).isEqualTo(expectedInboxResource.location());
+        // no path encryption for inbox:
+        assertThat(foundResource.toString()).contains(SHARED_FILE);
+        // validate encryption on high-level:
+        assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
     }
 
     @SneakyThrows
-    private void validatePrivateEncrypted(AbsoluteResourceLocation<PrivateResource> expectedPrivateResource) {
+    private void validatePrivateStructAndEncryption(AbsoluteResourceLocation<PrivateResource> expectedPrivateResource) {
         List<AbsoluteResourceLocation<PrivateResource>> privateFiles = listFiles(
                 it -> it.contains(PRIVATE_FILES_COMPONENT));
 
         assertThat(privateFiles).hasSize(1);
-        assertThat(privateFiles.get(0).location()).isEqualTo(expectedPrivateResource.location());
-        assertThat(privateFiles.get(0).toString()).doesNotContain(PRIVATE_FILE);
-        assertThat(privateFiles.get(0).toString()).doesNotContain(FOLDER);
-        assertThat(
-                CharStreams.toString(new InputStreamReader(storage.read(privateFiles.get(0))))
-        ).doesNotContain(MESSAGE_ONE);
+        AbsoluteResourceLocation<PrivateResource> foundResource = privateFiles.get(0);
+        assertThat(foundResource.location()).isEqualTo(expectedPrivateResource.location());
+        // validate encryption on high-level:
+        assertThat(foundResource.toString()).doesNotContain(PRIVATE_FILE);
+        assertThat(foundResource.toString()).doesNotContain(FOLDER);
+        assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
     }
 
     @SneakyThrows

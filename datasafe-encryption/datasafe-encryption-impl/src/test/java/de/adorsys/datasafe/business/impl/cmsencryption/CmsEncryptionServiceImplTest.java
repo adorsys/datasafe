@@ -26,6 +26,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Key;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 
@@ -65,7 +66,9 @@ public class CmsEncryptionServiceImplTest {
         byte[] byteArray = outputStream.toByteArray();
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess);
+        InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyId -> getKey(keyId, keyStoreAccess)
+        );
         byte[] actualResult = toByteArray(decryptionStream);
 
         assertThat(TEST_MESSAGE_CONTENT).isEqualTo(new String(actualResult));
@@ -89,7 +92,8 @@ public class CmsEncryptionServiceImplTest {
         byte[] byteArray = outputStream.toByteArray();
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess));
+        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyId -> getKey(keyId, keyStoreAccess)));
     }
 
     @Test
@@ -115,7 +119,8 @@ public class CmsEncryptionServiceImplTest {
         byte[] byteArray = outputStream.toByteArray();
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess));
+        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyId -> getKey(keyId, keyStoreAccess)));
     }
 
     @Test
@@ -133,7 +138,8 @@ public class CmsEncryptionServiceImplTest {
 
         KeyStoreAccess newKeyStoreAccess = getKeyStoreAccess(); // new store access would be different from first even was generated similar
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        assertThrows(CMSException.class, () -> cmsEncryptionService.buildDecryptionInputStream(inputStream, newKeyStoreAccess));
+        assertThrows(CMSException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyId -> getKey(keyId, newKeyStoreAccess)));
     }
 
     private static KeyStoreAccess getKeyStoreAccess() {
@@ -185,7 +191,8 @@ public class CmsEncryptionServiceImplTest {
         log.info("File encrypted");
 
         FileInputStream fisEnFile = new FileInputStream(encryptedFile);
-        InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(fisEnFile, keyStoreAccess);
+        InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(
+                fisEnFile, keyId -> getKey(keyId, keyStoreAccess));
 
         File decryptedFile = new File(decryptedTestFilePath);
         OutputStream osDecrypt = new FileOutputStream(decryptedFile);
@@ -231,5 +238,10 @@ public class CmsEncryptionServiceImplTest {
             }
             return Hex.toHexString(digest.digest());
         }
+    }
+
+    @SneakyThrows
+    private static Key getKey(String id, KeyStoreAccess access) {
+        return access.getKeyStore().getKey(id, access.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
     }
 }

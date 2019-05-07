@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.Key;
 import java.security.KeyStore;
 
 import static de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
@@ -50,7 +51,8 @@ public class SymetricEncryptionTest {
         byte[] byteArray = outputStream.toByteArray();
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess);
+        InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyId -> getKey(keyId, keyStoreAccess));
 
         assertThat(decryptionStream).hasContent(MESSAGE_CONTENT);
         log.debug("en and decrypted successfully");
@@ -74,7 +76,12 @@ public class SymetricEncryptionTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         // Opening envelope with wrong key must throw a cms exception.
         Assertions.assertThrows(CMSException.class, () ->
-            cmsEncryptionService.buildDecryptionInputStream(inputStream, keyStoreAccess)
+            cmsEncryptionService.buildDecryptionInputStream(inputStream, keyId -> getKey(keyId, keyStoreAccess))
         );
+    }
+
+    @SneakyThrows
+    private static Key getKey(String id, KeyStoreAccess access) {
+        return access.getKeyStore().getKey(id, access.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
     }
 }
