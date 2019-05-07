@@ -10,6 +10,7 @@ import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
+import de.adorsys.datasafe.business.api.types.utils.LogHelper;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);
+        log.info("{} has {} in PRIVATE", LogHelper.encryptIdNeeded(inboxOwner.getUserID().getValue()), LogHelper.encryptIdNeeded(files));
         return files.get(0);
     }
 
@@ -59,7 +60,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
-        log.info("{} has {} in PRIVATE", user.getUserID().getValue(), data);
+        log.info("{} has {} in PRIVATE", LogHelper.encryptIdNeeded(user.getUserID().getValue()), LogHelper.encryptIdNeeded(data));
 
         return data;
     }
@@ -71,7 +72,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
-        log.info("{} has {} in INBOX", user.getUserID().getValue(), data);
+        log.info("{} has {} in INBOX", LogHelper.encryptIdNeeded(user.getUserID().getValue()), LogHelper.encryptIdNeeded(data));
 
         return data;
     }
@@ -81,7 +82,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in INBOX", inboxOwner.getUserID().getValue(), files);
+        log.info("{} has {} in INBOX", LogHelper.encryptIdNeeded(inboxOwner.getUserID().getValue()), LogHelper.encryptIdNeeded(files));
         return files.get(0);
     }
 
@@ -122,7 +123,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
     protected void removeUser(UserIDAuth userIDAuth) {
         services.userProfile().deregister(userIDAuth);
-        log.info("user deleted: {}", userIDAuth.getUserID().getValue());
+        log.info("user deleted: {}", LogHelper.encryptIdNeeded(userIDAuth.getUserID().getValue()));
     }
 
     private AbsoluteResourceLocation<PublicResource> access(URI path) {

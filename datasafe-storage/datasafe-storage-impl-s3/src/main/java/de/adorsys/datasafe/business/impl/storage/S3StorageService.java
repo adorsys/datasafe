@@ -7,6 +7,7 @@ import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
+import de.adorsys.datasafe.business.api.types.utils.LogHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +31,7 @@ public class S3StorageService implements StorageService {
 
     @Override
     public Stream<AbsoluteResourceLocation<PrivateResource>> list(AbsoluteResourceLocation location) {
-        log.debug("List at {}", location.location());
+        log.debug("List at {}", LogHelper.encryptIdNeeded(location.location()));
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
         listObjectsV2Request.setBucketName(bucketName);
         String prefix = location.location().getPath().replaceFirst("^/", "");
@@ -47,7 +48,7 @@ public class S3StorageService implements StorageService {
 
     @Override
     public InputStream read(AbsoluteResourceLocation location) {
-        log.debug("Read from {}", location.location());
+        log.debug("Read from {}", LogHelper.encryptIdNeeded(location.location()));
         GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, location.location().getPath().replaceFirst("^/", ""));
         S3Object fullObject = s3.getObject(getObjectRequest);
         return fullObject.getObjectContent();
@@ -61,7 +62,7 @@ public class S3StorageService implements StorageService {
     @Override
     public void remove(AbsoluteResourceLocation location) {
         String path = location.location().getPath();
-        log.debug("Remove path {}", path);
+        log.debug("Remove path {}", LogHelper.encryptIdNeeded(path));
         s3.deleteObject(bucketName, path.replaceFirst("^/", "").replaceFirst("/$", ""));
     }
 
@@ -76,7 +77,7 @@ public class S3StorageService implements StorageService {
         @Override
         public void close() throws IOException {
 
-            log.debug("Write to {}", resource.location());
+            log.debug("Write to {}", LogHelper.encryptIdNeeded(resource.location()));
             ObjectMetadata metadata = new ObjectMetadata();
             byte[] data = super.toByteArray();
             metadata.setContentLength(data.length);
