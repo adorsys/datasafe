@@ -17,10 +17,12 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -133,5 +135,40 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
     private AbsoluteResourceLocation<PrivateResource> accessPrivate(URI path) {
         return new AbsoluteResourceLocation<>(new DefaultPrivateResource(path, URI.create(""), URI.create("")));
+    }
+
+    protected UserIDAuth createJohnTestUser(int i) {
+        UserIDAuth userAuth = new UserIDAuth();
+        UserID userName = new UserID("john_" + i);
+        userAuth.setUserID(userName);
+        userAuth.setReadKeyPassword(new ReadKeyPassword("secure-password " + userName.getValue()));
+
+        return userAuth;
+    }
+
+    @SneakyThrows
+    protected String extractFileContent(UserIDAuth john, PrivateResource privateResource) {
+        InputStream read = services.privateService().read(ReadRequest.forPrivate(john, privateResource));
+        OutputStream data = new ByteArrayOutputStream();
+
+        ByteStreams.copy(read, data);
+
+        read.close();
+        data.close();
+
+        return data.toString();
+    }
+
+    protected void writeTextToFileForUser(UserIDAuth john, String filePath, String msg, CountDownLatch startSignal) throws IOException {
+        WriteRequest<UserIDAuth, PrivateResource> writeRequest = WriteRequest.<UserIDAuth, PrivateResource>builder()
+                .owner(john)
+                .location(DefaultPrivateResource.forPrivate(URI.create(filePath)))
+                .build();
+
+        OutputStream write = services.privateService().write(writeRequest);
+        write.write(msg.getBytes());
+        write.close();
+
+        startSignal.countDown();
     }
 }
