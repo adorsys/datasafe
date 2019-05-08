@@ -99,12 +99,10 @@ abstract class BaseStorageTest extends BaseE2ETest {
                 .collect(Collectors.toList());
     }
 
-
-    CountDownLatch fileSaveCountDown = new CountDownLatch(NUMBER_OF_TEST_USERS * NUMBER_OF_TEST_FILES);
-
     @Test
     @SneakyThrows
     public void WriteToPrivateListPrivateInDifferentThreads() {
+        CountDownLatch fileSaveCountDown = new CountDownLatch(NUMBER_OF_TEST_USERS * NUMBER_OF_TEST_FILES);
         String path = "folder2";
 
         log.trace("*** Starting write threads ***");
