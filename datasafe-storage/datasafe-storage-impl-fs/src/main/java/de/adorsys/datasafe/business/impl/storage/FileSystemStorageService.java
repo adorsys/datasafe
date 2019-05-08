@@ -31,6 +31,11 @@ public class FileSystemStorageService implements StorageService {
         Path filePath = resolve(path.location(), false);
         log.debug("List file: {}", filePath);
 
+        // FS should be compatible with s3 behavior:
+        if (!filePath.toFile().exists()) {
+            return Stream.empty();
+        }
+
         return Files.walk(filePath)
                 .filter(it -> !it.startsWith("."))
                 .filter(it -> !it.toFile().isDirectory())

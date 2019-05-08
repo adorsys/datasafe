@@ -12,6 +12,7 @@
         <module>datasafe-inbox</module>
         <module>datasafe-storage</module>
         <module>datasafe-types</module>
+        <module>datasafe-test-shared</module>
     </modules>
 
     <groupId>de.adorsys</groupId>

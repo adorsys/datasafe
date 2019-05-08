@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl;
+package de.adorsys.datasafe.shared;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
