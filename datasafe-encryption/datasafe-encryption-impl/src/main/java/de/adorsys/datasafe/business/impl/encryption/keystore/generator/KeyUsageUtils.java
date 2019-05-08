@@ -1,12 +1,12 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
-import org.bouncycastle.asn1.crmf.CertTemplate;
+import lombok.experimental.UtilityClass;
 import org.bouncycastle.asn1.x509.Extension;
-import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.cert.X509CertificateHolder;
 
+@UtilityClass
 public class KeyUsageUtils {
 
 	public static int getKeyUsage(X509CertificateHolder issuerCertificate) {
@@ -22,20 +22,7 @@ public class KeyUsageUtils {
 		return -1;
 	}
 
-	private static final boolean hasAnyKeyUsage(Extension extension, int... keyUsageBits){
-        if (extension != null){
-        	KeyUsage ku = KeyUsage.getInstance(extension.getParsedValue());
-            int bits = ku.getBytes()[0] & 0xff;
-            // check all bits. Assume true.
-            for (int keyUsageBit : keyUsageBits) {
-            	if((bits & keyUsageBit) == keyUsageBit) return true;
-			}
-        } 
-        // else false
-    	return false;
-	}
-
-	public static final int[] getCaKeyUsages(){
-		return new int[]{KeyUsage.keyCertSign};
+	public static int[] getCaKeyUsages(){
+		return new int[] {KeyUsage.keyCertSign};
 	}
 }
