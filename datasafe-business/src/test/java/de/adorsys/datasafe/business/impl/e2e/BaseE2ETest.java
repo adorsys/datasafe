@@ -7,6 +7,7 @@ import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
@@ -67,6 +68,10 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return data;
     }
 
+    protected void removeFromPrivate(UserIDAuth user, PrivateResource location) {
+        services.privateService().remove(RemoveRequest.forPrivate(user, location));
+    }
+
     @SneakyThrows
     protected String readInboxUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -99,6 +104,10 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         stream.write(data.getBytes());
         stream.close();
         log.info("File {} sent to INBOX of user {}", LogHelper.secure(filename), LogHelper.secure(to));
+    }
+
+    protected void removeFromInbox(UserIDAuth inboxOwner, PrivateResource location) {
+        services.inboxService().remove(RemoveRequest.forPrivate(inboxOwner, location));
     }
 
     protected UserIDAuth registerUser(String userName, URI rootLocation) {

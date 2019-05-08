@@ -4,7 +4,7 @@ import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;

@@ -5,10 +5,10 @@ import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.StorageListService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
-import de.adorsys.datasafe.business.api.storage.StorageRemoveService;
-import de.adorsys.datasafe.business.api.storage.StorageWriteService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageRemoveService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageWriteService;
 import de.adorsys.datasafe.business.api.types.*;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
@@ -16,6 +16,7 @@ import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
@@ -83,21 +84,24 @@ public class DFSBasedProfileStorageImpl implements
 
     @Override
     public void deregister(UserIDAuth userID) {
-        removeStorageByLocation(userID, privateProfile(userID).getPrivateStorage());
-        removeStorageByLocation(userID, privateProfile(userID).getInboxWithFullAccess());
+        @NonNull
+        AbsoluteResourceLocation<PrivateResource> privateStorage = privateProfile(userID).getPrivateStorage();
+        removeStorageByLocation(userID, privateStorage);
+
+        @NonNull
+        AbsoluteResourceLocation<PrivateResource> inbox = privateProfile(userID).getInboxWithFullAccess();
+        removeStorageByLocation(userID, inbox);
 
         removeService.remove(privateProfile(userID).getKeystore());
-        removeService.remove(privateProfile(userID).getPrivateStorage());
-        removeService.remove(privateProfile(userID).getInboxWithFullAccess());
+        removeService.remove(privateStorage);
+        removeService.remove(inbox);
         removeService.remove(locatePrivateProfile(userID.getUserID()));
         removeService.remove(locatePublicProfile(userID.getUserID()));
     }
 
-    private void removeStorageByLocation(UserIDAuth userID, AbsoluteResourceLocation<PrivateResource> target) {
-        ListRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> privateRequest =
-                new ListRequest<>(userID, target);
-
-        listService.list(privateRequest.getLocation()).forEach(removeService::remove);
+    private void removeStorageByLocation(UserIDAuth userID, AbsoluteResourceLocation<PrivateResource> privateStorage) {
+        listService.list(new ListRequest<>(userID, privateStorage).getLocation())
+                .forEach(removeService::remove);
     }
 
     @Override

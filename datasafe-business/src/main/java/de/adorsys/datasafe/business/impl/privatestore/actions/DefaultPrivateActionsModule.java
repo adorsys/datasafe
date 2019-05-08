@@ -18,4 +18,7 @@ public abstract class DefaultPrivateActionsModule {
 
     @Binds
     abstract WriteToPrivate writeToPrivate(WriteToPrivateImpl impl);
+
+    @Binds
+    abstract RemoveFromPrivate removeFromPrivate(RemoveFromPrivateImpl impl);
 }

@@ -53,6 +53,9 @@ abstract class BaseStorageTest extends BaseE2ETest {
         assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
         validateInboxStructAndEncryption(inboxJohn);
         validatePrivateStructAndEncryption(privateJane);
+
+        removeFromPrivate(jane, privateJane.getResource());
+        removeFromInbox(john, inboxJohn.getResource());
     }
 
     @SneakyThrows
