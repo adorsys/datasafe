@@ -77,7 +77,6 @@ public class KeyStoreServiceTest {
 
     @Test
     public void getPrivateKey() throws Exception {
-        Provider bcProvider = ProviderUtils.bcProvider;
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreType.DEFAULT); // UBER
 
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
