@@ -31,7 +31,7 @@ public class S3StorageService implements StorageService {
 
     @Override
     public Stream<AbsoluteResourceLocation<PrivateResource>> list(AbsoluteResourceLocation location) {
-        log.debug("List at {}", LogHelper.encryptIdNeeded(location.location()));
+        log.debug("List at {}", LogHelper.secure(location.location()));
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
         listObjectsV2Request.setBucketName(bucketName);
         String prefix = location.location().getPath().replaceFirst("^/", "");
@@ -48,7 +48,7 @@ public class S3StorageService implements StorageService {
     @Override
     public InputStream read(AbsoluteResourceLocation location) {
         String key = location.location().getPath().replaceFirst("^/", "");
-        log.debug("Read from {}", LogHelper.encryptIdNeeded(key));
+        log.debug("Read from {}", LogHelper.secure(key));
         GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
         S3Object fullObject = s3.getObject(getObjectRequest);
         return fullObject.getObjectContent();
@@ -63,7 +63,7 @@ public class S3StorageService implements StorageService {
     public void remove(AbsoluteResourceLocation location) {
         String path = location.location().getPath();
         String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
-        log.debug("Remove path {}", LogHelper.encryptIdNeeded(key));
+        log.debug("Remove path {}", LogHelper.secure(key));
         s3.deleteObject(bucketName, key);
     }
 
@@ -85,7 +85,7 @@ public class S3StorageService implements StorageService {
             InputStream is = new ByteArrayInputStream(data);
 
             String key = resource.location().getPath().replaceFirst("^/", "");
-            log.debug("Write to {}", LogHelper.encryptIdNeeded(key));
+            log.debug("Write to {}", LogHelper.secure(key));
             s3.putObject(bucketName, key, is, metadata);
 
             super.close();

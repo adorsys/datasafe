@@ -83,13 +83,13 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
     private SecretKey secretKey(Function<String, Key> keyById, RecipientId rid) {
         String keyIdentifier = new String(((KEKRecipientId) rid).getKeyIdentifier());
-        log.debug("Secret key ID from envelope: {}", LogHelper.encryptIdNeeded(keyIdentifier));
+        log.debug("Secret key ID from envelope: {}", LogHelper.secure(keyIdentifier));
         return (SecretKey) keyById.apply(keyIdentifier);
     }
 
     private PrivateKey privateKey(Function<String, Key> keyById, RecipientId rid) {
         String subjectKeyIdentifier = new String(((KeyTransRecipientId) rid).getSubjectKeyIdentifier());
-        log.debug("Private key ID from envelope: {}", LogHelper.encryptIdNeeded(subjectKeyIdentifier));
+        log.debug("Private key ID from envelope: {}", LogHelper.secure(subjectKeyIdentifier));
         return (PrivateKey) keyById.apply(subjectKeyIdentifier);
     }
 

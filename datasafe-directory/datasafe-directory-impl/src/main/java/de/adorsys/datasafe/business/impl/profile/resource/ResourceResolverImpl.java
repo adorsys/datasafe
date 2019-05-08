@@ -35,7 +35,7 @@ public class ResourceResolverImpl implements ResourceResolver {
             UserIDAuth userID, PrivateResource resource) {
         return resolveRelative(
                 resource,
-                () -> profile.privateProfile(userID).getInboxWithWriteAccess()
+                () -> profile.privateProfile(userID).getInboxWithFullAccess()
         );
     }
 

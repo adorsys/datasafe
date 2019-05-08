@@ -34,7 +34,7 @@ public class KeyStoreGenerator {
         this.keyStoreType = keyStoreType;
         this.serverKeyPairAliasPrefix = "KEYSTORE-ID-0";
         this.readKeyPassword = readKeyPassword;
-        log.debug("Keystore ID ignored {}", LogHelper.encryptIdNeeded(serverKeyPairAliasPrefix));
+        log.debug("Keystore ID ignored {}", LogHelper.secure(serverKeyPairAliasPrefix));
     }
     
     public KeyStore generate() {

@@ -17,5 +17,5 @@ public class UserPrivateProfile {
     private final AbsoluteResourceLocation<PrivateResource> privateStorage;
 
     @NonNull
-    private final AbsoluteResourceLocation<PrivateResource> inboxWithWriteAccess;
+    private final AbsoluteResourceLocation<PrivateResource> inboxWithFullAccess;
 }

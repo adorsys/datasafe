@@ -36,7 +36,7 @@ public class S3Test extends BaseStorageTest {
     @BeforeEach
     void init() {
         // FIXME: travis runs builds in parrallel - we can't have same users on shared resource, so adding entropy
-        this.location = URI.create("s3://" +  bucketName + "/" + System.currentTimeMillis() + "/");
+        this.location = URI.create("s3://" +  bucketName + "/datasafe/" + System.currentTimeMillis() + "/");
         this.storage = new S3StorageService(s3, bucketName);
 
         this.services = DaggerDefaultDatasafeServices
