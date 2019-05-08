@@ -12,4 +12,9 @@ public class UserID {
     public UserID(String value) {
         this.value = new BaseTypeString(value);
     }
+
+    @Override
+    public String toString() {
+        return value.getValue();
+    }
 }
