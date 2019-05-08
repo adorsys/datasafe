@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This is approximation of real implementation - should be broken down.
+ * FIXME: it should be broken down.
  */
 public class DFSBasedProfileStorageImpl implements
         ProfileRegistrationService,
@@ -44,13 +44,13 @@ public class DFSBasedProfileStorageImpl implements
     private final KeyStoreService keyStoreService;
     private final DFSSystem dfsSystem;
     private final GsonSerde serde;
+    private final UserProfileCache userProfileCache;
 
     @Inject
-    public DFSBasedProfileStorageImpl(StorageReadService readService,
-                                      StorageWriteService writeService,
-                                      StorageRemoveService removeService,
-                                      StorageListService listService,
-                                      KeyStoreService keyStoreService, DFSSystem dfsSystem, GsonSerde serde) {
+    public DFSBasedProfileStorageImpl(StorageReadService readService, StorageWriteService writeService,
+                                      StorageRemoveService removeService, StorageListService listService,
+                                      KeyStoreService keyStoreService, DFSSystem dfsSystem, GsonSerde serde,
+                                      UserProfileCache userProfileCache) {
         this.readService = readService;
         this.writeService = writeService;
         this.removeService = removeService;
@@ -58,6 +58,7 @@ public class DFSBasedProfileStorageImpl implements
         this.keyStoreService = keyStoreService;
         this.dfsSystem = dfsSystem;
         this.serde = serde;
+        this.userProfileCache = userProfileCache;
     }
 
     @Override
@@ -77,8 +78,8 @@ public class DFSBasedProfileStorageImpl implements
 
         // TODO: check if we need to create it
         createKeyStore(
-            profile.getId(),
-            profile.getKeystore().getResource()
+                profile.getId(),
+                profile.getKeystore().getResource()
         );
     }
 
@@ -104,17 +105,19 @@ public class DFSBasedProfileStorageImpl implements
     @Override
     @SneakyThrows
     public UserPublicProfile publicProfile(UserID ofUser) {
-        try (InputStream is =  readService.read(locatePublicProfile(ofUser))) {
-            return serde.fromJson(new String(ByteStreams.toByteArray(is)), UserPublicProfile.class);
-        }
+        return userProfileCache.getPublicProfile().computeIfAbsent(
+                ofUser,
+                id -> readProfile(locatePublicProfile(ofUser), UserPublicProfile.class)
+        );
     }
 
     @Override
     @SneakyThrows
     public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
-        try (InputStream is =  readService.read(locatePrivateProfile(ofUser.getUserID()))) {
-            return serde.fromJson(new String(ByteStreams.toByteArray(is)), UserPrivateProfile.class);
-        }
+        return userProfileCache.getPrivateProfile().computeIfAbsent(
+                ofUser.getUserID(),
+                id -> readProfile(locatePrivateProfile(ofUser.getUserID()), UserPrivateProfile.class)
+        );
     }
 
     @Override
@@ -127,13 +130,20 @@ public class DFSBasedProfileStorageImpl implements
         KeyStoreAuth auth = dfsSystem.privateKeyStoreAuth(forUser);
 
         KeyStore store = keyStoreService.createKeyStore(
-            auth,
-            KeyStoreType.DEFAULT,
-            new KeyStoreCreationConfig(1, 1, 1)
+                auth,
+                KeyStoreType.DEFAULT,
+                new KeyStoreCreationConfig(1, 1, 1)
         );
 
         try (OutputStream os = writeService.write(new AbsoluteResourceLocation<>(keystore))) {
             os.write(keyStoreService.serialize(store, forUser.getUserID().getValue(), auth.getReadStorePassword()));
+        }
+    }
+
+    @SneakyThrows
+    private <T> T readProfile(AbsoluteResourceLocation resource, Class<T> clazz) {
+        try (InputStream is = readService.read(resource)) {
+            return serde.fromJson(new String(ByteStreams.toByteArray(is)), clazz);
         }
     }
 
