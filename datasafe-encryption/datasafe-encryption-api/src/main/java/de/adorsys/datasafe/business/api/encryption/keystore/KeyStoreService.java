@@ -22,8 +22,6 @@ public interface KeyStoreService {
 
     SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID);
 
-    SecretKeyIDWithKey getRandomSecretKeyID(KeyStoreAccess keyStoreAccess);
-
     byte[] serialize(KeyStore store, String storeId, ReadStorePassword password);
 
     KeyStore deserialize(byte[] payload, String storeId, ReadStorePassword password);

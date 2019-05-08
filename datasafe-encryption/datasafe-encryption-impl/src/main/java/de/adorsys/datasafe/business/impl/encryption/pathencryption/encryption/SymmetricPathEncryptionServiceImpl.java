@@ -1,17 +1,14 @@
 package de.adorsys.datasafe.business.impl.encryption.pathencryption.encryption;
 
 import de.adorsys.datasafe.business.api.encryption.pathencryption.encryption.SymmetricPathEncryptionService;
+import de.adorsys.datasafe.business.impl.encryption.pathencryption.PathEncryptionConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.net.URI;
-import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.function.Function;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -21,8 +18,11 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
     private static final String PATH_SEPARATOR = "/";
 
+    private final PathEncryptionConfig encryptionConfig;
+
     @Inject
-    public SymmetricPathEncryptionServiceImpl() {
+    public SymmetricPathEncryptionServiceImpl(PathEncryptionConfig encryptionConfig) {
+        this.encryptionConfig = encryptionConfig;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         validateArgs(secretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
-        Cipher cipher = createCipher(secretKey, Cipher.ENCRYPT_MODE);
+        Cipher cipher = encryptionConfig.encryptionCipher(secretKey);
 
         return processURIparts(
                 bucketPath,
@@ -45,12 +45,22 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         validateArgs(secretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
-        Cipher cipher = createCipher(secretKey, Cipher.DECRYPT_MODE);
+        Cipher cipher = encryptionConfig.decryptionCipher(secretKey);
 
         return processURIparts(
                 bucketPath,
                 str -> decode(str, cipher)
         );
+    }
+
+    @SneakyThrows
+    private String decode(String str, Cipher cipher) {
+        return new String(cipher.doFinal(encryptionConfig.byteDeserializer(str)), UTF_8);
+    }
+
+    @SneakyThrows
+    private String encode(String str, Cipher cipher) {
+        return encryptionConfig.byteSerializer(cipher.doFinal(str.getBytes(UTF_8)));
     }
 
     @SneakyThrows
@@ -79,31 +89,6 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         }
 
         return new URI(result.toString());
-    }
-
-    @SneakyThrows
-    private static String decode(String str, Cipher cipher) {
-        return new String(cipher.doFinal(Base64.getUrlDecoder().decode(str)), UTF_8);
-    }
-
-    @SneakyThrows
-    private static String encode(String str, Cipher cipher) {
-        return Base64.getUrlEncoder().encodeToString(cipher.doFinal(str.getBytes(UTF_8)));
-    }
-
-    @SneakyThrows
-    private static Cipher createCipher(SecretKey secretKey, int cipherMode) {
-        byte[] key = secretKey.getEncoded();
-        MessageDigest sha = MessageDigest.getInstance("SHA-256");
-        key = sha.digest(key);
-        // nur die ersten 128 bit nutzen
-        key = Arrays.copyOf(key, 16);
-        // der fertige Schluessel
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(cipherMode, secretKeySpec);
-        return cipher;
     }
 
     private static void validateArgs(SecretKey secretKey, URI bucketPath) {

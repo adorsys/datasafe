@@ -1,8 +1,10 @@
 package de.adorsys.datasafe.business.impl.encryption.cmsencryption;
 
+import lombok.experimental.UtilityClass;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 
+@UtilityClass
 public class DatasafeCryptoAlgorithm {
 
     // Asymmetric algorithms

@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/adorsys/datasafe.svg?branch=develop)](https://travis-ci.com/adorsys/datasafe)
+[![codecov](https://codecov.io/gh/adorsys/datasafe/branch/develop/graph/badge.svg)](https://codecov.io/gh/adorsys/datasafe)
+
 # General information
 * [CodingRules](docs/codingrules/CodingRules.md)
 * [Branching and commiting](docs/branching/branch-and-commit.md)

@@ -4,6 +4,8 @@ import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentRea
 import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 
 import javax.inject.Inject;
 import java.io.InputStream;
@@ -20,16 +22,18 @@ public class ReadFromInboxImpl implements ReadFromInbox {
     }
 
     @Override
-    public InputStream read(ReadRequest<UserIDAuth> request) {
+    public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
         return reader.read(resolveRelative(request));
     }
 
-    private ReadRequest<UserIDAuth> resolveRelative(ReadRequest<UserIDAuth> request) {
-        return request.toBuilder().location(
-                resolver.resolveRelativeToPrivateInbox(
+    private ReadRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> resolveRelative
+            (ReadRequest<UserIDAuth, PrivateResource> request) {
+        return ReadRequest.<UserIDAuth, AbsoluteResourceLocation<PrivateResource>>builder()
+                .location(resolver.resolveRelativeToPrivateInbox(
                         request.getOwner(),
-                        request.getLocation()
+                        request.getLocation())
                 )
-        ).build();
+                .owner(request.getOwner())
+                .build();
     }
 }

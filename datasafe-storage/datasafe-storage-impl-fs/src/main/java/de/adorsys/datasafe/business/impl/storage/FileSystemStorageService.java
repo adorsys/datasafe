@@ -2,9 +2,9 @@ package de.adorsys.datasafe.business.impl.storage;
 
 import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.business.api.storage.StorageService;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class FileSystemStorageService implements StorageService {
 
     @SneakyThrows
     @Override
-    public Stream<PrivateResource> list(ResourceLocation path) {
+    public Stream<AbsoluteResourceLocation<PrivateResource>> list(AbsoluteResourceLocation path) {
         log.debug("List file request: {}", path.location());
         Path filePath = resolve(path.location(), false);
         log.debug("List file: {}", filePath);
@@ -34,12 +34,12 @@ public class FileSystemStorageService implements StorageService {
         return Files.walk(filePath)
                 .filter(it -> !it.startsWith("."))
                 .filter(it -> !it.toFile().isDirectory())
-                .map(it -> new DefaultPrivateResource(it.toUri()));
+                .map(it -> new AbsoluteResourceLocation<>(new DefaultPrivateResource(it.toUri())));
     }
 
     @SneakyThrows
     @Override
-    public InputStream read(ResourceLocation path) {
+    public InputStream read(AbsoluteResourceLocation path) {
         log.debug("Read file request: {}", path.location());
         Path filePath = resolve(path.location(), false);
         log.debug("Read file: {}", filePath);
@@ -48,7 +48,7 @@ public class FileSystemStorageService implements StorageService {
 
     @SneakyThrows
     @Override
-    public OutputStream write(ResourceLocation path) {
+    public OutputStream write(AbsoluteResourceLocation path) {
         log.debug("Write file request: {}", path.location());
         Path filePath = resolve(path.location(), true);
         log.debug("Write file: {}", filePath);
@@ -57,7 +57,7 @@ public class FileSystemStorageService implements StorageService {
 
     @SneakyThrows
     @Override
-    public void remove(ResourceLocation location) {
+    public void remove(AbsoluteResourceLocation location) {
         Files.delete(resolve(location.location(), false));
         log.debug("deleted directory at: {}", location.location().getPath());
     }

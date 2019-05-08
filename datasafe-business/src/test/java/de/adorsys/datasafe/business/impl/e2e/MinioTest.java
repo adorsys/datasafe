@@ -5,6 +5,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import de.adorsys.datasafe.business.api.config.DFSConfig;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,7 +17,8 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.net.URI;
 
 @Slf4j
-public class MinioTest extends StorageTest {
+public class MinioTest extends BaseStorageTest {
+
     private static String accessKeyID = "admin";
     private static String secretAccessKey = "password";
     private static String region = "eu-central-1";
@@ -37,7 +40,7 @@ public class MinioTest extends StorageTest {
         Integer mappedPort = minio.getMappedPort(9000);
         log.info("Mapped port: " + mappedPort);
         s3 = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(url+":"+mappedPort, region))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(url + ":" + mappedPort, region))
                 .withCredentials(new AWSStaticCredentialsProvider(creds))
                 .enablePathStyleAccess()
                 .build();
@@ -48,11 +51,22 @@ public class MinioTest extends StorageTest {
 
     @BeforeEach
     void init() {
-
         location = URI.create("s3://" +  bucketName + "/");
         this.storage = new S3StorageService(s3, bucketName);
 
-        this.services = DaggerTestDocusafeServices.builder()
+        this.services = DaggerDefaultDocusafeServices
+                .builder()
+                .config(new DFSConfig() {
+                    @Override
+                    public String keystorePassword() {
+                        return "PAZZWORD";
+                    }
+
+                    @Override
+                    public URI systemRoot() {
+                        return location;
+                    }
+                })
                 .storageList(new S3StorageService(s3, bucketName))
                 .storageRead(new S3StorageService(s3, bucketName))
                 .storageWrite(new S3StorageService(s3, bucketName))

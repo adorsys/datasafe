@@ -5,6 +5,7 @@ import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 
 import javax.inject.Inject;
@@ -22,16 +23,15 @@ public class ListInboxImpl implements ListInbox {
     }
 
     @Override
-    public Stream<PrivateResource> list(ListRequest<UserIDAuth> forUser) {
-        return listService.list(resolveRelative(forUser).getLocation());
+    public Stream<AbsoluteResourceLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> forUser) {
+        return listService.list(resolveRelative(forUser));
     }
 
-    private ListRequest<UserIDAuth> resolveRelative(ListRequest<UserIDAuth> request) {
-        return request.toBuilder().location(
-                resolver.resolveRelativeToPrivateInbox(
-                        request.getOwner(),
-                        request.getLocation()
-                )
-        ).build();
+    private AbsoluteResourceLocation<PrivateResource> resolveRelative(
+            ListRequest<UserIDAuth, PrivateResource> request) {
+        return resolver.resolveRelativeToPrivateInbox(
+                request.getOwner(),
+                request.getLocation()
+        );
     }
 }

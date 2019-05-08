@@ -32,6 +32,10 @@ public final class DefaultPrivateResource implements PrivateResource {
     }
 
     public static PrivateResource forPrivate(URI path) {
+        if (path.isAbsolute()) {
+            return new DefaultPrivateResource(path).resolve(EMPTY_URI, EMPTY_URI);
+        }
+
         return new DefaultPrivateResource().resolve(path, EMPTY_URI);
     }
 

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 public class KeyStoreCreationConfig {
 
     public static final KeyID PATH_KEY_ID = new KeyID("PATH_SECRET");
+    public static final KeyID SYMM_KEY_ID = new KeyID("PRIVATE_SECRET");
 
     private final int encKeyNumber;
     private final int signKeyNumber;

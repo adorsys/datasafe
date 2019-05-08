@@ -44,8 +44,8 @@ public class KeyStoreServiceTest {
         Assertions.assertNotNull(keyStore);
 
         List<String> list = Collections.list(keyStore.aliases());
-        // One additional secret key being generated for path encryption.
-        Assertions.assertEquals(3, list.size());
+        // One additional secret key being generated for path encryption and one for private doc encryption.
+        Assertions.assertEquals(4, list.size());
 
         Assertions.assertEquals("UBER", keyStore.getType());
         Assertions.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
@@ -56,8 +56,8 @@ public class KeyStoreServiceTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
-        // One additional secret key being generated for path encryption.
-        Assertions.assertEquals(16, list.size());
+        // One additional secret key being generated for path encryption and one for private doc encryption.
+        Assertions.assertEquals(17, list.size());
     }
 
     @Test
@@ -120,20 +120,4 @@ public class KeyStoreServiceTest {
         Assertions.assertNotNull(secretKey);
     }
 
-    @Test
-    public void getRandomSecretKeyID() {
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(10, 10, 1);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
-        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-        SecretKeyIDWithKey randomSecretKeyID = keyStoreService.getRandomSecretKeyID(keyStoreAccess);
-        Assertions.assertNotNull(randomSecretKeyID);
-    }
-
-    @Test
-    public void getRandomSecretKeyIDException() {
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(10, 10, 0);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
-        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-        Assertions.assertThrows(IllegalArgumentException.class, () ->keyStoreService.getRandomSecretKeyID(keyStoreAccess));
-    }
 }
