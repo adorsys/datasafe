@@ -1,5 +1,8 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
+import lombok.Value;
+
+@Value
 public class KeyValue {
 	private final String key;
 	private final Object value;
@@ -9,14 +12,7 @@ public class KeyValue {
 		this.value = value;
 	}
 	
-	public boolean isNull(){return value==null;}
-
-	public String getKey() {
-		return key;
+	public boolean isNull(){
+		return null == value;
 	}
-
-	public Object getValue() {
-		return value;
-	}
-	
 }

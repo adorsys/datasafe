@@ -83,19 +83,6 @@ public class KeyStoreServiceImplBaseFunctions {
         return ks;
     }
 
-    @SneakyThrows
-    public static KeyStore loadKeyStore(KeyStoreType keyStoreType, KeyStore.LoadStoreParameter loadStoreParameter) {
-        // Use default type if blank.
-        if (keyStoreType == null) {
-            keyStoreType = KeyStoreType.DEFAULT;
-        }
-
-        KeyStore ks = KeyStore.getInstance(keyStoreType.getValue());
-
-        ks.load(loadStoreParameter);
-        return ks;
-    }
-
     /**
      * @param data         : the byte array containing key store data.
      * @param storeId      : The store id. This is passed to the callback handler to identify the requested password record.
@@ -172,85 +159,6 @@ public class KeyStoreServiceImplBaseFunctions {
         ks.setCertificateEntry(trustedCertHolder.getAlias(), V3CertificateUtils.getX509JavaCertificate(trustedCertHolder.getCertificate()));
     }
 
-    public static List<KeyEntry> loadEntries(KeyStore keyStore, PasswordProvider passwordProvider) {
-        List<KeyEntry> keyEntries = new ArrayList<>();
-        Enumeration<String> aliases;
-
-        try {
-            aliases = keyStore.aliases();
-        } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        for (String alias : Collections.list(aliases)) {
-            KeyStore.Entry entry;
-            try {
-                CallbackHandler passwordSource = passwordProvider.providePasswordCallbackHandler(alias);
-                entry = keyStore.getEntry(alias, getPasswordProtectionParameter(passwordSource, alias));
-                KeyEntry keyEntry = createFromKeyStoreEntry(alias, entry, passwordSource);
-
-                keyEntries.add(keyEntry);
-            } catch (NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return keyEntries;
-    }
-
-    public static Map<String, KeyEntry> loadEntryMap(KeyStore keyStore, PasswordProvider passwordProvider) {
-        Map<String, KeyEntry> keyEntries = new HashMap<>();
-        Enumeration<String> aliases;
-
-        try {
-            aliases = keyStore.aliases();
-        } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        for (String alias : Collections.list(aliases)) {
-            KeyStore.Entry entry;
-            try {
-                CallbackHandler passwordSource = passwordProvider.providePasswordCallbackHandler(alias);
-                entry = keyStore.getEntry(alias, getPasswordProtectionParameter(passwordSource, alias));
-                KeyEntry keyEntry = createFromKeyStoreEntry(alias, entry, passwordSource);
-
-                keyEntries.put(alias, keyEntry);
-            } catch (NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return keyEntries;
-    }
-
-    private static KeyEntry createFromKeyStoreEntry(String alias, KeyStore.Entry entry, CallbackHandler passwordSource) {
-        if (entry instanceof KeyStore.PrivateKeyEntry) {
-            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) entry;
-            return fromPrivateKeyEntry(alias, passwordSource, privateKeyEntry);
-        } else if (entry instanceof KeyStore.SecretKeyEntry) {
-            KeyStore.SecretKeyEntry secretKeyEntry = (KeyStore.SecretKeyEntry) entry;
-            SecretKey secretKey = secretKeyEntry.getSecretKey();
-
-            return SecretKeyData.builder()
-                    .alias(alias)
-                    .passwordSource(passwordSource)
-                    .secretKey(secretKey)
-                    .keyAlgo(secretKey.getAlgorithm())
-                    .build();
-        } else if (entry instanceof KeyStore.TrustedCertificateEntry) {
-            KeyStore.TrustedCertificateEntry trustedCertificateEntry = (KeyStore.TrustedCertificateEntry) entry;
-
-            return TrustedCertData.builder()
-                    .alias(alias)
-                    .passwordSource(passwordSource)
-                    .certificate(toX509CertificateHolder(trustedCertificateEntry.getTrustedCertificate()))
-                    .build();
-        } else {
-            throw new RuntimeException("Unknown type: " + entry.getClass());
-        }
-    }
-
     private static KeyPairEntry fromPrivateKeyEntry(String alias, CallbackHandler passwordSource, KeyStore.PrivateKeyEntry privateKeyEntry) {
         KeyPair keyPair = new KeyPair(privateKeyEntry.getCertificate().getPublicKey(), privateKeyEntry.getPrivateKey());
 
@@ -283,47 +191,6 @@ public class KeyStoreServiceImplBaseFunctions {
         }
 
         return new X509CertificateHolder(bouncyCastleAsn1Certificate);
-    }
-
-    public interface PasswordProvider {
-        CallbackHandler providePasswordCallbackHandler(String keyAlias);
-    }
-
-    public static class PasswordProviderMap implements PasswordProvider {
-        private final Map<String, char[]> passwordsForAlias;
-
-        public PasswordProviderMap(Map<String, char[]> passwordsForAlias) {
-            this.passwordsForAlias = passwordsForAlias;
-        }
-
-        @Override
-        public CallbackHandler providePasswordCallbackHandler(String keyAlias) {
-            char[] password = passwordsForAlias.get(keyAlias);
-
-            if (password == null) {
-                throw new RuntimeException("Password for alias '" + keyAlias + "' not found");
-            }
-
-            return new PasswordCallbackHandler(password);
-        }
-    }
-
-    public static class SimplePasswordProvider implements PasswordProvider {
-
-        private final CallbackHandler callbackHandler;
-
-        public SimplePasswordProvider(char[] password) {
-            this.callbackHandler = new PasswordCallbackHandler(password);
-        }
-
-        public SimplePasswordProvider(CallbackHandler callbackHandler) {
-            this.callbackHandler = callbackHandler;
-        }
-
-        @Override
-        public CallbackHandler providePasswordCallbackHandler(String keyAlias) {
-            return callbackHandler;
-        }
     }
 }
 

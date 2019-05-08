@@ -22,48 +22,6 @@ public class KeyUsageUtils {
 		return -1;
 	}
 
-	public static final boolean hasAllKeyUsage(X509CertificateHolder holder, int... keyUsageBits){
-    	Extension extension = holder.getExtension(X509Extension.keyUsage);
-    	return hasAllKeyUsage(extension, keyUsageBits);
-    }
-	public static final boolean hasAllKeyUsage(CertTemplate certTemplate, int... keyUsageBits){
-		Extensions extensions = certTemplate.getExtensions();
-    	Extension extension = extensions.getExtension(X509Extension.keyUsage);
-    	return hasAllKeyUsage(extension, keyUsageBits);
-    }
-	private static final boolean hasAllKeyUsage(Extension extension, int... keyUsageBits){
-        if (extension != null){
-            KeyUsage ku = KeyUsage.getInstance(extension.getParsedValue());
-            int bits = ku.getBytes()[0] & 0xff;
-            // no bit, false
-            if(keyUsageBits.length<=0) return false;
-            
-            // check all bits. Assume true.
-            for (int keyUsageBit : keyUsageBits) {
-            	if((bits & keyUsageBit) != keyUsageBit) return false;
-			}
-            return true;
-        } else {
-        	// no extensions, no key usage, fine
-            if(keyUsageBits.length<=0) return true;
-            
-            // else false
-        	return false;
-        }
-	}
-	public static final boolean hasAnyKeyUsage(X509CertificateHolder holder, int... keyUsageBits){
-        // no bit, true
-        if(keyUsageBits.length<=0) return true;
-        Extension extension = holder.getExtension(X509Extension.keyUsage);
-        return hasAnyKeyUsage(extension, keyUsageBits);
-    }
-	public static final boolean hasAnyKeyUsage(CertTemplate certTemplate, int... keyUsageBits){
-        // no bit, true
-        if(keyUsageBits.length<=0) return true;
-        Extensions extensions = certTemplate.getExtensions();
-        Extension extension = extensions.getExtension(X509Extension.keyUsage);
-        return hasAnyKeyUsage(extension, keyUsageBits);
-    }
 	private static final boolean hasAnyKeyUsage(Extension extension, int... keyUsageBits){
         if (extension != null){
         	KeyUsage ku = KeyUsage.getInstance(extension.getParsedValue());
@@ -75,9 +33,6 @@ public class KeyUsageUtils {
         } 
         // else false
     	return false;
-	}	
-	public static final int[] getStdKeyUsages(){
-		return new int[]{KeyUsage.digitalSignature, KeyUsage.nonRepudiation,KeyUsage.keyEncipherment};
 	}
 
 	public static final int[] getCaKeyUsages(){
