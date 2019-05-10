@@ -1,6 +1,5 @@
-package de.adorsys.datasafe.business.api.inbox.actions;
+package de.adorsys.datasafe.business.impl.privatespace.actions;
 
-import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
@@ -20,7 +19,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-class ListInboxImplTest extends BaseMockitoTest {
+class ListPrivateImplTest extends BaseMockitoTest {
 
     private static final String PATH = "./";
     private static final URI ABSOLUTE_PATH = URI.create("s3://absolute");
@@ -28,19 +27,19 @@ class ListInboxImplTest extends BaseMockitoTest {
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
 
     @Mock
-    private ResourceResolver resolver;
+    private EncryptedResourceResolver resolver;
 
     @Mock
     private StorageListService listService;
 
     @InjectMocks
-    private ListInboxImpl inbox;
+    private ListPrivateImpl inbox;
 
     @Test
     void list() {
         AbsoluteResourceLocation<PrivateResource> resource = DefaultPrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.forDefaultPrivate(auth, PATH);
-        when(resolver.resolveRelativeToPrivateInbox(request.getOwner(), request.getLocation())).thenReturn(resource);
+        when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
         when(listService.list(resource)).thenReturn(Stream.of(resource));
 
         assertThat(inbox.list(request)).hasSize(1);
