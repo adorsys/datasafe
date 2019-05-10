@@ -8,7 +8,6 @@ import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -105,13 +103,11 @@ abstract class BaseStorageTest extends BaseE2ETest {
                 .collect(Collectors.toList());
     }
 
-
-    CountDownLatch fileSaveCountDown = new CountDownLatch(NUMBER_OF_TEST_USERS * NUMBER_OF_TEST_FILES);
-
     @Test
     @SneakyThrows
     @Ignore
     public void WriteToPrivateListPrivateInDifferentThreads() {
+        CountDownLatch fileSaveCountDown = new CountDownLatch(NUMBER_OF_TEST_USERS * NUMBER_OF_TEST_FILES);
         String path = "folder2";
 
         log.trace("*** Starting write threads ***");
