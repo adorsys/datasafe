@@ -98,9 +98,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     protected UserIDAuth registerUser(String userName, URI rootLocation) {
-        UserIDAuth auth = new UserIDAuth();
-        auth.setUserID(new UserID(userName));
-        auth.setReadKeyPassword(new ReadKeyPassword("secure-password " + userName));
+        UserIDAuth auth = new UserIDAuth(new UserID(userName), new ReadKeyPassword("secure-password " + userName));
 
         rootLocation = rootLocation.resolve(userName + "/");
 

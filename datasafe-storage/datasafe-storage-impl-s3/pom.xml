@@ -31,6 +31,11 @@
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>${amazon.aws.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>${amazon.aws.version}</version>
+        </dependency>
 
 
         <dependency>
