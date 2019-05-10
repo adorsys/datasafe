@@ -17,10 +17,12 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,13 +45,17 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         stream.close();
     }
 
-    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
+    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
+        return getAllFilesInPrivate(owner).get(0);
+    }
+
+    protected List<AbsoluteResourceLocation<PrivateResource>> getAllFilesInPrivate(UserIDAuth owner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.privateService().list(
-                ListRequest.forPrivate(inboxOwner, "./")
+                ListRequest.forPrivate(owner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);
-        return files.get(0);
+        log.info("{} has {} in PRIVATE", owner.getUserID().getValue(), files);
+        return files;
     }
 
     @SneakyThrows
@@ -77,12 +83,16 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     protected AbsoluteResourceLocation<PrivateResource>  getFirstFileInInbox(UserIDAuth inboxOwner) {
+        return getAllFilesInInbox(inboxOwner).get(0);
+    }
+
+    protected List<AbsoluteResourceLocation<PrivateResource>>  getAllFilesInInbox(UserIDAuth inboxOwner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.inboxService().list(
-               ListRequest.forPrivate(inboxOwner, "./")
+                ListRequest.forPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
         log.info("{} has {} in INBOX", inboxOwner.getUserID().getValue(), files);
-        return files.get(0);
+        return files;
     }
 
     protected void registerJohnAndJane(URI rootLocation) {
@@ -91,7 +101,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     @SneakyThrows
-    protected void sendToInbox(UserID to, String filename, String data) {
+    protected void writeDataToInbox(UserID to, String filename, String data) {
         OutputStream stream = services.inboxService().write(WriteRequest.forPublic(to, "./" + filename));
         stream.write(data.getBytes());
         stream.close();
@@ -133,5 +143,40 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
     private AbsoluteResourceLocation<PrivateResource> accessPrivate(URI path) {
         return new AbsoluteResourceLocation<>(new DefaultPrivateResource(path, URI.create(""), URI.create("")));
+    }
+
+    protected UserIDAuth createJohnTestUser(int i) {
+        UserIDAuth userAuth = new UserIDAuth();
+        UserID userName = new UserID("john_" + i);
+        userAuth.setUserID(userName);
+        userAuth.setReadKeyPassword(new ReadKeyPassword("secure-password " + userName.getValue()));
+
+        return userAuth;
+    }
+
+    @SneakyThrows
+    protected String extractFileContent(UserIDAuth john, PrivateResource privateResource) {
+        InputStream read = services.privateService().read(ReadRequest.forPrivate(john, privateResource));
+        OutputStream data = new ByteArrayOutputStream();
+
+        ByteStreams.copy(read, data);
+
+        read.close();
+        data.close();
+
+        return data.toString();
+    }
+
+    protected void writeTextToFileForUser(UserIDAuth john, String filePath, String msg, CountDownLatch startSignal) throws IOException {
+        WriteRequest<UserIDAuth, PrivateResource> writeRequest = WriteRequest.<UserIDAuth, PrivateResource>builder()
+                .owner(john)
+                .location(DefaultPrivateResource.forPrivate(URI.create(filePath)))
+                .build();
+
+        OutputStream write = services.privateService().write(writeRequest);
+        write.write(msg.getBytes());
+        write.close();
+
+        startSignal.countDown();
     }
 }
