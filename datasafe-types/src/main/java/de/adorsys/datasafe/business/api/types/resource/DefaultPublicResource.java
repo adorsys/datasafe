@@ -11,6 +11,10 @@ public class DefaultPublicResource implements PublicResource {
 
     private final URI uri;
 
+    public static AbsoluteResourceLocation<PublicResource> forAbsolutePublic(URI path) {
+        return new AbsoluteResourceLocation<>(new DefaultPublicResource(path));
+    }
+
     @Override
     public URI location() {
         return uri;

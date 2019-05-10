@@ -39,6 +39,10 @@ public final class DefaultPrivateResource implements PrivateResource {
         return new DefaultPrivateResource().resolve(path, EMPTY_URI);
     }
 
+    public static AbsoluteResourceLocation<PrivateResource> forAbsolutePrivate(URI path) {
+        return new AbsoluteResourceLocation<>(new DefaultPrivateResource(path).resolve(EMPTY_URI, EMPTY_URI));
+    }
+
     @Override
     public URI encryptedPath() {
         return encryptedPath;
