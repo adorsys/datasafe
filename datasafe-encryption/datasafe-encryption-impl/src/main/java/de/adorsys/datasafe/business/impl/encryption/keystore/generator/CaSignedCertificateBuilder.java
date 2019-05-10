@@ -40,22 +40,19 @@ public class CaSignedCertificateBuilder {
 	private Integer notAfterInDays;
 	private Integer notBeforeInDays = 0;
 
-	private X509CertificateHolder subjectSampleCertificate;
-
 	private X509CertificateHolder issuerCertificate;
 
 	private int keyUsage=-1;
 	private boolean keyUsageSet = false;
 
 	private GeneralNames subjectAltNames;
-
-	private AuthorityInformationAccess authorityInformationAccess;
 	
 	private String signatureAlgo;
 	
 	private PublicKey subjectPublicKey;
 
 	boolean dirty = false;
+
 	public X509CertificateHolder build(PrivateKey issuerPrivatekey) {
 		if(dirty)throw new IllegalStateException("Builder can not be reused");
 		dirty=true;
@@ -73,36 +70,7 @@ public class CaSignedCertificateBuilder {
 		Date now = new Date();
 		Date notAfter = notAfterInDays!=null?DateUtils.addDays(now, notAfterInDays):null;
 		Date notBefore = notBeforeInDays!=null?DateUtils.addDays(now, notBeforeInDays):null;;
-		
-		// Prefill location subject certificate
-		if(subjectSampleCertificate!=null){
-			// Verify self signed certificate
-			
-			// get subject public key location sample certificate.
-			subjectPublicKey= V3CertificateUtils.extractPublicKey(subjectSampleCertificate);
-			
-			// Take subjectDN if not provided
-			if(subjectDN==null)subjectDN=subjectSampleCertificate.getSubject();
-			
-			// Copy expiration location cert if not provided.
-			if(notAfter==null)notAfter=subjectSampleCertificate.getNotAfter();
-			if(notBefore==null)notBefore=subjectSampleCertificate.getNotBefore();
-			
-			if(!keyUsageSet)copyKeyUsage(subjectSampleCertificate);
-			
-			if(subjectAltNames==null){
-				Extension extension = subjectSampleCertificate.getExtension(X509Extension.subjectAlternativeName);
-				if(extension!=null) subjectAltNames = GeneralNames.getInstance(extension.getParsedValue());
-			}
-		}
-		
-//		
-//		if(authorityInformationAccess==null){
-//			Extension extension = issuerCertificate.getExtension(X509Extension.authorityInfoAccess);
-//			if(extension!=null) authorityInformationAccess = AuthorityInformationAccess.getInstance(extension.getParsedValue());
-//		}
-		
-		
+
 		List<KeyValue> notNullCheckList = ListOfKeyValueBuilder.newBuilder()
 				.add("X509CertificateBuilder_missing_subject_DN", subjectDN)
 				.add("X509CertificateBuilder_missing_subject_publicKey", subjectPublicKey)
@@ -201,10 +169,6 @@ public class CaSignedCertificateBuilder {
 					v3CertGen.addExtension(X509Extension.subjectAlternativeName, false, subjectAltNames);
 				}
 			}
-			
-			if(authorityInformationAccess!=null)
-				v3CertGen.addExtension(X509Extension.authorityInfoAccess, false, authorityInformationAccess);
-			
 		} catch (CertIOException e) {
 			throw new IllegalStateException(e);
 		}
@@ -248,12 +212,6 @@ public class CaSignedCertificateBuilder {
 
 	public CaSignedCertificateBuilder withNotBeforeInDays(Integer notBeforeInDays) {
 		this.notBeforeInDays = notBeforeInDays;
-		return this;
-	}
-
-	public CaSignedCertificateBuilder withSubjectSampleCertificate(
-			X509CertificateHolder subjectSampleCertificate) {
-		this.subjectSampleCertificate = subjectSampleCertificate;
 		return this;
 	}
 
@@ -301,33 +259,4 @@ public class CaSignedCertificateBuilder {
 		}
 		return this;
 	}
-
-	public CaSignedCertificateBuilder withSubjectAltName(GeneralName subjectAltName) {
-		if(this.subjectAltNames==null){
-			this.subjectAltNames = new GeneralNames(subjectAltName);
-		} else {
-			ArrayList<GeneralName> nameList = new ArrayList<GeneralName>();
-			GeneralName[] names1 = this.subjectAltNames.getNames();
-			for (GeneralName generalName : names1) {
-				if(!nameList.contains(generalName))
-					nameList.add(generalName);
-			}
-			nameList.add(subjectAltName);
-			GeneralName[] names = nameList.toArray(new GeneralName[nameList.size()]);
-			this.subjectAltNames = new GeneralNames(names);
-		}
-		return this;
-	}
-	
-	public CaSignedCertificateBuilder withAuthorityInformationAccess(
-			AuthorityInformationAccess authorityInformationAccess) {
-		this.authorityInformationAccess = authorityInformationAccess;
-		return this;
-	}
-
-	public CaSignedCertificateBuilder withSubjectOnlyInAlternativeName(boolean subjectOnlyInAlternativeName) {
-		this.subjectOnlyInAlternativeName = subjectOnlyInAlternativeName;
-		return this;
-	}
-
 }

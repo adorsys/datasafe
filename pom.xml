@@ -12,6 +12,7 @@
         <module>datasafe-inbox</module>
         <module>datasafe-storage</module>
         <module>datasafe-types</module>
+        <module>datasafe-test-shared</module>
     </modules>
 
     <groupId>de.adorsys</groupId>
@@ -220,6 +221,7 @@
                             <outputXML>true</outputXML>
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.projectlombok:lombok</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
@@ -256,6 +258,13 @@
                 </executions>
                 <configuration>
                     <append>true</append>
+                    <excludes>
+                        <!-- Exclude Dagger2 generated code -->
+                        <exclude>**/*_Provide*/**</exclude>
+                        <exclude>**/*_Factory*/**</exclude>
+                        <exclude>**/*_MembersInjector.class</exclude>
+                        <exclude>**/*Dagger*</exclude>
+                    </excludes>
                     <propertyName>surefireArgLine</propertyName>
                 </configuration>
             </plugin>
