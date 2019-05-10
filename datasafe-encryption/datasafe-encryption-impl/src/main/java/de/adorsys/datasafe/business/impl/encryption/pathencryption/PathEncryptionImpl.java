@@ -5,7 +5,7 @@ import de.adorsys.datasafe.business.api.encryption.pathencryption.encryption.Sym
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
-import de.adorsys.datasafe.business.api.types.utils.LogHelper;
+import de.adorsys.datasafe.business.api.types.utils.Log;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -28,8 +28,8 @@ public class PathEncryptionImpl implements PathEncryption {
     public URI encrypt(UserIDAuth forUser, URI path) {
         SecretKeyIDWithKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);
         URI encrypt = bucketPathEncryptionService.encrypt(keySpec.getSecretKey(), path);
-        log.debug("encrypted path {} for user {} path {}", LogHelper.secure(encrypt.getPath()),
-                LogHelper.secure(forUser.getUserID()), LogHelper.secure(path.getPath()));
+        log.debug("encrypted path {} for user {} path {}", Log.secure(encrypt.getPath()),
+                Log.secure(forUser.getUserID()), Log.secure(path.getPath()));
         return encrypt;
     }
 
@@ -37,8 +37,8 @@ public class PathEncryptionImpl implements PathEncryption {
     public URI decrypt(UserIDAuth forUser, URI path) {
         SecretKeyIDWithKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);
         URI decrypt = bucketPathEncryptionService.decrypt(keySpec.getSecretKey(), path);
-        log.debug("decrypted path {} for user {} path {}", LogHelper.secure(decrypt.getPath()),
-                LogHelper.secure(forUser.getUserID()), LogHelper.secure(path.getPath()));
+        log.debug("decrypted path {} for user {} path {}", Log.secure(decrypt.getPath()),
+                Log.secure(forUser.getUserID()), Log.secure(path.getPath()));
         return decrypt;
     }
 }

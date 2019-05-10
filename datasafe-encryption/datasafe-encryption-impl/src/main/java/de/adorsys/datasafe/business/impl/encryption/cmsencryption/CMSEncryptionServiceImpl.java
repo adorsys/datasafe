@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.impl.encryption.cmsencryption;
 
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.api.types.keystore.KeyID;
-import de.adorsys.datasafe.business.api.types.utils.LogHelper;
+import de.adorsys.datasafe.business.api.types.utils.Log;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.exceptions.DecryptionException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -83,13 +83,13 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
     private SecretKey secretKey(Function<String, Key> keyById, RecipientId rid) {
         String keyIdentifier = new String(((KEKRecipientId) rid).getKeyIdentifier());
-        log.debug("Secret key ID from envelope: {}", LogHelper.secure(keyIdentifier));
+        log.debug("Secret key ID from envelope: {}", Log.secure(keyIdentifier));
         return (SecretKey) keyById.apply(keyIdentifier);
     }
 
     private PrivateKey privateKey(Function<String, Key> keyById, RecipientId rid) {
         String subjectKeyIdentifier = new String(((KeyTransRecipientId) rid).getSubjectKeyIdentifier());
-        log.debug("Private key ID from envelope: {}", LogHelper.secure(subjectKeyIdentifier));
+        log.debug("Private key ID from envelope: {}", Log.secure(subjectKeyIdentifier));
         return (PrivateKey) keyById.apply(subjectKeyIdentifier);
     }
 

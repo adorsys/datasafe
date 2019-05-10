@@ -7,7 +7,7 @@ import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
-import de.adorsys.datasafe.business.api.types.utils.LogHelper;
+import de.adorsys.datasafe.business.api.types.utils.Log;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +31,7 @@ public class S3StorageService implements StorageService {
 
     @Override
     public Stream<AbsoluteResourceLocation<PrivateResource>> list(AbsoluteResourceLocation location) {
-        log.debug("List at {}", LogHelper.secure(location.location()));
+        log.debug("List at {}", Log.secure(location.location()));
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
         listObjectsV2Request.setBucketName(bucketName);
         String prefix = location.location().getPath().replaceFirst("^/", "");
@@ -48,7 +48,7 @@ public class S3StorageService implements StorageService {
     @Override
     public InputStream read(AbsoluteResourceLocation location) {
         String key = location.location().getPath().replaceFirst("^/", "");
-        log.debug("Read from {}", LogHelper.secure(key));
+        log.debug("Read from {}", Log.secure(key));
         GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
         S3Object fullObject = s3.getObject(getObjectRequest);
         return fullObject.getObjectContent();
@@ -63,7 +63,7 @@ public class S3StorageService implements StorageService {
     public void remove(AbsoluteResourceLocation location) {
         String path = location.location().getPath();
         String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
-        log.debug("Remove path {}", LogHelper.secure(key));
+        log.debug("Remove path {}", Log.secure(key));
         s3.deleteObject(bucketName, key);
     }
 
@@ -85,7 +85,7 @@ public class S3StorageService implements StorageService {
             InputStream is = new ByteArrayInputStream(data);
 
             String key = resource.location().getPath().replaceFirst("^/", "");
-            log.debug("Write to {}", LogHelper.secure(key));
+            log.debug("Write to {}", Log.secure(key));
             s3.putObject(bucketName, key, is, metadata);
 
             super.close();

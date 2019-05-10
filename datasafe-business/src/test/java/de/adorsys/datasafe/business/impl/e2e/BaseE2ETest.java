@@ -11,8 +11,8 @@ import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
-import de.adorsys.datasafe.business.api.types.utils.LogHelper;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.business.api.types.utils.Log;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -43,8 +43,8 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         OutputStream stream = services.privateService().write(WriteRequest.forDefaultPrivate(auth, path));
         stream.write(data.getBytes());
         stream.close();
-        log.info("File {} of user {} saved to {}", LogHelper.secure(data),
-                LogHelper.secure(auth.getUserID()), LogHelper.secure(path));
+        log.info("File {} of user {} saved to {}", Log.secure(data),
+                Log.secure(auth.getUserID()), Log.secure(path));
     }
 
     protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
@@ -52,7 +52,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in PRIVATE", LogHelper.secure(inboxOwner.getUserID().getValue()), LogHelper.secure(files));
+        log.info("{} has {} in PRIVATE", Log.secure(inboxOwner.getUserID().getValue()), Log.secure(files));
         return files.get(0);
     }
 
@@ -63,7 +63,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
-        log.info("{} has {} in PRIVATE", LogHelper.secure(user.getUserID().getValue()), LogHelper.secure(data));
+        log.info("{} has {} in PRIVATE", Log.secure(user.getUserID().getValue()), Log.secure(data));
 
         return data;
     }
@@ -79,7 +79,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
-        log.info("{} has {} in INBOX", LogHelper.secure(user.getUserID().getValue()), LogHelper.secure(data));
+        log.info("{} has {} in INBOX", Log.secure(user.getUserID().getValue()), Log.secure(data));
 
         return data;
     }
@@ -89,7 +89,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in INBOX", LogHelper.secure(inboxOwner.getUserID().getValue()), LogHelper.secure(files));
+        log.info("{} has {} in INBOX", Log.secure(inboxOwner.getUserID().getValue()), Log.secure(files));
         return files.get(0);
     }
 
@@ -103,7 +103,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         OutputStream stream = services.inboxService().write(WriteRequest.forDefaultPublic(to, "./" + filename));
         stream.write(data.getBytes());
         stream.close();
-        log.info("File {} sent to INBOX of user {}", LogHelper.secure(filename), LogHelper.secure(to));
+        log.info("File {} sent to INBOX of user {}", Log.secure(filename), Log.secure(to));
     }
 
     protected void removeFromInbox(UserIDAuth inboxOwner, PrivateResource location) {
@@ -116,9 +116,9 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         rootLocation = rootLocation.resolve(userName + "/");
 
         URI keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
-        log.info("User's keystore location: {}", LogHelper.secure(keyStoreUri));
+        log.info("User's keystore location: {}", Log.secure(keyStoreUri));
         URI inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
-        log.info("User's inbox location: {}", LogHelper.secure(inboxUri));
+        log.info("User's inbox location: {}", Log.secure(inboxUri));
 
         services.userProfile().registerPublic(CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
@@ -128,7 +128,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         );
 
         URI filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
-        log.info("User's files location: {}", LogHelper.secure(filesUri));
+        log.info("User's files location: {}", Log.secure(filesUri));
 
         services.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
                 .id(auth)
@@ -138,13 +138,13 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 .build()
         );
 
-        log.info("Created user: {}", LogHelper.secure(userName));
+        log.info("Created user: {}", Log.secure(userName));
         return auth;
     }
 
     protected void removeUser(UserIDAuth userIDAuth) {
         services.userProfile().deregister(userIDAuth);
-        log.info("User deleted: {}", LogHelper.secure(userIDAuth.getUserID().getValue()));
+        log.info("User deleted: {}", Log.secure(userIDAuth.getUserID().getValue()));
     }
 
     private AbsoluteResourceLocation<PublicResource> access(URI path) {
