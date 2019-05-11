@@ -71,6 +71,7 @@ public class MinioTest extends BaseStorageTest {
                 .storageRead(new S3StorageService(s3, bucketName))
                 .storageWrite(new S3StorageService(s3, bucketName))
                 .storageRemove(new S3StorageService(s3, bucketName))
+                .storageCheck(new S3StorageService(s3, bucketName))
                 .build();
     }
 }
