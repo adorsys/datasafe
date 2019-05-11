@@ -18,7 +18,7 @@ public class UserIDAuth {
     public String toString() {
         return "UserIDAuth{" +
                 "userID=" + Log.secure(userID) +
-                ", readKeyPassword=" + readKeyPassword +
+                ", readKeyPassword=" + Log.secure(readKeyPassword) +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.api.types.utils;
 
+import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import lombok.SneakyThrows;
 
 import java.net.URI;
@@ -30,7 +31,12 @@ public class Log {
 
     @SneakyThrows
     public static String secure(URI uri) {
-        return secure(uri.getPath().split("/"), "/");
+        return uri.getHost() + "/" + secure(uri.getPath().split("/"), "/");
+    }
+
+    @SneakyThrows
+    public static <T extends ResourceLocation> String secure(T resource) {
+        return resource.location().getHost() + "/" + secure(resource.location().getPath().split("/"), "/");
     }
 
     @SneakyThrows
