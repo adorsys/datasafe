@@ -31,7 +31,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
-    protected static final Map<String, Long> loadReport = new ConcurrentHashMap<>();//change to sync map
+    protected static final Map<String, Long> loadReport = new ConcurrentHashMap<>();
 
     protected DefaultDocusafeServices services;
 
