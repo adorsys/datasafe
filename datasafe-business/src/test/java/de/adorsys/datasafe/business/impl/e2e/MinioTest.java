@@ -46,7 +46,6 @@ public class MinioTest extends BaseStorageTest {
                 .build();
 
         s3.createBucket(bucketName);
-
     }
 
     @BeforeEach

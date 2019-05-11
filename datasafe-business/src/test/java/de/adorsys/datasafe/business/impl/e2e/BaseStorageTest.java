@@ -2,21 +2,27 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.Hex;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.net.URI;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,11 +36,11 @@ import java.util.stream.Collectors;
 
 import static de.adorsys.datasafe.business.api.types.action.ListRequest.forPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
 @RequiredArgsConstructor
-//TODD 3. Circle stream
-//Change on the executors?
 abstract class BaseStorageTest extends BaseE2ETest {
 
     private static final String MESSAGE_ONE = "Hello here 1";
@@ -122,46 +128,29 @@ abstract class BaseStorageTest extends BaseE2ETest {
 
     @Test
     @SneakyThrows
-   // @Ignore
-    public void WriteToPrivateListPrivateInDifferentThreads() {
+    @Ignore
+    public void writeToPrivateListPrivateInDifferentThreads() {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
-        CountDownLatch startHoldingLatch = new CountDownLatch(1);
+        CountDownLatch holdingLatch = new CountDownLatch(1);
         CountDownLatch finishHoldingLatch = new CountDownLatch(NUMBER_OF_TEST_USERS * NUMBER_OF_TEST_FILES);
+
+        FileInputStream input = new FileInputStream(new File(TEST_FILE));
+        String checksumOfOriginTestFile = checksum(input);
+        input.close();
 
         String path = "folder2";
 
         log.trace("*** Starting write threads ***");
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             long userRegisterTime = System.currentTimeMillis();
-            UserIDAuth john = registerUser("john_" + i, location);
-            loadReport.put("Register user " + john.getUserID().getValue(), System.currentTimeMillis() - userRegisterTime);
-            log.debug("Registered user: {}", john.getUserID().getValue());
+            UserIDAuth user = registerUser("john_" + i, location);
+            loadReport.put("Register user " + user.getUserID().getValue(), System.currentTimeMillis() - userRegisterTime);
+            log.debug("Registered user: {}", user.getUserID().getValue());
 
-            AtomicInteger counter = new AtomicInteger();
-
-            for (int j = 0; j < NUMBER_OF_TEST_FILES; j++) {
-                executor.execute(() -> {
-                    try {
-                        startHoldingLatch.await();
-
-                        long measurementOfWritingTextToFile = System.currentTimeMillis();
-                        log.trace("Start thread: {} for user: {}",
-                                Thread.currentThread().getName(), john.getUserID().getValue());
-
-                        String filePath = path + "/" + counter.incrementAndGet() + ".txt";
-
-                        log.debug("Saving file: {}", filePath);
-                        writeDataToFileForUser(john, filePath, TEST_FILE, finishHoldingLatch);
-
-                        loadReport.put(Thread.currentThread().getName() + " write data to user " + john.getUserID().getValue(), System.currentTimeMillis() - measurementOfWritingTextToFile);
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
+            createFileForUserParallelly(executor, holdingLatch, finishHoldingLatch, path, user, new AtomicInteger());
 
             // open latch and start all threads
-            startHoldingLatch.countDown();
+            holdingLatch.countDown();
         }
 
         log.trace("*** Main thread waiting for all threads ***");
@@ -177,13 +166,63 @@ abstract class BaseStorageTest extends BaseE2ETest {
             log.debug("Read files for user: " + user.getUserID().getValue());
 
             assertThat(resourceList.size()).isEqualTo(EXPECTED_NUMBER_OF_FILES_PER_USER);
-            /*resourceList.forEach(item -> {
-                String content = extractFileContent(user, item.getResource());
 
-                log.debug("Content: " + content);
-                assertThat(content).isEqualTo(generateContent(FILE_SIZE_IN_KB));
-            })*/;
+            resourceList.forEach(item -> {
+                String checksumOfDecryptedTestFile = calculateDecryptedContentChecksum(user, item);
+
+                log.info("Origin test file checksum hex: {}", checksumOfOriginTestFile);
+                log.info("Decrypted test file checksum hex: {}", checksumOfDecryptedTestFile);
+                assertEquals(checksumOfOriginTestFile, checksumOfDecryptedTestFile);
+            });
         }
+    }
+
+    private void createFileForUserParallelly(ThreadPoolExecutor executor, CountDownLatch holdingLatch, CountDownLatch finishHoldingLatch, String path, UserIDAuth john, AtomicInteger counter) {
+        for (int j = 0; j < NUMBER_OF_TEST_FILES; j++) {
+            executor.execute(() -> {
+                try {
+                    holdingLatch.await();
+
+                    long measurementOfWritingTextToFile = System.currentTimeMillis();
+                    Thread.currentThread().setName(john.getUserID().getValue());
+
+                    String filePath = path + "/" + counter.incrementAndGet() + ".txt";
+
+                    log.debug("Saving file: {}", filePath);
+                    writeDataToFileForUser(john, filePath, TEST_FILE, finishHoldingLatch);
+
+                    loadReport.put(Thread.currentThread().getName() + " write data to user " + john.getUserID().getValue(), System.currentTimeMillis() - measurementOfWritingTextToFile);
+                } catch (IOException | InterruptedException e) {
+                    fail(e);
+                }
+            });
+        }
+    }
+
+    private String calculateDecryptedContentChecksum(UserIDAuth user,
+                                                     AbsoluteResourceLocation<PrivateResource> item) {
+        try {
+            InputStream decryptedFileStream = services.privateService().read(
+                    ReadRequest.forPrivate(user, item.getResource()));
+            String checksumOfDecryptedTestFile = checksum(decryptedFileStream);
+            decryptedFileStream.close();
+            return checksumOfDecryptedTestFile;
+        } catch (IOException e) {
+            fail(e);
+        }
+
+        return "";
+    }
+
+    @SneakyThrows
+    public String checksum(InputStream input) {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] block = new byte[4096];
+        int length;
+        while ((length = input.read(block)) > 0) {
+            digest.update(block, 0, length);
+        }
+        return Hex.toHexString(digest.digest());
     }
 
     @Test
@@ -221,20 +260,19 @@ abstract class BaseStorageTest extends BaseE2ETest {
 
         List<String> expectedData = Arrays.asList(MESSAGE_ONE, MESSAGE_TWO);
 
+        validateUserPrivateStorage(testPath, privateJohnFiles, expectedData, john);
+
+        validateUserPrivateStorage(testPath, privateJaneFiles, expectedData, jane);
+
+    }
+
+    private void validateUserPrivateStorage(List<String> testPath, List<AbsoluteResourceLocation<PrivateResource>> privateJohnFiles, List<String> expectedData, UserIDAuth john) {
         assertThat(privateJohnFiles).hasSize(2);
         privateJohnFiles.forEach(item -> {
             String data = readPrivateUsingPrivateKey(john, item.getResource());
             assertThat(testPath).contains(item.getResource().decryptedPath().getPath());
             assertThat(expectedData.contains(data)).isTrue();
         });
-
-        assertThat(privateJaneFiles).hasSize(2);
-        privateJaneFiles.forEach(item -> {
-            String data = readPrivateUsingPrivateKey(jane, item.getResource());
-            assertThat(testPath).contains(item.getResource().decryptedPath().getPath());
-            assertThat(expectedData.contains(data)).isTrue();
-        });
-
     }
 
     private void readOriginUserInboxAndWriteToTargetUserPrivate(UserIDAuth originUser, UserIDAuth targetUser,
@@ -251,7 +289,7 @@ abstract class BaseStorageTest extends BaseE2ETest {
     @AfterAll
     @SneakyThrows
     public static void exportReport() {
-       // Files.delete(Paths.get(TEST_FILE));
+        Files.delete(Paths.get(TEST_FILE));
 
         loadReport.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(reportRow -> {
             System.out.println(reportRow.getKey() + " " + reportRow.getValue() + " millisec");

@@ -154,19 +154,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return userAuth;
     }
 
-    @SneakyThrows
-    protected String extractFileContent(UserIDAuth john, PrivateResource privateResource) {
-        InputStream read = services.privateService().read(ReadRequest.forPrivate(john, privateResource));
-        OutputStream data = new ByteArrayOutputStream();
-
-        ByteStreams.copy(read, data);
-
-        read.close();
-        data.close();
-
-        return data.toString();
-    }
-
     protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, String filePathForReading,
                                           CountDownLatch latch) throws IOException {
         WriteRequest<UserIDAuth, PrivateResource> writeRequest = WriteRequest.<UserIDAuth, PrivateResource>builder()
