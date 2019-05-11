@@ -34,5 +34,7 @@ public class FsTest extends BaseStorageTest {
                 .storageWrite(storage)
                 .storageRemove(storage)
                 .build();
+
+        loadReport.put("impl File System", 0L);
     }
 }

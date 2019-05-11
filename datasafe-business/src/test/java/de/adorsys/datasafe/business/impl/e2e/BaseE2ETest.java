@@ -16,12 +16,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
@@ -32,6 +31,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
+    protected static final Map<String, Long> loadReport = new ConcurrentHashMap<>();//change to sync map
 
     protected DefaultDocusafeServices services;
 
@@ -167,16 +167,19 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return data.toString();
     }
 
-    protected void writeTextToFileForUser(UserIDAuth john, String filePath, String msg, CountDownLatch startSignal) throws IOException {
+    protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, String filePathForReading,
+                                          CountDownLatch latch) throws IOException {
         WriteRequest<UserIDAuth, PrivateResource> writeRequest = WriteRequest.<UserIDAuth, PrivateResource>builder()
                 .owner(john)
-                .location(DefaultPrivateResource.forPrivate(URI.create(filePath)))
+                .location(DefaultPrivateResource.forPrivate(URI.create(filePathForWriting)))
                 .build();
 
         OutputStream write = services.privateService().write(writeRequest);
-        write.write(msg.getBytes());
+        FileInputStream fis = new FileInputStream(filePathForReading);
+        ByteStreams.copy(fis, write);
+        fis.close();
         write.close();
 
-        startSignal.countDown();
+        latch.countDown();
     }
 }
