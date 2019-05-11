@@ -162,11 +162,7 @@ abstract class BaseStorageTest extends BaseE2ETest {
             assertThat(resourceList.size()).isEqualTo(EXPECTED_NUMBER_OF_FILES_PER_USER);
 
             resourceList.forEach(item -> {
-                String checksumOfDecryptedTestFile = calculateDecryptedContentChecksum(user, item);
-
-                log.info("Origin test file checksum hex: {}", checksumOfOriginTestFile);
-                log.info("Decrypted test file checksum hex: {}", checksumOfDecryptedTestFile);
-                assertEquals(checksumOfOriginTestFile, checksumOfDecryptedTestFile);
+                assertEquals(checksumOfOriginTestFile, calculateDecryptedContentChecksum(user, item));
             });
         }
     }
@@ -175,7 +171,7 @@ abstract class BaseStorageTest extends BaseE2ETest {
                                              CountDownLatch finishHoldingLatch, String testFilePath,
                                              UserIDAuth john) {
         AtomicInteger counter = new AtomicInteger();
-        String path = "folder2";
+        String remotePath = "folder2";
 
         for (int  j = 0; j < NUMBER_OF_TEST_FILES; j++) {
             executor.execute(() -> {
@@ -275,12 +271,12 @@ abstract class BaseStorageTest extends BaseE2ETest {
     }
 
     private void readOriginUserInboxAndWriteToTargetUserPrivate(UserIDAuth originUser, UserIDAuth targetUser,
-                                                                CountDownLatch countDownLatch, String _const) {
+                                                                CountDownLatch countDownLatch, String prefixes) {
         AbsoluteResourceLocation<PrivateResource> inbox = getFirstFileInInbox(originUser);
 
         String result = readInboxUsingPrivateKey(originUser, inbox.getResource());
 
-        writeDataToPrivate(targetUser, FOLDER + "/" + _const + PRIVATE_FILE, result);
+        writeDataToPrivate(targetUser, FOLDER + "/" + prefixes + PRIVATE_FILE, result);
 
         countDownLatch.countDown();
     }
