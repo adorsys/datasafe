@@ -27,6 +27,10 @@ card "Datasafe DFS adapter" {
       /latest/dir2/fileB.txt --> /private/dir2/fileB.txt-V3
   ]
 
+  note right
+  **latest** can be thought as commit tag
+  end note
+
   node s3Private [
       /private/dir1/fileA.txt-V0
       /private/dir1/fileA.txt-V1
