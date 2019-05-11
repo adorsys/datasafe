@@ -22,12 +22,16 @@ public class CreateUserPrivateProfile {
     @NonNull
     private final AbsoluteResourceLocation<PrivateResource> inboxWithWriteAccess;
 
+    @NonNull
+    private final AbsoluteResourceLocation<PrivateResource> documentVersionStorage;
+
     public UserPrivateProfile removeAccess() {
         return UserPrivateProfile.builder()
             // FIXME - remove access ?
             .keystore(keystore)
             .privateStorage(privateStorage)
             .inboxWithWriteAccess(inboxWithWriteAccess)
+            .documentVersionStorage(documentVersionStorage)
             .build();
     }
 }

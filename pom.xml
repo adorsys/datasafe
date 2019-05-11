@@ -6,6 +6,7 @@
 
     <modules>
         <module>datasafe-business</module>
+        <module>datasafe-metainfo-version</module>
         <module>datasafe-privatestore</module>
         <module>datasafe-directory</module>
         <module>datasafe-encryption</module>
