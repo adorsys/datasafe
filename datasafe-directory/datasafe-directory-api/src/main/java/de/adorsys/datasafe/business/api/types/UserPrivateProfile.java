@@ -18,13 +18,4 @@ public class UserPrivateProfile {
 
     @NonNull
     private final AbsoluteResourceLocation<PrivateResource> inboxWithFullAccess;
-
-    @Override
-    public String toString() {
-        return "UserPrivateProfile{" +
-                "keystore=" + keystore.location().getPath() +
-                ", privateStorage=" + privateStorage.location().getPath() +
-                ", inboxWithFullAccess=" + inboxWithFullAccess.location().getPath() +
-                '}';
-    }
 }

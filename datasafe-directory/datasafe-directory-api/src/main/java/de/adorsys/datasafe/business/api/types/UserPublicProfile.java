@@ -15,12 +15,4 @@ public class UserPublicProfile {
 
     @NonNull
     private final AbsoluteResourceLocation<PublicResource> inbox;
-
-    @Override
-    public String toString() {
-        return "UserPublicProfile{" +
-                "publicKeys=" + publicKeys.location().getPath() +
-                ", inbox=" + inbox.location().getPath() +
-                '}';
-    }
 }

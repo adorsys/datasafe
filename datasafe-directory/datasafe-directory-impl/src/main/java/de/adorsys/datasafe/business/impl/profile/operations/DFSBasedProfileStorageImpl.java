@@ -69,7 +69,7 @@ public class DFSBasedProfileStorageImpl implements
         try (OutputStream os = writeService.write(locatePublicProfile(profile.getId()))) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
-        log.debug("Register public {}", Log.secure(profile.getId()));
+        log.debug("Register public {}", profile.getId());
     }
 
     @Override
@@ -78,7 +78,7 @@ public class DFSBasedProfileStorageImpl implements
         try (OutputStream os = writeService.write(locatePrivateProfile(profile.getId().getUserID()))) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
-        log.debug("Register private {}", Log.secure(profile.getId()));
+        log.debug("Register private {}", profile.getId());
 
         // TODO: check if we need to create it
         createKeyStore(
@@ -90,7 +90,7 @@ public class DFSBasedProfileStorageImpl implements
     @Override
     public void deregister(UserIDAuth userID) {
         if (!userExists(userID.getUserID())) {
-            log.debug("User deregistation failed. User '{}' does not exist", Log.secure(userID.getUserID()));
+            log.debug("User deregistation failed. User '{}' does not exist", userID);
             return;
         }
 
@@ -105,7 +105,7 @@ public class DFSBasedProfileStorageImpl implements
         removeService.remove(inbox);
         removeService.remove(locatePrivateProfile(userID.getUserID()));
         removeService.remove(locatePublicProfile(userID.getUserID()));
-        log.debug("Deregistered user {}", Log.secure(userID.getUserID()));
+        log.debug("Deregistered user {}", userID);
     }
 
     private void removeStorageByLocation(UserIDAuth userID, AbsoluteResourceLocation<PrivateResource> privateStorage) {
@@ -120,8 +120,7 @@ public class DFSBasedProfileStorageImpl implements
                 ofUser,
                 id -> readProfile(locatePublicProfile(ofUser), UserPublicProfile.class)
         );
-        log.debug("get public profile {} for user {}", Log.secure(userPublicProfile),
-                Log.secure(ofUser));
+        log.debug("get public profile {} for user {}", userPublicProfile, ofUser);
         return userPublicProfile;
     }
 
@@ -132,7 +131,7 @@ public class DFSBasedProfileStorageImpl implements
                 ofUser.getUserID(),
                 id -> readProfile(locatePrivateProfile(ofUser.getUserID()), UserPrivateProfile.class)
         );
-        log.debug("get private profile {} for user {}", Log.secure(userPrivateProfile), Log.secure(ofUser));
+        log.debug("get private profile {} for user {}", userPrivateProfile, ofUser);
         return userPrivateProfile;
     }
 
@@ -155,8 +154,7 @@ public class DFSBasedProfileStorageImpl implements
         try (OutputStream os = writeService.write(new AbsoluteResourceLocation<>(keystore))) {
             os.write(keyStoreService.serialize(store, forUser.getUserID().getValue(), auth.getReadStorePassword()));
         }
-        log.debug("Keystore created for user {} in path {}", Log.secure(forUser.getUserID()),
-                Log.secure(keystore.location()));
+        log.debug("Keystore created for user {} in path {}", forUser, keystore);
     }
 
     @SneakyThrows

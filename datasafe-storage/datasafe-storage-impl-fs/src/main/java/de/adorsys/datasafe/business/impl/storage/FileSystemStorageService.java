@@ -28,7 +28,7 @@ public class FileSystemStorageService implements StorageService {
     @SneakyThrows
     @Override
     public Stream<AbsoluteResourceLocation<PrivateResource>> list(AbsoluteResourceLocation path) {
-        log.debug("List file request: {}", Log.secure(path.location()));
+        log.debug("List file request: {}", path);
         Path filePath = resolve(path.location(), false);
         log.debug("List file: {}", Log.secure(filePath));
 
@@ -46,7 +46,7 @@ public class FileSystemStorageService implements StorageService {
     @SneakyThrows
     @Override
     public InputStream read(AbsoluteResourceLocation path) {
-        log.debug("Read file request: {}", Log.secure(path.location()));
+        log.debug("Read file request: {}", path);
         Path filePath = resolve(path.location(), false);
         log.debug("Read file: {}", Log.secure(filePath));
         return MoreFiles.asByteSource(filePath, StandardOpenOption.READ).openStream();
@@ -65,13 +65,13 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public void remove(AbsoluteResourceLocation location) {
         Files.delete(resolve(location.location(), false));
-        log.debug("deleted directory at: {}", Log.secure(location.location().getPath()));
+        log.debug("deleted directory at: {}", location);
     }
 
     @Override
     public boolean objectExists(AbsoluteResourceLocation location) {
         boolean exists = Files.exists(resolve(location.location(), false));
-        log.debug("exists {} directory at: {}", exists, Log.secure(location.location().getPath()));
+        log.debug("exists {} directory at: {}", exists, Log.secure(location));
         return exists;
     }
 

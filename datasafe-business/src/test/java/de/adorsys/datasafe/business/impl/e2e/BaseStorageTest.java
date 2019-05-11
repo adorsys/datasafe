@@ -66,7 +66,7 @@ abstract class BaseStorageTest extends BaseE2ETest {
         AbsoluteResourceLocation<PrivateResource> foundResource = inbox.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedInboxResource.location());
         // no path encryption for inbox:
-        assertThat(foundResource.toString()).contains(SHARED_FILE);
+        assertThat(foundResource.location().getPath().contains(SHARED_FILE));
         // validate encryption on high-level:
         assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
     }

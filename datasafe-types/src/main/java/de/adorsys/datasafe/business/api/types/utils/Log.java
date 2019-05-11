@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.api.types.utils;
 
 import lombok.SneakyThrows;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -14,9 +15,9 @@ public class Log {
     private static Base64.Encoder encoder = Base64.getEncoder();
 
     @SneakyThrows
-    public static <T> String secure(Iterable<T> values) {
+    public static <T> String secure(Iterable<T> values, String delim) {
         StringBuilder sb = new StringBuilder();
-        values.forEach(v -> sb.append(secure(v)).append("\n"));
+        values.forEach(v -> sb.append(secure(v)).append(delim));
         return sb.toString();
     }
 
@@ -28,8 +29,13 @@ public class Log {
     }
 
     @SneakyThrows
-    public static String secure(Object[] values) {
-        return secure(Arrays.asList(values));
+    public static String secure(URI uri) {
+        return secure(uri.getPath().split("/"), "/");
+    }
+
+    @SneakyThrows
+    public static String secure(Object[] values, String delim) {
+        return secure(Arrays.asList(values), delim);
     }
 
     @SneakyThrows

@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.api.types;
 
+import de.adorsys.datasafe.business.api.types.utils.Log;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
 
@@ -15,6 +16,6 @@ public class UserID {
 
     @Override
     public String toString() {
-        return value.getValue();
+        return Log.secure(value.getValue());
     }
 }
