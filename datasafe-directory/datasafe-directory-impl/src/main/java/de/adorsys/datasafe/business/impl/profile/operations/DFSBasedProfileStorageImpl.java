@@ -5,10 +5,7 @@ import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
-import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
-import de.adorsys.datasafe.business.api.storage.actions.StorageRemoveService;
-import de.adorsys.datasafe.business.api.storage.actions.StorageWriteService;
+import de.adorsys.datasafe.business.api.storage.actions.*;
 import de.adorsys.datasafe.business.api.types.*;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
@@ -17,7 +14,6 @@ import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.types.utils.Log;
 import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;
-import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +40,8 @@ public class DFSBasedProfileStorageImpl implements
     private final StorageWriteService writeService;
     private final StorageRemoveService removeService;
     private final StorageListService listService;
+    private final StorageCheckService checkService;
+
     private final KeyStoreService keyStoreService;
     private final DFSSystem dfsSystem;
     private final GsonSerde serde;
@@ -52,12 +50,13 @@ public class DFSBasedProfileStorageImpl implements
     @Inject
     public DFSBasedProfileStorageImpl(StorageReadService readService, StorageWriteService writeService,
                                       StorageRemoveService removeService, StorageListService listService,
-                                      KeyStoreService keyStoreService, DFSSystem dfsSystem, GsonSerde serde,
-                                      UserProfileCache userProfileCache) {
+                                      StorageCheckService checkService, KeyStoreService keyStoreService,
+                                      DFSSystem dfsSystem, GsonSerde serde, UserProfileCache userProfileCache) {
         this.readService = readService;
         this.writeService = writeService;
         this.removeService = removeService;
         this.listService = listService;
+        this.checkService = checkService;
         this.keyStoreService = keyStoreService;
         this.dfsSystem = dfsSystem;
         this.serde = serde;
@@ -90,11 +89,14 @@ public class DFSBasedProfileStorageImpl implements
 
     @Override
     public void deregister(UserIDAuth userID) {
-        @NonNull
+        if (!userExists(userID.getUserID())) {
+            log.debug("User deregistation failed. User '{}' does not exist", Log.secure(userID.getUserID()));
+            return;
+        }
+
         AbsoluteResourceLocation<PrivateResource> privateStorage = privateProfile(userID).getPrivateStorage();
         removeStorageByLocation(userID, privateStorage);
 
-        @NonNull
         AbsoluteResourceLocation<PrivateResource> inbox = privateProfile(userID).getInboxWithFullAccess();
         removeStorageByLocation(userID, inbox);
 
@@ -136,7 +138,8 @@ public class DFSBasedProfileStorageImpl implements
 
     @Override
     public boolean userExists(UserID ofUser) {
-        throw new UnsupportedOperationException("Not implemented");
+        return checkService.objectExists(locatePrivateProfile(ofUser)) &&
+                checkService.objectExists(locatePublicProfile(ofUser));
     }
 
     @SneakyThrows

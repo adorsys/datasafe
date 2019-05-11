@@ -67,6 +67,15 @@ public class S3StorageService implements StorageService {
         s3.deleteObject(bucketName, key);
     }
 
+    @Override
+    public boolean objectExists(AbsoluteResourceLocation location) {
+        String path = location.location().getPath();
+        String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
+        boolean pathExists = s3.doesObjectExist(bucketName, key);
+        log.debug("Path {} exists {}", Log.secure(key), pathExists);
+        return pathExists;
+    }
+
     @Slf4j
     @RequiredArgsConstructor
     private static final class PutBlobOnClose extends ByteArrayOutputStream {

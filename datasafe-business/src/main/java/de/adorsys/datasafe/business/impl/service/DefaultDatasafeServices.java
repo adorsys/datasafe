@@ -8,6 +8,7 @@ import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
 import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
 import de.adorsys.datasafe.business.api.storage.actions.StorageRemoveService;
 import de.adorsys.datasafe.business.api.storage.actions.StorageWriteService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageCheckService;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultCredentialsModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultProfileModule;
@@ -58,6 +59,9 @@ public interface DefaultDatasafeServices {
 
         @BindsInstance
         Builder storageRemove(StorageRemoveService removeService);
+
+        @BindsInstance
+        Builder storageCheck(StorageCheckService checkService);
 
         DefaultDatasafeServices build();
     }

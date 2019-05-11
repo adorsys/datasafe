@@ -68,6 +68,13 @@ public class FileSystemStorageService implements StorageService {
         log.debug("deleted directory at: {}", Log.secure(location.location().getPath()));
     }
 
+    @Override
+    public boolean objectExists(AbsoluteResourceLocation location) {
+        boolean exists = Files.exists(resolve(location.location(), false));
+        log.debug("exists {} directory at: {}", exists, Log.secure(location.location().getPath()));
+        return exists;
+    }
+
     protected Path resolve(URI uri, boolean mkDirs) {
         Path path = Paths.get(dir.resolve(uri));
         if (!path.getParent().toFile().exists() && mkDirs) {
