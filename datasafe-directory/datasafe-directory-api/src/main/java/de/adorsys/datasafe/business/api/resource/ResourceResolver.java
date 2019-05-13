@@ -11,7 +11,7 @@ public interface ResourceResolver {
 
     AbsoluteResourceLocation<PublicResource> resolveRelativeToPublicInbox(UserID userID, PublicResource resource);
 
-    AbsoluteResourceLocation<PrivateResource>resolveRelativeToPrivateInbox(UserIDAuth userID, PrivateResource resource);
+    AbsoluteResourceLocation<PrivateResource> resolveRelativeToPrivateInbox(UserIDAuth userID, PrivateResource resource);
 
     AbsoluteResourceLocation<PrivateResource> resolveRelativeToPrivate(UserIDAuth userID, PrivateResource resource);
 

@@ -7,8 +7,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
-import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import lombok.Getter;
@@ -113,12 +113,12 @@ public abstract class WithStorageProvider extends BaseE2ETest {
 
         private final StorageService storageService;
         private final URI location;
-        private final DefaultDocusafeServices docusafeServices;
+        private final DefaultDatasafeServices docusafeServices;
 
         StorageDescriptor(StorageService storageService, URI location) {
             this.storageService = storageService;
             this.location = location;
-            this.docusafeServices = DaggerDefaultDocusafeServices
+            this.docusafeServices = DaggerDefaultDatasafeServices
                     .builder()
                     .config(new DFSConfig() {
                         @Override

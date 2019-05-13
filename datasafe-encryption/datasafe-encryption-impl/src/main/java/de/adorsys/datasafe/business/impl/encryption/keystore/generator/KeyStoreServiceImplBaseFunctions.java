@@ -9,16 +9,20 @@ import de.adorsys.datasafe.business.impl.encryption.keystore.types.SelfSignedKey
 import lombok.SneakyThrows;
 import org.bouncycastle.cert.X509CertificateHolder;
 
-import javax.crypto.SecretKey;
 import javax.security.auth.callback.CallbackHandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.security.*;
+import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.KeyStore.ProtectionParameter;
+import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**

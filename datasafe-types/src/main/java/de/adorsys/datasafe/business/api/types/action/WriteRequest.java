@@ -17,11 +17,19 @@ public class WriteRequest<T, L extends ResourceLocation> {
     @NonNull
     private final L location;
 
-    public static <T> WriteRequest<T, PrivateResource> forPrivate(T owner, String path) {
+    public static <T> WriteRequest<T, PrivateResource> forDefaultPrivate(T owner, String path) {
         return new WriteRequest<>(owner, DefaultPrivateResource.forPrivate(URI.create(path)));
     }
 
-    public static <T> WriteRequest<T, PublicResource> forPublic(T owner, String path) {
+    public static <T> WriteRequest<T, PublicResource> forDefaultPublic(T owner, String path) {
         return new WriteRequest<>(owner, new DefaultPublicResource(URI.create(path)));
+    }
+
+    public static <T> WriteRequest<T, PrivateResource> forDefaultPrivate(T owner, URI path) {
+        return new WriteRequest<>(owner, DefaultPrivateResource.forPrivate(path));
+    }
+
+    public static <T> WriteRequest<T, PublicResource> forDefaultPublic(T owner, URI path) {
+        return new WriteRequest<>(owner, new DefaultPublicResource(path));
     }
 }
