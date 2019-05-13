@@ -17,6 +17,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.platform.commons.util.StringUtils;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
@@ -84,7 +85,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     }
 
     private static void initS3() {
-        if (null == amazonAccessKeyID) {
+        if (StringUtils.isBlank(amazonAccessKeyID)) {
             return;
         }
 
