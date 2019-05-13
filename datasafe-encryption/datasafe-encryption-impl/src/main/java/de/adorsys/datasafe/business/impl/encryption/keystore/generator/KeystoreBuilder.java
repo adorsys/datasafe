@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
-import de.adorsys.datasafe.business.api.types.keystore.KeyEntry;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.business.api.version.types.keystore.KeyEntry;
+import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreType;
 
 import java.security.KeyStore;
 import java.util.HashMap;

@@ -11,6 +11,9 @@ import de.adorsys.datasafe.business.impl.privatespace.actions.*;
 public abstract class DefaultPrivateActionsModule {
 
     @Binds
+    abstract EncryptedResourceResolver encryptedResourceResolver(EncryptedResourceResolverImpl impl);
+
+    @Binds
     abstract ListPrivate listPrivate(ListPrivateImpl impl);
 
     @Binds

@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.encryption.pathencryption.encryption;
 
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.api.version.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.business.impl.encryption.pathencryption.DefaultPathDigestConfig;
 import de.adorsys.datasafe.business.impl.encryption.pathencryption.DefaultPathEncryption;

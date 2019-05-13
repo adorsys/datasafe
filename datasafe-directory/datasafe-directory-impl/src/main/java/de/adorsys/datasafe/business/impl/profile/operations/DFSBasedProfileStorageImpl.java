@@ -9,12 +9,12 @@ import de.adorsys.datasafe.business.api.storage.StorageListService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
 import de.adorsys.datasafe.business.api.storage.StorageRemoveService;
 import de.adorsys.datasafe.business.api.storage.StorageWriteService;
-import de.adorsys.datasafe.business.api.types.*;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
-import de.adorsys.datasafe.business.api.types.resource.*;
+import de.adorsys.datasafe.business.api.version.types.*;
+import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.business.api.version.types.resource.*;
 import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;
 import lombok.SneakyThrows;
 

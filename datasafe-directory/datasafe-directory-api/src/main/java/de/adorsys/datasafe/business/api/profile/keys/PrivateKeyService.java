@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.profile.keys;
 
-import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyIDWithKey;
 
 import java.security.Key;
 

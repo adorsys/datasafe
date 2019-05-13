@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.cmsencryption;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.api.version.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.DefaultCMSEncryptionConfig;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.exceptions.DecryptionException;

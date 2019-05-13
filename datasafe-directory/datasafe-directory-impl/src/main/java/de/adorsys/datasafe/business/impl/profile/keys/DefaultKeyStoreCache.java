@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.impl.profile.keys;
 
-import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.version.types.UserID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

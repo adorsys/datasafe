@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.api.inbox.actions;
 
-import de.adorsys.datasafe.business.api.types.UserID;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.version.types.UserID;
+import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.version.types.resource.PublicResource;
 
 import java.io.OutputStream;
 

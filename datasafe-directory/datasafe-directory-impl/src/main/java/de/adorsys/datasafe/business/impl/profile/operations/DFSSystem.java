@@ -1,13 +1,13 @@
 package de.adorsys.datasafe.business.impl.profile.operations;
 
 import de.adorsys.datasafe.business.api.config.DFSConfig;
-import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.keystore.ReadStorePassword;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
-import de.adorsys.datasafe.business.api.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.version.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.version.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.version.types.resource.DefaultPublicResource;
+import de.adorsys.datasafe.business.api.version.types.resource.PublicResource;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;

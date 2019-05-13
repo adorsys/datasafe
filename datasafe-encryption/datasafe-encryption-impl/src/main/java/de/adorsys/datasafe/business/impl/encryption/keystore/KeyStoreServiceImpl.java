@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore;
 
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.api.version.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
 import lombok.SneakyThrows;

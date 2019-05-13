@@ -5,10 +5,10 @@ import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.storage.StorageReadService;
-import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;
 import lombok.SneakyThrows;
 
@@ -17,8 +17,8 @@ import javax.inject.Inject;
 import java.security.Key;
 import java.security.KeyStore;
 
-import static de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
-import static de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
+import static de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
+import static de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
 
 /**
  * Retrieves and opens private keystore associated with user location DFS storage.

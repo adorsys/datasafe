@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.impl.storage;
 
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.version.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;

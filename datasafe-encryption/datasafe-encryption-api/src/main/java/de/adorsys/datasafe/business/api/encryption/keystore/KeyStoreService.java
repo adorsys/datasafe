@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.encryption.keystore;
 
-import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.api.version.types.keystore.*;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.KeyStore;

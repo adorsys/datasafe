@@ -1,15 +1,15 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
-import de.adorsys.datasafe.business.api.types.CreateUserPublicProfile;
-import de.adorsys.datasafe.business.api.types.UserID;
-import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.resource.*;
+import de.adorsys.datasafe.business.api.version.types.CreateUserPrivateProfile;
+import de.adorsys.datasafe.business.api.version.types.CreateUserPublicProfile;
+import de.adorsys.datasafe.business.api.version.types.UserID;
+import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.version.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.version.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.version.types.resource.*;
 import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;

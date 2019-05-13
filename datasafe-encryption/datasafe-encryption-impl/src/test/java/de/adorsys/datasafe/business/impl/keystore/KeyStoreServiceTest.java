@@ -1,13 +1,12 @@
 package de.adorsys.datasafe.business.impl.keystore;
 
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.types.keystore.*;
-import de.adorsys.datasafe.business.api.types.keystore.exceptions.KeyStoreConfigException;
+import de.adorsys.datasafe.business.api.version.types.keystore.*;
+import de.adorsys.datasafe.business.api.version.types.keystore.exceptions.KeyStoreConfigException;
 import de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
-import de.adorsys.datasafe.business.impl.encryption.keystore.generator.ProviderUtils;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairGenerator;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +17,6 @@ import javax.crypto.SecretKey;
 import javax.security.auth.callback.CallbackHandler;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.Provider;
 import java.security.Security;
 import java.util.Collections;
 import java.util.List;

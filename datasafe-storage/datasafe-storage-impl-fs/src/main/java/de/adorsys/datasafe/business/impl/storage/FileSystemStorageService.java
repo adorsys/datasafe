@@ -2,9 +2,9 @@ package de.adorsys.datasafe.business.impl.storage;
 
 import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.version.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

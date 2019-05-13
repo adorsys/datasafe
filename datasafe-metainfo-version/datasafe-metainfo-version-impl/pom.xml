@@ -39,5 +39,9 @@
 			<groupId>com.google.dagger</groupId>
 			<artifactId>dagger</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 	</dependencies>
 </project>
