@@ -4,7 +4,6 @@ import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,10 +26,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static de.adorsys.datasafe.business.api.types.action.ListRequest.forPrivate;
+import static de.adorsys.datasafe.business.api.types.action.ListRequest.forDefaultPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -93,7 +91,8 @@ abstract class BaseStorageTest extends BaseE2ETest {
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             UserIDAuth user = createJohnTestUser(i);
 
-            List<AbsoluteResourceLocation<PrivateResource>> resourceList = services.privateService().list(forPrivate(user, "./")).collect(Collectors.toList());
+            List<AbsoluteResourceLocation<PrivateResource>> resourceList = services.privateService().list(
+                    forDefaultPrivate(user, "./")).collect(Collectors.toList());
             log.debug("Read files for user: " + user.getUserID().getValue());
 
             assertThat(resourceList.size()).isEqualTo(EXPECTED_NUMBER_OF_FILES_PER_USER);
