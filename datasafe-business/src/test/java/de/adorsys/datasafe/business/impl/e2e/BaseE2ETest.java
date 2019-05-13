@@ -10,7 +10,7 @@ import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
-import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -31,7 +31,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
 
-    protected DefaultDocusafeServices services;
+    protected DefaultDatasafeServices services;
 
     protected UserIDAuth john;
     protected UserIDAuth jane;

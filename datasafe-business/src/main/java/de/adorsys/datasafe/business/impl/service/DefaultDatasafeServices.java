@@ -22,7 +22,7 @@ import de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStora
 import javax.inject.Singleton;
 
 /**
- * This is user Docusafe services default implementation.
+ * This is user Datasafe services default implementation.
  */
 @Singleton
 @Component(modules = {
@@ -35,7 +35,7 @@ import javax.inject.Singleton;
         DefaultPrivateActionsModule.class,
         DefaultProfileModule.class
 })
-public interface DefaultDocusafeServices {
+public interface DefaultDatasafeServices {
 
     PrivateSpaceServiceImpl privateService();
     InboxServiceImpl inboxService();
@@ -59,6 +59,6 @@ public interface DefaultDocusafeServices {
         @BindsInstance
         Builder storageRemove(StorageRemoveService removeService);
 
-        DefaultDocusafeServices build();
+        DefaultDatasafeServices build();
     }
 }
