@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 public class Log {
-    private static String secureLogs = System.getProperty("SECURE_LOGS");
+    static String secureLogs = System.getProperty("SECURE_LOGS");
     private static MessageDigest digest = getDigest();
     private static Base64.Encoder encoder = Base64.getEncoder();
 
@@ -31,12 +31,14 @@ public class Log {
 
     @SneakyThrows
     public static String secure(URI uri) {
-        return uri.getHost() + "/" + secure(uri.getPath().split("/"), "/");
+        String s = uri.getHost() + "/" + uri.getPath();
+        return secure(s.split("/"), "/");
     }
 
     @SneakyThrows
     public static <T extends ResourceLocation> String secure(T resource) {
-        return resource.location().getHost() + "/" + secure(resource.location().getPath().split("/"), "/");
+        String s = resource.location().getHost() + "/" + resource.location().getPath();
+        return secure(s.split("/"), "/");
     }
 
     @SneakyThrows
