@@ -10,7 +10,7 @@ import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
-import de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -31,21 +31,21 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
 
-    protected DefaultDocusafeServices services;
+    protected DefaultDatasafeServices services;
 
     protected UserIDAuth john;
     protected UserIDAuth jane;
 
     @SneakyThrows
     protected void writeDataToPrivate(UserIDAuth auth, String path, String data) {
-        OutputStream stream = services.privateService().write(WriteRequest.forPrivate(auth, path));
+        OutputStream stream = services.privateService().write(WriteRequest.forDefaultPrivate(auth, path));
         stream.write(data.getBytes());
         stream.close();
     }
 
     protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.privateService().list(
-                ListRequest.forPrivate(inboxOwner, "./")
+                ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
         log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);
@@ -78,7 +78,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
     protected AbsoluteResourceLocation<PrivateResource>  getFirstFileInInbox(UserIDAuth inboxOwner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.inboxService().list(
-               ListRequest.forPrivate(inboxOwner, "./")
+               ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
         log.info("{} has {} in INBOX", inboxOwner.getUserID().getValue(), files);
@@ -92,15 +92,13 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
     @SneakyThrows
     protected void sendToInbox(UserID from, UserID to, String filename, String data) {
-        OutputStream stream = services.inboxService().write(WriteRequest.forPublic(to, "./" + filename));
+        OutputStream stream = services.inboxService().write(WriteRequest.forDefaultPublic(to, "./" + filename));
         stream.write(data.getBytes());
         stream.close();
     }
 
     protected UserIDAuth registerUser(String userName, URI rootLocation) {
-        UserIDAuth auth = new UserIDAuth();
-        auth.setUserID(new UserID(userName));
-        auth.setReadKeyPassword(new ReadKeyPassword("secure-password " + userName));
+        UserIDAuth auth = new UserIDAuth(new UserID(userName), new ReadKeyPassword("secure-password " + userName));
 
         rootLocation = rootLocation.resolve(userName + "/");
 

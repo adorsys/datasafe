@@ -21,7 +21,6 @@ public class EncryptedResourceResolver {
     }
 
     public AbsoluteResourceLocation<PrivateResource> encryptAndResolvePath(UserIDAuth auth, PrivateResource resource) {
-        // TODO: multi-DFS check
         if (resolver.isAbsolute(resource)) {
             return new AbsoluteResourceLocation<>(resource);
         }
@@ -34,7 +33,6 @@ public class EncryptedResourceResolver {
 
     public AbsoluteResourceLocation<PrivateResource> decryptAndResolvePath(
             UserIDAuth auth, PrivateResource resource, PrivateResource root) {
-        // TODO: multi-DFS check
         if (!resolver.isAbsolute(resource)) {
             URI encryptedPath = resource.location();
             URI decryptedPath = pathEncryption.decrypt(auth, encryptedPath);
@@ -65,5 +63,4 @@ public class EncryptedResourceResolver {
 
         return URI.create(resourceString.substring(resourceString.indexOf(rootString) + rootString.length()));
     }
-
 }

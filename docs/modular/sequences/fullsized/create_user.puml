@@ -11,7 +11,7 @@ activate DocusafeServiceAdapterImpl
 DocusafeServiceAdapterImpl -> DefaultDocusafeServices : userProfile
 
 activate DefaultDocusafeServices
-' de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices
+' de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices
 DefaultDocusafeServices -> DaggerDefaultDocusafeServices : userProfile
 
 activate DaggerDefaultDocusafeServices
@@ -19,7 +19,7 @@ activate DaggerDefaultDocusafeServices
 DefaultDocusafeServices <-- DaggerDefaultDocusafeServices : DFSBasedProfileStorageImpl
 deactivate DaggerDefaultDocusafeServices
 
-' de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices
+' de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices
 DocusafeServiceAdapterImpl <-- DefaultDocusafeServices : DFSBasedProfileStorageImpl
 deactivate DefaultDocusafeServices
 
@@ -91,7 +91,7 @@ deactivate DFSBasedProfileStorageImpl
 DocusafeServiceAdapterImpl -> DefaultDocusafeServices : userProfile
 
 activate DefaultDocusafeServices
-' de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices
+' de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices
 DefaultDocusafeServices -> DaggerDefaultDocusafeServices : userProfile
 
 activate DaggerDefaultDocusafeServices
@@ -99,7 +99,7 @@ activate DaggerDefaultDocusafeServices
 DefaultDocusafeServices <-- DaggerDefaultDocusafeServices : DFSBasedProfileStorageImpl
 deactivate DaggerDefaultDocusafeServices
 
-' de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices
+' de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices
 DocusafeServiceAdapterImpl <-- DefaultDocusafeServices : DFSBasedProfileStorageImpl
 deactivate DefaultDocusafeServices
 
