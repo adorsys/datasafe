@@ -46,6 +46,8 @@ public class MinioTest extends BaseStorageTest {
                 .build();
 
         s3.createBucket(bucketName);
+
+        loadReport.add("Test with Minio");
     }
 
     @BeforeEach

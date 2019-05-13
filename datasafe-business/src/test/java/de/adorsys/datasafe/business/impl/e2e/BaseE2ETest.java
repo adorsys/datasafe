@@ -15,12 +15,11 @@ import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 
 import java.io.*;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
-    protected static final Map<String, Long> loadReport = new ConcurrentHashMap<>();
+    protected static final List<String> loadReport = Lists.newArrayList();
 
     protected DefaultDocusafeServices services;
 
@@ -82,11 +81,11 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return data;
     }
 
-    protected AbsoluteResourceLocation<PrivateResource>  getFirstFileInInbox(UserIDAuth inboxOwner) {
+    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInInbox(UserIDAuth inboxOwner) {
         return getAllFilesInInbox(inboxOwner).get(0);
     }
 
-    protected List<AbsoluteResourceLocation<PrivateResource>>  getAllFilesInInbox(UserIDAuth inboxOwner) {
+    protected List<AbsoluteResourceLocation<PrivateResource>> getAllFilesInInbox(UserIDAuth inboxOwner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.inboxService().list(
                 ListRequest.forPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
@@ -117,14 +116,14 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         services.userProfile().registerPublic(CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
                 .inbox(access(rootLocation.resolve("./" + INBOX_COMPONENT + "/")))
-                .publicKeys(access(rootLocation.resolve("./"+ PRIVATE_COMPONENT + "/keystore")))
+                .publicKeys(access(rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore")))
                 .build()
         );
 
         services.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
                 .id(auth)
                 .privateStorage(accessPrivate(rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/")))
-                .keystore(accessPrivate(rootLocation.resolve("./"+ PRIVATE_COMPONENT + "/keystore")))
+                .keystore(accessPrivate(rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore")))
                 .inboxWithWriteAccess(accessPrivate(rootLocation.resolve("./" + INBOX_COMPONENT + "/")))
                 .build()
         );
@@ -169,4 +168,5 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
         latch.countDown();
     }
+
 }

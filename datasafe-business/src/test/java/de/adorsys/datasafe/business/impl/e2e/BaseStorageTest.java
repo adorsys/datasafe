@@ -10,25 +10,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
-import org.checkerframework.checker.units.qual.A;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.platform.commons.util.StringUtils;
 
 import java.io.*;
 import java.net.URI;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -50,7 +44,6 @@ abstract class BaseStorageTest extends BaseE2ETest {
     private static final String FOLDER = "folder1";
     private static final String PRIVATE_FILE = "secret.txt";
     private static final String PRIVATE_FILE_PATH = FOLDER + "/" + PRIVATE_FILE;
-
     private static final String SHARED_FILE = "hello.txt";
     private static final String SHARED_FILE_PATH = SHARED_FILE;
 
@@ -121,15 +114,18 @@ abstract class BaseStorageTest extends BaseE2ETest {
                 .collect(Collectors.toList());
     }
 
+
     @Test
     @SneakyThrows
-    public void writeToPrivateListPrivateInDifferentThreads(@TempDir String testFilePath) {
-        generateTestFile(testFilePath, FILE_SIZE_IN_KB);
+    public void writeToPrivateListPrivateInDifferentThreads(@TempDir Path tempDirPath) {
+        String tempDir = tempDirPath.toString();
+        String testFile = tempDir + "/test.txt";
+        generateTestFile(testFile, FILE_SIZE_IN_KB);
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
         CountDownLatch holdingLatch = new CountDownLatch(1);
         CountDownLatch finishHoldingLatch = new CountDownLatch(NUMBER_OF_TEST_USERS * NUMBER_OF_TEST_FILES);
 
-        FileInputStream input = new FileInputStream(new File(testFilePath));
+        FileInputStream input = new FileInputStream(new File(testFile));
         String checksumOfOriginTestFile = checksum(input);
         input.close();
 
@@ -137,11 +133,12 @@ abstract class BaseStorageTest extends BaseE2ETest {
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             long userRegisterTime = System.currentTimeMillis();
             UserIDAuth user = registerUser("john_" + i, location);
-            loadReport.put("Register user " + user.getUserID().getValue(), System.currentTimeMillis() - userRegisterTime);
+            loadReport.add("Register user " + user.getUserID().getValue() + ": " +
+                    (System.currentTimeMillis() - userRegisterTime) + "ms");
             log.debug("Registered user: {}", user.getUserID().getValue());
 
             createFileForUserParallelly(executor, holdingLatch, finishHoldingLatch,
-                    testFilePath, user);
+                    testFile, user);
 
             // open latch and start all threads
             holdingLatch.countDown();
@@ -173,7 +170,7 @@ abstract class BaseStorageTest extends BaseE2ETest {
         AtomicInteger counter = new AtomicInteger();
         String remotePath = "folder2";
 
-        for (int  j = 0; j < NUMBER_OF_TEST_FILES; j++) {
+        for (int j = 0; j < NUMBER_OF_TEST_FILES; j++) {
             executor.execute(() -> {
                 try {
                     holdingLatch.await();
@@ -186,7 +183,8 @@ abstract class BaseStorageTest extends BaseE2ETest {
                     log.debug("Saving file: {}", filePath);
                     writeDataToFileForUser(john, filePath, testFilePath, finishHoldingLatch);
 
-                    loadReport.put(Thread.currentThread().getName() + " write data to user " + john.getUserID().getValue(), System.currentTimeMillis() - measurementOfWritingTextToFile);
+                    loadReport.add(Thread.currentThread().getName() + " write data to user " + john.getUserID().getValue() + ": " +
+                            (System.currentTimeMillis() - measurementOfWritingTextToFile) + "ms");
                 } catch (IOException | InterruptedException e) {
                     fail(e);
                 }
@@ -285,8 +283,8 @@ abstract class BaseStorageTest extends BaseE2ETest {
     @SneakyThrows
     public static void exportReport() {
 
-        loadReport.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(reportRow -> {
-            System.out.println(reportRow.getKey() + " " + reportRow.getValue() + " millisec");
+        loadReport.stream().sorted().forEach(reportRow -> {
+            log.info(reportRow);
         });
     }
 
@@ -299,4 +297,5 @@ abstract class BaseStorageTest extends BaseE2ETest {
             out.put((byte) 'x');
         }
     }
+
 }

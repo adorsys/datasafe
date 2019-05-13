@@ -57,6 +57,8 @@ public class S3Test extends BaseStorageTest {
                 .storageWrite(new S3StorageService(s3, bucketName))
                 .storageRemove(new S3StorageService(s3, bucketName))
                 .build();
+
+        loadReport.add("Test with Amazon S3");
     }
 
     @AfterEach
