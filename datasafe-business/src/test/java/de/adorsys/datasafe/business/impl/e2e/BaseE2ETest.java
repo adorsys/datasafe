@@ -30,6 +30,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
+    protected static final String VERSION_COMPONENT = "versions";
 
     protected DefaultDocusafeServices services;
 
@@ -116,6 +117,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 .privateStorage(accessPrivate(rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/")))
                 .keystore(accessPrivate(rootLocation.resolve("./"+ PRIVATE_COMPONENT + "/keystore")))
                 .inboxWithWriteAccess(accessPrivate(rootLocation.resolve("./" + INBOX_COMPONENT + "/")))
+                .documentVersionStorage(accessPrivate(rootLocation.resolve("./" + VERSION_COMPONENT + "/")))
                 .build()
         );
 
