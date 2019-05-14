@@ -45,7 +45,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         stream.write(data.getBytes());
         stream.close();
         log.info("File {} of user {} saved to {}", Log.secure(data), Log.secure(auth),
-                Log.secure(path.split("/")));
+                Log.secure(path.split("/"), "/"));
     }
 
     protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
