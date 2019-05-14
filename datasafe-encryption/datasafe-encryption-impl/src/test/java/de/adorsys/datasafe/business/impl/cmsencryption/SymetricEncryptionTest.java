@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.impl.cmsencryption;
 
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.version.types.keystore.*;
+import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.DefaultCMSEncryptionConfig;
 import de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl;
@@ -20,8 +20,8 @@ import java.io.OutputStream;
 import java.security.Key;
 import java.security.KeyStore;
 
-import static de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
-import static de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
+import static de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
+import static de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j

@@ -4,9 +4,10 @@ import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
+import de.adorsys.datasafe.business.api.types.utils.Log;
 import de.adorsys.datasafe.business.api.version.VersionedPrivateSpaceService;
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.version.types.UserPrivateProfile;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
@@ -19,6 +20,7 @@ import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -93,7 +95,10 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
     public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
         UserPrivateProfile privateProfile = profiles.privateProfile(request.getOwner());
 
-        AbsoluteResourceLocation<PrivateResource> latestSnapshotLink = resolveEncryptedLinkLocation(request.getOwner(), request.getLocation(), privateProfile);
+        AbsoluteResourceLocation<PrivateResource> latestSnapshotLink = resolveEncryptedLinkLocation(
+                request.getOwner(),
+                request.getLocation(), privateProfile
+        );
 
         return privateSpace.read(request.toBuilder()
                 .location(readLinkAndTransform(request.getOwner(), latestSnapshotLink, privateProfile).getResource())
@@ -110,7 +115,11 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
 
         URI decryptedPath = URI.create(request.getLocation().location() + "-" + UUID.randomUUID().toString());
 
-        PrivateResource resourceRelativeToPrivate = encryptWuthUUID(request.getOwner(), decryptedPath, request.getLocation());
+        PrivateResource resourceRelativeToPrivate = encryptWithUUID(
+                request.getOwner(),
+                decryptedPath,
+                request.getLocation()
+        );
 
         return new VersionCommittingStream(
                 privateSpace.write(
@@ -126,7 +135,8 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
     public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
     }
 
-    private AbsoluteResourceLocation<PrivateResource> resolveEncryptedLinkLocation(UserIDAuth auth, PrivateResource resource, UserPrivateProfile privateProfile) {
+    private AbsoluteResourceLocation<PrivateResource> resolveEncryptedLinkLocation(
+            UserIDAuth auth, PrivateResource resource, UserPrivateProfile privateProfile) {
         AbsoluteResourceLocation<PrivateResource> encryptedPath = encryptedResourceResolver.encryptAndResolvePath(
                 auth,
                 resource
@@ -137,7 +147,7 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
         );
     }
 
-    private PrivateResource encryptWuthUUID(UserIDAuth auth, URI uri, PrivateResource base) {
+    private PrivateResource encryptWithUUID(UserIDAuth auth, URI uri, PrivateResource base) {
         AbsoluteResourceLocation<PrivateResource> resource = encryptedResourceResolver.encryptAndResolvePath(
                 auth,
                 base.resolve(uri, URI.create(""))
@@ -146,6 +156,7 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
         return DefaultPrivateResource.forPrivate(resource.getResource().encryptedPath());
     }
 
+    @Slf4j
     @RequiredArgsConstructor
     private static final class VersionCommittingStream extends OutputStream {
 
@@ -170,6 +181,7 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
             super.close();
             streamToWrite.close();
 
+            log.debug("Commiting file {} with blob {}", Log.secure(request.getLocation()), Log.secure(writtenResource));
             try (OutputStream os = privateSpaceService.write(request)) {
                 os.write(writtenResource.location().toASCIIString().getBytes());
             }

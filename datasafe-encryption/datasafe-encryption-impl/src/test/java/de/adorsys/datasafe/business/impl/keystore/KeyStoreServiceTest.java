@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.impl.keystore;
 
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.version.types.keystore.*;
-import de.adorsys.datasafe.business.api.version.types.keystore.exceptions.KeyStoreConfigException;
+import de.adorsys.datasafe.business.api.types.keystore.*;
+import de.adorsys.datasafe.business.api.types.keystore.exceptions.KeyStoreConfigException;
 import de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreServiceImplBaseFunctions;

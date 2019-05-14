@@ -4,7 +4,7 @@ import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.impl.version.types.OlderThanLatestDFSVersion;
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;

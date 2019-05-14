@@ -3,8 +3,8 @@ package de.adorsys.datasafe.business.impl.encryption.pathencryption;
 import de.adorsys.datasafe.business.api.encryption.pathencryption.PathEncryption;
 import de.adorsys.datasafe.business.api.encryption.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.business.api.types.utils.Log;
 import lombok.extern.slf4j.Slf4j;
 

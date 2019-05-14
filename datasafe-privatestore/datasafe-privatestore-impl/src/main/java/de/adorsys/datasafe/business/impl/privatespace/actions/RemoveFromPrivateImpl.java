@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.impl.privatespace.actions;
 
 import de.adorsys.datasafe.business.api.storage.actions.StorageRemoveService;
 import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 
 import javax.inject.Inject;

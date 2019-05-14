@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
-import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyGenerator;
+import de.adorsys.datasafe.business.api.types.keystore.SecretKeyGenerator;
 
 import javax.crypto.SecretKey;
 import javax.security.auth.callback.CallbackHandler;

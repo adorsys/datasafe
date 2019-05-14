@@ -5,7 +5,7 @@ import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionSe
 import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
@@ -43,6 +43,7 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
                 dfsSource,
                 keyId -> privateKeyService.keyById(request.getOwner(), keyId)
         );
+
         return new CloseCoordinatingStream(encryptionSource, ImmutableList.of(encryptionSource, dfsSource));
     }
 

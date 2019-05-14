@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.encryption.cmsencryption;
 
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
-import de.adorsys.datasafe.business.api.version.types.keystore.KeyID;
+import de.adorsys.datasafe.business.api.types.keystore.KeyID;
 import de.adorsys.datasafe.business.api.types.utils.Log;
 import de.adorsys.datasafe.business.impl.encryption.cmsencryption.exceptions.DecryptionException;
 import lombok.SneakyThrows;

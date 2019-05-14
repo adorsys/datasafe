@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.impl.profile.dfs;
 
-import de.adorsys.datasafe.business.api.version.types.UserID;
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.version.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;

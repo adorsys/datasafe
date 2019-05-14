@@ -2,10 +2,10 @@ package de.adorsys.datasafe.business.api.inbox.actions;
 
 import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
-import de.adorsys.datasafe.business.api.version.types.UserID;
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.version.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;

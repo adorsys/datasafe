@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.encryption.document;
 
-import de.adorsys.datasafe.business.api.version.types.keystore.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;

@@ -15,6 +15,7 @@ import java.net.URI;
 @Builder(toBuilder = true)
 public class ListRequest<T, L extends ResourceLocation> {
 
+    //TODO: Add ROOT bucket path constant
     @NonNull
     private final T owner;
 

@@ -6,11 +6,11 @@ import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationSe
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.storage.actions.*;
-import de.adorsys.datasafe.business.api.version.types.*;
+import de.adorsys.datasafe.business.api.types.*;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;

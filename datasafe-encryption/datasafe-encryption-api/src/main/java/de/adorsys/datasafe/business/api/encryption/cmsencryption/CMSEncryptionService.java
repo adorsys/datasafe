@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.encryption.cmsencryption;
 
-import de.adorsys.datasafe.business.api.version.types.keystore.KeyID;
+import de.adorsys.datasafe.business.api.types.keystore.KeyID;
 
 import javax.crypto.SecretKey;
 import java.io.InputStream;

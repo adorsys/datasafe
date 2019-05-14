@@ -8,7 +8,7 @@ import dagger.Provides;
 import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
-import de.adorsys.datasafe.business.api.version.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.business.impl.profile.keys.DFSPrivateKeyServiceImpl;
 import de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl;

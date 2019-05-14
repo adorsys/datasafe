@@ -31,6 +31,10 @@ public final class DefaultPrivateResource implements PrivateResource {
         this.encryptedPath = EMPTY_URI;
     }
 
+    public static PrivateResource forPrivate(String path) {
+        return forPrivate(URI.create(path));
+    }
+
     public static PrivateResource forPrivate(URI path) {
         if (path.isAbsolute()) {
             return new DefaultPrivateResource(path).resolve(EMPTY_URI, EMPTY_URI);

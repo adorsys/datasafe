@@ -2,12 +2,12 @@ package de.adorsys.datasafe.business.impl.privatespace.actions;
 
 import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
-import de.adorsys.datasafe.business.api.version.types.UserID;
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.version.types.keystore.KeyID;
-import de.adorsys.datasafe.business.api.version.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.business.api.types.keystore.KeyID;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;

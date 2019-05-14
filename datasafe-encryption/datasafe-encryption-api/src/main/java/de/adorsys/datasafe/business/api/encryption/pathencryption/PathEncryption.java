@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.encryption.pathencryption;
 
-import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 
 import java.net.URI;
 

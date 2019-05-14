@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.profile.operations;
 
-import de.adorsys.datasafe.business.api.version.types.CreateUserPrivateProfile;
-import de.adorsys.datasafe.business.api.version.types.CreateUserPublicProfile;
+import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
+import de.adorsys.datasafe.business.api.types.CreateUserPublicProfile;
 
 /**
  * This is a WIP part.
