@@ -11,7 +11,7 @@ public interface PrivateResource extends ResourceLocation<PrivateResource> {
     URI encryptedPath();
 
     /**
-     * Logical path for path-encrypted document
+     * Logical path for path-decrypted document
      * @return decrypted relative URI
      */
     URI decryptedPath();

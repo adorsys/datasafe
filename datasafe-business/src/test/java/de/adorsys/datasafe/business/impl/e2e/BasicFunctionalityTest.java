@@ -4,37 +4,46 @@ import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Slf4j
-@RequiredArgsConstructor
-abstract class BaseStorageTest extends BaseE2ETest {
+class BasicFunctionalityTest extends WithStorageProvider {
 
-    private static final String MESSAGE_ONE = "Hello here";
+    private static final String MESSAGE_ONE = "Hello here 1";
     private static final String FOLDER = "folder1";
     private static final String PRIVATE_FILE = "secret.txt";
     private static final String PRIVATE_FILE_PATH = FOLDER + "/" + PRIVATE_FILE;
-
     private static final String SHARED_FILE = "hello.txt";
     private static final String SHARED_FILE_PATH = SHARED_FILE;
 
-    protected StorageService storage;
-    protected URI location;
+    private StorageService storage;
+    private URI location;
 
-    @Test
-    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox() {
+    @ParameterizedTest
+    @MethodSource("storages")
+    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
+            WithStorageProvider.StorageDescriptor descriptor) {
 
-        registerJohnAndJane(location);
+        this.location = descriptor.getLocation();
+        this.services = descriptor.getDocusafeServices();
+        this.storage = descriptor.getStorageService();
+
+        registerJohnAndJane(descriptor.getLocation());
 
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
 
@@ -66,7 +75,7 @@ abstract class BaseStorageTest extends BaseE2ETest {
         AbsoluteResourceLocation<PrivateResource> foundResource = inbox.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedInboxResource.location());
         // no path encryption for inbox:
-        assertThat(foundResource.location().getPath().contains(SHARED_FILE));
+        assertThat(foundResource.location().getPath()).asString().contains(SHARED_FILE);
         // validate encryption on high-level:
         assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
     }
@@ -79,6 +88,7 @@ abstract class BaseStorageTest extends BaseE2ETest {
         assertThat(privateFiles).hasSize(1);
         AbsoluteResourceLocation<PrivateResource> foundResource = privateFiles.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedPrivateResource.location());
+
         // validate encryption on high-level:
         assertThat(foundResource.toString()).doesNotContain(PRIVATE_FILE);
         assertThat(foundResource.toString()).doesNotContain(FOLDER);

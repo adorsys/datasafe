@@ -43,6 +43,7 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
                 dfsSource,
                 keyId -> privateKeyService.keyById(request.getOwner(), keyId)
         );
+
         return new CloseCoordinatingStream(encryptionSource, ImmutableList.of(encryptionSource, dfsSource));
     }
 

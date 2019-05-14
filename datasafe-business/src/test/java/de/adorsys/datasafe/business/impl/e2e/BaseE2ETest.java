@@ -17,12 +17,12 @@ import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,6 +32,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
+    protected static final List<String> loadReport = Lists.newArrayList();
 
     protected DefaultDatasafeServices services;
 
@@ -44,16 +45,20 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         stream.write(data.getBytes());
         stream.close();
         log.info("File {} of user {} saved to {}", Log.secure(data), Log.secure(auth),
-                Log.secure(path.split("/")));
+                Log.secure(path.split("/"), "/"));
     }
 
-    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
+    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
+        return getAllFilesInPrivate(owner).get(0);
+    }
+
+    protected List<AbsoluteResourceLocation<PrivateResource>> getAllFilesInPrivate(UserIDAuth owner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.privateService().list(
-                ListRequest.forDefaultPrivate(inboxOwner, "./")
+                ListRequest.forDefaultPrivate(owner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in PRIVATE", inboxOwner, Log.secure(files));
-        return files.get(0);
+        log.info("{} has {} in PRIVATE", owner.getUserID(), Log.secure(files));
+        return files;
     }
 
     @SneakyThrows
@@ -84,13 +89,17 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return data;
     }
 
-    protected AbsoluteResourceLocation<PrivateResource>  getFirstFileInInbox(UserIDAuth inboxOwner) {
+    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInInbox(UserIDAuth inboxOwner) {
+        return getAllFilesInInbox(inboxOwner).get(0);
+    }
+
+    protected List<AbsoluteResourceLocation<PrivateResource>> getAllFilesInInbox(UserIDAuth inboxOwner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = services.inboxService().list(
-               ListRequest.forDefaultPrivate(inboxOwner, "./")
+                ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
         log.info("{} has {} in INBOX", inboxOwner, Log.secure(files));
-        return files.get(0);
+        return files;
     }
 
     protected void registerJohnAndJane(URI rootLocation) {
@@ -154,4 +163,28 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     private AbsoluteResourceLocation<PrivateResource> accessPrivate(URI path) {
         return new AbsoluteResourceLocation<>(new DefaultPrivateResource(path, URI.create(""), URI.create("")));
     }
+
+    protected UserIDAuth createJohnTestUser(int i) {
+        UserID userName = new UserID("john_" + i);
+
+        return new UserIDAuth(
+                userName,
+                new ReadKeyPassword("secure-password " + userName.getValue())
+        );
+    }
+
+    protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, byte[] bytes,
+                                          CountDownLatch latch) throws IOException {
+        WriteRequest<UserIDAuth, PrivateResource> writeRequest = WriteRequest.<UserIDAuth, PrivateResource>builder()
+                .owner(john)
+                .location(DefaultPrivateResource.forPrivate(URI.create(filePathForWriting)))
+                .build();
+
+        try (OutputStream os = services.privateService().write(writeRequest)) {
+            os.write(bytes);
+        }
+
+        latch.countDown();
+    }
+
 }

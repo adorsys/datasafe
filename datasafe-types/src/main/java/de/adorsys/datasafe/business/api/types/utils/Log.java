@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 public class Log {
+
     static String secureLogs = System.getProperty("SECURE_LOGS");
     private static MessageDigest digest = getDigest();
     private static Base64.Encoder encoder = Base64.getEncoder();
