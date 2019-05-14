@@ -2,6 +2,8 @@ package de.adorsys.datasafe.business.impl.privatestore.actions;
 
 import dagger.Binds;
 import dagger.Module;
+import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
+import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.privatespace.actions.*;
 
 /**
@@ -21,4 +23,7 @@ public abstract class DefaultPrivateActionsModule {
 
     @Binds
     abstract WriteToPrivate writeToPrivate(WriteToPrivateImpl impl);
+
+    @Binds
+    abstract PrivateSpaceService privateSpaceService(PrivateSpaceServiceImpl impl);
 }

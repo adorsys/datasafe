@@ -10,22 +10,27 @@ import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.version.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.version.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
 import de.adorsys.datasafe.business.impl.privatespace.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 /**
  * TODO: split down.
  * Each operation will be applied to latest file version.
+ *
  * @param <V>
  */
 public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements VersionedPrivateSpaceService<V> {
@@ -87,9 +92,7 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
     public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
         UserPrivateProfile privateProfile = profiles.privateProfile(request.getOwner());
 
-        AbsoluteResourceLocation<PrivateResource> latestSnapshotLink = new AbsoluteResourceLocation<>(
-                request.getLocation().resolve(privateProfile.getDocumentVersionStorage().getResource())
-        );
+        AbsoluteResourceLocation<PrivateResource> latestSnapshotLink = resolveEncryptedLinkLocation(request.getOwner(), request.getLocation(), privateProfile);
 
         return privateSpace.read(request.toBuilder()
                 .location(readLinkAndTransform(request.getOwner(), latestSnapshotLink, privateProfile).getResource())
@@ -101,13 +104,70 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
     public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
         UserPrivateProfile privateProfile = profiles.privateProfile(request.getOwner());
 
-        AbsoluteResourceLocation<PrivateResource> latestSnapshotLink = new AbsoluteResourceLocation<>(
-                request.getLocation().resolve(privateProfile.getDocumentVersionStorage().getResource())
+        AbsoluteResourceLocation<PrivateResource> latestSnapshotLink =
+                resolveEncryptedLinkLocation(request.getOwner(), request.getLocation(), privateProfile);
+
+        URI decryptedPath = URI.create(request.getLocation().location() + "-" + UUID.randomUUID().toString());
+
+        PrivateResource resourceRelativeToPrivate = encryptWuthUUID(request.getOwner(), decryptedPath, request.getLocation());
+
+        return new VersionCommittingStream(
+                privateSpace.write(
+                        request.toBuilder().location(DefaultPrivateResource.forPrivate(decryptedPath)).build()
+                ),
+                privateSpace,
+                request.toBuilder().location(latestSnapshotLink.getResource()).build(),
+                resourceRelativeToPrivate
+        );
+    }
+
+    private AbsoluteResourceLocation<PrivateResource> resolveEncryptedLinkLocation(UserIDAuth auth, PrivateResource resource, UserPrivateProfile privateProfile) {
+        AbsoluteResourceLocation<PrivateResource> encryptedPath = encryptedResourceResolver.encryptAndResolvePath(
+                auth,
+                resource
         );
 
-        return privateSpace.write(request.toBuilder()
-                .location(readLinkAndTransform(request.getOwner(), latestSnapshotLink, privateProfile).getResource())
-                .build()
+        return new AbsoluteResourceLocation<>(
+                encryptedPath.resolve(privateProfile.getDocumentVersionStorage().getResource())
         );
+    }
+
+    private PrivateResource encryptWuthUUID(UserIDAuth auth, URI uri, PrivateResource base) {
+        AbsoluteResourceLocation<PrivateResource> resource = encryptedResourceResolver.encryptAndResolvePath(
+                auth,
+                base.resolve(uri, URI.create(""))
+        );
+
+        return DefaultPrivateResource.forPrivate(resource.getResource().encryptedPath());
+    }
+
+    @RequiredArgsConstructor
+    private static final class VersionCommittingStream extends OutputStream {
+
+        private final OutputStream streamToWrite;
+        private final PrivateSpaceService privateSpaceService;
+        private final WriteRequest<UserIDAuth, PrivateResource> request;
+        private final PrivateResource writtenResource;
+
+        @Override
+        public void write(int b) throws IOException {
+            streamToWrite.write(b);
+        }
+
+        @Override
+        public void write(byte[] bytes, int off, int len) throws IOException {
+            streamToWrite.write(bytes, off, len);
+        }
+
+        @Override
+        @SneakyThrows
+        public void close() {
+            super.close();
+            streamToWrite.close();
+
+            try (OutputStream os = privateSpaceService.write(request)) {
+                os.write(writtenResource.location().toASCIIString().getBytes());
+            }
+        }
     }
 }
