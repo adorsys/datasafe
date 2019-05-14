@@ -27,7 +27,7 @@ public class CreateUserPrivateProfile {
             // FIXME - remove access ?
             .keystore(keystore)
             .privateStorage(privateStorage)
-            .inboxWithWriteAccess(inboxWithWriteAccess)
+            .inboxWithFullAccess(inboxWithWriteAccess)
             .build();
     }
 }

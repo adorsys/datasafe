@@ -51,7 +51,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
         String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource());
 
-        writeDataToInbox(john.getUserID(), SHARED_FILE_PATH, privateContentJane);
+        sendToInbox(john.getUserID(), SHARED_FILE_PATH, privateContentJane);
 
         AbsoluteResourceLocation<PrivateResource> inboxJohn = getFirstFileInInbox(john);
 
@@ -62,6 +62,9 @@ class BasicFunctionalityTest extends WithStorageProvider {
         assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
         validateInboxStructAndEncryption(inboxJohn);
         validatePrivateStructAndEncryption(privateJane);
+
+        removeFromPrivate(jane, privateJane.getResource());
+        removeFromInbox(john, inboxJohn.getResource());
     }
 
     @SneakyThrows
@@ -72,7 +75,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
         AbsoluteResourceLocation<PrivateResource> foundResource = inbox.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedInboxResource.location());
         // no path encryption for inbox:
-        assertThat(foundResource.toString()).contains(SHARED_FILE);
+        assertThat(foundResource.location().getPath()).asString().contains(SHARED_FILE);
         // validate encryption on high-level:
         assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
     }

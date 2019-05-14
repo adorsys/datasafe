@@ -12,6 +12,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -76,10 +77,8 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     @ValueSource
     protected static Stream<WithStorageProvider.StorageDescriptor> storages() {
         return Stream.of(
-                new StorageDescriptor(new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()),
-                new StorageDescriptor(
-                        new S3StorageService(minio, minioBucketName), URI.create("s3://" +  minioBucketName + "/")
-                ),
+                new StorageDescriptor("FILESYSTEM", new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()),
+                minio(),
                 s3()
         ).filter(Objects::nonNull);
     }
@@ -94,8 +93,18 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                         new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
                 )
                 .withRegion(amazonRegion)
-                .enablePathStyleAccess()
                 .build();
+    }
+
+    private static StorageDescriptor minio() {
+        if (null == minio) {
+            return null;
+        }
+
+        return new StorageDescriptor(
+                "MINIO S3",
+                new S3StorageService(minio, minioBucketName), URI.create("s3://" +  minioBucketName + "/")
+        );
     }
 
     private static StorageDescriptor s3() {
@@ -104,18 +113,22 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         }
 
         return new StorageDescriptor(
+                "AMAZON S3",
                 new S3StorageService(amazonS3, amazonBucket), URI.create("s3://" +  amazonBucket + "/")
         );
     }
 
     @Getter
+    @ToString(of = "name")
     static class StorageDescriptor {
 
+        private final String name;
         private final StorageService storageService;
         private final URI location;
         private final DefaultDatasafeServices docusafeServices;
 
-        StorageDescriptor(StorageService storageService, URI location) {
+        StorageDescriptor(String name, StorageService storageService, URI location) {
+            this.name = name;
             this.storageService = storageService;
             this.location = location;
             this.docusafeServices = DaggerDefaultDatasafeServices
@@ -135,6 +148,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                     .storageRead(storageService)
                     .storageWrite(storageService)
                     .storageRemove(storageService)
+                    .storageCheck(storageService)
                     .build();
         }
     }

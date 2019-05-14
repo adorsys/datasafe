@@ -35,7 +35,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         }
         // TODO, hier also statt der StoreID nun das
         String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
-        log.debug("keystoreid = " + serverKeyPairAliasPrefix);
+        log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
         KeyStoreGenerator keyStoreGenerator = new KeyStoreGenerator(
                 config,
                 keyStoreType,
