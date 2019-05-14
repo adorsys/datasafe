@@ -3,14 +3,17 @@ package de.adorsys.datasafe.business.impl.e2e;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.version.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.version.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DaggerVersionedDocusafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDocusafeServices;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,9 +23,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 public class VersionedFsTest extends BaseStorageTest {
 
     private static final String MESSAGE_ONE = "Hello here 1";
@@ -77,6 +83,8 @@ public class VersionedFsTest extends BaseStorageTest {
                 DefaultPrivateResource.forPrivate(URI.create(PRIVATE_FILE_PATH)));
 
         assertThat(result).isEqualTo(MESSAGE_THREE);
+
+        assertThat(getFirstFileInPrivate(jane).getResource().decryptedPath()).asString().contains(PRIVATE_FILE_PATH);
     }
 
     @Override
@@ -96,5 +104,15 @@ public class VersionedFsTest extends BaseStorageTest {
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
         return data;
+    }
+
+    @Override
+    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
+        List<AbsoluteResourceLocation<PrivateResource>> files = versionedDocusafeServices.versionedPrivate().list(
+                ListRequest.forPrivate(inboxOwner, "./")
+        ).collect(Collectors.toList());
+
+        log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);
+        return files.get(0);
     }
 }
