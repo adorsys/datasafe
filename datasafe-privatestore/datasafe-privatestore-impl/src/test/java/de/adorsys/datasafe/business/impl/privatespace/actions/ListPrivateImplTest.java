@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.impl.privatespace.actions;
 
-import de.adorsys.datasafe.business.api.storage.StorageListService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;

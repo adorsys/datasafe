@@ -33,6 +33,7 @@ public class FsTest extends BaseStorageTest {
                 .storageRead(storage)
                 .storageWrite(storage)
                 .storageRemove(storage)
+                .storageCheck(storage)
                 .build();
     }
 }

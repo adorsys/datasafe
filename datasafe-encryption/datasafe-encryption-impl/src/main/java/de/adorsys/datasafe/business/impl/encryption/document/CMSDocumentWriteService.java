@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.encryption.document;
 import com.google.common.collect.ImmutableList;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
-import de.adorsys.datasafe.business.api.storage.StorageWriteService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageWriteService;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
