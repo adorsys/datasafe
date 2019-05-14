@@ -12,7 +12,7 @@ import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
 import de.adorsys.datasafe.business.api.types.resource.*;
-import de.adorsys.datasafe.business.api.types.utils.Log;
+import de.adorsys.datasafe.business.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -91,7 +91,7 @@ public class DFSBasedProfileStorageImpl implements
     public void deregister(UserIDAuth userID) {
         if (!userExists(userID.getUserID())) {
             log.debug("User deregistation failed. User '{}' does not exist", userID);
-            return;
+            throw new UserNotFoundException("User not found: " + userID);
         }
 
         AbsoluteResourceLocation<PrivateResource> privateStorage = privateProfile(userID).getPrivateStorage();
