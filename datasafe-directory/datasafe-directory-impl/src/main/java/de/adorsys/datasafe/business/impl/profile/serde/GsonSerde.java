@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.impl.profile.serde;
 
 import com.google.gson.*;
-import de.adorsys.datasafe.business.api.version.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.version.types.resource.DefaultPublicResource;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.version.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.experimental.Delegate;
 
 import javax.inject.Inject;

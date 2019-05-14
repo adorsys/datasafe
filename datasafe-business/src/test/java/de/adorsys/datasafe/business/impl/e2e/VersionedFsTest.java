@@ -3,12 +3,12 @@ package de.adorsys.datasafe.business.impl.e2e;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.version.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DaggerVersionedDocusafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDocusafeServices;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
@@ -90,7 +90,7 @@ public class VersionedFsTest extends BaseStorageTest {
     @Override
     @SneakyThrows
     protected void writeDataToPrivate(UserIDAuth auth, String path, String data) {
-        OutputStream stream = versionedDocusafeServices.versionedPrivate().write(WriteRequest.forPrivate(auth, path));
+        OutputStream stream = versionedDocusafeServices.versionedPrivate().write(WriteRequest.forDefaultPrivate(auth, path));
         stream.write(data.getBytes());
         stream.close();
     }
@@ -109,7 +109,7 @@ public class VersionedFsTest extends BaseStorageTest {
     @Override
     protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth inboxOwner) {
         List<AbsoluteResourceLocation<PrivateResource>> files = versionedDocusafeServices.versionedPrivate().list(
-                ListRequest.forPrivate(inboxOwner, "./")
+                ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
         log.info("{} has {} in PRIVATE", inboxOwner.getUserID().getValue(), files);

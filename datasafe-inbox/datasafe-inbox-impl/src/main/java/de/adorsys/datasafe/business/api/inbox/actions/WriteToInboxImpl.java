@@ -4,9 +4,9 @@ import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWri
 import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.version.types.UserID;
-import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.version.types.keystore.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.version.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 
 import javax.inject.Inject;
 import java.io.OutputStream;

@@ -4,11 +4,11 @@ import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
 import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyIDWithKey;
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;
 import lombok.SneakyThrows;
 

@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.config.DFSConfig;
-import de.adorsys.datasafe.business.impl.service.DaggerDefaultDocusafeServices;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -16,7 +16,7 @@ public class FsTest extends BaseStorageTest {
         this.location = location.toUri();
         this.storage = new FileSystemStorageService(this.location);
 
-        this.services = DaggerDefaultDocusafeServices
+        this.services = DaggerDefaultDatasafeServices
                 .builder()
                 .config(new DFSConfig() {
                     @Override
@@ -33,6 +33,7 @@ public class FsTest extends BaseStorageTest {
                 .storageRead(storage)
                 .storageWrite(storage)
                 .storageRemove(storage)
+                .storageCheck(storage)
                 .build();
     }
 }

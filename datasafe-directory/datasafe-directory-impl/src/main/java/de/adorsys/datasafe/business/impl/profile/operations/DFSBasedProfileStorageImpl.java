@@ -5,30 +5,29 @@ import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.StorageListService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
-import de.adorsys.datasafe.business.api.storage.StorageRemoveService;
-import de.adorsys.datasafe.business.api.storage.StorageWriteService;
+import de.adorsys.datasafe.business.api.storage.actions.*;
 import de.adorsys.datasafe.business.api.version.types.*;
-import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreType;
-import de.adorsys.datasafe.business.api.version.types.resource.*;
+import de.adorsys.datasafe.business.api.types.resource.*;
+import de.adorsys.datasafe.business.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.security.KeyStore;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * FIXME: it should be broken down.
  */
+
+@Slf4j
 public class DFSBasedProfileStorageImpl implements
         ProfileRegistrationService,
         ProfileRetrievalService,
@@ -41,6 +40,8 @@ public class DFSBasedProfileStorageImpl implements
     private final StorageWriteService writeService;
     private final StorageRemoveService removeService;
     private final StorageListService listService;
+    private final StorageCheckService checkService;
+
     private final KeyStoreService keyStoreService;
     private final DFSSystem dfsSystem;
     private final GsonSerde serde;
@@ -49,12 +50,13 @@ public class DFSBasedProfileStorageImpl implements
     @Inject
     public DFSBasedProfileStorageImpl(StorageReadService readService, StorageWriteService writeService,
                                       StorageRemoveService removeService, StorageListService listService,
-                                      KeyStoreService keyStoreService, DFSSystem dfsSystem, GsonSerde serde,
-                                      UserProfileCache userProfileCache) {
+                                      StorageCheckService checkService, KeyStoreService keyStoreService,
+                                      DFSSystem dfsSystem, GsonSerde serde, UserProfileCache userProfileCache) {
         this.readService = readService;
         this.writeService = writeService;
         this.removeService = removeService;
         this.listService = listService;
+        this.checkService = checkService;
         this.keyStoreService = keyStoreService;
         this.dfsSystem = dfsSystem;
         this.serde = serde;
@@ -67,6 +69,7 @@ public class DFSBasedProfileStorageImpl implements
         try (OutputStream os = writeService.write(locatePublicProfile(profile.getId()))) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
+        log.debug("Register public {}", profile.getId());
     }
 
     @Override
@@ -75,6 +78,7 @@ public class DFSBasedProfileStorageImpl implements
         try (OutputStream os = writeService.write(locatePrivateProfile(profile.getId().getUserID()))) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
+        log.debug("Register private {}", profile.getId());
 
         // TODO: check if we need to create it
         createKeyStore(
@@ -85,44 +89,56 @@ public class DFSBasedProfileStorageImpl implements
 
     @Override
     public void deregister(UserIDAuth userID) {
-        ListRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> privateRequest =
-                new ListRequest<>(userID, privateProfile(userID).getPrivateStorage());
-
-        List<AbsoluteResourceLocation<PrivateResource>> privateFiles =
-                listService.list(privateRequest.getLocation()).collect(Collectors.toList());
-
-        for (AbsoluteResourceLocation<PrivateResource> file : privateFiles) {
-            removeService.remove(file);
+        if (!userExists(userID.getUserID())) {
+            log.debug("User deregistation failed. User '{}' does not exist", userID);
+            throw new UserNotFoundException("User not found: " + userID);
         }
 
+        AbsoluteResourceLocation<PrivateResource> privateStorage = privateProfile(userID).getPrivateStorage();
+        removeStorageByLocation(userID, privateStorage);
+
+        AbsoluteResourceLocation<PrivateResource> inbox = privateProfile(userID).getInboxWithFullAccess();
+        removeStorageByLocation(userID, inbox);
+
         removeService.remove(privateProfile(userID).getKeystore());
-        removeService.remove(privateProfile(userID).getPrivateStorage());
-        removeService.remove(privateProfile(userID).getInboxWithWriteAccess());
+        removeService.remove(privateStorage);
+        removeService.remove(inbox);
         removeService.remove(locatePrivateProfile(userID.getUserID()));
         removeService.remove(locatePublicProfile(userID.getUserID()));
+        log.debug("Deregistered user {}", userID);
+    }
+
+    private void removeStorageByLocation(UserIDAuth userID, AbsoluteResourceLocation<PrivateResource> privateStorage) {
+        listService.list(new ListRequest<>(userID, privateStorage).getLocation())
+                .forEach(removeService::remove);
     }
 
     @Override
     @SneakyThrows
     public UserPublicProfile publicProfile(UserID ofUser) {
-        return userProfileCache.getPublicProfile().computeIfAbsent(
+        UserPublicProfile userPublicProfile = userProfileCache.getPublicProfile().computeIfAbsent(
                 ofUser,
                 id -> readProfile(locatePublicProfile(ofUser), UserPublicProfile.class)
         );
+        log.debug("get public profile {} for user {}", userPublicProfile, ofUser);
+        return userPublicProfile;
     }
 
     @Override
     @SneakyThrows
     public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
-        return userProfileCache.getPrivateProfile().computeIfAbsent(
+        UserPrivateProfile userPrivateProfile = userProfileCache.getPrivateProfile().computeIfAbsent(
                 ofUser.getUserID(),
                 id -> readProfile(locatePrivateProfile(ofUser.getUserID()), UserPrivateProfile.class)
         );
+        log.debug("get private profile {} for user {}", userPrivateProfile, ofUser);
+        return userPrivateProfile;
     }
 
     @Override
     public boolean userExists(UserID ofUser) {
-        throw new UnsupportedOperationException("Not implemented");
+        return checkService.objectExists(locatePrivateProfile(ofUser)) &&
+                checkService.objectExists(locatePublicProfile(ofUser));
     }
 
     @SneakyThrows
@@ -138,11 +154,13 @@ public class DFSBasedProfileStorageImpl implements
         try (OutputStream os = writeService.write(new AbsoluteResourceLocation<>(keystore))) {
             os.write(keyStoreService.serialize(store, forUser.getUserID().getValue(), auth.getReadStorePassword()));
         }
+        log.debug("Keystore created for user {} in path {}", forUser, keystore);
     }
 
     @SneakyThrows
     private <T> T readProfile(AbsoluteResourceLocation resource, Class<T> clazz) {
         try (InputStream is = readService.read(resource)) {
+            log.debug("read profile {}", resource.location().getPath());
             return serde.fromJson(new String(ByteStreams.toByteArray(is)), clazz);
         }
     }

@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.api.version.types.keystore;
 
 import de.adorsys.datasafe.business.api.version.types.keystore.exceptions.KeyStoreAuthException;
+import de.adorsys.datasafe.business.api.types.utils.Log;
 
 /**
  * Created by peter on 05.01.18.
@@ -34,8 +35,8 @@ public class KeyStoreAuth {
     @Override
     public String toString() {
         return "KeyStoreAuth{" +
-                readStorePassword +
-                ", " + readKeyPassword +
+                Log.secure(readStorePassword) +
+                ", " + Log.secure(readKeyPassword) +
                 '}';
     }
 }

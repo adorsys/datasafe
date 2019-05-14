@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.impl.privatespace.actions;
 
-import de.adorsys.datasafe.business.api.storage.StorageListService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
 import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 
 import javax.inject.Inject;
 import java.util.stream.Stream;

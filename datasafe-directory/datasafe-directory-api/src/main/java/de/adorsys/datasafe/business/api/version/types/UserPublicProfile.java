@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.version.types;
 
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

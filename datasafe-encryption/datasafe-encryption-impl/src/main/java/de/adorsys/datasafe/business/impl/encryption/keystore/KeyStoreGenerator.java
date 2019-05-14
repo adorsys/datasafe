@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.encryption.keystore;
 
 import de.adorsys.datasafe.business.api.version.types.keystore.*;
 import de.adorsys.datasafe.business.api.version.types.keystore.exceptions.KeyStoreConfigException;
+import de.adorsys.datasafe.business.api.types.utils.Log;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeystoreBuilder;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
@@ -33,7 +34,7 @@ public class KeyStoreGenerator {
         this.keyStoreType = keyStoreType;
         this.serverKeyPairAliasPrefix = "KEYSTORE-ID-0";
         this.readKeyPassword = readKeyPassword;
-        log.debug("Keystore ID ignored " + serverKeyPairAliasPrefix);
+        log.debug("Keystore ID ignored {}", Log.secure(serverKeyPairAliasPrefix));
     }
     
     public KeyStore generate() {
@@ -105,7 +106,7 @@ public class KeyStoreGenerator {
         } finally {
             Date stopTime = new Date();
             long duration = stopTime.getTime() - startTime.getTime();
-            log.debug("KeyStoreGeneration (milliseconds) DURATION WAS " + duration);
+            log.debug("KeyStoreGeneration (milliseconds) DURATION WAS {}", duration);
         }
     }
 

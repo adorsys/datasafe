@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.version.types;
 
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -17,7 +17,7 @@ public class UserPrivateProfile {
     private final AbsoluteResourceLocation<PrivateResource> privateStorage;
 
     @NonNull
-    private final AbsoluteResourceLocation<PrivateResource> inboxWithWriteAccess;
+    private final AbsoluteResourceLocation<PrivateResource> inboxWithFullAccess;
 
     @NonNull
     private final AbsoluteResourceLocation<PrivateResource> documentVersionStorage;

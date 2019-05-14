@@ -1,14 +1,15 @@
 package de.adorsys.datasafe.business.impl.version.oldest;
 
+import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.impl.version.types.OlderThanLatestDFSVersion;
 import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.version.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,9 @@ public class OlderThanLatestPrivateSpaceImpl<V extends OlderThanLatestDFSVersion
     @Override
     public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
         return null;
+    }
+
+    @Override
+    public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
     }
 }

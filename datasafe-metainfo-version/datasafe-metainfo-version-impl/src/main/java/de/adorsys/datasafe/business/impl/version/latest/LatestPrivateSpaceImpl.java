@@ -3,15 +3,16 @@ package de.adorsys.datasafe.business.impl.version.latest;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.version.types.UserPrivateProfile;
-import de.adorsys.datasafe.business.api.version.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.version.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
 import de.adorsys.datasafe.business.impl.privatespace.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
@@ -119,6 +120,10 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
                 request.toBuilder().location(latestSnapshotLink.getResource()).build(),
                 resourceRelativeToPrivate
         );
+    }
+
+    @Override
+    public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
     }
 
     private AbsoluteResourceLocation<PrivateResource> resolveEncryptedLinkLocation(UserIDAuth auth, PrivateResource resource, UserPrivateProfile privateProfile) {

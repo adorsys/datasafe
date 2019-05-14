@@ -26,4 +26,7 @@ public abstract class DefaultPrivateActionsModule {
 
     @Binds
     abstract PrivateSpaceService privateSpaceService(PrivateSpaceServiceImpl impl);
+
+    @Binds
+    abstract RemoveFromPrivate removeFromPrivate(RemoveFromPrivateImpl impl);
 }

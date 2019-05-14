@@ -4,10 +4,7 @@ import dagger.BindsInstance;
 import dagger.Component;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.inbox.InboxServiceImpl;
-import de.adorsys.datasafe.business.api.storage.StorageListService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
-import de.adorsys.datasafe.business.api.storage.StorageRemoveService;
-import de.adorsys.datasafe.business.api.storage.StorageWriteService;
+import de.adorsys.datasafe.business.api.storage.actions.*;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultCredentialsModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultProfileModule;
@@ -39,7 +36,7 @@ import javax.inject.Singleton;
         DefaultVersionedPrivateActionsModule.class,
         DefaultProfileModule.class
 })
-public interface VersionedDocusafeServices extends DefaultDocusafeServices {
+public interface VersionedDocusafeServices extends DefaultDatasafeServices {
 
     PrivateSpaceServiceImpl privateService();
     LatestPrivateSpaceImpl<LatestDFSVersion> versionedPrivate();
@@ -63,6 +60,9 @@ public interface VersionedDocusafeServices extends DefaultDocusafeServices {
 
         @BindsInstance
         Builder storageRemove(StorageRemoveService removeService);
+
+        @BindsInstance
+        Builder storageCheck(StorageCheckService checkService);
 
         VersionedDocusafeServices build();
     }

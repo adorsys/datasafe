@@ -3,9 +3,9 @@ package de.adorsys.datasafe.business.impl.privatespace.actions;
 import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.version.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.version.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyIDWithKey;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 
 import javax.inject.Inject;
 import java.io.OutputStream;

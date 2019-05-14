@@ -3,12 +3,12 @@ package de.adorsys.datasafe.business.impl.encryption.document;
 import com.google.common.collect.ImmutableList;
 import de.adorsys.datasafe.business.api.encryption.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentWriteService;
-import de.adorsys.datasafe.business.api.storage.StorageWriteService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageWriteService;
 import de.adorsys.datasafe.business.api.version.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.business.api.version.types.keystore.SecretKeyIDWithKey;
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.version.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 

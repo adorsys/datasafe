@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.privatespace.actions;
 
 import dagger.internal.Factory;
-import de.adorsys.datasafe.business.api.storage.StorageListService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
 import javax.annotation.Generated;
 import javax.inject.Provider;
 

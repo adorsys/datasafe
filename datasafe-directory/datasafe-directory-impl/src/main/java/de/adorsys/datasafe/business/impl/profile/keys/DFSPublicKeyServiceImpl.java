@@ -4,13 +4,13 @@ import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
 import de.adorsys.datasafe.business.api.version.types.UserID;
 import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.business.api.version.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.business.api.version.types.keystore.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.version.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.version.types.resource.PublicResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;
 
 import javax.inject.Inject;

@@ -63,6 +63,16 @@
             <artifactId>datasafe-privatestore-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-metainfo-version-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-metainfo-version-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -118,18 +128,6 @@
             <artifactId>datasafe-test-shared</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-metainfo-version-impl</artifactId>
-            <version>0.0.6-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-metainfo-version-impl</artifactId>
-            <version>0.0.6-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
