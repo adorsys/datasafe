@@ -5,6 +5,7 @@ import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
@@ -50,7 +51,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     @ParameterizedTest
     @MethodSource("storages")
     void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor) {
-        applyDescriptor(descriptor);
+        init(descriptor);
 
         byte[] testData = generateTestData(FILE_SIZE_IN_KB);
 
@@ -83,7 +84,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             UserIDAuth user = createJohnTestUser(i);
 
-            List<AbsoluteResourceLocation<PrivateResource>> resourceList = services.privateService().list(
+            List<AbsoluteResourceLocation<PrivateResource>> resourceList = listPrivate.list(
                     forDefaultPrivate(user, "./")).collect(Collectors.toList());
             log.debug("Read files for user: " + user.getUserID().getValue());
 
@@ -100,7 +101,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     @MethodSource("storages")
     void testCrossReadWriteOperationsBetweenUsersInboxPrivateComponents(
             WithStorageProvider.StorageDescriptor descriptor) {
-        applyDescriptor(descriptor);
+        init(descriptor);
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
         List<String> prefixes = Arrays.asList("A_", "B_", "C_", "D_");
@@ -150,9 +151,12 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     }
 
-    private void applyDescriptor(WithStorageProvider.StorageDescriptor descriptor) {
+    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+        DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
+                .defaultDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+        initialize(datasafeServices);
+
         this.location = descriptor.getLocation();
-        this.services = descriptor.getDocusafeServices();
         this.storage = descriptor.getStorageService();
     }
 
@@ -187,7 +191,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     private String calculateDecryptedContentChecksum(UserIDAuth user,
                                                      AbsoluteResourceLocation<PrivateResource> item) {
         try {
-            InputStream decryptedFileStream = services.privateService().read(
+            InputStream decryptedFileStream = readFromPrivate.read(
                     ReadRequest.forPrivate(user, item.getResource()));
             String checksumOfDecryptedTestFile = checksum(decryptedFileStream);
             decryptedFileStream.close();

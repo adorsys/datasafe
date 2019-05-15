@@ -161,31 +161,11 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         private final String name;
         private final StorageService storageService;
         private final URI location;
-        private final DefaultDatasafeServices docusafeServices;
 
         StorageDescriptor(String name, StorageService storageService, URI location) {
             this.name = name;
             this.storageService = storageService;
             this.location = location;
-            this.docusafeServices = DaggerDefaultDatasafeServices
-                    .builder()
-                    .config(new DFSConfig() {
-                        @Override
-                        public String keystorePassword() {
-                            return "PAZZWORD";
-                        }
-
-                        @Override
-                        public URI systemRoot() {
-                            return location;
-                        }
-                    })
-                    .storageList(storageService)
-                    .storageRead(storageService)
-                    .storageWrite(storageService)
-                    .storageRemove(storageService)
-                    .storageCheck(storageService)
-                    .build();
         }
     }
 }

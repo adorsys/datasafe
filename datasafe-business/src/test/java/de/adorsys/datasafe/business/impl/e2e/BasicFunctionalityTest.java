@@ -4,6 +4,7 @@ import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +39,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
     @MethodSource("storages")
     void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
             WithStorageProvider.StorageDescriptor descriptor) {
-
-        this.location = descriptor.getLocation();
-        this.services = descriptor.getDocusafeServices();
-        this.storage = descriptor.getStorageService();
+        init(descriptor);
 
         registerJohnAndJane(descriptor.getLocation());
 
@@ -101,5 +99,14 @@ class BasicFunctionalityTest extends WithStorageProvider {
                 .filter(it -> !it.location().toString().startsWith("."))
                 .filter(it -> pattern.test(it.location().toString()))
                 .collect(Collectors.toList());
+    }
+
+    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+        DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
+                .defaultDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+        initialize(datasafeServices);
+
+        this.location = descriptor.getLocation();
+        this.storage = descriptor.getStorageService();
     }
 }

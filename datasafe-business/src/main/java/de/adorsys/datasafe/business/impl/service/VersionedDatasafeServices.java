@@ -36,10 +36,10 @@ import javax.inject.Singleton;
         DefaultVersionedPrivateActionsModule.class,
         DefaultProfileModule.class
 })
-public interface VersionedDocusafeServices extends DefaultDatasafeServices {
+public interface VersionedDatasafeServices {
 
     PrivateSpaceServiceImpl privateService();
-    LatestPrivateSpaceImpl<LatestDFSVersion> versionedPrivate();
+    LatestPrivateSpaceImpl<LatestDFSVersion> latestPrivate();
     InboxServiceImpl inboxService();
     DFSBasedProfileStorageImpl userProfile();
 
@@ -64,6 +64,6 @@ public interface VersionedDocusafeServices extends DefaultDatasafeServices {
         @BindsInstance
         Builder storageCheck(StorageCheckService checkService);
 
-        VersionedDocusafeServices build();
+        VersionedDatasafeServices build();
     }
 }
