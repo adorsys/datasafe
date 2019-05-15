@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import de.adorsys.datasafe.business.api.types.utils.Log;
@@ -41,7 +41,7 @@ public class S3StorageService implements StorageService {
         List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
         return objectSummaries.stream()
                 .map(os -> URI.create(os.getKey().substring(len)))
-                .map(uri -> new DefaultPrivateResource(uri).resolve(location))
+                .map(uri -> new BasePrivateResource(uri).resolve(location))
                 .map(AbsoluteResourceLocation::new);
     }
 

@@ -7,12 +7,12 @@ import java.net.URI;
 
 @ToString
 @RequiredArgsConstructor
-public class DefaultPublicResource implements PublicResource {
+public class BasePublicResource implements PublicResource {
 
     private final URI uri;
 
     public static AbsoluteResourceLocation<PublicResource> forAbsolutePublic(URI path) {
-        return new AbsoluteResourceLocation<>(new DefaultPublicResource(path));
+        return new AbsoluteResourceLocation<>(new BasePublicResource(path));
     }
 
     @Override
@@ -22,6 +22,6 @@ public class DefaultPublicResource implements PublicResource {
 
     @Override
     public PublicResource resolve(ResourceLocation location) {
-        return new DefaultPublicResource(location.location().resolve(uri));
+        return new BasePublicResource(location.location().resolve(uri));
     }
 }

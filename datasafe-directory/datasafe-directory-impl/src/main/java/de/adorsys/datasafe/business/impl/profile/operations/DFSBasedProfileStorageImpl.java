@@ -167,13 +167,13 @@ public class DFSBasedProfileStorageImpl implements
 
     private AbsoluteResourceLocation<PrivateResource> locatePrivateProfile(UserID ofUser) {
         return new AbsoluteResourceLocation<>(
-                new DefaultPrivateResource(PRIVATE.resolve(ofUser.getValue())).resolve(dfsSystem.dfsRoot())
+                new BasePrivateResource(PRIVATE.resolve(ofUser.getValue())).resolve(dfsSystem.dfsRoot())
         );
     }
 
     private AbsoluteResourceLocation<PublicResource> locatePublicProfile(UserID ofUser) {
         return new AbsoluteResourceLocation<>(
-                new DefaultPublicResource(PUBLIC.resolve(ofUser.getValue())).resolve(dfsSystem.dfsRoot())
+                new BasePublicResource(PUBLIC.resolve(ofUser.getValue())).resolve(dfsSystem.dfsRoot())
         );
     }
 }

@@ -205,11 +205,11 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     private AbsoluteResourceLocation<PublicResource> access(URI path) {
-        return new AbsoluteResourceLocation<>(new DefaultPublicResource(path));
+        return new AbsoluteResourceLocation<>(new BasePublicResource(path));
     }
 
     private AbsoluteResourceLocation<PrivateResource> accessPrivate(URI path) {
-        return new AbsoluteResourceLocation<>(new DefaultPrivateResource(path, URI.create(""), URI.create("")));
+        return new AbsoluteResourceLocation<>(new BasePrivateResource(path, URI.create(""), URI.create("")));
     }
 
     protected UserIDAuth createJohnTestUser(int i) {
@@ -225,7 +225,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                                           CountDownLatch latch) throws IOException {
         WriteRequest<UserIDAuth, PrivateResource> writeRequest = WriteRequest.<UserIDAuth, PrivateResource>builder()
                 .owner(john)
-                .location(DefaultPrivateResource.forPrivate(URI.create(filePathForWriting)))
+                .location(BasePrivateResource.forPrivate(URI.create(filePathForWriting)))
                 .build();
 
         try (OutputStream os = writeToPrivate.write(writeRequest)) {

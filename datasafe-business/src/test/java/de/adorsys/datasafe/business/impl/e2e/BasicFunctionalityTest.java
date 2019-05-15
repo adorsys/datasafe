@@ -2,24 +2,17 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -95,7 +88,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
     @SneakyThrows
     private List<AbsoluteResourceLocation<PrivateResource>> listFiles(Predicate<String> pattern) {
-        return storage.list(new AbsoluteResourceLocation<>(DefaultPrivateResource.forPrivate(location)))
+        return storage.list(new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(location)))
                 .filter(it -> !it.location().toString().startsWith("."))
                 .filter(it -> pattern.test(it.location().toString()))
                 .collect(Collectors.toList());
