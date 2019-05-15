@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
@@ -45,6 +46,7 @@ public class VersionedDataTest extends WithStorageProvider {
         String readingResult = readPrivateUsingPrivateKey(jane, DefaultPrivateResource.forPrivate(PRIVATE_FILE_PATH));
 
         assertThat(readingResult).isEqualTo(MESSAGE_THREE);
+        validateThereAreVersions(jane, 3);
     }
 
     @ParameterizedTest
@@ -59,6 +61,7 @@ public class VersionedDataTest extends WithStorageProvider {
 
         assertThat(directResult).isEqualTo(MESSAGE_THREE);
         assertThat(latest.getResource().decryptedPath()).asString().contains(PRIVATE_FILE_PATH);
+        validateThereAreVersions(jane, 3);
     }
 
     @Override
@@ -116,5 +119,11 @@ public class VersionedDataTest extends WithStorageProvider {
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_TWO);
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_THREE);
+    }
+
+    private void validateThereAreVersions(UserIDAuth user, int versionCount) {
+        assertThat(
+                versionedDocusafeServices.privateService().list(ListRequest.forDefaultPrivate(user, "./"))
+        ).hasSize(versionCount);
     }
 }

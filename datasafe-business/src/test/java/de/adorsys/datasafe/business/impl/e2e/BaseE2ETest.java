@@ -74,10 +74,10 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     }
 
     protected void initialize(VersionedDatasafeServices datasafeServices) {
-        this.listPrivate = datasafeServices.privateService();
-        this.readFromPrivate = datasafeServices.privateService();
-        this.writeToPrivate = datasafeServices.privateService();
-        this.removeFromPrivate = datasafeServices.privateService();
+        this.listPrivate = datasafeServices.latestPrivate();
+        this.readFromPrivate = datasafeServices.latestPrivate();
+        this.writeToPrivate = datasafeServices.latestPrivate();
+        this.removeFromPrivate = datasafeServices.latestPrivate();
         this.readFromInbox = datasafeServices.inboxService();
         this.listInbox = datasafeServices.inboxService();
         this.writeToInbox = datasafeServices.inboxService();
