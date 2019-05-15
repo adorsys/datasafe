@@ -22,7 +22,7 @@ import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
 import javax.inject.Singleton;
 
 /**
- * This is user Docusafe services default implementation.
+ * This is Datasafe services that always work with latest file version.
  */
 @Singleton
 @Component(modules = {
@@ -38,9 +38,24 @@ import javax.inject.Singleton;
 })
 public interface VersionedDatasafeServices {
 
-    PrivateSpaceServiceImpl privateService();
+    /**
+     * @return Filtered view of user's private space, that shows only latest files
+     */
     LatestPrivateSpaceImpl<LatestDFSVersion> latestPrivate();
+
+    /**
+     * @return Raw view of private user space (all file versions are visible)
+     */
+    PrivateSpaceServiceImpl privateService();
+
+    /**
+     * @return Inbox service that provides capability to share data between users
+     */
     InboxServiceImpl inboxService();
+
+    /**
+     * @return User-profile service that provides information necessary for locating his data.
+     */
     DFSBasedProfileStorageImpl userProfile();
 
     @Component.Builder

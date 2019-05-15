@@ -23,7 +23,7 @@ import de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStora
 import javax.inject.Singleton;
 
 /**
- * This is user Datasafe services default implementation.
+ * This is Datasafe services default implementation.
  */
 @Singleton
 @Component(modules = {
