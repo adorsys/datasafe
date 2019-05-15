@@ -5,7 +5,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -89,21 +88,12 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         }
 
         if (null != minio) {
-            remove(minio, minioBucketName, prefix);
+            removeObjectFromS3(minio, minioBucketName, prefix);
         }
 
         if (null != amazonS3) {
-            remove(amazonS3, amazonBucket, prefix);
+            removeObjectFromS3(amazonS3, amazonBucket, prefix);
         }
-    }
-
-    private void remove(AmazonS3 amazonS3, String bucket, String prefix) {
-        amazonS3.listObjects(bucket, prefix)
-                .getObjectSummaries()
-                .forEach(it -> {
-                    log.debug("Remove {}", it.getKey());
-                    amazonS3.deleteObject(bucket, it.getKey());
-                });
     }
 
     @AfterAll
@@ -118,6 +108,15 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                 minio(),
                 s3()
         ).filter(Objects::nonNull);
+    }
+
+    private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
+        amazonS3.listObjects(bucket, prefix)
+                .getObjectSummaries()
+                .forEach(it -> {
+                    log.debug("Remove {}", it.getKey());
+                    amazonS3.deleteObject(bucket, it.getKey());
+                });
     }
 
     private static void initS3() {

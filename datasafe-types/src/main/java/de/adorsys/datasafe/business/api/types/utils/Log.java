@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.api.types.utils;
 
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +11,7 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Base64;
 
+@UtilityClass
 public class Log {
 
     static String secureLogs = System.getProperty("SECURE_LOGS");
@@ -18,28 +20,65 @@ public class Log {
 
     @SneakyThrows
     public static <T> String secure(Iterable<T> values, String delim) {
+        if (values == null) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder();
-        values.forEach(v -> sb.append(secure(v)).append(delim));
+
+        boolean isStarted = false;
+        for (T value : values) {
+            if (isStarted) {
+                sb.append(delim);
+            }
+
+            if (null == value || "".equals(value.toString())) {
+                continue;
+            } else {
+                sb.append(secure(value));
+            }
+
+            isStarted = true;
+        }
+
         return sb.toString();
     }
 
     @SneakyThrows
     public static String secure(Path path) {
-        StringBuilder sb = new StringBuilder();
-        path.forEach(v -> sb.append(secure(v.toString())).append("/"));
-        return sb.toString();
+        if (path == null) {
+            return null;
+        }
+
+        return secure(path.toUri());
     }
 
     @SneakyThrows
     public static String secure(URI uri) {
-        String s = uri.getHost() + "/" + uri.getPath();
-        return secure(s.split("/"), "/");
+        if (uri == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (null != uri.getScheme()) {
+            sb.append(uri.getScheme()).append("://");
+        }
+
+        if (null != uri.getHost()) {
+            sb.append(uri.getHost());
+        }
+
+        if (null != uri.getPath()) {
+            sb.append(uri.getPath());
+        }
+
+        return secure(sb.toString().split("/", -1), "/");
     }
 
     @SneakyThrows
     public static <T extends ResourceLocation> String secure(T resource) {
-        String s = resource.location().getHost() + "/" + resource.location().getPath();
-        return secure(s.split("/"), "/");
+        return secure(resource.location());
     }
 
     @SneakyThrows
@@ -49,7 +88,9 @@ public class Log {
 
     @SneakyThrows
     public static String secure(Object value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         String s = value.toString();
         if ("0".equals(secureLogs) || "false".equalsIgnoreCase(secureLogs) || "off".equalsIgnoreCase(secureLogs)) {
