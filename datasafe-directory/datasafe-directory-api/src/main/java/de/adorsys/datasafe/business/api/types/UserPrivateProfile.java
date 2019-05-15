@@ -18,4 +18,7 @@ public class UserPrivateProfile {
 
     @NonNull
     private final AbsoluteResourceLocation<PrivateResource> inboxWithFullAccess;
+
+    @NonNull
+    private final AbsoluteResourceLocation<PrivateResource> documentVersionStorage;
 }

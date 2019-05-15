@@ -38,6 +38,7 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
             .privateStorage(PRIVATE)
             .inboxWithFullAccess(PRIVATE)
             .keystore(PRIVATE)
+            .documentVersionStorage(PRIVATE)
             .build();
 
     private UserPublicProfile publicProfile = UserPublicProfile.builder()

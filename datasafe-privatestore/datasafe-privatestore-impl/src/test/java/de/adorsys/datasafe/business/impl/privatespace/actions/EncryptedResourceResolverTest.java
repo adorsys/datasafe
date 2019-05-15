@@ -42,7 +42,7 @@ class EncryptedResourceResolverTest extends BaseMockitoTest {
     private PathEncryption pathEncryption;
 
     @InjectMocks
-    private EncryptedResourceResolver resolver;
+    private EncryptedResourceResolverImpl resolver;
 
     @Captor
     private ArgumentCaptor<PrivateResource> captor;

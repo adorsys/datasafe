@@ -9,17 +9,18 @@ import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import javax.inject.Inject;
 import java.net.URI;
 
-public class EncryptedResourceResolver {
+public class EncryptedResourceResolverImpl implements EncryptedResourceResolver {
 
     private final ResourceResolver resolver;
     private final PathEncryption pathEncryption;
 
     @Inject
-    public EncryptedResourceResolver(ResourceResolver resolver, PathEncryption pathEncryption) {
+    public EncryptedResourceResolverImpl(ResourceResolver resolver, PathEncryption pathEncryption) {
         this.resolver = resolver;
         this.pathEncryption = pathEncryption;
     }
 
+    @Override
     public AbsoluteResourceLocation<PrivateResource> encryptAndResolvePath(UserIDAuth auth, PrivateResource resource) {
         if (resolver.isAbsolute(resource)) {
             return new AbsoluteResourceLocation<>(resource);
@@ -31,6 +32,7 @@ public class EncryptedResourceResolver {
         return resolver.resolveRelativeToPrivate(auth, resource.resolve(encryptedRelativePath, decryptedPath));
     }
 
+    @Override
     public AbsoluteResourceLocation<PrivateResource> decryptAndResolvePath(
             UserIDAuth auth, PrivateResource resource, PrivateResource root) {
         if (!resolver.isAbsolute(resource)) {
