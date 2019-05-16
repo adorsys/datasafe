@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.api.version.actions;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.VersionStrategy;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.Version;
 import de.adorsys.datasafe.business.api.types.resource.Versioned;
@@ -15,9 +15,9 @@ import java.util.stream.Stream;
 public interface VersionedList<V extends VersionStrategy> extends ListPrivate, WithVersionStrategy<V> {
 
     @Override
-    Stream<AbsoluteResourceLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request);
+    Stream<AbsoluteLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request);
 
-    Stream<Versioned<AbsoluteResourceLocation<PrivateResource>, PrivateResource, Version>> listVersioned(
+    Stream<Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version>> listVersioned(
             ListRequest<UserIDAuth, PrivateResource> request
     );
 }

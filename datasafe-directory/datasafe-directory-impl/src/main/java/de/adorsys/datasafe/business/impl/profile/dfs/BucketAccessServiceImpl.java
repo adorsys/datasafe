@@ -20,14 +20,14 @@ public class BucketAccessServiceImpl implements BucketAccessService {
     }
 
     @Override
-    public AbsoluteResourceLocation<PrivateResource> privateAccessFor(UserIDAuth user, ResourceLocation bucket) {
+    public AbsoluteLocation<PrivateResource> privateAccessFor(UserIDAuth user, ResourceLocation bucket) {
         log.debug("get private access for user {} and bucket {}", user, bucket);
-        return new AbsoluteResourceLocation<>(new BasePrivateResource(bucket.location()));
+        return new AbsoluteLocation<>(new BasePrivateResource(bucket.location()));
     }
 
     @Override
-    public AbsoluteResourceLocation<PublicResource> publicAccessFor(UserID user, ResourceLocation bucket) {
+    public AbsoluteLocation<PublicResource> publicAccessFor(UserID user, ResourceLocation bucket) {
         log.debug("get public access for user {} and bucket {}", user, bucket.location());
-        return new AbsoluteResourceLocation<>(new BasePublicResource(bucket.location()));
+        return new AbsoluteLocation<>(new BasePublicResource(bucket.location()));
     }
 }

@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
-import com.google.common.collect.Iterables;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
@@ -57,7 +56,7 @@ public class VersionedDataTest extends WithStorageProvider {
 
         registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
 
-        AbsoluteResourceLocation<PrivateResource> latest = getFirstFileInPrivate(jane);
+        AbsoluteLocation<PrivateResource> latest = getFirstFileInPrivate(jane);
         String directResult = readRawPrivateUsingPrivateKey(jane, latest.getResource());
 
         assertThat(directResult).isEqualTo(MESSAGE_THREE);
@@ -72,7 +71,7 @@ public class VersionedDataTest extends WithStorageProvider {
 
         registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
 
-        Versioned<AbsoluteResourceLocation<PrivateResource>, PrivateResource, Version> first =
+        Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version> first =
                 Position.first(versionedListRoot(jane));
         versionedDocusafeServices.latestPrivate().remove(RemoveRequest.forPrivate(jane, first.stripVersion()));
 
@@ -111,20 +110,20 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @Override
-    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
-        List<AbsoluteResourceLocation<PrivateResource>> files = listRoot(owner).collect(Collectors.toList());
+    protected AbsoluteLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
+        List<AbsoluteLocation<PrivateResource>> files = listRoot(owner).collect(Collectors.toList());
 
         log.info("{} has {} in PRIVATE", owner.getUserID().getValue(), files);
         return files.get(0);
     }
 
-    private Stream<AbsoluteResourceLocation<PrivateResource>> listRoot(UserIDAuth owner) {
+    private Stream<AbsoluteLocation<PrivateResource>> listRoot(UserIDAuth owner) {
         return listPrivate.list(ListRequest.forDefaultPrivate(owner, "./"));
     }
 
-    private Stream<Versioned<AbsoluteResourceLocation<PrivateResource>, PrivateResource, Version>> versionedListRoot(
+    private Stream<Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version>> versionedListRoot(
             UserIDAuth owner) {
-        return versionedDocusafeServices.latestPrivate().listVersioned(ListRequest.forDefaultPrivate(owner, "./"));
+        return versionedDocusafeServices.latestPrivate().listWithDetails(ListRequest.forDefaultPrivate(owner, "./"));
     }
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {

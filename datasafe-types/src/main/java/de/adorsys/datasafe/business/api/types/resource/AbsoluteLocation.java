@@ -5,12 +5,12 @@ import lombok.Getter;
 
 import java.net.URI;
 
-public class AbsoluteResourceLocation<T extends ResourceLocation<T>> implements ResourceLocation<T> {
+public class AbsoluteLocation<T extends ResourceLocation<T>> implements ResourceLocation<T> {
 
     @Getter
     private final T resource;
 
-    public AbsoluteResourceLocation(T resource) {
+    public AbsoluteLocation(T resource) {
         if (!resource.location().isAbsolute()) {
             throw new IllegalArgumentException("Resource location must be absolute");
         }
@@ -30,7 +30,7 @@ public class AbsoluteResourceLocation<T extends ResourceLocation<T>> implements 
 
     @Override
     public String toString() {
-        return "AbsoluteResourceLocation{" +
+        return "AbsoluteLocation{" +
                 "resource=" + Log.secure(location()) +
                 '}';
     }

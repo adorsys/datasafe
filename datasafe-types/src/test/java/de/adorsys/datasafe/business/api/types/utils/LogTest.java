@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.types.utils;
 
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import org.junit.jupiter.api.Test;
@@ -51,8 +51,8 @@ public class LogTest {
     @Test
     void secureResourceLocation() {
         Log.secureLogs = "STARS";
-        AbsoluteResourceLocation<PrivateResource> resource =
-                new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(TEST_URI));
+        AbsoluteLocation<PrivateResource> resource =
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(TEST_URI));
         assertThat(Log.secure(resource)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er");
     }
 
@@ -65,8 +65,8 @@ public class LogTest {
     @Test
     void secureResourceLocationSlash() {
         Log.secureLogs = "STARS";
-        AbsoluteResourceLocation<PrivateResource> resource =
-                new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(TEST_URI_ENDS_SLASH));
+        AbsoluteLocation<PrivateResource> resource =
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(TEST_URI_ENDS_SLASH));
         assertThat(Log.secure(resource)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er/");
     }
 }

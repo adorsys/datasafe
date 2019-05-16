@@ -5,7 +5,7 @@ import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.version.EncryptedLatestLinkService;
 import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
@@ -27,22 +27,22 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
     }
 
     @Override
-    public AbsoluteResourceLocation<PrivateResource> resolveLatestLinkLocation(
+    public AbsoluteLocation<PrivateResource> resolveLatestLinkLocation(
             UserIDAuth auth, PrivateResource resource, UserPrivateProfile privateProfile) {
-        AbsoluteResourceLocation<PrivateResource> encryptedPath = resolver.encryptAndResolvePath(
+        AbsoluteLocation<PrivateResource> encryptedPath = resolver.encryptAndResolvePath(
                 auth,
                 resource
         );
 
-        return new AbsoluteResourceLocation<>(
+        return new AbsoluteLocation<>(
                 encryptedPath.resolve(privateProfile.getDocumentVersionStorage().getResource())
         );
     }
 
     @Override
-    public AbsoluteResourceLocation<PrivateResource> readLinkAndDecrypt(
+    public AbsoluteLocation<PrivateResource> readLinkAndDecrypt(
             UserIDAuth owner,
-            AbsoluteResourceLocation<PrivateResource> latestLink,
+            AbsoluteLocation<PrivateResource> latestLink,
             UserPrivateProfile privateProfile) {
         String relativeToPrivateUri = readLink(owner, latestLink);
 
@@ -57,7 +57,7 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
     }
 
     @SneakyThrows
-    private String readLink(UserIDAuth owner, AbsoluteResourceLocation<PrivateResource> latestLink) {
+    private String readLink(UserIDAuth owner, AbsoluteLocation<PrivateResource> latestLink) {
         return new String(
                 ByteStreams.toByteArray(privateSpace.read(ReadRequest.forPrivate(owner, latestLink.getResource()))),
                 Charsets.UTF_8

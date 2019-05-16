@@ -94,10 +94,10 @@ public class DFSBasedProfileStorageImpl implements
             throw new UserNotFoundException("User not found: " + userID);
         }
 
-        AbsoluteResourceLocation<PrivateResource> privateStorage = privateProfile(userID).getPrivateStorage();
+        AbsoluteLocation<PrivateResource> privateStorage = privateProfile(userID).getPrivateStorage();
         removeStorageByLocation(userID, privateStorage);
 
-        AbsoluteResourceLocation<PrivateResource> inbox = privateProfile(userID).getInboxWithFullAccess();
+        AbsoluteLocation<PrivateResource> inbox = privateProfile(userID).getInboxWithFullAccess();
         removeStorageByLocation(userID, inbox);
 
         removeService.remove(privateProfile(userID).getKeystore());
@@ -108,7 +108,7 @@ public class DFSBasedProfileStorageImpl implements
         log.debug("Deregistered user {}", userID);
     }
 
-    private void removeStorageByLocation(UserIDAuth userID, AbsoluteResourceLocation<PrivateResource> privateStorage) {
+    private void removeStorageByLocation(UserIDAuth userID, AbsoluteLocation<PrivateResource> privateStorage) {
         listService.list(new ListRequest<>(userID, privateStorage).getLocation())
                 .forEach(removeService::remove);
     }
@@ -151,28 +151,28 @@ public class DFSBasedProfileStorageImpl implements
                 new KeyStoreCreationConfig(1, 1, 1)
         );
 
-        try (OutputStream os = writeService.write(new AbsoluteResourceLocation<>(keystore))) {
+        try (OutputStream os = writeService.write(new AbsoluteLocation<>(keystore))) {
             os.write(keyStoreService.serialize(store, forUser.getUserID().getValue(), auth.getReadStorePassword()));
         }
         log.debug("Keystore created for user {} in path {}", forUser, keystore);
     }
 
     @SneakyThrows
-    private <T> T readProfile(AbsoluteResourceLocation resource, Class<T> clazz) {
+    private <T> T readProfile(AbsoluteLocation resource, Class<T> clazz) {
         try (InputStream is = readService.read(resource)) {
             log.debug("read profile {}", resource.location().getPath());
             return serde.fromJson(new String(ByteStreams.toByteArray(is)), clazz);
         }
     }
 
-    private AbsoluteResourceLocation<PrivateResource> locatePrivateProfile(UserID ofUser) {
-        return new AbsoluteResourceLocation<>(
+    private AbsoluteLocation<PrivateResource> locatePrivateProfile(UserID ofUser) {
+        return new AbsoluteLocation<>(
                 new BasePrivateResource(PRIVATE.resolve(ofUser.getValue())).resolve(dfsSystem.dfsRoot())
         );
     }
 
-    private AbsoluteResourceLocation<PublicResource> locatePublicProfile(UserID ofUser) {
-        return new AbsoluteResourceLocation<>(
+    private AbsoluteLocation<PublicResource> locatePublicProfile(UserID ofUser) {
+        return new AbsoluteLocation<>(
                 new BasePublicResource(PUBLIC.resolve(ofUser.getValue())).resolve(dfsSystem.dfsRoot())
         );
     }

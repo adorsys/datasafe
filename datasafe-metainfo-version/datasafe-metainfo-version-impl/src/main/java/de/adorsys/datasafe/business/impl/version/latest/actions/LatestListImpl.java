@@ -33,12 +33,12 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
     }
 
     @Override
-    public Stream<AbsoluteResourceLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+    public Stream<AbsoluteLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
         return listVersioned(request).map(Versioned::absolute);
     }
 
     @Override
-    public Stream<Versioned<AbsoluteResourceLocation<PrivateResource>, PrivateResource, Version>> listVersioned(
+    public Stream<Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version>> listVersioned(
             ListRequest<UserIDAuth, PrivateResource> request) {
         UserPrivateProfile privateProfile = profiles.privateProfile(request.getOwner());
 

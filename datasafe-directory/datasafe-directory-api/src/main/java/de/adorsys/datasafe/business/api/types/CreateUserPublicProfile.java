@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.types;
 
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.Builder;
 import lombok.NonNull;
@@ -14,10 +14,10 @@ public class CreateUserPublicProfile {
     private final UserID id;
 
     @NonNull
-    private final AbsoluteResourceLocation<PublicResource> publicKeys;
+    private final AbsoluteLocation<PublicResource> publicKeys;
 
     @NonNull
-    private final AbsoluteResourceLocation<PublicResource> inbox;
+    private final AbsoluteLocation<PublicResource> inbox;
 
     public UserPublicProfile removeAccess() {
         return UserPublicProfile.builder()

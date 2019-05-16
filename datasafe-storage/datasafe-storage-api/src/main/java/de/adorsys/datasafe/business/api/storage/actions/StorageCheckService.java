@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.api.storage.actions;
 
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 
 public interface StorageCheckService {
 
-    boolean objectExists(AbsoluteResourceLocation location);
+    boolean objectExists(AbsoluteLocation location);
 }

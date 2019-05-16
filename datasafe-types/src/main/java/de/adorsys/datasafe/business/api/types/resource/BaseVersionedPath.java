@@ -3,25 +3,25 @@ package de.adorsys.datasafe.business.api.types.resource;
 import lombok.Getter;
 
 public class BaseVersionedPath<V extends Version>
-        implements Versioned<AbsoluteResourceLocation<PrivateResource>, PrivateResource, V> {
+        implements Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, V> {
 
     @Getter
     private final V version;
 
     private final PrivateResource withoutVersion;
-    private final AbsoluteResourceLocation<PrivateResource> withVersion;
+    private final AbsoluteLocation<PrivateResource> withVersion;
 
     public BaseVersionedPath(
             V version,
             PrivateResource withoutVersion,
-            AbsoluteResourceLocation<PrivateResource> withVersion) {
+            AbsoluteLocation<PrivateResource> withVersion) {
         this.version = version;
         this.withoutVersion = withoutVersion;
         this.withVersion = withVersion;
     }
 
     @Override
-    public AbsoluteResourceLocation<PrivateResource> absolute() {
+    public AbsoluteLocation<PrivateResource> absolute() {
         return withVersion;
     }
 

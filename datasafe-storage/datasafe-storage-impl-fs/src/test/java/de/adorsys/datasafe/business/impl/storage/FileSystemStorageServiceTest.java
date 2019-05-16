@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.impl.storage;
 
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
@@ -23,16 +23,16 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
     private static final String MESSAGE = "hello";
 
     private FileSystemStorageService storageService;
-    private AbsoluteResourceLocation<PrivateResource> root;
-    private AbsoluteResourceLocation<PrivateResource> fileWithMsg;
+    private AbsoluteLocation<PrivateResource> root;
+    private AbsoluteLocation<PrivateResource> fileWithMsg;
     private Path storageDir;
 
     @BeforeEach
     void prepare(@TempDir Path dir) {
         this.storageService = new FileSystemStorageService(dir.toUri());
         this.storageDir = dir;
-        this.root = new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(dir.toUri()));
-        this.fileWithMsg = new AbsoluteResourceLocation<>(
+        this.root = new AbsoluteLocation<>(BasePrivateResource.forPrivate(dir.toUri()));
+        this.fileWithMsg = new AbsoluteLocation<>(
                 BasePrivateResource.forPrivate(storageDir.toUri().resolve(FILE))
         );
     }
@@ -43,7 +43,7 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
 
         assertThat(storageService.list(root))
                 .hasSize(1)
-                .extracting(AbsoluteResourceLocation::location)
+                .extracting(AbsoluteLocation::location)
                 .asString().contains(FILE);
     }
 

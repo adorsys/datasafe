@@ -11,8 +11,8 @@ public class BasePublicResource implements PublicResource {
 
     private final URI uri;
 
-    public static AbsoluteResourceLocation<PublicResource> forAbsolutePublic(URI path) {
-        return new AbsoluteResourceLocation<>(new BasePublicResource(path));
+    public static AbsoluteLocation<PublicResource> forAbsolutePublic(URI path) {
+        return new AbsoluteLocation<>(new BasePublicResource(path));
     }
 
     @Override

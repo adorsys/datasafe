@@ -4,7 +4,7 @@ import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalServi
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.version.actions.VersionedRemove;
 import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
@@ -36,7 +36,7 @@ public class LatestRemoveImpl<V extends LatestDFSVersion> implements VersionedRe
     public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
         UserPrivateProfile privateProfile = profiles.privateProfile(request.getOwner());
 
-        AbsoluteResourceLocation<PrivateResource> latestSnapshotLink =
+        AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(
                         request.getOwner(),
                         request.getLocation(),

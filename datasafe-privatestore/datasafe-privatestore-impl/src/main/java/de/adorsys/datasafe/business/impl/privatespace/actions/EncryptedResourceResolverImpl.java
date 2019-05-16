@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.privatespace.actions;
 import de.adorsys.datasafe.business.api.encryption.pathencryption.PathEncryption;
 import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 
 import javax.inject.Inject;
@@ -21,9 +21,9 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
     }
 
     @Override
-    public AbsoluteResourceLocation<PrivateResource> encryptAndResolvePath(UserIDAuth auth, PrivateResource resource) {
+    public AbsoluteLocation<PrivateResource> encryptAndResolvePath(UserIDAuth auth, PrivateResource resource) {
         if (resolver.isAbsolute(resource)) {
-            return new AbsoluteResourceLocation<>(resource);
+            return new AbsoluteLocation<>(resource);
         }
 
         URI decryptedPath = resource.location();
@@ -33,13 +33,13 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
     }
 
     @Override
-    public AbsoluteResourceLocation<PrivateResource> decryptAndResolvePath(
+    public AbsoluteLocation<PrivateResource> decryptAndResolvePath(
             UserIDAuth auth, PrivateResource resource, PrivateResource root) {
         if (!resolver.isAbsolute(resource)) {
             URI encryptedPath = resource.location();
             URI decryptedPath = pathEncryption.decrypt(auth, encryptedPath);
 
-            return new AbsoluteResourceLocation<>(
+            return new AbsoluteLocation<>(
                     resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(
                             encryptedPath,
                             decryptedPath)
@@ -49,7 +49,7 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
         URI encryptedPath = relativize(root.location(), resource.location());
         URI decryptedPath = pathEncryption.decrypt(auth, encryptedPath);
 
-        return new AbsoluteResourceLocation<>(
+        return new AbsoluteLocation<>(
                 resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(encryptedPath, decryptedPath)
         );
     }

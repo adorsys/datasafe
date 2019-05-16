@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
@@ -38,13 +38,13 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
 
-        AbsoluteResourceLocation<PrivateResource> privateJane = getFirstFileInPrivate(jane);
+        AbsoluteLocation<PrivateResource> privateJane = getFirstFileInPrivate(jane);
 
         String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource());
 
         sendToInbox(john.getUserID(), SHARED_FILE_PATH, privateContentJane);
 
-        AbsoluteResourceLocation<PrivateResource> inboxJohn = getFirstFileInInbox(john);
+        AbsoluteLocation<PrivateResource> inboxJohn = getFirstFileInInbox(john);
 
         String result = readInboxUsingPrivateKey(john, inboxJohn.getResource());
 
@@ -59,11 +59,11 @@ class BasicFunctionalityTest extends WithStorageProvider {
     }
 
     @SneakyThrows
-    private void validateInboxStructAndEncryption(AbsoluteResourceLocation<PrivateResource> expectedInboxResource) {
-        List<AbsoluteResourceLocation<PrivateResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));
+    private void validateInboxStructAndEncryption(AbsoluteLocation<PrivateResource> expectedInboxResource) {
+        List<AbsoluteLocation<PrivateResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));
 
         assertThat(inbox).hasSize(1);
-        AbsoluteResourceLocation<PrivateResource> foundResource = inbox.get(0);
+        AbsoluteLocation<PrivateResource> foundResource = inbox.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedInboxResource.location());
         // no path encryption for inbox:
         assertThat(foundResource.location().getPath()).asString().contains(SHARED_FILE);
@@ -72,12 +72,12 @@ class BasicFunctionalityTest extends WithStorageProvider {
     }
 
     @SneakyThrows
-    private void validatePrivateStructAndEncryption(AbsoluteResourceLocation<PrivateResource> expectedPrivateResource) {
-        List<AbsoluteResourceLocation<PrivateResource>> privateFiles = listFiles(
+    private void validatePrivateStructAndEncryption(AbsoluteLocation<PrivateResource> expectedPrivateResource) {
+        List<AbsoluteLocation<PrivateResource>> privateFiles = listFiles(
                 it -> it.contains(PRIVATE_FILES_COMPONENT));
 
         assertThat(privateFiles).hasSize(1);
-        AbsoluteResourceLocation<PrivateResource> foundResource = privateFiles.get(0);
+        AbsoluteLocation<PrivateResource> foundResource = privateFiles.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedPrivateResource.location());
 
         // validate encryption on high-level:
@@ -87,8 +87,8 @@ class BasicFunctionalityTest extends WithStorageProvider {
     }
 
     @SneakyThrows
-    private List<AbsoluteResourceLocation<PrivateResource>> listFiles(Predicate<String> pattern) {
-        return storage.list(new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(location)))
+    private List<AbsoluteLocation<PrivateResource>> listFiles(Predicate<String> pattern) {
+        return storage.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(location)))
                 .filter(it -> !it.location().toString().startsWith("."))
                 .filter(it -> pattern.test(it.location().toString()))
                 .collect(Collectors.toList());

@@ -95,12 +95,12 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 Log.secure(path.split("/"), "/"));
     }
 
-    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
+    protected AbsoluteLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
         return getAllFilesInPrivate(owner).get(0);
     }
 
-    protected List<AbsoluteResourceLocation<PrivateResource>> getAllFilesInPrivate(UserIDAuth owner) {
-        List<AbsoluteResourceLocation<PrivateResource>> files = listPrivate.list(
+    protected List<AbsoluteLocation<PrivateResource>> getAllFilesInPrivate(UserIDAuth owner) {
+        List<AbsoluteLocation<PrivateResource>> files = listPrivate.list(
                 ListRequest.forDefaultPrivate(owner, "./")
         ).collect(Collectors.toList());
 
@@ -136,12 +136,12 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return data;
     }
 
-    protected AbsoluteResourceLocation<PrivateResource> getFirstFileInInbox(UserIDAuth inboxOwner) {
+    protected AbsoluteLocation<PrivateResource> getFirstFileInInbox(UserIDAuth inboxOwner) {
         return getAllFilesInInbox(inboxOwner).get(0);
     }
 
-    protected List<AbsoluteResourceLocation<PrivateResource>> getAllFilesInInbox(UserIDAuth inboxOwner) {
-        List<AbsoluteResourceLocation<PrivateResource>> files = listInbox.list(
+    protected List<AbsoluteLocation<PrivateResource>> getAllFilesInInbox(UserIDAuth inboxOwner) {
+        List<AbsoluteLocation<PrivateResource>> files = listInbox.list(
                 ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
@@ -204,12 +204,12 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         log.info("User deleted: {}", Log.secure(userIDAuth));
     }
 
-    private AbsoluteResourceLocation<PublicResource> access(URI path) {
-        return new AbsoluteResourceLocation<>(new BasePublicResource(path));
+    private AbsoluteLocation<PublicResource> access(URI path) {
+        return new AbsoluteLocation<>(new BasePublicResource(path));
     }
 
-    private AbsoluteResourceLocation<PrivateResource> accessPrivate(URI path) {
-        return new AbsoluteResourceLocation<>(new BasePrivateResource(path, URI.create(""), URI.create("")));
+    private AbsoluteLocation<PrivateResource> accessPrivate(URI path) {
+        return new AbsoluteLocation<>(new BasePrivateResource(path, URI.create(""), URI.create("")));
     }
 
     protected UserIDAuth createJohnTestUser(int i) {

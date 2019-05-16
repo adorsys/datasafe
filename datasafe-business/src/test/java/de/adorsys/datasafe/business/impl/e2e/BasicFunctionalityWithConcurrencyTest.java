@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
@@ -84,7 +84,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             UserIDAuth user = createJohnTestUser(i);
 
-            List<AbsoluteResourceLocation<PrivateResource>> resourceList = listPrivate.list(
+            List<AbsoluteLocation<PrivateResource>> resourceList = listPrivate.list(
                     forDefaultPrivate(user, "./")).collect(Collectors.toList());
             log.debug("Read files for user: " + user.getUserID().getValue());
 
@@ -140,8 +140,8 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         countDownLatch.await();
         executor.shutdown();
 
-        List<AbsoluteResourceLocation<PrivateResource>> privateJohnFiles = getAllFilesInPrivate(john);
-        List<AbsoluteResourceLocation<PrivateResource>> privateJaneFiles = getAllFilesInPrivate(jane);
+        List<AbsoluteLocation<PrivateResource>> privateJohnFiles = getAllFilesInPrivate(john);
+        List<AbsoluteLocation<PrivateResource>> privateJaneFiles = getAllFilesInPrivate(jane);
 
         List<String> expectedData = Arrays.asList(MESSAGE_ONE, MESSAGE_TWO);
 
@@ -189,7 +189,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     }
 
     private String calculateDecryptedContentChecksum(UserIDAuth user,
-                                                     AbsoluteResourceLocation<PrivateResource> item) {
+                                                     AbsoluteLocation<PrivateResource> item) {
         try {
             InputStream decryptedFileStream = readFromPrivate.read(
                     ReadRequest.forPrivate(user, item.getResource()));
@@ -215,7 +215,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     }
 
     private void validateUserPrivateStorage(List<String> testPath,
-                                            List<AbsoluteResourceLocation<PrivateResource>> privateJohnFiles,
+                                            List<AbsoluteLocation<PrivateResource>> privateJohnFiles,
                                             List<String> expectedData, UserIDAuth john) {
         assertThat(privateJohnFiles).hasSize(2);
         privateJohnFiles.forEach(item -> {
@@ -227,7 +227,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     private void readOriginUserInboxAndWriteToTargetUserPrivate(UserIDAuth originUser, UserIDAuth targetUser,
                                                                 CountDownLatch countDownLatch, String prefixes) {
-        AbsoluteResourceLocation<PrivateResource> inbox = getFirstFileInInbox(originUser);
+        AbsoluteLocation<PrivateResource> inbox = getFirstFileInInbox(originUser);
 
         String result = readInboxUsingPrivateKey(originUser, inbox.getResource());
 
