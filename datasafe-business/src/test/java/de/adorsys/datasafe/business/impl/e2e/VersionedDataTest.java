@@ -8,6 +8,7 @@ import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
+import de.adorsys.datasafe.business.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.shared.Position;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,6 +79,26 @@ public class VersionedDataTest extends WithStorageProvider {
 
         assertThat(listRoot(jane)).isEmpty();
         validateThereAreVersions(jane, 3);
+    }
+
+    @ParameterizedTest
+    @MethodSource("storages")
+    void testVersionsOf(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
+
+        List<Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, DFSVersion>> versionedResource =
+                versionedDocusafeServices.versionInfo()
+                        .versionsOf(jane, BasePrivateResource.forPrivate("./"))
+                        .collect(Collectors.toList());
+
+        assertThat(versionedResource).hasSize(3);
+        assertThat(versionedResource)
+                .extracting(Versioned::stripVersion)
+                .extracting(ResourceLocation::location)
+                .extracting(URI::toString)
+                .containsExactly(PRIVATE_FILE_PATH, PRIVATE_FILE_PATH, PRIVATE_FILE_PATH);
     }
 
     @Override
