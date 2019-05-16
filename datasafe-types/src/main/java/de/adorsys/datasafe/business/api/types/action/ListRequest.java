@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.types.action;
 
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
 import lombok.AllArgsConstructor;
@@ -23,6 +23,6 @@ public class ListRequest<T, L extends ResourceLocation> {
     private final L location;
 
     public static <T> ListRequest<T, PrivateResource> forDefaultPrivate(T owner, String path) {
-        return new ListRequest<>(owner, DefaultPrivateResource.forPrivate(URI.create(path)));
+        return new ListRequest<>(owner, BasePrivateResource.forPrivate(URI.create(path)));
     }
 }

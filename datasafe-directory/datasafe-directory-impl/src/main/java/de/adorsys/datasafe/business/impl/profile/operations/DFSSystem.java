@@ -6,7 +6,7 @@ import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePublicResource;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.SneakyThrows;
 
@@ -42,6 +42,6 @@ public class DFSSystem {
     }
 
     public AbsoluteResourceLocation<PublicResource> dfsRoot() {
-        return new AbsoluteResourceLocation<>(new DefaultPublicResource(config.systemRoot()));
+        return new AbsoluteResourceLocation<>(new BasePublicResource(config.systemRoot()));
     }
 }

@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.storage;
 import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.utils.Log;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class FileSystemStorageService implements StorageService {
         return Files.walk(filePath)
                 .filter(it -> !it.startsWith("."))
                 .filter(it -> !it.toFile().isDirectory())
-                .map(it -> new AbsoluteResourceLocation<>(new DefaultPrivateResource(it.toUri())));
+                .map(it -> new AbsoluteResourceLocation<>(new BasePrivateResource(it.toUri())));
     }
 
     @SneakyThrows

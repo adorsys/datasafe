@@ -6,7 +6,7 @@ import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Test;
@@ -42,10 +42,10 @@ class ReadFromPrivateImplTest extends BaseMockitoTest {
 
     @Test
     void read() {
-        AbsoluteResourceLocation<PrivateResource> resource = DefaultPrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
+        AbsoluteResourceLocation<PrivateResource> resource = BasePrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(
                 auth,
-                DefaultPrivateResource.forPrivate(ABSOLUTE_PATH)
+                BasePrivateResource.forPrivate(ABSOLUTE_PATH)
         );
         when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
         when(readService.read(captor.capture())).thenReturn(new ByteArrayInputStream(BYTES.getBytes()));

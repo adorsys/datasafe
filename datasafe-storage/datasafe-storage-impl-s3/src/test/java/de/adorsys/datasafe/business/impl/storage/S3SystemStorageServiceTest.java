@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
@@ -61,8 +61,8 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
                 .build();
 
         s3.createBucket(bucketName);
-        root = new AbsoluteResourceLocation<>(DefaultPrivateResource.forPrivate(URI.create("s3://" + bucketName)));
-        fileWithMsg = new AbsoluteResourceLocation<>(DefaultPrivateResource.forPrivate(URI.create("./" + FILE))
+        root = new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(URI.create("s3://" + bucketName)));
+        fileWithMsg = new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(URI.create("./" + FILE))
                 .resolve(root));
     }
 

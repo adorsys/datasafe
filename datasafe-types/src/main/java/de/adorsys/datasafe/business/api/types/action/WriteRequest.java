@@ -18,18 +18,18 @@ public class WriteRequest<T, L extends ResourceLocation> {
     private final L location;
 
     public static <T> WriteRequest<T, PrivateResource> forDefaultPrivate(T owner, String path) {
-        return new WriteRequest<>(owner, DefaultPrivateResource.forPrivate(URI.create(path)));
+        return new WriteRequest<>(owner, BasePrivateResource.forPrivate(URI.create(path)));
     }
 
     public static <T> WriteRequest<T, PublicResource> forDefaultPublic(T owner, String path) {
-        return new WriteRequest<>(owner, new DefaultPublicResource(URI.create(path)));
+        return new WriteRequest<>(owner, new BasePublicResource(URI.create(path)));
     }
 
     public static <T> WriteRequest<T, PrivateResource> forDefaultPrivate(T owner, URI path) {
-        return new WriteRequest<>(owner, DefaultPrivateResource.forPrivate(path));
+        return new WriteRequest<>(owner, BasePrivateResource.forPrivate(path));
     }
 
     public static <T> WriteRequest<T, PublicResource> forDefaultPublic(T owner, URI path) {
-        return new WriteRequest<>(owner, new DefaultPublicResource(path));
+        return new WriteRequest<>(owner, new BasePublicResource(path));
     }
 }

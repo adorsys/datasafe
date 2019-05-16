@@ -9,7 +9,7 @@ import de.adorsys.datasafe.business.api.types.keystore.KeyID;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
@@ -57,7 +57,7 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void write() {
-        AbsoluteResourceLocation<PrivateResource> resource = DefaultPrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
+        AbsoluteResourceLocation<PrivateResource> resource = BasePrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
         WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(auth, ABSOLUTE_PATH);
         when(privateKeyService.documentEncryptionSecretKey(auth)).thenReturn(secretKeyIDWithKey);
         when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
