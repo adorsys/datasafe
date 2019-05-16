@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.storage.actions;
 
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 
 import java.io.InputStream;
 
@@ -14,5 +14,5 @@ public interface StorageReadService {
      * @param location absolute bucket path with access credentials
      * @return data stream of resource to read from
      */
-    InputStream read(AbsoluteResourceLocation location);
+    InputStream read(AbsoluteLocation location);
 }

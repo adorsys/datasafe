@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.privatespace.actions;
 import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 
 import javax.inject.Inject;
@@ -21,8 +21,8 @@ public class ListPrivateImpl implements ListPrivate {
     }
 
     @Override
-    public Stream<AbsoluteResourceLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
-        AbsoluteResourceLocation<PrivateResource> listDir =
+    public Stream<AbsoluteLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+        AbsoluteLocation<PrivateResource> listDir =
                 resolver.encryptAndResolvePath(request.getOwner(), request.getLocation());
 
         return listService

@@ -5,7 +5,7 @@ import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
@@ -55,7 +55,7 @@ class EncryptedResourceResolverTest extends BaseMockitoTest {
 
     @Test
     void encryptAndResolvePathAbsolute() {
-        AbsoluteResourceLocation<PrivateResource> resource = resolver.encryptAndResolvePath(auth, absolute);
+        AbsoluteLocation<PrivateResource> resource = resolver.encryptAndResolvePath(auth, absolute);
 
         assertThat(resource.location()).isEqualTo(absolute.location());
         verify(pathEncryption, never()).encrypt(any(), any());
@@ -67,7 +67,7 @@ class EncryptedResourceResolverTest extends BaseMockitoTest {
         when(resourceResolver.resolveRelativeToPrivate(eq(auth), any()))
                 .thenAnswer(inv -> BasePrivateResource.forAbsolutePrivate(root.location().resolve(ENCRYPTED)));
 
-        AbsoluteResourceLocation<PrivateResource> resource = resolver.encryptAndResolvePath(auth, relative);
+        AbsoluteLocation<PrivateResource> resource = resolver.encryptAndResolvePath(auth, relative);
 
         verify(resourceResolver).resolveRelativeToPrivate(eq(auth), captor.capture());
         assertThat(resource.location()).asString().isEqualTo("s3://root/" + ENCRYPTED);
@@ -79,9 +79,9 @@ class EncryptedResourceResolverTest extends BaseMockitoTest {
     void decryptAndResolvePathAbsolute() {
         when(pathEncryption.decrypt(auth, URI.create(ENCRYPTED))).thenReturn(URI.create(DECRYPTED));
         when(resourceResolver.resolveRelativeToPrivate(auth, absoluteEncrypted))
-                .thenReturn(new AbsoluteResourceLocation<>(absolute));
+                .thenReturn(new AbsoluteLocation<>(absolute));
 
-        AbsoluteResourceLocation<PrivateResource> resource =
+        AbsoluteLocation<PrivateResource> resource =
                 resolver.decryptAndResolvePath(auth, absoluteEncrypted, root);
 
         assertThat(resource.location()).asString().isEqualTo("s3://root/bucket/" + ENCRYPTED);
@@ -93,9 +93,9 @@ class EncryptedResourceResolverTest extends BaseMockitoTest {
     void decryptAndResolvePathRelative() {
         when(pathEncryption.decrypt(auth, URI.create("path/" + ENCRYPTED))).thenReturn(URI.create(DECRYPTED));
         when(resourceResolver.resolveRelativeToPrivate(auth, relativeEncrypted))
-                .thenReturn(new AbsoluteResourceLocation<>(absolute));
+                .thenReturn(new AbsoluteLocation<>(absolute));
 
-        AbsoluteResourceLocation<PrivateResource> resource =
+        AbsoluteLocation<PrivateResource> resource =
                 resolver.decryptAndResolvePath(auth, relativeEncrypted, root);
 
         assertThat(resource.location()).asString().isEqualTo("s3://root/bucket/path/" + ENCRYPTED);

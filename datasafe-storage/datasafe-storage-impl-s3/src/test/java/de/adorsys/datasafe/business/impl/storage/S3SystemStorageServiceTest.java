@@ -6,7 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
@@ -37,8 +37,8 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
     private static String url = "http://localhost";
     private static BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
     private static AmazonS3 s3;
-    private static AbsoluteResourceLocation<PrivateResource> root;
-    private static AbsoluteResourceLocation<PrivateResource> fileWithMsg;
+    private static AbsoluteLocation<PrivateResource> root;
+    private static AbsoluteLocation<PrivateResource> fileWithMsg;
 
     private static GenericContainer minio = new GenericContainer("minio/minio")
             .withExposedPorts(9000)
@@ -61,8 +61,8 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
                 .build();
 
         s3.createBucket(bucketName);
-        root = new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(URI.create("s3://" + bucketName)));
-        fileWithMsg = new AbsoluteResourceLocation<>(BasePrivateResource.forPrivate(URI.create("./" + FILE))
+        root = new AbsoluteLocation<>(BasePrivateResource.forPrivate(URI.create("s3://" + bucketName)));
+        fileWithMsg = new AbsoluteLocation<>(BasePrivateResource.forPrivate(URI.create("./" + FILE))
                 .resolve(root));
     }
 
@@ -77,7 +77,7 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
 
         assertThat(storageService.list(root))
                 .hasSize(1)
-                .extracting(AbsoluteResourceLocation::location)
+                .extracting(AbsoluteLocation::location)
                 .asString().contains(FILE);
     }
 

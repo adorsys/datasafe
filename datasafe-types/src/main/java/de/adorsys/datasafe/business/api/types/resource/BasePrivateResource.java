@@ -41,8 +41,8 @@ public final class BasePrivateResource implements PrivateResource {
         return new BasePrivateResource().resolve(path, EMPTY_URI);
     }
 
-    public static AbsoluteResourceLocation<PrivateResource> forAbsolutePrivate(URI path) {
-        return new AbsoluteResourceLocation<>(new BasePrivateResource(path).resolve(EMPTY_URI, EMPTY_URI));
+    public static AbsoluteLocation<PrivateResource> forAbsolutePrivate(URI path) {
+        return new AbsoluteLocation<>(new BasePrivateResource(path).resolve(EMPTY_URI, EMPTY_URI));
     }
 
     @Override

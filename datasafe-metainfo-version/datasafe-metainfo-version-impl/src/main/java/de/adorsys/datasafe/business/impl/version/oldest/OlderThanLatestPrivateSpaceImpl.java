@@ -6,7 +6,7 @@ import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.Version;
 import de.adorsys.datasafe.business.api.types.resource.Versioned;
@@ -35,13 +35,13 @@ public class OlderThanLatestPrivateSpaceImpl<V extends OlderThanLatestDFSVersion
     private final PrivateSpaceService privateSpaceService;
 
     @Override
-    public Stream<AbsoluteResourceLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+    public Stream<AbsoluteLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
         // profiles.privateProfile(request.getOwner()).getDocumentVersionStorage()
         return null;
     }
 
     @Override
-    public Stream<Versioned<AbsoluteResourceLocation<PrivateResource>, PrivateResource, Version>> listVersioned(
+    public Stream<Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version>> listWithDetails(
             ListRequest<UserIDAuth, PrivateResource> request) {
         return null;
     }

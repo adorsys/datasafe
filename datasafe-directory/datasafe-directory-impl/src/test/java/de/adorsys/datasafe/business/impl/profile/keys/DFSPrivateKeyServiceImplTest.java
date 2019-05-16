@@ -27,9 +27,9 @@ import static org.mockito.Mockito.when;
 
 class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
 
-    private static final AbsoluteResourceLocation<PrivateResource> PRIVATE = BasePrivateResource
+    private static final AbsoluteLocation<PrivateResource> PRIVATE = BasePrivateResource
             .forAbsolutePrivate(URI.create("s3://bucket"));
-    private static final AbsoluteResourceLocation<PublicResource> PUBLIC = BasePublicResource
+    private static final AbsoluteLocation<PublicResource> PUBLIC = BasePublicResource
             .forAbsolutePublic(URI.create("s3://bucket"));
 
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));

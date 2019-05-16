@@ -4,7 +4,7 @@ import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalServi
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.utils.Log;
@@ -49,7 +49,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
     public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
         UserPrivateProfile privateProfile = profiles.privateProfile(request.getOwner());
 
-        AbsoluteResourceLocation<PrivateResource> latestSnapshotLink =
+        AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(
                         request.getOwner(), request.getLocation(), privateProfile
                 );
@@ -73,7 +73,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
     }
 
     private PrivateResource encryptPath(UserIDAuth auth, URI uri, PrivateResource base) {
-        AbsoluteResourceLocation<PrivateResource> resource = encryptedResourceResolver.encryptAndResolvePath(
+        AbsoluteLocation<PrivateResource> resource = encryptedResourceResolver.encryptAndResolvePath(
                 auth,
                 base.resolve(uri, URI.create(""))
         );
