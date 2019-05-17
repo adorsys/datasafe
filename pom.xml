@@ -14,6 +14,7 @@
         <module>datasafe-storage</module>
         <module>datasafe-types</module>
         <module>datasafe-test-shared</module>
+        <module>datasafe-rest</module>
     </modules>
 
     <groupId>de.adorsys</groupId>
