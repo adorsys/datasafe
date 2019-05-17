@@ -3,17 +3,13 @@ package de.adorsys.datasafe.business.impl.storage;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
-import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.types.utils.Log;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -30,7 +26,7 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public Stream<AbsoluteLocation<PrivateResource>> list(AbsoluteLocation location) {
+    public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         log.debug("List at {}", location);
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
         listObjectsV2Request.setBucketName(bucketName);
@@ -40,9 +36,12 @@ public class S3StorageService implements StorageService {
         ListObjectsV2Result listObjectsV2Result = s3.listObjectsV2(listObjectsV2Request);
         List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
         return objectSummaries.stream()
-                .map(os -> URI.create(os.getKey().substring(len)))
-                .map(uri -> new BasePrivateResource(uri).resolve(location))
-                .map(AbsoluteLocation::new);
+                .map(os -> new AbsoluteLocation<>(
+                        new BaseResolvedResource(
+                                createResource(location, os, len),
+                                os.getLastModified().toInstant()
+                        ))
+                );
     }
 
     @Override
@@ -74,6 +73,15 @@ public class S3StorageService implements StorageService {
         boolean pathExists = s3.doesObjectExist(bucketName, key);
         log.debug("Path {} exists {}", Log.secure(key), pathExists);
         return pathExists;
+    }
+
+    private PrivateResource createResource(AbsoluteLocation root, S3ObjectSummary os, int prefixLen) {
+        String relUrl = os.getKey().substring(prefixLen);
+        if ("".equals(relUrl)) {
+            return BasePrivateResource.forPrivate(root.location());
+        }
+
+        return BasePrivateResource.forPrivate(relUrl).resolve(root);
     }
 
     @Slf4j
