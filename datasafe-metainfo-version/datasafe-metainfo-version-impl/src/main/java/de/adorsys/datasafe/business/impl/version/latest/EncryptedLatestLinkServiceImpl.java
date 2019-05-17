@@ -1,7 +1,8 @@
-package de.adorsys.datasafe.business.impl.version;
+package de.adorsys.datasafe.business.impl.version.latest;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
@@ -17,20 +18,25 @@ import java.net.URI;
 
 public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkService {
 
+    private final ProfileRetrievalService profiles;
     private final EncryptedResourceResolver resolver;
     private final PrivateSpaceService privateSpace;
 
     @Inject
-    public EncryptedLatestLinkServiceImpl(EncryptedResourceResolver resolver, PrivateSpaceService privateSpace) {
+    public EncryptedLatestLinkServiceImpl(EncryptedResourceResolver resolver, PrivateSpaceService privateSpace,
+                                          ProfileRetrievalService profiles) {
         this.resolver = resolver;
         this.privateSpace = privateSpace;
+        this.profiles = profiles;
     }
 
     @Override
     public AbsoluteLocation<PrivateResource> resolveLatestLinkLocation(
-            UserIDAuth auth, PrivateResource resource, UserPrivateProfile privateProfile) {
+            UserIDAuth owner, PrivateResource resource) {
+        UserPrivateProfile privateProfile = profiles.privateProfile(owner);
+
         AbsoluteLocation<PrivateResource> encryptedPath = resolver.encryptAndResolvePath(
-                auth,
+                owner,
                 resource
         );
 
@@ -42,8 +48,9 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
     @Override
     public AbsoluteLocation<PrivateResource> readLinkAndDecrypt(
             UserIDAuth owner,
-            AbsoluteLocation<PrivateResource> latestLink,
-            UserPrivateProfile privateProfile) {
+            AbsoluteLocation<PrivateResource> latestLink) {
+        UserPrivateProfile privateProfile = profiles.privateProfile(owner);
+
         String relativeToPrivateUri = readLink(owner, latestLink);
 
         PrivateResource userPrivate = privateProfile.getPrivateStorage().getResource();

@@ -1,17 +1,16 @@
 package de.adorsys.datasafe.business.impl.version.latest.actions;
 
-import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.utils.Log;
+import de.adorsys.datasafe.business.api.version.VersionEncoder;
 import de.adorsys.datasafe.business.api.version.actions.VersionedWrite;
-import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
 import de.adorsys.datasafe.business.impl.privatespace.actions.EncryptedResourceResolver;
-import de.adorsys.datasafe.business.impl.version.EncryptedLatestLinkServiceImpl;
+import de.adorsys.datasafe.business.impl.privatespace.actions.WriteToPrivate;
+import de.adorsys.datasafe.business.impl.version.latest.EncryptedLatestLinkServiceImpl;
 import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,39 +21,35 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.UUID;
 
 public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWrite<V> {
 
     @Getter
     private final V strategy;
 
+    private final VersionEncoder encoder;
     private final EncryptedResourceResolver encryptedResourceResolver;
-    private final ProfileRetrievalService profiles;
-    private final PrivateSpaceService privateSpace;
+    private final WriteToPrivate writeToPrivate;
     private final EncryptedLatestLinkServiceImpl latestVersionLinkLocator;
 
     @Inject
-    public LatestWriteImpl(V versionStrategy, EncryptedResourceResolver encryptedResourceResolver,
-                           ProfileRetrievalService profiles, PrivateSpaceService privateSpace,
-                           EncryptedLatestLinkServiceImpl latestVersionLinkLocator) {
-        this.strategy = versionStrategy;
+    public LatestWriteImpl(V strategy, VersionEncoder encoder, EncryptedResourceResolver encryptedResourceResolver,
+                           WriteToPrivate writeToPrivate, EncryptedLatestLinkServiceImpl latestVersionLinkLocator) {
+        this.strategy = strategy;
+        this.encoder = encoder;
         this.encryptedResourceResolver = encryptedResourceResolver;
-        this.profiles = profiles;
-        this.privateSpace = privateSpace;
+        this.writeToPrivate = writeToPrivate;
         this.latestVersionLinkLocator = latestVersionLinkLocator;
     }
 
     @Override
     public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
-        UserPrivateProfile privateProfile = profiles.privateProfile(request.getOwner());
-
         AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(
-                        request.getOwner(), request.getLocation(), privateProfile
+                        request.getOwner(), request.getLocation()
                 );
 
-        URI decryptedPath = URI.create(request.getLocation().location() + "-" + UUID.randomUUID().toString());
+        URI decryptedPath = encoder.newVersion(request.getLocation().location()).getPathWithVersion();
 
         PrivateResource resourceRelativeToPrivate = encryptPath(
                 request.getOwner(),
@@ -63,10 +58,10 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
         );
 
         return new VersionCommittingStream(
-                privateSpace.write(
+                writeToPrivate.write(
                         request.toBuilder().location(BasePrivateResource.forPrivate(decryptedPath)).build()
                 ),
-                privateSpace,
+                writeToPrivate,
                 request.toBuilder().location(latestSnapshotLink.getResource()).build(),
                 resourceRelativeToPrivate
         );
@@ -86,7 +81,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
     private static final class VersionCommittingStream extends OutputStream {
 
         private final OutputStream streamToWrite;
-        private final PrivateSpaceService privateSpaceService;
+        private final WriteToPrivate writeToPrivate;
         private final WriteRequest<UserIDAuth, PrivateResource> request;
         private final PrivateResource writtenResource;
 
@@ -107,7 +102,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
             streamToWrite.close();
 
             log.debug("Committing file {} with blob {}", Log.secure(request.getLocation()), Log.secure(writtenResource));
-            try (OutputStream os = privateSpaceService.write(request)) {
+            try (OutputStream os = writeToPrivate.write(request)) {
                 os.write(writtenResource.location().toASCIIString().getBytes());
             }
         }

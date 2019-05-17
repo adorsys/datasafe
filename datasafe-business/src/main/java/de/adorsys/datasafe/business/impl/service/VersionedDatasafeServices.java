@@ -16,6 +16,7 @@ import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultVersionedPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl;
+import de.adorsys.datasafe.business.impl.version.latest.DefaultVersionInfoServiceImpl;
 import de.adorsys.datasafe.business.impl.version.latest.LatestPrivateSpaceImpl;
 import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
 
@@ -37,6 +38,11 @@ import javax.inject.Singleton;
         DefaultProfileModule.class
 })
 public interface VersionedDatasafeServices {
+
+    /**
+     * @return Provides version information for a given resource
+     */
+    DefaultVersionInfoServiceImpl versionInfo();
 
     /**
      * @return Filtered view of user's private space, that shows only latest files

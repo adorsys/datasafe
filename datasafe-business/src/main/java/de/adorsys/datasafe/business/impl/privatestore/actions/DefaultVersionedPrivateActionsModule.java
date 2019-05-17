@@ -4,17 +4,22 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import de.adorsys.datasafe.business.api.version.EncryptedLatestLinkService;
+import de.adorsys.datasafe.business.api.version.VersionEncoder;
+import de.adorsys.datasafe.business.api.version.VersionInfoService;
 import de.adorsys.datasafe.business.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.business.api.version.actions.VersionedList;
 import de.adorsys.datasafe.business.api.version.actions.VersionedRead;
 import de.adorsys.datasafe.business.api.version.actions.VersionedRemove;
 import de.adorsys.datasafe.business.api.version.actions.VersionedWrite;
-import de.adorsys.datasafe.business.impl.version.EncryptedLatestLinkServiceImpl;
+import de.adorsys.datasafe.business.impl.version.latest.DefaultVersionEncoder;
+import de.adorsys.datasafe.business.impl.version.latest.DefaultVersionInfoServiceImpl;
+import de.adorsys.datasafe.business.impl.version.latest.EncryptedLatestLinkServiceImpl;
 import de.adorsys.datasafe.business.impl.version.latest.LatestPrivateSpaceImpl;
 import de.adorsys.datasafe.business.impl.version.latest.actions.LatestListImpl;
 import de.adorsys.datasafe.business.impl.version.latest.actions.LatestReadImpl;
 import de.adorsys.datasafe.business.impl.version.latest.actions.LatestRemoveImpl;
 import de.adorsys.datasafe.business.impl.version.latest.actions.LatestWriteImpl;
+import de.adorsys.datasafe.business.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
 
 /**
@@ -27,6 +32,12 @@ public abstract class DefaultVersionedPrivateActionsModule {
     static LatestDFSVersion latestDFSVersion() {
         return new LatestDFSVersion();
     }
+
+    @Binds
+    abstract VersionEncoder versionEncoder(DefaultVersionEncoder impl);
+
+    @Binds
+    abstract VersionInfoService<DFSVersion> versionInfoService(DefaultVersionInfoServiceImpl impl);
 
     @Binds
     abstract EncryptedLatestLinkService latestLink(EncryptedLatestLinkServiceImpl impl);

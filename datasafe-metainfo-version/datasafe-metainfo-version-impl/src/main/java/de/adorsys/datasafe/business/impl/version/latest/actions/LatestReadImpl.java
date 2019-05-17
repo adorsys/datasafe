@@ -1,14 +1,12 @@
 package de.adorsys.datasafe.business.impl.version.latest.actions;
 
-import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.version.actions.VersionedRead;
-import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
-import de.adorsys.datasafe.business.impl.version.EncryptedLatestLinkServiceImpl;
+import de.adorsys.datasafe.business.impl.privatespace.actions.ReadFromPrivate;
+import de.adorsys.datasafe.business.impl.version.latest.EncryptedLatestLinkServiceImpl;
 import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
 import lombok.Getter;
 
@@ -20,35 +18,30 @@ public class LatestReadImpl<V extends LatestDFSVersion> implements VersionedRead
     @Getter
     private final V strategy;
 
-    private final ProfileRetrievalService profiles;
-    private final PrivateSpaceService privateSpace;
+    private final ReadFromPrivate readFromPrivate;
     private final EncryptedLatestLinkServiceImpl latestVersionLinkLocator;
 
     @Inject
-    public LatestReadImpl(V versionStrategy, ProfileRetrievalService profiles, PrivateSpaceService privateSpace,
+    public LatestReadImpl(V versionStrategy, ReadFromPrivate readFromPrivate,
                           EncryptedLatestLinkServiceImpl latestVersionLinkLocator) {
         this.strategy = versionStrategy;
-        this.profiles = profiles;
-        this.privateSpace = privateSpace;
+        this.readFromPrivate = readFromPrivate;
         this.latestVersionLinkLocator = latestVersionLinkLocator;
     }
 
     @Override
     public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
-        UserPrivateProfile privateProfile = profiles.privateProfile(request.getOwner());
 
         AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(
                         request.getOwner(),
-                        request.getLocation(),
-                        privateProfile
+                        request.getLocation()
                 );
 
-        return privateSpace.read(request.toBuilder()
+        return readFromPrivate.read(request.toBuilder()
                 .location(latestVersionLinkLocator.readLinkAndDecrypt(
                         request.getOwner(),
-                        latestSnapshotLink,
-                        privateProfile).getResource()
+                        latestSnapshotLink).getResource()
                 )
                 .build()
         );
