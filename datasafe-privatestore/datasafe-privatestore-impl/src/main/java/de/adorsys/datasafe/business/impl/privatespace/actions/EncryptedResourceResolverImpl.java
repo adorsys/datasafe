@@ -21,15 +21,20 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
     }
 
     @Override
+    public PrivateResource encrypt(UserIDAuth auth, PrivateResource resource) {
+        URI decryptedPath = resource.location();
+        URI encryptedRelativePath = pathEncryption.encrypt(auth, decryptedPath);
+
+        return resource.resolve(encryptedRelativePath, decryptedPath);
+    }
+
+    @Override
     public AbsoluteLocation<PrivateResource> encryptAndResolvePath(UserIDAuth auth, PrivateResource resource) {
         if (resolver.isAbsolute(resource)) {
             return new AbsoluteLocation<>(resource);
         }
 
-        URI decryptedPath = resource.location();
-        URI encryptedRelativePath = pathEncryption.encrypt(auth, decryptedPath);
-
-        return resolver.resolveRelativeToPrivate(auth, resource.resolve(encryptedRelativePath, decryptedPath));
+        return resolver.resolveRelativeToPrivate(auth, encrypt(auth, resource));
     }
 
     @Override

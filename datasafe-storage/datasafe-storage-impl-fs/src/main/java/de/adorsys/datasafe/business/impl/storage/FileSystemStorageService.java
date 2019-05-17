@@ -2,9 +2,7 @@ package de.adorsys.datasafe.business.impl.storage;
 
 import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
-import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.types.utils.Log;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -17,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Instant;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -27,7 +26,7 @@ public class FileSystemStorageService implements StorageService {
 
     @SneakyThrows
     @Override
-    public Stream<AbsoluteLocation<PrivateResource>> list(AbsoluteLocation path) {
+    public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation path) {
         log.debug("List file request: {}", path);
         Path filePath = resolve(path.location(), false);
         log.debug("List file: {}", Log.secure(filePath));
@@ -40,7 +39,12 @@ public class FileSystemStorageService implements StorageService {
         return Files.walk(filePath)
                 .filter(it -> !it.startsWith("."))
                 .filter(it -> !it.toFile().isDirectory())
-                .map(it -> new AbsoluteLocation<>(new BasePrivateResource(it.toUri())));
+                .map(it -> new AbsoluteLocation<>(
+                        new BaseResolvedResource(
+                                new BasePrivateResource(it.toUri()),
+                                Instant.ofEpochMilli(it.toFile().lastModified()))
+                        )
+                );
     }
 
     @SneakyThrows

@@ -95,12 +95,12 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 Log.secure(path.split("/"), "/"));
     }
 
-    protected AbsoluteLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
+    protected AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth owner) {
         return getAllFilesInPrivate(owner).get(0);
     }
 
-    protected List<AbsoluteLocation<PrivateResource>> getAllFilesInPrivate(UserIDAuth owner) {
-        List<AbsoluteLocation<PrivateResource>> files = listPrivate.list(
+    protected List<AbsoluteLocation<ResolvedResource>> getAllFilesInPrivate(UserIDAuth owner) {
+        List<AbsoluteLocation<ResolvedResource>> files = listPrivate.list(
                 ListRequest.forDefaultPrivate(owner, "./")
         ).collect(Collectors.toList());
 
@@ -136,12 +136,12 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return data;
     }
 
-    protected AbsoluteLocation<PrivateResource> getFirstFileInInbox(UserIDAuth inboxOwner) {
+    protected AbsoluteLocation<ResolvedResource> getFirstFileInInbox(UserIDAuth inboxOwner) {
         return getAllFilesInInbox(inboxOwner).get(0);
     }
 
-    protected List<AbsoluteLocation<PrivateResource>> getAllFilesInInbox(UserIDAuth inboxOwner) {
-        List<AbsoluteLocation<PrivateResource>> files = listInbox.list(
+    protected List<AbsoluteLocation<ResolvedResource>> getAllFilesInInbox(UserIDAuth inboxOwner) {
+        List<AbsoluteLocation<ResolvedResource>> files = listInbox.list(
                 ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 

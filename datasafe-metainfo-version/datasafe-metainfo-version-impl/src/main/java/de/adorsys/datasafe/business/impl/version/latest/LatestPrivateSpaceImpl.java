@@ -5,10 +5,7 @@ import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.Version;
-import de.adorsys.datasafe.business.api.types.resource.Versioned;
+import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.business.api.version.actions.VersionedList;
 import de.adorsys.datasafe.business.api.version.actions.VersionedRead;
@@ -49,13 +46,13 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
 
     // Delegate didn't work
     @Override
-    public Stream<AbsoluteLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
         return listService.list(request);
     }
 
     // Delegate didn't work
     @Override
-    public Stream<Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version>> listWithDetails(
+    public Stream<Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version>> listWithDetails(
             ListRequest<UserIDAuth, PrivateResource> request) {
         return listService.listVersioned(request);
     }

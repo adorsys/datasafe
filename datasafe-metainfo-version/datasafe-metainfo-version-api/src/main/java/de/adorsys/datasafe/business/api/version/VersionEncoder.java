@@ -5,6 +5,9 @@ import de.adorsys.datasafe.business.api.types.resource.*;
 import java.net.URI;
 import java.util.Optional;
 
+/**
+ * Encodes and decodes URI into/from URI with version.
+ */
 public interface VersionEncoder {
 
     /**

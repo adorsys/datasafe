@@ -34,12 +34,15 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
     }
 
     @Override
-    public Stream<AbsoluteLocation<PrivateResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
-        return listVersioned(request).map(Versioned::absolute);
+    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+        // Returns absolute location of versioned resource tagged with date based on link
+        return listVersioned(request)
+                .map(it -> it.stripVersion().withResource(it.absolute().getResource()))
+                .map(AbsoluteLocation::new);
     }
 
     @Override
-    public Stream<Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version>> listVersioned(
+    public Stream<Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version>> listVersioned(
             ListRequest<UserIDAuth, PrivateResource> request) {
 
         ListRequest<UserIDAuth, PrivateResource> forLatestSnapshotDir = request.toBuilder().location(
@@ -53,10 +56,13 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
                 .filter(Objects::nonNull);
     }
 
-    private Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version> parseVersion(
-            ListRequest<UserIDAuth, PrivateResource> request, AbsoluteLocation<PrivateResource> resource) {
+    private Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version> parseVersion(
+            ListRequest<UserIDAuth, PrivateResource> request, AbsoluteLocation<ResolvedResource> resource) {
         AbsoluteLocation<PrivateResource> privateBlob =
-                latestVersionLinkLocator.readLinkAndDecrypt(request.getOwner(), resource);
+                latestVersionLinkLocator.readLinkAndDecrypt(
+                        request.getOwner(),
+                        new AbsoluteLocation<>(resource.getResource().asPrivate())
+                );
 
         VersionedUri versionedUri = encoder.decodeVersion(privateBlob.getResource().decryptedPath()).orElse(null);
 
@@ -66,8 +72,8 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
 
         return new BaseVersionedPath<>(
                 new DFSVersion(versionedUri.getVersion()),
-                resource.getResource(),
-                privateBlob
+                privateBlob,
+                resource.getResource()
         );
     }
 }
