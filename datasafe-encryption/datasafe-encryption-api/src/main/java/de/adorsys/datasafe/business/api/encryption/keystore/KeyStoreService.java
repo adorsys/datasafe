@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Created by peter on 11.01.18.
+ * This class is responsible for creating,serializing keystores as well as reading keys from keystores.
+ * TODO: Move it into another subproject - it is very heavyweight and used mostly in profile module.
  */
 public interface KeyStoreService {
 
