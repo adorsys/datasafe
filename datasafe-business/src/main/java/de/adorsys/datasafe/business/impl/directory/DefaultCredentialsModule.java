@@ -49,11 +49,4 @@ public abstract class DefaultCredentialsModule {
 
     @Binds
     abstract PrivateKeyService privateKeyService(DFSPrivateKeyServiceImpl impl);
-
-    private static <T> Supplier<Cache<UserID, T>> keystore() {
-        return () -> CacheBuilder.newBuilder()
-                .initialCapacity(1000)
-                .build();
-
-    }
 }
