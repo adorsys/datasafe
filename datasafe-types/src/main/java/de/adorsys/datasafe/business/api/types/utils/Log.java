@@ -44,7 +44,6 @@ public class Log {
         return sb.toString();
     }
 
-    @SneakyThrows
     public static String secure(Path path) {
         if (path == null) {
             return null;
@@ -53,7 +52,6 @@ public class Log {
         return secure(path.toUri());
     }
 
-    @SneakyThrows
     public static String secure(URI uri) {
         if (uri == null) {
             return null;
@@ -76,17 +74,14 @@ public class Log {
         return secure(sb.toString().split("/", -1), "/");
     }
 
-    @SneakyThrows
     public static <T extends ResourceLocation> String secure(T resource) {
         return secure(resource.location());
     }
 
-    @SneakyThrows
     public static String secure(Object[] values, String delim) {
         return secure(Arrays.asList(values), delim);
     }
 
-    @SneakyThrows
     public static String secure(Object value) {
         if (value == null) {
             return null;

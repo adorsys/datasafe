@@ -6,6 +6,7 @@ import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +47,24 @@ public class LogTest {
     void secureURI() {
         Log.secureLogs = "STARS";
         assertThat(Log.secure(TEST_URI)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er");
+    }
+
+    @Test
+    void secureNullPath() {
+        Path path = null;
+        assertThat(Log.secure(path) == null);
+    }
+
+    @Test
+    void secureNullUri() {
+        URI uri = null;
+        assertThat(Log.secure(uri) == null);
+    }
+
+    @Test
+    void secureNullObject() {
+        Object uri = null;
+        assertThat(Log.secure(uri) == null);
     }
 
     @Test

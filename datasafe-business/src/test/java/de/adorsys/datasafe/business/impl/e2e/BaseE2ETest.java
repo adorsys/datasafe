@@ -7,6 +7,7 @@ import de.adorsys.datasafe.business.api.inbox.actions.RemoveFromInbox;
 import de.adorsys.datasafe.business.api.inbox.actions.WriteToInbox;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
+import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.business.api.types.UserID;
@@ -56,6 +57,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected RemoveFromInbox removeFromInbox;
     protected ProfileRegistrationService profileRegistrationService;
     protected ProfileRemovalService profileRemovalService;
+    protected ProfileRetrievalService profileRetrievalService;
 
     protected UserIDAuth john;
     protected UserIDAuth jane;
@@ -71,6 +73,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         this.removeFromInbox = datasafeServices.inboxService();
         this.profileRegistrationService = datasafeServices.userProfile();
         this.profileRemovalService = datasafeServices.userProfile();
+        this.profileRetrievalService = datasafeServices.userProfile();
     }
 
     protected void initialize(VersionedDatasafeServices datasafeServices) {
@@ -84,6 +87,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         this.removeFromInbox = datasafeServices.inboxService();
         this.profileRegistrationService = datasafeServices.userProfile();
         this.profileRemovalService = datasafeServices.userProfile();
+        this.profileRetrievalService = datasafeServices.userProfile();
     }
 
     @SneakyThrows

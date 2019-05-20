@@ -64,6 +64,9 @@ public class FileSystemStorageService implements StorageService {
     @SneakyThrows
     @Override
     public void remove(AbsoluteLocation location) {
+        if (!objectExists(location)) {
+            return;
+        }
         Files.delete(resolve(location.location(), false));
         log.debug("deleted directory at: {}", location);
     }

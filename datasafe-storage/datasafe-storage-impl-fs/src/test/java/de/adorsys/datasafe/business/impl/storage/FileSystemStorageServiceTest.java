@@ -105,7 +105,7 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     @Test
     void listDotFilesToo() {
-        Path dotFile = Paths.get(".dotfile");
+        Path dotFile = storageDir.resolve(".dotfile");
         AbsoluteLocation<PrivateResource> newFileLocation = new AbsoluteLocation<>(BasePrivateResource.forPrivate(dotFile.toUri()));
 
         assertThat(storageService.list(root).collect(Collectors.toList()).isEmpty());
@@ -114,17 +114,6 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
         }
         assertThat(!storageService.list(root).collect(Collectors.toList()).isEmpty());
     }
-
-    @Test
-    void removeWithException() {
-        createFileWithMessage();
-        storageService.remove(fileWithMsg);
-        assertThatThrownBy(() -> {
-            storageService.remove(fileWithMsg);
-        });
-
-    }
-
 
     @Test
     void list() {

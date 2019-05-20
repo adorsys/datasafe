@@ -30,8 +30,18 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
-            WithStorageProvider.StorageDescriptor descriptor) {
+    public void testDFSBasedProfileStorage(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+        // assertThat(!profileRetrievalService.userExists(john.getUserID()));
+        john = registerUser("john", descriptor.getLocation());
+        assertThat(profileRetrievalService.userExists(john.getUserID()));
+        profileRemovalService.deregister(john);
+        assertThat(profileRetrievalService.userExists(john.getUserID()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("storages")
+    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane(descriptor.getLocation());
