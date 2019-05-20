@@ -47,6 +47,12 @@
                 <value>%logger</value>
             </property>
         </properties>
+        <headers>
+            <header>
+                <name>Content-Type</name>
+                <value>application/json</value>
+            </header>
+        </headers>
     </appender>
 
     <root level="info">
@@ -60,7 +66,6 @@
 
     <logger name="es-logger" level="INFO" additivity="false">
         <appender name="ES_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <!-- ... -->
             <encoder>
                 <pattern>%msg</pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
             </encoder>

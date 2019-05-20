@@ -70,7 +70,7 @@ public class DocumentController {
                                       @RequestParam String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         return dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
-                        .map(e -> e.getResource().location().getPath())
+                        .map(e -> e.getResource().decryptedPath().getPath())
                         .collect(Collectors.toList());
     }
 

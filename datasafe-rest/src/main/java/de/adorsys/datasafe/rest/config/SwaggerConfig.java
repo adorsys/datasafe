@@ -8,6 +8,8 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import static springfox.documentation.builders.RequestHandlerSelectors.basePackage;
+
 @EnableSwagger2
 @Configuration
 public class SwaggerConfig {
@@ -16,6 +18,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.any())
+                .apis(basePackage("de.adorsys"))
                 .paths(PathSelectors.any())
                 .build();
     }
