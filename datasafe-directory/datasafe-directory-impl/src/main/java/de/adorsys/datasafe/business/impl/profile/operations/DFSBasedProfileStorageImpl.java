@@ -152,7 +152,7 @@ public class DFSBasedProfileStorageImpl implements
         KeyStore keystoreBlob = keyStoreService.createKeyStore(
                 auth,
                 KeyStoreType.DEFAULT,
-                new KeyStoreCreationConfig(1, 1, 1)
+                new KeyStoreCreationConfig(1, 1)
         );
 
         try (OutputStream os = writeService.write(keystore)) {

@@ -15,5 +15,4 @@ public class KeyStoreCreationConfig {
 
     private final int encKeyNumber;
     private final int signKeyNumber;
-    private final int secretKeyNumber;
 }

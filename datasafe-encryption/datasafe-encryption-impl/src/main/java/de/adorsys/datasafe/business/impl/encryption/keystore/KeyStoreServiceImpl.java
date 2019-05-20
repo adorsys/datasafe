@@ -46,7 +46,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
         log.debug("start create keystore ");
         if (config == null) {
-            config = new KeyStoreCreationConfig(5, 5, 5);
+            config = new KeyStoreCreationConfig(5, 5);
         }
         // TODO, hier also statt der StoreID nun das
         String serverKeyPairAliasPrefix = UUID.randomUUID().toString();

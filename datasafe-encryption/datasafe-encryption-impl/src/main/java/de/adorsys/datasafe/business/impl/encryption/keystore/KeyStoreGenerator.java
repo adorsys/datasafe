@@ -92,7 +92,6 @@ public class KeyStoreGenerator {
                 }
             }
             {
-                // FIXME: We do not really need random ids
                 SecretKeyGenerator secretKeyGenerator = config.getSecretKeyGenerator(keyStoreID);
 
                 for (Map.Entry<KeyID, Optional<SecretKeyEntry>> keyEntry : secretKeys.entrySet()) {
