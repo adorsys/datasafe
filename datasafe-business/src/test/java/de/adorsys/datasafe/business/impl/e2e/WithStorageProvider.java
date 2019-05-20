@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
@@ -26,6 +27,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -43,38 +45,25 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     private static String amazonRegion = System.getProperty("AWS_REGION", "eu-central-1");
     private static String amazonBucket = System.getProperty("AWS_BUCKET", "adorsys-docusafe");
 
-    private static GenericContainer minioContainer = new GenericContainer("minio/minio")
-            .withExposedPorts(9000)
-            .withEnv("MINIO_ACCESS_KEY", "admin")
-            .withEnv("MINIO_SECRET_KEY", "password")
-            .withCommand("server /data")
-            .waitingFor(Wait.defaultWaitStrategy());
+    private static GenericContainer minioContainer;
 
     private static Path tempDir;
     private static AmazonS3 minio;
     private static AmazonS3 amazonS3;
 
+    private static Supplier<Void> MINIO = Suppliers.memoize(() -> {
+        startMinio();
+        return null;
+    });
+
+    private static Supplier<Void> AMAZON_S3 = Suppliers.memoize(() -> {
+        initS3();
+        return null;
+    });
+
     @BeforeAll
     static void init(@TempDir Path tempDir) {
-        minioContainer.start();
-        Integer mappedPort = minioContainer.getMappedPort(9000);
-        log.info("Mapped port: " + mappedPort);
-        minio = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration(minioUrl + ":" + mappedPort, minioRegion)
-                )
-                .withCredentials(
-                        new AWSStaticCredentialsProvider(
-                                new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)
-                        )
-                )
-                .enablePathStyleAccess()
-                .build();
-
-
-        minio.createBucket(minioBucketName);
         WithStorageProvider.tempDir = tempDir;
-        initS3();
     }
 
     @AfterEach
@@ -95,13 +84,19 @@ public abstract class WithStorageProvider extends BaseE2ETest {
 
     @AfterAll
     static void shutdown() {
-        minioContainer.stop();
+        if (null != minioContainer) {
+            minioContainer.stop();
+        }
     }
 
     @ValueSource
     protected static Stream<WithStorageProvider.StorageDescriptor> storages() {
         return Stream.of(
-                new StorageDescriptor("FILESYSTEM", new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()),
+                new StorageDescriptor(
+                        "FILESYSTEM",
+                        () -> new FileSystemStorageService(tempDir.toUri()),
+                        tempDir.toUri()
+                ),
                 minio(),
                 s3()
         ).filter(Objects::nonNull);
@@ -130,13 +125,13 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     }
 
     private static StorageDescriptor minio() {
-        if (null == minio) {
-            return null;
-        }
-
         return new StorageDescriptor(
                 "MINIO S3",
-                new S3StorageService(minio, minioBucketName), URI.create("s3://" + minioBucketName + "/" + prefix + "/")
+                () -> {
+                    MINIO.get();
+                    return new S3StorageService(minio, minioBucketName);
+                },
+                URI.create("s3://" + minioBucketName + "/" + prefix + "/")
         );
     }
 
@@ -147,8 +142,39 @@ public abstract class WithStorageProvider extends BaseE2ETest {
 
         return new StorageDescriptor(
                 "AMAZON S3",
-                new S3StorageService(amazonS3, amazonBucket), URI.create("s3://" + amazonBucket + "/" + prefix + "/")
+                () -> {
+                    AMAZON_S3.get();
+                    return new S3StorageService(amazonS3, amazonBucket);
+                },
+                URI.create("s3://" + amazonBucket + "/" + prefix + "/")
         );
+    }
+
+    private static void startMinio() {
+        minioContainer = new GenericContainer("minio/minio")
+                .withExposedPorts(9000)
+                .withEnv("MINIO_ACCESS_KEY", "admin")
+                .withEnv("MINIO_SECRET_KEY", "password")
+                .withCommand("server /data")
+                .waitingFor(Wait.defaultWaitStrategy());
+
+        minioContainer.start();
+        Integer mappedPort = minioContainer.getMappedPort(9000);
+        log.info("Mapped port: " + mappedPort);
+        minio = AmazonS3ClientBuilder.standard()
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(minioUrl + ":" + mappedPort, minioRegion)
+                )
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)
+                        )
+                )
+                .enablePathStyleAccess()
+                .build();
+
+
+        minio.createBucket(minioBucketName);
     }
 
     @Getter
@@ -156,10 +182,10 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     static class StorageDescriptor {
 
         private final String name;
-        private final StorageService storageService;
+        private final Supplier<StorageService> storageService;
         private final URI location;
 
-        StorageDescriptor(String name, StorageService storageService, URI location) {
+        StorageDescriptor(String name, Supplier<StorageService> storageService, URI location) {
             this.name = name;
             this.storageService = storageService;
             this.location = location;

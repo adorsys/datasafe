@@ -154,11 +154,11 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
-                .defaultDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+                .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(datasafeServices);
 
         this.location = descriptor.getLocation();
-        this.storage = descriptor.getStorageService();
+        this.storage = descriptor.getStorageService().get();
     }
 
     private void createFileForUserParallelly(ThreadPoolExecutor executor, CountDownLatch holdingLatch,

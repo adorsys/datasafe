@@ -182,7 +182,7 @@ public class VersionedDataTest extends WithStorageProvider {
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         VersionedDatasafeServices datasafeServices = DatasafeServicesProvider
-                .versionedDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+                .versionedDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
 
         initialize(datasafeServices);
         this.versionedDocusafeServices = datasafeServices;
