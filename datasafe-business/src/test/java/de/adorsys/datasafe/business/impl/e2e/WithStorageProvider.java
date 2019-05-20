@@ -90,7 +90,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     }
 
     @ValueSource
-    protected static Stream<WithStorageProvider.StorageDescriptor> storages() {
+    protected static Stream<WithStorageProvider.StorageDescriptor> allStorages() {
         return Stream.of(
                 new StorageDescriptor(
                         "FILESYSTEM",
@@ -100,6 +100,34 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                 minio(),
                 s3()
         ).filter(Objects::nonNull);
+    }
+
+    @ValueSource
+    protected static StorageDescriptor minio() {
+        return new StorageDescriptor(
+                "MINIO S3",
+                () -> {
+                    MINIO.get();
+                    return new S3StorageService(minio, minioBucketName);
+                },
+                URI.create("s3://" + minioBucketName + "/" + prefix + "/")
+        );
+    }
+
+    @ValueSource
+    protected static StorageDescriptor s3() {
+        if (null == amazonAccessKeyID) {
+            return null;
+        }
+
+        return new StorageDescriptor(
+                "AMAZON S3",
+                () -> {
+                    AMAZON_S3.get();
+                    return new S3StorageService(amazonS3, amazonBucket);
+                },
+                URI.create("s3://" + amazonBucket + "/" + prefix + "/")
+        );
     }
 
     private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
@@ -122,32 +150,6 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                 )
                 .withRegion(amazonRegion)
                 .build();
-    }
-
-    private static StorageDescriptor minio() {
-        return new StorageDescriptor(
-                "MINIO S3",
-                () -> {
-                    MINIO.get();
-                    return new S3StorageService(minio, minioBucketName);
-                },
-                URI.create("s3://" + minioBucketName + "/" + prefix + "/")
-        );
-    }
-
-    private static StorageDescriptor s3() {
-        if (null == amazonS3) {
-            return null;
-        }
-
-        return new StorageDescriptor(
-                "AMAZON S3",
-                () -> {
-                    AMAZON_S3.get();
-                    return new S3StorageService(amazonS3, amazonBucket);
-                },
-                URI.create("s3://" + amazonBucket + "/" + prefix + "/")
-        );
     }
 
     private static void startMinio() {

@@ -39,7 +39,7 @@ public class VersionedDataTest extends WithStorageProvider {
     private VersionedDatasafeServices versionedDocusafeServices;
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionedWriteTopLevel(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -52,7 +52,7 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionedWriteUsingDirectAccess(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -67,7 +67,7 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionedRemove(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -84,7 +84,7 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionsOf(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -105,7 +105,7 @@ public class VersionedDataTest extends WithStorageProvider {
 
     // this test imitates removal of old file versions
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testOldRemoval(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 

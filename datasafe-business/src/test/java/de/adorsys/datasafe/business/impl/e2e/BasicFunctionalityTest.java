@@ -29,7 +29,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
     private URI location;
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
             WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);

@@ -54,7 +54,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     @SneakyThrows
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -103,7 +103,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     @SneakyThrows
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testCrossReadWriteOperationsBetweenUsersInboxPrivateComponents(
             WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
