@@ -30,7 +30,4 @@ public class KeyStoreCreationConfigImpl {
     public int getSignKeyNumber() {
         return config.getSignKeyNumber();
     }
-    public int getSecretKeyNumber() {
-        return config.getSecretKeyNumber();
-    }
 }

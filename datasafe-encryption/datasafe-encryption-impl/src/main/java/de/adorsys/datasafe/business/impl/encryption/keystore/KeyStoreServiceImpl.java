@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore;
 
+import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreServiceImplBaseFunctions;
@@ -12,10 +13,7 @@ import javax.inject.Inject;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 public class KeyStoreServiceImpl implements KeyStoreService {
@@ -29,18 +27,38 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                                    KeyStoreType keyStoreType,
                                    KeyStoreCreationConfig config) {
 
+        return createKeyStore(
+                keyStoreAuth,
+                keyStoreType,
+                config,
+                ImmutableMap.of(
+                        KeyStoreCreationConfig.PATH_KEY_ID, Optional.empty(),
+                        KeyStoreCreationConfig.SYMM_KEY_ID, Optional.empty()
+                )
+        );
+    }
+
+    @Override
+    public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
+                                   KeyStoreType keyStoreType,
+                                   KeyStoreCreationConfig config,
+                                   Map<KeyID, Optional<SecretKeyEntry>> secretKeys) {
+
         log.debug("start create keystore ");
         if (config == null) {
-            config = new KeyStoreCreationConfig(5, 5, 5);
+            config = new KeyStoreCreationConfig(5, 5);
         }
         // TODO, hier also statt der StoreID nun das
         String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
         log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
-        KeyStoreGenerator keyStoreGenerator = new KeyStoreGenerator(
-                config,
-                keyStoreType,
-                serverKeyPairAliasPrefix,
-                keyStoreAuth.getReadKeyPassword());
+        KeyStoreGenerator keyStoreGenerator = KeyStoreGenerator.builder()
+                .config(config)
+                .keyStoreType(keyStoreType)
+                .serverKeyPairAliasPrefix(serverKeyPairAliasPrefix)
+                .readKeyPassword(keyStoreAuth.getReadKeyPassword())
+                .secretKeys(secretKeys)
+                .build();
+
         KeyStore userKeyStore = keyStoreGenerator.generate();
         log.debug("finished create keystore ");
         return userKeyStore;

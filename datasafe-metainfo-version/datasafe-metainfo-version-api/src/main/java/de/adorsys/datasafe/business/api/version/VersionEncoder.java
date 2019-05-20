@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.version;
 
-import de.adorsys.datasafe.business.api.types.resource.*;
+import de.adorsys.datasafe.business.api.types.resource.VersionedUri;
 
 import java.net.URI;
 import java.util.Optional;

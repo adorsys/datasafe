@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.version.latest;
 
-import de.adorsys.datasafe.business.api.version.VersionEncoder;
 import de.adorsys.datasafe.business.api.types.resource.VersionedUri;
+import de.adorsys.datasafe.business.api.version.VersionEncoder;
 
 import javax.inject.Inject;
 import java.net.URI;

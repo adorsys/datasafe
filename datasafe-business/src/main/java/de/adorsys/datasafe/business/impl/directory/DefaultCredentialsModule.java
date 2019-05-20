@@ -9,6 +9,7 @@ import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.business.impl.profile.keys.DFSPrivateKeyServiceImpl;
 import de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl;
@@ -17,6 +18,7 @@ import de.adorsys.datasafe.business.impl.profile.keys.KeyStoreCache;
 
 import javax.inject.Singleton;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -28,11 +30,15 @@ public abstract class DefaultCredentialsModule {
     @Provides
     @Singleton
     static KeyStoreCache keyStoreCache() {
-        Supplier<Cache<UserID, KeyStore>> cache = () -> CacheBuilder.newBuilder()
+        Supplier<Cache<UserID, KeyStore>> cacheKeystore = () -> CacheBuilder.newBuilder()
                 .initialCapacity(1000)
                 .build();
 
-        return new DefaultKeyStoreCache(cache.get().asMap(), cache.get().asMap());
+        Supplier<Cache<UserID, List<PublicKeyIDWithPublicKey>>> cachePubKeys = () -> CacheBuilder.newBuilder()
+                .initialCapacity(1000)
+                .build();
+
+        return new DefaultKeyStoreCache(cachePubKeys.get().asMap(), cacheKeystore.get().asMap());
     }
 
     @Binds

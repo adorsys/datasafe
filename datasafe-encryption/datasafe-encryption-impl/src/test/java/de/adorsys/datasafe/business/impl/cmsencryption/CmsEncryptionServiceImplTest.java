@@ -53,8 +53,6 @@ public class CmsEncryptionServiceImplTest {
     @Test
     @SneakyThrows
     public void cmsStreamEnvelopeEncryptAndDecryptTest() {
-        KeyStoreAccess keyStoreAccess = getKeyStoreAccess();
-
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -147,7 +145,7 @@ public class CmsEncryptionServiceImplTest {
         ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
 
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 1);
+        KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
 
         return new KeyStoreAccess(keyStore, keyStoreAuth);
