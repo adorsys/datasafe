@@ -67,17 +67,18 @@ public class GsonSerde {
     @SneakyThrows
     private JsonPrimitive writePubKey(PublicKey publicKey) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(bos);
-        os.writeObject(publicKey);
-
-        return new JsonPrimitive(new String(Base64.getEncoder().encode(bos.toByteArray())));
+        try (ObjectOutputStream os = new ObjectOutputStream(bos);) {
+            os.writeObject(publicKey);
+            return new JsonPrimitive(new String(Base64.getEncoder().encode(bos.toByteArray())));
+        }
     }
 
     @SneakyThrows
     private PublicKey readPubKey(JsonElement in) {
         byte[] bytes = Base64.getDecoder().decode(in.getAsString());
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        ObjectInputStream is = new ObjectInputStream(bis);
-        return (PublicKey) is.readObject();
+        try (ObjectInputStream is = new ObjectInputStream(bis)) {
+            return (PublicKey) is.readObject();
+        }
     }
 }

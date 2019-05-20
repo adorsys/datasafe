@@ -39,7 +39,7 @@ public class KeyStoreGenerator {
     private final Map<KeyID, Optional<SecretKeyEntry>> secretKeys;
 
     @Builder
-    private KeyStoreGenerator(
+    protected KeyStoreGenerator(
             KeyStoreCreationConfig config,
             KeyStoreType keyStoreType,
             String serverKeyPairAliasPrefix,
