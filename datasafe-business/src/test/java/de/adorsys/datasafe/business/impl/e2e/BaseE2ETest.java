@@ -42,7 +42,8 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
-    protected static final String INBOX_COMPONENT = "inbox";
+    protected static final String PUBLIC_COMPONENT = "public";
+    protected static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
     protected static final String VERSION_COMPONENT = "versions";
     protected static final List<String> loadReport = Lists.newArrayList();
 
@@ -176,10 +177,14 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         URI inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
         log.info("User's inbox location: {}", Log.secure(inboxUri));
 
+        AbsoluteLocation<PublicResource> publicKeys = access(
+                rootLocation.resolve("./" + PUBLIC_COMPONENT + "/keystore")
+        );
+
         profileRegistrationService.registerPublic(CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
                 .inbox(access(inboxUri))
-                .publicKeys(access(keyStoreUri))
+                .publicKeys(publicKeys)
                 .build()
         );
 
@@ -192,6 +197,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 .keystore(accessPrivate(keyStoreUri))
                 .inboxWithWriteAccess(accessPrivate(inboxUri))
                 .documentVersionStorage(accessPrivate(rootLocation.resolve("./" + VERSION_COMPONENT + "/")))
+                .publishPubKeysTo(publicKeys)
                 .build()
         );
 
