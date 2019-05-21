@@ -1,9 +1,6 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
-import de.adorsys.datasafe.business.api.types.keystore.KeyEntry;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
-import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.keystore.SecretKeyEntry;
+import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.CertificationResult;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
 import lombok.SneakyThrows;
@@ -70,17 +67,16 @@ public class KeyStoreServiceImplBaseFunctions {
      * @param in           : the inputStream location which to read the keystore
      * @param storeId      : The store id. This is passed to the callback handler to identify the requested password record.
      * @param storeType    : the type of this key store. f null, the defaut java keystore type is used.
-     * @param storePassSrc : the callback handler that retrieves the store password.
      * @return KeyStore
      */
     @SneakyThrows
-    public static KeyStore loadKeyStore(InputStream in, String storeId, KeyStoreType storeType, CallbackHandler storePassSrc) {
+    public static KeyStore loadKeyStore(InputStream in, String storeId, KeyStoreType storeType, ReadStorePassword readStorePassword) {
         // Use default type if blank.
         if (storeType == null) storeType = KeyStoreType.DEFAULT;
 
         KeyStore ks = KeyStore.getInstance(storeType.getValue());
 
-        ks.load(in, PasswordCallbackUtils.getPassword(storePassSrc, storeId));
+        ks.load(in, readStorePassword.getValue().toCharArray());
         return ks;
     }
 
@@ -88,11 +84,10 @@ public class KeyStoreServiceImplBaseFunctions {
      * @param data         : the byte array containing key store data.
      * @param storeId      : The store id. This is passed to the callback handler to identify the requested password record.
      * @param keyStoreType : the type of this key store. f null, the defaut java keystore type is used.
-     * @param storePassSrc : the callback handler that retrieves the store password.
      * @return KeyStore
      */
-    public static KeyStore loadKeyStore(byte[] data, String storeId, KeyStoreType keyStoreType, CallbackHandler storePassSrc) {
-        return loadKeyStore(new ByteArrayInputStream(data), storeId, keyStoreType, storePassSrc);
+    public static KeyStore loadKeyStore(byte[] data, String storeId, KeyStoreType keyStoreType, ReadStorePassword readStorePassword) {
+        return loadKeyStore(new ByteArrayInputStream(data), storeId, keyStoreType, readStorePassword);
     }
 
     /**
