@@ -15,7 +15,6 @@ import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.utils.Lists;
 
 import java.io.*;
 import java.net.URI;
@@ -30,7 +29,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String INBOX_COMPONENT = "inbox";
-    protected static final List<String> loadReport = Lists.newArrayList();
 
     protected DefaultDatasafeServices services;
 

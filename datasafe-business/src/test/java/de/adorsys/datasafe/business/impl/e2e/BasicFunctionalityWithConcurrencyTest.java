@@ -5,18 +5,19 @@ import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.impl.e2e.metrtics.SaveTestRecord;
-import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
-import de.adorsys.datasafe.business.impl.e2e.metrtics.UserRegisterTestRecord;
+import de.adorsys.datasafe.business.impl.e2e.metrtics.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.*;
 import java.net.URI;
@@ -25,10 +26,7 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -49,57 +47,59 @@ public class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     private static final String FOLDER = "folder1";
     private static final String PRIVATE_FILE = "secret.txt";
 
-    private static final int NUMBER_OF_TEST_USERS = 5;//10;
-    private static final int NUMBER_OF_TEST_FILES = 10;//100;
-    private static final int EXPECTED_NUMBER_OF_FILES_PER_USER = NUMBER_OF_TEST_FILES;
+    //private static final int NUMBER_OF_TEST_USERS = 2;//10;
+    //private static final int NUMBER_OF_TEST_FILES = 5;//100;
+   //private static final int EXPECTED_NUMBER_OF_FILES_PER_USER = NUMBER_OF_TEST_FILES;
     private static final int FILE_SIZE_IN_KB = 1024 * 30; //30Kb
-    private static final TestMetricCollector concurrencyTestMetric = new TestMetricCollector();
 
     protected StorageService storage;
     protected URI location;
 
+    private TestMetricCollector<TestRecord> metricCollector = new TestMetricCollector<>();
+
     @SneakyThrows
-    @ParameterizedTest(name = "Run #{index} service storage: {0} with data size: {1} bytes")
+    @ParameterizedTest(name = "Run #{index} service storage: {0} with data size: {1} bytes and {2} threads. Users: {3}, Files: {4}")
     @MethodSource("testOptions")
-    public void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor, int size) {
+    public void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor,
+                                                            int size, int poolSize//,  int numberOfTestUsers, int numberOfTestFiles
+                                                            ) {
+        int expectedNumberOfFilesPerUser = 2;
+
+        int numberOfTestUsers = 3; int numberOfTestFiles=2;
         this.location = descriptor.getLocation();
         this.services = descriptor.getDocusafeServices();
         this.storage = descriptor.getStorageService();
 
-        String testFile = location.getPath() + "/test.txt";
+        String testFile =  "./test.txt";
         generateTestFile(testFile, size);
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
-        CountDownLatch holdingLatch = new CountDownLatch(1);
-        CountDownLatch finishHoldingLatch = new CountDownLatch(NUMBER_OF_TEST_USERS * NUMBER_OF_TEST_FILES);
 
-        FileInputStream input = new FileInputStream(new File(testFile));
-        String checksumOfOriginTestFile = checksum(input);
-        input.close();
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(poolSize);
+
+        CountDownLatch holdingLatch = new CountDownLatch(1);
+        CountDownLatch finishHoldingLatch = new CountDownLatch(numberOfTestUsers * numberOfTestFiles);
+
+        String checksumOfOriginTestFile;
+        try(FileInputStream input = new FileInputStream(new File(testFile))) {
+            checksumOfOriginTestFile = checksum(input);
+        }
 
         log.trace("*** Starting write threads ***");
-        for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
+        for (int i = 0; i < numberOfTestUsers; i++) {
             long userRegisterTime = System.currentTimeMillis();
-            UserIDAuth user = registerUser("john_" + i, location);
-            concurrencyTestMetric.addRegisterRecord(UserRegisterTestRecord.builder()
-                    .userName(user.getUserID().getValue())
-                    .storage(descriptor.getStorageService().getClass().getSimpleName())
-                    .duration(System.currentTimeMillis() - userRegisterTime)
-                    .build()
-            );
-            log.debug("Registered user: {}", user.getUserID().getValue());
+            String userName = "john_" + i;
+            executor.execute(() -> {
+                UserIDAuth user = registerUser(userName, location);
+                metricCollector.addRegisterRecords(user.getUserID().getValue(),
+                        new TestRecord(System.currentTimeMillis() - userRegisterTime));
 
+                log.debug("Registered user: {}", user.getUserID().getValue());
 
-            SaveTestRecord.SaveTestRecordBuilder saveTestRecordBuilder = SaveTestRecord.builder()
-                    .size(size)
-                    .storage(descriptor.getStorageService().getClass().getSimpleName())
-                    .userName(user.getUserID().getValue());
-
-            createFileForUserParallelly(executor, holdingLatch, finishHoldingLatch,
-                    testFile, user, saveTestRecordBuilder);
-
-            // open latch and start all threads
-            holdingLatch.countDown();
+                createFileForUserParallelly(executor, holdingLatch, finishHoldingLatch,
+                        testFile, user, metricCollector.getSaveRecords(), numberOfTestFiles);
+            });
         }
+        // open latch and start all threads
+        holdingLatch.countDown();
 
         log.trace("*** Main thread waiting for all threads ***");
         finishHoldingLatch.await();
@@ -107,53 +107,59 @@ public class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         log.trace("*** All threads are finished work ***");
 
         log.trace("*** Starting read info saved earlier *** ");
-        for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
+        for (int i = 0; i < numberOfTestUsers; i++) {
             UserIDAuth user = createJohnTestUser(i);
 
             List<AbsoluteResourceLocation<PrivateResource>> resourceList = services.privateService().list(
                     forDefaultPrivate(user, "./")).collect(Collectors.toList());
             log.debug("Read files for user: " + user.getUserID().getValue());
 
-            assertThat(resourceList.size()).isEqualTo(EXPECTED_NUMBER_OF_FILES_PER_USER);
+            assertThat(resourceList.size()).isEqualTo(expectedNumberOfFilesPerUser);
 
             resourceList.forEach(item -> {
                 assertEquals(checksumOfOriginTestFile, calculateDecryptedContentChecksum(user, item));
             });
         }
 
-        concurrencyTestMetric.logSave(log);
-        concurrencyTestMetric.logRegister(log);
-        concurrencyTestMetric.writeToJSON();
+        metricCollector.setDataSize(size);
+        metricCollector.setStorageType(storage.getClass().getSimpleName());
+        metricCollector.setNumberOfThreads(poolSize);
+        metricCollector.writeToJSON();
+
+     /*   metrics.logSave(log);
+        metrics.logRegister(log);
+        metrics.writeToJSON();*/
     }
 
     private void createFileForUserParallelly(ThreadPoolExecutor executor, CountDownLatch holdingLatch,
                                              CountDownLatch finishHoldingLatch, String testFilePath,
-                                             UserIDAuth john, SaveTestRecord.SaveTestRecordBuilder saveTestRecordBuilder) {
+                                             UserIDAuth user,
+                                             Map<String, List<TestRecord>> metrics, int numberOfTestFiles) {
         AtomicInteger counter = new AtomicInteger();
         String remotePath = "folder2";
 
-        for (int j = 0; j < NUMBER_OF_TEST_FILES; j++) {
+        for (int j = 0; j < numberOfTestFiles; j++) {
             executor.execute(() -> {
                 try {
                     holdingLatch.await();
-                    Instant instantStart = Instant.now();
+                    Instant startSaving = Instant.now();
 
-                  //  long measurementOfWritingTextToFile = System.currentTimeMillis();
-                    Thread.currentThread().setName(john.getUserID().getValue());
+                    Thread.currentThread().setName(user.getUserID().getValue());
 
                     String filePath = remotePath + "/" + counter.incrementAndGet() + ".txt";
 
                     log.debug("Saving file: {}", filePath);
-                    writeDataToFileForUser(john, filePath, testFilePath, finishHoldingLatch);
+                    writeDataToFileForUser(user, filePath, testFilePath, finishHoldingLatch);
 
-                    /*loadReport.add(Thread.currentThread().getName() + " write data to user " + john.getUserID().getValue() + ": " +
-                            (System.currentTimeMillis() - measurementOfWritingTextToFile) + "ms");
-*/
-                    Instant instantEnd = Instant.now();
-                    saveTestRecordBuilder.duration(Duration.between(instantStart, instantEnd).toMillis())
-                            .threadName(Thread.currentThread().getName());
-
-                    concurrencyTestMetric.addSaveRecord(saveTestRecordBuilder.build());
+                    if(metrics.get(user.getUserID().getValue()) == null ) metrics.put(user.getUserID().getValue(),  Collections.synchronizedList(new ArrayList<>()));
+                    metrics.get(user.getUserID().getValue())
+                           .add(
+                                SaveTestRecord
+                                        .builder()
+                                        .duration(Duration.between(startSaving, Instant.now()).toMillis())
+                                        .threadName(Thread.currentThread().getName())
+                                        .build()
+                           );
                 } catch (IOException | InterruptedException e) {
                     fail(e);
                 }
@@ -248,14 +254,6 @@ public class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         countDownLatch.countDown();
     }
 
-    @AfterAll
-    @SneakyThrows
-    public static void exportReport() {
-        loadReport.stream().sorted().forEach(reportRow -> {
-            log.info(reportRow);
-        });
-    }
-
     private static void generateTestFile(String testFilePath, int testFileSizeInBytes) {
         RandomAccessFile originTestFile = null;
         try {
@@ -278,9 +276,18 @@ public class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         List<Arguments> arguments = new ArrayList<>();
 
         storageDescriptorMap.values().forEach(storageDescriptor -> {
-            arguments.add(Arguments.of(storageDescriptor, 1024 * 30));
-            arguments.add(Arguments.of(storageDescriptor, 1024 * 60));
-            arguments.add(Arguments.of(storageDescriptor, 1024 * 90));
+            //FS - 30kb - 4 threads pool size, 2 users, 2 files
+            arguments.add(Arguments.of(storageDescriptor, 1024 * 30, 4, 2, 2));//, NUMBER_OF_TEST_USERS, NUMBER_OF_TEST_FILES));
+            //FS - 30kb - 8 threads pool size
+            /*arguments.add(Arguments.of(storageDescriptor, 1024 * 30, 8));
+            //FS - 60kb - 4 threads pool size
+            arguments.add(Arguments.of(storageDescriptor, 1024 * 60, 4));
+            //FS - 60kb - 8 threads pool size
+            arguments.add(Arguments.of(storageDescriptor, 1024 * 60, 8));
+            //FS - 5Mb - 4 threads pool size
+            arguments.add(Arguments.of(storageDescriptor, 1024 * 1024 * 5, 4));
+            //FS - 5Mb - 8 threads pool size
+            arguments.add(Arguments.of(storageDescriptor, 1024 * 1024 * 5, 8));*/
         });
         return arguments.stream();
     }

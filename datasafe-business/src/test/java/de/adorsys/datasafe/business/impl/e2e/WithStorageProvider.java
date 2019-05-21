@@ -56,7 +56,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
 
     @BeforeAll
     static void init(@TempDir Path tempDir) {
-       /* minioContainer.start();
+        minioContainer.start();
         Integer mappedPort = minioContainer.getMappedPort(9000);
         log.info("Mapped port: " + mappedPort);
         minio = AmazonS3ClientBuilder.standard()
@@ -66,7 +66,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                 .build();
 
 
-        minio.createBucket(minioBucketName);*/
+        minio.createBucket(minioBucketName);
         WithStorageProvider.tempDir = tempDir;
         //initS3();
     }
@@ -79,11 +79,11 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     @ValueSource
     protected static Stream<WithStorageProvider.StorageDescriptor> storages() {
         return Stream.of(
-                new StorageDescriptor(new FileSystemStorageService(tempDir.toUri()), tempDir.toUri())/*,
+                new StorageDescriptor(new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()),
                 new StorageDescriptor(
                         new S3StorageService(minio, minioBucketName), URI.create("s3://" +  minioBucketName + "/")
-                ),
-                s3()*/
+                )//,
+                //s3()*/
         ).filter(Objects::nonNull);
     }
 
@@ -91,10 +91,10 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         Map<String, StorageDescriptor> storageMap = new HashMap<>();
 
         storageMap.put("FS", new StorageDescriptor(new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()));
-        /*storageMap.put("Minio", new StorageDescriptor(
+        storageMap.put("Minio", new StorageDescriptor(
                 new S3StorageService(minio, minioBucketName), URI.create("s3://" + minioBucketName + "/")
         ));
-        storageMap.put("S3", s3());*/
+        //storageMap.put("S3", s3());*/
 
         return storageMap;
     }
