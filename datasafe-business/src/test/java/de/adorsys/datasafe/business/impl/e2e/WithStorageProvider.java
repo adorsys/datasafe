@@ -102,7 +102,6 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         ).filter(Objects::nonNull);
     }
 
-    @ValueSource
     protected static StorageDescriptor minio() {
         return new StorageDescriptor(
                 "MINIO S3",
@@ -114,7 +113,6 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         );
     }
 
-    @ValueSource
     protected static StorageDescriptor s3() {
         if (null == amazonAccessKeyID) {
             return null;
@@ -181,7 +179,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
 
     @Getter
     @ToString(of = "name")
-    static class StorageDescriptor {
+    public static class StorageDescriptor {
 
         private final String name;
         private final Supplier<StorageService> storageService;
