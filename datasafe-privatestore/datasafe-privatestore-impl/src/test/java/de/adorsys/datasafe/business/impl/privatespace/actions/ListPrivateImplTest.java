@@ -1,14 +1,16 @@
 package de.adorsys.datasafe.business.impl.privatespace.actions;
 
-import de.adorsys.datasafe.business.api.storage.StorageListService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,21 +29,37 @@ class ListPrivateImplTest extends BaseMockitoTest {
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
 
     @Mock
+    private ResolvedResource resolvedResource;
+
+    @Mock
+    private AbsoluteLocation<ResolvedResource> absoluteResolvedResource;
+
+    @Mock
     private EncryptedResourceResolver resolver;
 
     @Mock
     private StorageListService listService;
 
     @InjectMocks
-    private ListPrivateImpl inbox;
+    private ListPrivateImpl privateService;
+
+    @BeforeEach
+    void init() {
+        when(absoluteResolvedResource.getResource()).thenReturn(resolvedResource);
+        when(resolvedResource.location()).thenReturn(ABSOLUTE_PATH);
+    }
 
     @Test
     void list() {
-        AbsoluteResourceLocation<PrivateResource> resource = DefaultPrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
+        AbsoluteLocation<PrivateResource> resource = BasePrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
+        when(resolvedResource.asPrivate()).thenReturn(resource.getResource());
+        when(resolvedResource.withResource(resource.getResource())).thenReturn(resolvedResource);
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.forDefaultPrivate(auth, PATH);
         when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
-        when(listService.list(resource)).thenReturn(Stream.of(resource));
+        when(resolver.decryptAndResolvePath(request.getOwner(), resource.getResource(), resource.getResource()))
+                .thenReturn(resource);
+        when(listService.list(resource)).thenReturn(Stream.of(absoluteResolvedResource));
 
-        assertThat(inbox.list(request)).hasSize(1);
+        assertThat(privateService.list(request)).hasSize(1);
     }
 }

@@ -4,7 +4,7 @@ import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalServi
 import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
@@ -22,7 +22,7 @@ public class ResourceResolverImpl implements ResourceResolver {
     }
 
     @Override
-    public AbsoluteResourceLocation<PublicResource> resolveRelativeToPublicInbox(
+    public AbsoluteLocation<PublicResource> resolveRelativeToPublicInbox(
             UserID userID, PublicResource resource) {
         return resolveRelative(
                 resource,
@@ -31,16 +31,16 @@ public class ResourceResolverImpl implements ResourceResolver {
     }
 
     @Override
-    public AbsoluteResourceLocation<PrivateResource> resolveRelativeToPrivateInbox(
+    public AbsoluteLocation<PrivateResource> resolveRelativeToPrivateInbox(
             UserIDAuth userID, PrivateResource resource) {
         return resolveRelative(
                 resource,
-                () -> profile.privateProfile(userID).getInboxWithWriteAccess()
+                () -> profile.privateProfile(userID).getInboxWithFullAccess()
         );
     }
 
     @Override
-    public AbsoluteResourceLocation<PrivateResource> resolveRelativeToPrivate(
+    public AbsoluteLocation<PrivateResource> resolveRelativeToPrivate(
             UserIDAuth userID, PrivateResource resource) {
         return resolveRelative(
                 resource,
@@ -53,12 +53,12 @@ public class ResourceResolverImpl implements ResourceResolver {
         return resource.location().isAbsolute();
     }
 
-    private  <T extends ResourceLocation<T>> AbsoluteResourceLocation<T> resolveRelative(
+    private  <T extends ResourceLocation<T>> AbsoluteLocation<T> resolveRelative(
             T resource, Supplier<ResourceLocation<T>> resolveTo) {
         if (isAbsolute(resource)) {
-            return new AbsoluteResourceLocation<>(resource);
+            return new AbsoluteLocation<>(resource);
         }
 
-        return new AbsoluteResourceLocation<>(resource.resolve(resolveTo.get()));
+        return new AbsoluteLocation<>(resource.resolve(resolveTo.get()));
     }
 }

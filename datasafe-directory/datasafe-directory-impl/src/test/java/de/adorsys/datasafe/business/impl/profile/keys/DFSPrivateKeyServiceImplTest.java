@@ -4,16 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.UserPublicProfile;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
-import de.adorsys.datasafe.business.impl.profile.keys.DFSPrivateKeyServiceImpl;
-import de.adorsys.datasafe.business.impl.profile.keys.KeyStoreCache;
-import de.adorsys.datasafe.business.impl.profile.keys.StreamReadUtil;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,17 +27,18 @@ import static org.mockito.Mockito.when;
 
 class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
 
-    private static final AbsoluteResourceLocation<PrivateResource> PRIVATE = DefaultPrivateResource
+    private static final AbsoluteLocation<PrivateResource> PRIVATE = BasePrivateResource
             .forAbsolutePrivate(URI.create("s3://bucket"));
-    private static final AbsoluteResourceLocation<PublicResource> PUBLIC = DefaultPublicResource
+    private static final AbsoluteLocation<PublicResource> PUBLIC = BasePublicResource
             .forAbsolutePublic(URI.create("s3://bucket"));
 
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
 
     private UserPrivateProfile privateProfile = UserPrivateProfile.builder()
             .privateStorage(PRIVATE)
-            .inboxWithWriteAccess(PRIVATE)
+            .inboxWithFullAccess(PRIVATE)
             .keystore(PRIVATE)
+            .documentVersionStorage(PRIVATE)
             .build();
 
     private UserPublicProfile publicProfile = UserPublicProfile.builder()
@@ -85,11 +83,6 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
         when(keystoreCache.getPrivateKeys()).thenReturn(new HashMap<>(ImmutableMap.of(
                 auth.getUserID(),
                 privateKeystore))
-        );
-
-        when(keystoreCache.getPublicKeys()).thenReturn(new HashMap<>(ImmutableMap.of(
-                auth.getUserID(),
-                publicKeystore))
         );
     }
 

@@ -12,21 +12,23 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.util.StringUtils;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -37,6 +39,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     private static String minioRegion = "eu-central-1";
     private static String minioBucketName = "home";
     private static String minioUrl = "http://localhost";
+    private static String prefix = UUID.randomUUID().toString();
 
     private static String amazonAccessKeyID = System.getProperty("AWS_ACCESS_KEY");
     private static String amazonSecretAccessKey = System.getProperty("AWS_SECRET_KEY");
@@ -60,43 +63,60 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         Integer mappedPort = minioContainer.getMappedPort(9000);
         log.info("Mapped port: " + mappedPort);
         minio = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(minioUrl + ":" + mappedPort, minioRegion))
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)))
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(minioUrl + ":" + mappedPort, minioRegion)
+                )
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)
+                        )
+                )
                 .enablePathStyleAccess()
                 .build();
 
 
         minio.createBucket(minioBucketName);
         WithStorageProvider.tempDir = tempDir;
-        //initS3();
+        initS3();
+    }
+
+    @AfterEach
+    @SneakyThrows
+    void cleanup() {
+        if (null != tempDir && tempDir.toFile().exists()) {
+            FileUtils.cleanDirectory(tempDir.toFile());
+        }
+
+        if (null != minio) {
+            removeObjectFromS3(minio, minioBucketName, prefix);
+        }
+
+        if (null != amazonS3) {
+            removeObjectFromS3(amazonS3, amazonBucket, prefix);
+        }
     }
 
     @AfterAll
-    static void detach() {
+    static void shutdown() {
         minioContainer.stop();
     }
 
     @ValueSource
     protected static Stream<WithStorageProvider.StorageDescriptor> storages() {
         return Stream.of(
-                new StorageDescriptor(new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()),
-                new StorageDescriptor(
-                        new S3StorageService(minio, minioBucketName), URI.create("s3://" +  minioBucketName + "/")
-                )//,
-                //s3()*/
+                new StorageDescriptor("FILESYSTEM", new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()),
+                minio(),
+                s3()
         ).filter(Objects::nonNull);
     }
 
-    protected static Map<String, StorageDescriptor> storagesMap() {
-        Map<String, StorageDescriptor> storageMap = new HashMap<>();
-
-        storageMap.put("FS", new StorageDescriptor(new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()));
-        storageMap.put("Minio", new StorageDescriptor(
-                new S3StorageService(minio, minioBucketName), URI.create("s3://" + minioBucketName + "/")
-        ));
-        //storageMap.put("S3", s3());*/
-
-        return storageMap;
+    private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
+        amazonS3.listObjects(bucket, prefix)
+                .getObjectSummaries()
+                .forEach(it -> {
+                    log.debug("Remove {}", it.getKey());
+                    amazonS3.deleteObject(bucket, it.getKey());
+                });
     }
 
     private static void initS3() {
@@ -113,49 +133,40 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                 .build();
     }
 
+    private static StorageDescriptor minio() {
+        if (null == minio) {
+            return null;
+        }
+
+        return new StorageDescriptor(
+                "MINIO S3",
+                new S3StorageService(minio, minioBucketName), URI.create("s3://" + minioBucketName + "/" + prefix + "/")
+        );
+    }
+
     private static StorageDescriptor s3() {
         if (null == amazonS3) {
             return null;
         }
 
         return new StorageDescriptor(
-                new S3StorageService(amazonS3, amazonBucket), URI.create("s3://" +  amazonBucket + "/")
+                "AMAZON S3",
+                new S3StorageService(amazonS3, amazonBucket), URI.create("s3://" + amazonBucket + "/" + prefix + "/")
         );
     }
 
     @Getter
+    @ToString(of = "name")
     static class StorageDescriptor {
 
+        private final String name;
         private final StorageService storageService;
         private final URI location;
-        private final DefaultDatasafeServices docusafeServices;
 
-        StorageDescriptor(StorageService storageService, URI location) {
+        StorageDescriptor(String name, StorageService storageService, URI location) {
+            this.name = name;
             this.storageService = storageService;
             this.location = location;
-            this.docusafeServices = DaggerDefaultDatasafeServices
-                    .builder()
-                    .config(new DFSConfig() {
-                        @Override
-                        public String keystorePassword() {
-                            return "PAZZWORD";
-                        }
-
-                        @Override
-                        public URI systemRoot() {
-                            return location;
-                        }
-                    })
-                    .storageList(storageService)
-                    .storageRead(storageService)
-                    .storageWrite(storageService)
-                    .storageRemove(storageService)
-                    .build();
-        }
-
-        @Override
-        public String toString() {
-            return storageService.getClass().getSimpleName();
         }
     }
 }

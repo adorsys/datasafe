@@ -1,7 +1,8 @@
 package de.adorsys.datasafe.business.api.types;
 
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -14,20 +15,26 @@ public class CreateUserPrivateProfile {
     private final UserIDAuth id;
 
     @NonNull
-    private final AbsoluteResourceLocation<PrivateResource> keystore;
+    private final AbsoluteLocation<PrivateResource> keystore;
 
     @NonNull
-    private final AbsoluteResourceLocation<PrivateResource> privateStorage;
+    private final AbsoluteLocation<PrivateResource> privateStorage;
 
     @NonNull
-    private final AbsoluteResourceLocation<PrivateResource> inboxWithWriteAccess;
+    private final AbsoluteLocation<PrivateResource> inboxWithWriteAccess;
+
+    @NonNull
+    private final AbsoluteLocation<PrivateResource> documentVersionStorage;
+
+    private final AbsoluteLocation<PublicResource> publishPubKeysTo;
 
     public UserPrivateProfile removeAccess() {
         return UserPrivateProfile.builder()
             // FIXME - remove access ?
             .keystore(keystore)
             .privateStorage(privateStorage)
-            .inboxWithWriteAccess(inboxWithWriteAccess)
+            .inboxWithFullAccess(inboxWithWriteAccess)
+            .documentVersionStorage(documentVersionStorage)
             .build();
     }
 }

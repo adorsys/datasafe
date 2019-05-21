@@ -1,24 +1,18 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,52 +32,52 @@ class BasicFunctionalityTest extends WithStorageProvider {
     @MethodSource("storages")
     void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
             WithStorageProvider.StorageDescriptor descriptor) {
-
-        this.location = descriptor.getLocation();
-        this.services = descriptor.getDocusafeServices();
-        this.storage = descriptor.getStorageService();
+        init(descriptor);
 
         registerJohnAndJane(descriptor.getLocation());
 
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
 
-        AbsoluteResourceLocation<PrivateResource> privateJane = getFirstFileInPrivate(jane);
+        AbsoluteLocation<ResolvedResource> privateJane = getFirstFileInPrivate(jane);
 
-        String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource());
+        String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource().asPrivate());
 
-        writeDataToInbox(john.getUserID(), SHARED_FILE_PATH, privateContentJane);
+        sendToInbox(john.getUserID(), SHARED_FILE_PATH, privateContentJane);
 
-        AbsoluteResourceLocation<PrivateResource> inboxJohn = getFirstFileInInbox(john);
+        AbsoluteLocation<ResolvedResource> inboxJohn = getFirstFileInInbox(john);
 
-        String result = readInboxUsingPrivateKey(john, inboxJohn.getResource());
+        String result = readInboxUsingPrivateKey(john, inboxJohn.getResource().asPrivate());
 
         assertThat(result).isEqualTo(MESSAGE_ONE);
-        assertThat(privateJane.getResource().decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
-        assertThat(privateJane.getResource().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
+        assertThat(privateJane.getResource().asPrivate().decryptedPath()).asString().isEqualTo(PRIVATE_FILE_PATH);
+        assertThat(privateJane.getResource().asPrivate().encryptedPath()).asString().isNotEqualTo(PRIVATE_FILE_PATH);
         validateInboxStructAndEncryption(inboxJohn);
         validatePrivateStructAndEncryption(privateJane);
+
+        removeFromPrivate(jane, privateJane.getResource().asPrivate());
+        removeFromInbox(john, inboxJohn.getResource().asPrivate());
     }
 
     @SneakyThrows
-    private void validateInboxStructAndEncryption(AbsoluteResourceLocation<PrivateResource> expectedInboxResource) {
-        List<AbsoluteResourceLocation<PrivateResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));
+    private void validateInboxStructAndEncryption(AbsoluteLocation<ResolvedResource> expectedInboxResource) {
+        List<AbsoluteLocation<ResolvedResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));
 
         assertThat(inbox).hasSize(1);
-        AbsoluteResourceLocation<PrivateResource> foundResource = inbox.get(0);
+        AbsoluteLocation<ResolvedResource> foundResource = inbox.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedInboxResource.location());
         // no path encryption for inbox:
-        assertThat(foundResource.toString()).contains(SHARED_FILE);
+        assertThat(foundResource.location().getPath()).asString().contains(SHARED_FILE);
         // validate encryption on high-level:
         assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
     }
 
     @SneakyThrows
-    private void validatePrivateStructAndEncryption(AbsoluteResourceLocation<PrivateResource> expectedPrivateResource) {
-        List<AbsoluteResourceLocation<PrivateResource>> privateFiles = listFiles(
+    private void validatePrivateStructAndEncryption(AbsoluteLocation<ResolvedResource> expectedPrivateResource) {
+        List<AbsoluteLocation<ResolvedResource>> privateFiles = listFiles(
                 it -> it.contains(PRIVATE_FILES_COMPONENT));
 
         assertThat(privateFiles).hasSize(1);
-        AbsoluteResourceLocation<PrivateResource> foundResource = privateFiles.get(0);
+        AbsoluteLocation<ResolvedResource> foundResource = privateFiles.get(0);
         assertThat(foundResource.location()).isEqualTo(expectedPrivateResource.location());
 
         // validate encryption on high-level:
@@ -93,10 +87,19 @@ class BasicFunctionalityTest extends WithStorageProvider {
     }
 
     @SneakyThrows
-    private List<AbsoluteResourceLocation<PrivateResource>> listFiles(Predicate<String> pattern) {
-        return storage.list(new AbsoluteResourceLocation<>(DefaultPrivateResource.forPrivate(location)))
+    private List<AbsoluteLocation<ResolvedResource>> listFiles(Predicate<String> pattern) {
+        return storage.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(location)))
                 .filter(it -> !it.location().toString().startsWith("."))
                 .filter(it -> pattern.test(it.location().toString()))
                 .collect(Collectors.toList());
+    }
+
+    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+        DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
+                .defaultDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+        initialize(datasafeServices);
+
+        this.location = descriptor.getLocation();
+        this.storage = descriptor.getStorageService();
     }
 }

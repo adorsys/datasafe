@@ -13,6 +13,7 @@ public abstract class BaseMockitoTest {
 
     @BeforeEach
     public void setup() {
+        System.setProperty("SECURE_LOGS", "off");
         MockitoAnnotations.initMocks(this);
     }
 

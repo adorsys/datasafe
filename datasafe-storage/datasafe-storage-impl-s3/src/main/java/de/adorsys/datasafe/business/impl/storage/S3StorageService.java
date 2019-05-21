@@ -3,16 +3,13 @@ package de.adorsys.datasafe.business.impl.storage;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.ResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.*;
+import de.adorsys.datasafe.business.api.types.utils.Log;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -29,8 +26,8 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public Stream<AbsoluteResourceLocation<PrivateResource>> list(AbsoluteResourceLocation location) {
-        log.debug("List at {}", location.location());
+    public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
+        log.debug("List at {}", location);
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
         listObjectsV2Request.setBucketName(bucketName);
         String prefix = location.location().getPath().replaceFirst("^/", "");
@@ -39,30 +36,52 @@ public class S3StorageService implements StorageService {
         ListObjectsV2Result listObjectsV2Result = s3.listObjectsV2(listObjectsV2Request);
         List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
         return objectSummaries.stream()
-                .map(os -> {
-                    URI uri = URI.create(os.getKey().substring(len));
-                    return new AbsoluteResourceLocation<>(new DefaultPrivateResource(uri).resolve(location));
-                });
+                .map(os -> new AbsoluteLocation<>(
+                        new BaseResolvedResource(
+                                createResource(location, os, len),
+                                os.getLastModified().toInstant()
+                        ))
+                );
     }
 
     @Override
-    public InputStream read(AbsoluteResourceLocation location) {
-        log.debug("Read from {}", location.location());
-        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, location.location().getPath().replaceFirst("^/", ""));
+    public InputStream read(AbsoluteLocation location) {
+        String key = location.location().getPath().replaceFirst("^/", "");
+        log.debug("Read from {}", Log.secure(key));
+        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
         S3Object fullObject = s3.getObject(getObjectRequest);
         return fullObject.getObjectContent();
     }
 
     @Override
-    public OutputStream write(AbsoluteResourceLocation location) {
+    public OutputStream write(AbsoluteLocation location) {
         return new PutBlobOnClose(s3, bucketName, location);
     }
 
     @Override
-    public void remove(AbsoluteResourceLocation location) {
+    public void remove(AbsoluteLocation location) {
         String path = location.location().getPath();
-        log.debug("Remove path {}", path);
-        s3.deleteObject(bucketName, path.replaceFirst("^/", "").replaceFirst("/$", ""));
+        String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
+        log.debug("Remove path {}", Log.secure(key));
+        s3.deleteObject(bucketName, key);
+    }
+
+    @Override
+    public boolean objectExists(AbsoluteLocation location) {
+        String path = location.location().getPath();
+        String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
+        boolean pathExists = s3.doesObjectExist(bucketName, key);
+        log.debug("Path {} exists {}", Log.secure(key), pathExists);
+        return pathExists;
+    }
+
+    private PrivateResource createResource(AbsoluteLocation root, S3ObjectSummary os, int prefixLen) {
+        String relUrl = os.getKey().substring(prefixLen);
+        if ("".equals(relUrl)) {
+            return BasePrivateResource.forPrivate(root.location());
+        }
+
+        return BasePrivateResource.forPrivate(relUrl).resolve(root);
     }
 
     @Slf4j
@@ -76,19 +95,15 @@ public class S3StorageService implements StorageService {
         @Override
         public void close() throws IOException {
 
-            log.debug("Write to {}", resource.location());
             ObjectMetadata metadata = new ObjectMetadata();
             byte[] data = super.toByteArray();
             metadata.setContentLength(data.length);
 
             InputStream is = new ByteArrayInputStream(data);
 
-            s3.putObject(
-                    bucketName,
-                    resource.location().getPath().replaceFirst("^/", ""),
-                    is,
-                    metadata
-            );
+            String key = resource.location().getPath().replaceFirst("^/", "");
+            log.debug("Write to {}", Log.secure(key));
+            s3.putObject(bucketName, key, is, metadata);
 
             super.close();
         }

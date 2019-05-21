@@ -18,4 +18,7 @@ public abstract class DefaultInboxActionsModule {
 
     @Binds
     abstract WriteToInbox writeInbox(WriteToInboxImpl impl);
+
+    @Binds
+    abstract RemoveFromInbox removeFromInbox(RemoveFromInboxImpl impl);
 }

@@ -5,8 +5,8 @@ import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Test;
@@ -38,14 +38,14 @@ class ReadFromPrivateImplTest extends BaseMockitoTest {
     private ReadFromPrivateImpl inbox;
 
     @Captor
-    private ArgumentCaptor<ReadRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>>> captor;
+    private ArgumentCaptor<ReadRequest<UserIDAuth, AbsoluteLocation<PrivateResource>>> captor;
 
     @Test
     void read() {
-        AbsoluteResourceLocation<PrivateResource> resource = DefaultPrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
+        AbsoluteLocation<PrivateResource> resource = BasePrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(
                 auth,
-                DefaultPrivateResource.forPrivate(ABSOLUTE_PATH)
+                BasePrivateResource.forPrivate(ABSOLUTE_PATH)
         );
         when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
         when(readService.read(captor.capture())).thenReturn(new ByteArrayInputStream(BYTES.getBytes()));

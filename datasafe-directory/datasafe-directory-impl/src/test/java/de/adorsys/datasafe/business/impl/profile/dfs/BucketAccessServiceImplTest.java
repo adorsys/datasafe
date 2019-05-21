@@ -3,8 +3,8 @@ package de.adorsys.datasafe.business.impl.profile.dfs;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePublicResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +26,7 @@ class BucketAccessServiceImplTest extends BaseMockitoTest {
     void privateAccessFor() {
         assertThat(bucketAccessService.privateAccessFor(
                 auth,
-                DefaultPrivateResource.forPrivate(URI.create(ABSOLUTE_BUCKET))).location()
+                BasePrivateResource.forPrivate(URI.create(ABSOLUTE_BUCKET))).location()
         ).asString().isEqualTo(ABSOLUTE_BUCKET);
     }
 
@@ -34,7 +34,7 @@ class BucketAccessServiceImplTest extends BaseMockitoTest {
     void publicAccessFor() {
         assertThat(bucketAccessService.publicAccessFor(
                 auth.getUserID(),
-                DefaultPublicResource.forAbsolutePublic(URI.create(ABSOLUTE_BUCKET))).location()
+                BasePublicResource.forAbsolutePublic(URI.create(ABSOLUTE_BUCKET))).location()
         ).asString().isEqualTo(ABSOLUTE_BUCKET);
     }
 }

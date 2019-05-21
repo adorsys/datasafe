@@ -29,7 +29,7 @@ class SymmetricPathEncryptionServiceImplTest {
     private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-    private KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 1);
+    private KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
     private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 

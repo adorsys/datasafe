@@ -1,0 +1,11 @@
+@startuml
+actor User
+User --> "datasafe-metainfo-version" as meta : Read my file at /dir1/file.txt
+meta --> "datasafe-directory" as directory : Get user version directory location
+directory --> meta : DFS location of latest directory (LATEST)
+meta --> "datasafe-storage" as s3 : get /dir1/file.txt content (LINK)
+s3 --> meta : content of LINK
+meta --> s3 : read file at LINK (FILE)
+s3 --> meta : content of FILE
+meta --> User : Latest data in /dir1/file.txt
+@enduml

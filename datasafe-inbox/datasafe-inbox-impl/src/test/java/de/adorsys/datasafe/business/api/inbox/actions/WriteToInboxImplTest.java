@@ -7,8 +7,8 @@ import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.KeyID;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPublicResource;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
+import de.adorsys.datasafe.business.api.types.resource.BasePublicResource;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
@@ -56,7 +56,7 @@ class WriteToInboxImplTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void write() {
-        AbsoluteResourceLocation<PublicResource> resource = DefaultPublicResource.forAbsolutePublic(ABSOLUTE_PATH);
+        AbsoluteLocation<PublicResource> resource = BasePublicResource.forAbsolutePublic(ABSOLUTE_PATH);
         WriteRequest<UserID, PublicResource> request = WriteRequest.forDefaultPublic(auth, ABSOLUTE_PATH);
         when(publicKeyService.publicKey(auth)).thenReturn(publicKeyWithId);
         when(resolver.resolveRelativeToPublicInbox(request.getOwner(), request.getLocation())).thenReturn(resource);

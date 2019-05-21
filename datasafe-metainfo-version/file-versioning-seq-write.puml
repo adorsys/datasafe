@@ -1,0 +1,9 @@
+@startuml
+actor User
+User --> "datasafe-metainfo-version" as meta : Write my file at /dir1/file.txt
+meta --> "datasafe-directory" as directory : Get user version directory location
+directory --> meta : DFS location of latest directory (LATEST)
+meta --> "datasafe-storage" as s3 : put file at /private/dir1/file.txt-V0
+meta --> s3: put file at LATEST/dir1/file.txt with content /private/dir1/file.txt-V0
+meta --> User : done
+@enduml

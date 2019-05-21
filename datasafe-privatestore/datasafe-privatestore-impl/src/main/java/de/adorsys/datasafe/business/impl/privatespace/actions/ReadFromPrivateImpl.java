@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.privatespace.actions;
 import de.adorsys.datasafe.business.api.encryption.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 
 import javax.inject.Inject;
@@ -25,8 +25,8 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
         return reader.read(resolveRelative(request));
     }
 
-    private ReadRequest<UserIDAuth, AbsoluteResourceLocation<PrivateResource>> resolveRelative(ReadRequest<UserIDAuth, PrivateResource> request) {
-        return ReadRequest.<UserIDAuth, AbsoluteResourceLocation<PrivateResource>>builder()
+    private ReadRequest<UserIDAuth, AbsoluteLocation<PrivateResource>> resolveRelative(ReadRequest<UserIDAuth, PrivateResource> request) {
+        return ReadRequest.<UserIDAuth, AbsoluteLocation<PrivateResource>>builder()
                 .owner(request.getOwner())
                 .location(resolver.encryptAndResolvePath(
                         request.getOwner(),

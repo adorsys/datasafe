@@ -1,20 +1,21 @@
 package de.adorsys.datasafe.business.impl.profile.keys;
 
-import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
+import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
 import de.adorsys.datasafe.business.api.types.UserID;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAccess;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteResourceLocation;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PublicResource;
-import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;
+import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;
+import lombok.SneakyThrows;
 
 import javax.inject.Inject;
-import java.security.KeyStore;
+import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Retrieves and opens public keystore associated with user location DFS storage.
@@ -22,51 +23,39 @@ import java.security.KeyStore;
 public class DFSPublicKeyServiceImpl implements PublicKeyService {
 
     private final KeyStoreCache keystoreCache;
-    private final DFSSystem dfsSystem;
-    private final KeyStoreService keyStoreService;
     private final BucketAccessService bucketAccessService;
     private final ProfileRetrievalService profiles;
-    private final StreamReadUtil streamReadUtil;
     private final StorageReadService readService;
+    private final GsonSerde serde;
 
     @Inject
     public DFSPublicKeyServiceImpl(KeyStoreCache keystoreCache,
-                                   DFSSystem dfsSystem, KeyStoreService keyStoreService,
                                    BucketAccessService bucketAccessService, ProfileRetrievalService profiles,
-                                   StreamReadUtil streamReadUtil, StorageReadService readService) {
+                                   StorageReadService readService, GsonSerde serde) {
         this.keystoreCache = keystoreCache;
-        this.dfsSystem = dfsSystem;
-        this.keyStoreService = keyStoreService;
         this.bucketAccessService = bucketAccessService;
         this.profiles = profiles;
-        this.streamReadUtil = streamReadUtil;
         this.readService = readService;
+        this.serde = serde;
     }
 
     @Override
     public PublicKeyIDWithPublicKey publicKey(UserID forUser) {
-        KeyStoreAuth publicAuth = dfsSystem.publicKeyStoreAuth();
-
-        KeyStore keyStore = keystoreCache.getPublicKeys().computeIfAbsent(
+        return keystoreCache.getPublicKeys().computeIfAbsent(
                 forUser,
-                id -> keystore(forUser, publicAuth)
-        );
-
-        return keyStoreService.getPublicKeys(new KeyStoreAccess(keyStore, publicAuth)).get(0);
+                id -> publicKeyList(forUser)
+        ).get(0);
     }
 
-    private KeyStore keystore(UserID forUser, KeyStoreAuth publicAuth) {
-        AbsoluteResourceLocation<PublicResource> accessiblePublicKey = bucketAccessService.publicAccessFor(
+    @SneakyThrows
+    private List<PublicKeyIDWithPublicKey> publicKeyList(UserID forUser) {
+        AbsoluteLocation<PublicResource> accessiblePublicKey = bucketAccessService.publicAccessFor(
                 forUser,
                 profiles.publicProfile(forUser).getPublicKeys()
         );
 
-        byte[] payload = streamReadUtil.readStream(readService.read(accessiblePublicKey));
-
-        return keyStoreService.deserialize(
-                payload,
-                forUser.getValue(),
-                publicAuth.getReadStorePassword()
-        );
+        try (JsonReader is = new JsonReader(new InputStreamReader(readService.read(accessiblePublicKey)))) {
+            return serde.fromJson(is, new TypeToken<List<PublicKeyIDWithPublicKey>>() {}.getType());
+        }
     }
 }

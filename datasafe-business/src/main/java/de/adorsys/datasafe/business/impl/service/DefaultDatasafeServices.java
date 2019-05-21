@@ -4,10 +4,7 @@ import dagger.BindsInstance;
 import dagger.Component;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.inbox.InboxServiceImpl;
-import de.adorsys.datasafe.business.api.storage.StorageListService;
-import de.adorsys.datasafe.business.api.storage.StorageReadService;
-import de.adorsys.datasafe.business.api.storage.StorageRemoveService;
-import de.adorsys.datasafe.business.api.storage.StorageWriteService;
+import de.adorsys.datasafe.business.api.storage.actions.*;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultCredentialsModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultProfileModule;
@@ -22,7 +19,7 @@ import de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStora
 import javax.inject.Singleton;
 
 /**
- * This is user Datasafe services default implementation.
+ * This is Datasafe services default implementation.
  */
 @Singleton
 @Component(modules = {
@@ -58,6 +55,9 @@ public interface DefaultDatasafeServices {
 
         @BindsInstance
         Builder storageRemove(StorageRemoveService removeService);
+
+        @BindsInstance
+        Builder storageCheck(StorageCheckService checkService);
 
         DefaultDatasafeServices build();
     }
