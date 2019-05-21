@@ -63,9 +63,11 @@ public class SingleKeyUsageSelfSignedCertBuilder {
 		if(keyUsages!=null)
 			for (int keyUsage : keyUsages) builder = builder.withKeyUsage(keyUsage);
 
+/*
 		if(subjectAltNames!=null)
 			builder = builder.withSubjectAltNames(subjectAltNames);
-		
+*/
+
 		X509CertificateHolder subjectCert = builder.build(keyPair.getPrivate());
 
 		return new SelfSignedKeyPairData(keyPair, subjectCert);
@@ -76,10 +78,12 @@ public class SingleKeyUsageSelfSignedCertBuilder {
 		return this;
 	}
 
+/*
 	public SingleKeyUsageSelfSignedCertBuilder withSubjectAltNames(GeneralNames subjectAltNames) {
 		this.subjectAltNames = subjectAltNames;
 		return this;
 	}
+*/
 
 	public SingleKeyUsageSelfSignedCertBuilder withSignatureAlgo(String signatureAlgo) {
 		this.signatureAlgo = signatureAlgo;

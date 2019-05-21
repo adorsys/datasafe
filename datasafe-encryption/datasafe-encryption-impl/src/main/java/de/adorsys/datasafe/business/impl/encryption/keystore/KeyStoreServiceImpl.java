@@ -86,6 +86,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         return key;
     }
 
+
     @Override
     public byte[] serialize(KeyStore store, String storeId, ReadStorePassword password) {
         return KeyStoreServiceImplBaseFunctions.toByteArray(
