@@ -3,7 +3,6 @@ package de.adorsys.datasafe.business.impl.encryption.keystore;
 import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
 import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreServiceImplBaseFunctions;
-import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -88,11 +87,11 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
 
     @Override
-    public byte[] serialize(KeyStore store, String storeId, ReadStorePassword password) {
+    public byte[] serialize(KeyStore store, String storeId, ReadStorePassword readStorePassword) {
         return KeyStoreServiceImplBaseFunctions.toByteArray(
                 store,
                 storeId,
-                new PasswordCallbackHandler(password.getValue().toCharArray())
+                readStorePassword
         );
     }
 

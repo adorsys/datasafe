@@ -51,13 +51,12 @@ public class KeyStoreServiceImplBaseFunctions {
      *
      * @param keystore     keystore
      * @param storeId      storeId
-     * @param storePassSrc storePassSrc
      * @return key store byte array
      */
     @SneakyThrows
-    public static byte[] toByteArray(KeyStore keystore, String storeId, CallbackHandler storePassSrc) {
+    public static byte[] toByteArray(KeyStore keystore, String storeId, ReadStorePassword readStorePassword) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        keystore.store(stream, PasswordCallbackUtils.getPassword(storePassSrc, storeId));
+        keystore.store(stream, readStorePassword.getValue().toCharArray());
         return stream.toByteArray();
     }
 

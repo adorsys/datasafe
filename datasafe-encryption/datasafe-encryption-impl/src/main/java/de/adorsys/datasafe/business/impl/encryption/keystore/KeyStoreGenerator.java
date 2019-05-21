@@ -5,12 +5,10 @@ import de.adorsys.datasafe.business.api.types.keystore.exceptions.KeyStoreConfig
 import de.adorsys.datasafe.business.api.types.utils.Log;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeystoreBuilder;
-import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairGenerator;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.security.auth.callback.CallbackHandler;
 import java.security.KeyStore;
 import java.util.Date;
 import java.util.UUID;
