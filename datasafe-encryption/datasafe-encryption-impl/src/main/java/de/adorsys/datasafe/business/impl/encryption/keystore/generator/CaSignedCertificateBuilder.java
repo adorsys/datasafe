@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -42,14 +43,13 @@ public class CaSignedCertificateBuilder {
     private int keyUsage = -1;
     private boolean keyUsageSet = false;
 
-    private GeneralNames subjectAltNames;
-
     private String signatureAlgo;
 
     private PublicKey subjectPublicKey;
 
     boolean dirty = false;
 
+    @SneakyThrows
     public X509CertificateHolder build(PrivateKey issuerPrivatekey) {
         if (dirty) throw new IllegalStateException("Builder can not be reused");
         dirty = true;
@@ -96,11 +96,6 @@ public class CaSignedCertificateBuilder {
         BigInteger serial = SerialNumberGenerator.uniqueSerial();
 
         X509v3CertificateBuilder v3CertGen = null;
-        if (subjectOnlyInAlternativeName && subjectAltNames != null) {
-            // Remove missing sobject error.
-            errorKeys.remove("X509CertificateBuilder_missing_subject_DN");
-            subjectDN = new X500Name("cn=");
-        }
 
         if (!errorKeys.isEmpty()) {
             throw new IllegalArgumentException("Fields can not be null: " + errorKeys);
@@ -109,30 +104,17 @@ public class CaSignedCertificateBuilder {
         v3CertGen = new JcaX509v3CertificateBuilder(issuerDN, serial, notBefore, notAfter, subjectDN, subjectPublicKey);
         JcaX509ExtensionUtils extUtils = V3CertificateUtils.getJcaX509ExtensionUtils();
 
-        try {
-            v3CertGen.addExtension(X509Extension.basicConstraints, true, basicConstraints);
+        v3CertGen.addExtension(X509Extension.basicConstraints, true, basicConstraints);
 
-            v3CertGen.addExtension(X509Extension.subjectKeyIdentifier, false,
-                    extUtils.createSubjectKeyIdentifier(subjectPublicKey));
+        v3CertGen.addExtension(X509Extension.subjectKeyIdentifier, false,
+                extUtils.createSubjectKeyIdentifier(subjectPublicKey));
 
-            v3CertGen.addExtension(X509Extension.authorityKeyIdentifier, false,
-                    extUtils.createAuthorityKeyIdentifier(subjectPublicKey));
+        v3CertGen.addExtension(X509Extension.authorityKeyIdentifier, false,
+                extUtils.createAuthorityKeyIdentifier(subjectPublicKey));
 
-            if (keyUsageSet) {
-                v3CertGen.addExtension(X509Extension.keyUsage,
-                        true, new KeyUsage(this.keyUsage));
-            }
-
-            // complex rules for subject alternative name. See rfc5280
-            if (subjectAltNames != null) {
-                if (subjectOnlyInAlternativeName) {
-                    v3CertGen.addExtension(X509Extension.subjectAlternativeName, true, subjectAltNames);
-                } else {
-                    v3CertGen.addExtension(X509Extension.subjectAlternativeName, false, subjectAltNames);
-                }
-            }
-        } catch (CertIOException e) {
-            throw new IllegalStateException(e);
+        if (keyUsageSet) {
+            v3CertGen.addExtension(X509Extension.keyUsage,
+                    true, new KeyUsage(this.keyUsage));
         }
 
         ContentSigner signer = V3CertificateUtils.getContentSigner(issuerPrivatekey, signatureAlgo);
@@ -164,12 +146,6 @@ public class CaSignedCertificateBuilder {
 
     public CaSignedCertificateBuilder withNotBeforeInDays(Integer notBeforeInDays) {
         this.notBeforeInDays = notBeforeInDays;
-        return this;
-    }
-
-    public CaSignedCertificateBuilder resetKeyUsage() {
-        keyUsageSet = false;
-        this.keyUsage = -1;
         return this;
     }
 

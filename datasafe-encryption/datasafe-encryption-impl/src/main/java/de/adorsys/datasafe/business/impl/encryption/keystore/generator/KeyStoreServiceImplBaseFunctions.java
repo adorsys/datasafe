@@ -6,7 +6,6 @@ import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
 import lombok.SneakyThrows;
 import org.bouncycastle.cert.X509CertificateHolder;
 
-import javax.security.auth.callback.CallbackHandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -49,8 +48,8 @@ public class KeyStoreServiceImplBaseFunctions {
     /**
      * Write this key store into a byte array
      *
-     * @param keystore     keystore
-     * @param storeId      storeId
+     * @param keystore keystore
+     * @param storeId  storeId
      * @return key store byte array
      */
     @SneakyThrows
@@ -63,9 +62,9 @@ public class KeyStoreServiceImplBaseFunctions {
     /**
      * Loads a key store. Given the store bytes, the store type
      *
-     * @param in           : the inputStream location which to read the keystore
-     * @param storeId      : The store id. This is passed to the callback handler to identify the requested password record.
-     * @param storeType    : the type of this key store. f null, the defaut java keystore type is used.
+     * @param in        : the inputStream location which to read the keystore
+     * @param storeId   : The store id. This is passed to the callback handler to identify the requested password record.
+     * @param storeType : the type of this key store. f null, the defaut java keystore type is used.
      * @return KeyStore
      */
     @SneakyThrows
@@ -150,44 +149,5 @@ public class KeyStoreServiceImplBaseFunctions {
         ks.setCertificateEntry(trustedCertHolder.getAlias(), V3CertificateUtils.getX509JavaCertificate(trustedCertHolder.getCertificate()));
     }
 
-/*
-    private static KeyPairEntry fromPrivateKeyEntry(String alias, CallbackHandler passwordSource, KeyStore.PrivateKeyEntry privateKeyEntry) {
-        KeyPair keyPair = new KeyPair(privateKeyEntry.getCertificate().getPublicKey(), privateKeyEntry.getPrivateKey());
-
-        X509CertificateHolder subjectCert = toX509CertificateHolder(privateKeyEntry.getCertificate());
-        SelfSignedKeyPairData keyPairData = new SelfSignedKeyPairData(keyPair, subjectCert);
-
-        CertificationResult certification = new CertificationResult(subjectCert, toX509CertificateHolders(privateKeyEntry.getCertificateChain()));
-
-        return KeyPairData.builder()
-                .alias(alias)
-                .keyPair(keyPairData)
-                .certification(certification)
-                .passwordSource(passwordSource)
-                .build();
-    }
- */
-
-/*
-    private static List<X509CertificateHolder> toX509CertificateHolders(Certificate[] certificates) {
-        return Arrays.stream(certificates)
-                .map(KeyStoreServiceImplBaseFunctions::toX509CertificateHolder)
-                .collect(Collectors.toList());
-    }
-*/
-
-/*
-    private static X509CertificateHolder toX509CertificateHolder(Certificate certificate) {
-        org.bouncycastle.asn1.x509.Certificate bouncyCastleAsn1Certificate = null;
-
-        try {
-            bouncyCastleAsn1Certificate = org.bouncycastle.asn1.x509.Certificate.getInstance(certificate.getEncoded());
-        } catch (CertificateEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-        return new X509CertificateHolder(bouncyCastleAsn1Certificate);
-    }
-*/
 }
 
