@@ -7,9 +7,9 @@ import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.rest.config.DatasafeProperties;
 import de.adorsys.datasafe.rest.dto.UserCreateRequestDTO;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,8 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/user", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 public class UserController {
 
-    @Value("${datasafe.system.root}")
-    private String systemRoot;
+   private DatasafeProperties properties;
 
     private static final String PRIVATE_COMPONENT = "private";
     private static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
@@ -29,7 +28,8 @@ public class UserController {
 
     private final DefaultDatasafeServices dataSafeService;
 
-    public UserController(DefaultDatasafeServices dataSafeService) {
+    public UserController(DatasafeProperties properties, DefaultDatasafeServices dataSafeService) {
+        this.properties = properties;
         this.dataSafeService = dataSafeService;
     }
 
@@ -40,7 +40,7 @@ public class UserController {
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(requestDTO.getPassword());
         UserIDAuth auth = new UserIDAuth(new UserID(requestDTO.getUserName()), readKeyPassword);
 
-        URI rootLocation = URI.create(systemRoot);
+        URI rootLocation = URI.create(properties.getSystemRoot());
         rootLocation = rootLocation.resolve(requestDTO.getUserName() + "/");
         URI inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
 

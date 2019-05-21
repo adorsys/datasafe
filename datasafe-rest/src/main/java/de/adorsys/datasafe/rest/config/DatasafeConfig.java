@@ -8,7 +8,7 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,22 +18,20 @@ import java.security.Security;
 @Configuration
 public class DatasafeConfig {
 
-    @Value("${AWS_BUCKET}")
-    private String bucketName;
-
-    @Value("${datasafe.system.root}")
-    private String systemRoot;
-
-    @Value("${datasafe.keystore.password}")
-    private String keystorePassword;
+    private final DatasafeProperties properties;
 
     private final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .enablePathStyleAccess()
             .build();
 
+    @Autowired
+    public DatasafeConfig(DatasafeProperties properties) {
+        this.properties = properties;
+    }
+
     @Bean
     StorageService storageService() {
-        return new S3StorageService(s3, bucketName);
+        return new S3StorageService(s3, properties.getBucketName());
     }
 
     @Bean
@@ -46,19 +44,19 @@ public class DatasafeConfig {
                 .config(new DFSConfig() {
                     @Override
                     public String keystorePassword() {
-                        return keystorePassword;
+                        return properties.getKeystorePassword();
                     }
 
                     @Override
                     public URI systemRoot() {
-                        return URI.create(systemRoot);
+                        return URI.create(properties.getSystemRoot());
                     }
                 })
-                .storageList(new S3StorageService(s3, bucketName))
-                .storageRead(new S3StorageService(s3, bucketName))
-                .storageWrite(new S3StorageService(s3, bucketName))
-                .storageRemove(new S3StorageService(s3, bucketName))
-                .storageCheck(new S3StorageService(s3, bucketName))
+                .storageList(new S3StorageService(s3, properties.getBucketName()))
+                .storageRead(new S3StorageService(s3, properties.getBucketName()))
+                .storageWrite(new S3StorageService(s3, properties.getBucketName()))
+                .storageRemove(new S3StorageService(s3, properties.getBucketName()))
+                .storageCheck(new S3StorageService(s3, properties.getBucketName()))
                 .build();
     }
 }
