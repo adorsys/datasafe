@@ -39,8 +39,6 @@ public class CaSignedCertificateBuilder {
     private Integer notAfterInDays;
     private Integer notBeforeInDays = 0;
 
-    private X509CertificateHolder issuerCertificate;
-
     private int keyUsage = -1;
     private boolean keyUsageSet = false;
 
@@ -83,48 +81,16 @@ public class CaSignedCertificateBuilder {
 
         X500Name issuerDN = null;
         BasicConstraints basicConstraints = null;
-        if (issuerCertificate == null) {
-            // Self signed certificate
-            issuerDN = subjectDN;
-            if (createCaCert) {
-                // self signed ca certificate
-                basicConstraints = new BasicConstraints(true);
-                // in ca case, subject must subject must be set
-                subjectOnlyInAlternativeName = false;
-            } else {
-                // not a ca certificate
-                basicConstraints = new BasicConstraints(false);
-            }
+        // Self signed certificate
+        issuerDN = subjectDN;
+        if (createCaCert) {
+            // self signed ca certificate
+            basicConstraints = new BasicConstraints(true);
+            // in ca case, subject must subject must be set
+            subjectOnlyInAlternativeName = false;
         } else {
-            // check is issuerCertificate is ca certificate
-            if (!CheckCaCertificate.isCaCertificate(issuerCertificate))
-                errorKeys.add("X509CertificateBuilder_issuerCert_notCaCert");
-
-            // prepare inputs
-            issuerDN = issuerCertificate.getSubject();
-
-            // ca signing another ca certificate
-            if (createCaCert) {
-                // in ca case, subject must subject must be set
-                subjectOnlyInAlternativeName = false;
-
-                // ca certificate must carry a subject
-                Extension basicConstraintsExtension = issuerCertificate.getExtension(X509Extension.basicConstraints);
-                BasicConstraints issuerBasicConstraints = BasicConstraints.getInstance(basicConstraintsExtension.getParsedValue());
-                BigInteger pathLenConstraint = issuerBasicConstraints.getPathLenConstraint();
-                if (pathLenConstraint == null) {
-                    pathLenConstraint = BigInteger.ONE;
-                } else {
-                    pathLenConstraint = pathLenConstraint.add(BigInteger.ONE);
-                }
-                basicConstraints = new BasicConstraints(pathLenConstraint.intValue());
-
-                resetKeyUsage();
-                for (int keyUsage : KeyUsageUtils.getCaKeyUsages()) withKeyUsage(keyUsage);
-            } else {
-                // ca issuing a simple certificate
-                basicConstraints = new BasicConstraints(false);
-            }
+            // not a ca certificate
+            basicConstraints = new BasicConstraints(false);
         }
 
         BigInteger serial = SerialNumberGenerator.uniqueSerial();
@@ -149,13 +115,8 @@ public class CaSignedCertificateBuilder {
             v3CertGen.addExtension(X509Extension.subjectKeyIdentifier, false,
                     extUtils.createSubjectKeyIdentifier(subjectPublicKey));
 
-            if (issuerCertificate == null) {
-                v3CertGen.addExtension(X509Extension.authorityKeyIdentifier, false,
-                        extUtils.createAuthorityKeyIdentifier(subjectPublicKey));
-            } else {
-                v3CertGen.addExtension(X509Extension.authorityKeyIdentifier, false,
-                        extUtils.createAuthorityKeyIdentifier(issuerCertificate));
-            }
+            v3CertGen.addExtension(X509Extension.authorityKeyIdentifier, false,
+                    extUtils.createAuthorityKeyIdentifier(subjectPublicKey));
 
             if (keyUsageSet) {
                 v3CertGen.addExtension(X509Extension.keyUsage,
@@ -219,16 +180,6 @@ public class CaSignedCertificateBuilder {
         this.notBeforeInDays = notBeforeInDays;
         return this;
     }
-
-/*
-	public CaSignedCertificateBuilder withIssuerCertificate(
-			X509CertificateHolder issuerCertificate) {
-		// Validate Issuer Certificate
-		if(!CheckCaCertificate.isCaCertificate(issuerCertificate)) throw new IllegalArgumentException("Invalid issuer certificate");
-		this.issuerCertificate = issuerCertificate;
-		return this;
-	}
-*/
 
     public CaSignedCertificateBuilder resetKeyUsage() {
         keyUsageSet = false;
