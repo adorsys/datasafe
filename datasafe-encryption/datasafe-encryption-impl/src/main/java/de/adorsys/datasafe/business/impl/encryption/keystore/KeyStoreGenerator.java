@@ -47,7 +47,6 @@ public class KeyStoreGenerator {
         Date startTime = new Date();
         try {
             String keyStoreID = serverKeyPairAliasPrefix;
-            CallbackHandler readKeyHandler = new PasswordCallbackHandler(readKeyPassword.getValue().toCharArray());
             KeystoreBuilder keystoreBuilder = new KeystoreBuilder().withStoreType(keyStoreType);
 
             {
@@ -56,7 +55,7 @@ public class KeyStoreGenerator {
                 for (int i = 0; i < numberOfEncKeyPairs; i++) {
                     KeyPairEntry signatureKeyPair = encKeyPairGenerator.generateEncryptionKey(
                             serverKeyPairAliasPrefix + UUID.randomUUID().toString(),
-                            readKeyHandler
+                            readKeyPassword
                     );
 
                     keystoreBuilder = keystoreBuilder.withKeyEntry(signatureKeyPair);
@@ -68,7 +67,7 @@ public class KeyStoreGenerator {
                 for (int i = 0; i < numberOfSignKeyPairs; i++) {
                     KeyPairEntry signatureKeyPair = signKeyPairGenerator.generateSignatureKey(
                             serverKeyPairAliasPrefix + UUID.randomUUID().toString(),
-                            readKeyHandler
+                            readKeyPassword
                     );
 
                     keystoreBuilder = keystoreBuilder.withKeyEntry(signatureKeyPair);
@@ -82,7 +81,7 @@ public class KeyStoreGenerator {
                     keystoreBuilder = buildSecretKey(
                             serverKeyPairAliasPrefix + UUID.randomUUID().toString(),
                             secretKeyGenerator,
-                            readKeyHandler,
+                            readKeyPassword,
                             keystoreBuilder
                     );
                 }
@@ -90,14 +89,14 @@ public class KeyStoreGenerator {
                 keystoreBuilder = buildSecretKey(
                         KeyStoreCreationConfig.SYMM_KEY_ID.getValue(),
                         secretKeyGenerator,
-                        readKeyHandler,
+                        readKeyPassword,
                         keystoreBuilder
                 );
 
                 keystoreBuilder = buildSecretKey(
                         KeyStoreCreationConfig.PATH_KEY_ID.getValue(),
                         secretKeyGenerator,
-                        readKeyHandler,
+                        readKeyPassword,
                         keystoreBuilder
                 );
             }
@@ -113,11 +112,11 @@ public class KeyStoreGenerator {
     private KeystoreBuilder buildSecretKey(
             String id,
             SecretKeyGenerator secretKeyGenerator,
-            CallbackHandler readKeyHandler,
+            ReadKeyPassword readKeyPassword,
             KeystoreBuilder keystoreBuilder) {
         SecretKeyEntry secretKeyData = secretKeyGenerator.generate(
                 id,
-                readKeyHandler
+                readKeyPassword
         );
 
         return keystoreBuilder.withKeyEntry(secretKeyData);

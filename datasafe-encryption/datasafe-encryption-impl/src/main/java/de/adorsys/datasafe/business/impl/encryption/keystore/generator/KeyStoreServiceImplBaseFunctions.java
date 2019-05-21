@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
 import de.adorsys.datasafe.business.api.types.keystore.KeyEntry;
 import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.keystore.SecretKeyEntry;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.CertificationResult;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
@@ -136,18 +137,18 @@ public class KeyStoreServiceImplBaseFunctions {
         }
         Certificate[] chain = chainList.toArray(new Certificate[chainList.size()]);
         ks.setKeyEntry(keyPairHolder.getAlias(), keyPairHolder.getKeyPair().getKeyPair().getPrivate(),
-                PasswordCallbackUtils.getPassword(keyPairHolder.getPasswordSource(), keyPairHolder.getAlias()), chain);
+                keyPairHolder.getReadKeyPassword().getValue().toCharArray(), chain);
     }
 
     @SneakyThrows
     public static void addToKeyStore(final KeyStore ks, SecretKeyEntry secretKeyData) {
         KeyStore.SecretKeyEntry entry = new KeyStore.SecretKeyEntry(secretKeyData.getSecretKey());
-        ProtectionParameter protParam = getPasswordProtectionParameter(secretKeyData.getPasswordSource(), secretKeyData.getAlias());
+        ProtectionParameter protParam = getPasswordProtectionParameter(secretKeyData.getReadKeyPassword());
         ks.setEntry(secretKeyData.getAlias(), entry, protParam);
     }
 
-    private static ProtectionParameter getPasswordProtectionParameter(CallbackHandler passwordSource, String alias) {
-        return new KeyStore.PasswordProtection(PasswordCallbackUtils.getPassword(passwordSource, alias));
+    private static ProtectionParameter getPasswordProtectionParameter(ReadKeyPassword readKeyPassword) {
+        return new KeyStore.PasswordProtection(readKeyPassword.getValue().toCharArray());
     }
 
     @SneakyThrows
