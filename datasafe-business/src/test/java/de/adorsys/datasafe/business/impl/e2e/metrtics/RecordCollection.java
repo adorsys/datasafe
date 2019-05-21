@@ -13,6 +13,6 @@ public class RecordCollection<T extends TestRecord> {
     private String description;
     private String storage;
     private int dataSize;
-    private Map<String, List<TestRecord>> records;
+    private Map<String, List<T>> records;
 
 }
