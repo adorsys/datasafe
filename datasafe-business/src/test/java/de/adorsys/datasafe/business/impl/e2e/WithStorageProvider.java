@@ -51,24 +51,28 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     private static AmazonS3 minio;
     private static AmazonS3 amazonS3;
 
-    private static Supplier<Void> MINIO = Suppliers.memoize(() -> {
-        startMinio();
-        return null;
-    });
-
-    private static Supplier<Void> AMAZON_S3 = Suppliers.memoize(() -> {
-        initS3();
-        return null;
-    });
+    private static Supplier<Void> MINIO;
+    private static Supplier<Void> AMAZON_S3;
 
     @BeforeAll
     static void init(@TempDir Path tempDir) {
         WithStorageProvider.tempDir = tempDir;
+
+        MINIO = Suppliers.memoize(() -> {
+            startMinio();
+            return null;
+        });
+
+        AMAZON_S3 = Suppliers.memoize(() -> {
+            initS3();
+            return null;
+        });
     }
 
     @AfterEach
     @SneakyThrows
     void cleanup() {
+        log.info("Executing cleanup");
         if (null != tempDir && tempDir.toFile().exists()) {
             FileUtils.cleanDirectory(tempDir.toFile());
         }
@@ -84,9 +88,14 @@ public abstract class WithStorageProvider extends BaseE2ETest {
 
     @AfterAll
     static void shutdown() {
+        log.info("Stopping containers");
         if (null != minioContainer) {
             minioContainer.stop();
+            minioContainer = null;
+            minio = null;
         }
+
+        amazonS3 = null;
     }
 
     @ValueSource
@@ -140,6 +149,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     }
 
     private static void initS3() {
+        log.info("Initializing S3");
         if (StringUtils.isBlank(amazonAccessKeyID)) {
             return;
         }
@@ -153,6 +163,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     }
 
     private static void startMinio() {
+        log.info("Starting MINIO");
         minioContainer = new GenericContainer("minio/minio")
                 .withExposedPorts(9000)
                 .withEnv("MINIO_ACCESS_KEY", "admin")
