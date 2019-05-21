@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static de.adorsys.datasafe.business.api.types.action.ListRequest.forDefaultPrivate;
+import static de.adorsys.datasafe.business.api.types.actions.ListRequest.forDefaultPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
