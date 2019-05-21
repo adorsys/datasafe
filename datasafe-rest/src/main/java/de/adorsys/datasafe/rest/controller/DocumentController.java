@@ -36,8 +36,8 @@ public class DocumentController {
 
     @SneakyThrows
     @GetMapping(produces = APPLICATION_OCTET_STREAM_VALUE)
-    public void readDocument(@RequestParam String user,
-                             @RequestParam String password,
+    public void readDocument(@RequestHeader String user,
+                             @RequestHeader String password,
                              @RequestParam String path,
                              HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
@@ -51,9 +51,9 @@ public class DocumentController {
     }
 
     @SneakyThrows
-    @PostMapping(consumes = APPLICATION_OCTET_STREAM_VALUE)
-    public void writeDocument(@RequestParam String user,
-                              @RequestParam String password,
+    @PutMapping(consumes = APPLICATION_OCTET_STREAM_VALUE)
+    public void writeDocument(@RequestHeader String user,
+                              @RequestHeader String password,
                               @RequestParam String path,
                               InputStream inputStream) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
@@ -65,8 +65,8 @@ public class DocumentController {
     }
 
     @GetMapping("/list")
-    public List<String> listDocuments(@RequestParam String user,
-                                      @RequestParam String password,
+    public List<String> listDocuments(@RequestHeader String user,
+                                      @RequestHeader String password,
                                       @RequestParam String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         return dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
@@ -75,8 +75,8 @@ public class DocumentController {
     }
 
     @DeleteMapping
-    public void deleteDocument(@RequestParam String user,
-                               @RequestParam String password,
+    public void deleteDocument(@RequestHeader String user,
+                               @RequestHeader String password,
                                @RequestParam String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         PrivateResource resource = DefaultPrivateResource.forPrivate(URI.create(path));

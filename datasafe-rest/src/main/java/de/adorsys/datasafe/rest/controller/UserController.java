@@ -33,7 +33,7 @@ public class UserController {
         this.dataSafeService = dataSafeService;
     }
 
-    @PostMapping("/")
+    @PutMapping
     @ApiOperation("Create user")
     public void createUser(@RequestBody UserCreateRequestDTO requestDTO) {
 
