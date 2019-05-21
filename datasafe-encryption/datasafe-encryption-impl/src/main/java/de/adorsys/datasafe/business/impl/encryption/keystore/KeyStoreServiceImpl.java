@@ -97,12 +97,12 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     }
 
     @Override
-    public KeyStore deserialize(byte[] payload, String storeId, ReadStorePassword password) {
+    public KeyStore deserialize(byte[] payload, String storeId, ReadStorePassword readStorePassword) {
         return KeyStoreServiceImplBaseFunctions.loadKeyStore(
                 payload,
                 storeId,
                 KeyStoreType.DEFAULT,
-                new PasswordCallbackHandler(password.getValue().toCharArray())
+                readStorePassword
         );
     }
 }
