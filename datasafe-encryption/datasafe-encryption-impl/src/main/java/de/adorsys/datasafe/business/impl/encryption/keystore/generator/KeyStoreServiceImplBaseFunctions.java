@@ -111,9 +111,12 @@ public class KeyStoreServiceImplBaseFunctions {
             addToKeyStore(ks, (KeyPairEntry) keyEntry);
         } else if (keyEntry instanceof SecretKeyEntry) {
             addToKeyStore(ks, (SecretKeyEntry) keyEntry);
-        } else if (keyEntry instanceof TrustedCertEntry) {
+        }
+/*
+        else if (keyEntry instanceof TrustedCertEntry) {
             addToKeyStore(ks, (TrustedCertEntry) keyEntry);
         }
+ */
     }
 
     @SneakyThrows
@@ -122,12 +125,15 @@ public class KeyStoreServiceImplBaseFunctions {
         CertificationResult certification = keyPairHolder.getCertification();
         X509CertificateHolder subjectCert = certification != null ? certification.getSubjectCert() : keyPairHolder.getKeyPair().getSubjectCert();
         chainList.add(V3CertificateUtils.getX509JavaCertificate(subjectCert));
+/*
         if (certification != null) {
             List<X509CertificateHolder> issuerChain = certification.getIssuerChain();
             for (X509CertificateHolder x509CertificateHolder : issuerChain) {
                 chainList.add(V3CertificateUtils.getX509JavaCertificate(x509CertificateHolder));
             }
         }
+
+ */
         Certificate[] chain = chainList.toArray(new Certificate[chainList.size()]);
         ks.setKeyEntry(keyPairHolder.getAlias(), keyPairHolder.getKeyPair().getKeyPair().getPrivate(),
                 keyPairHolder.getReadKeyPassword().getValue().toCharArray(), chain);
@@ -143,11 +149,12 @@ public class KeyStoreServiceImplBaseFunctions {
     private static ProtectionParameter getPasswordProtectionParameter(ReadKeyPassword readKeyPassword) {
         return new KeyStore.PasswordProtection(readKeyPassword.getValue().toCharArray());
     }
-
+/*
     @SneakyThrows
     private static void addToKeyStore(final KeyStore ks, TrustedCertEntry trustedCertHolder) {
         ks.setCertificateEntry(trustedCertHolder.getAlias(), V3CertificateUtils.getX509JavaCertificate(trustedCertHolder.getCertificate()));
     }
 
+ */
 }
 
