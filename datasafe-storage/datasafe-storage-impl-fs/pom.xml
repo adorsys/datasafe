@@ -8,10 +8,6 @@
         <version>0.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <properties>
-        <commons.io.version>2.5</commons.io.version>
-        <slf4j-simple.version>1.7.25</slf4j-simple.version>
-    </properties>
 
     <artifactId>datasafe-storage-impl-fs</artifactId>
 

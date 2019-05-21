@@ -86,9 +86,11 @@
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-       	<slf4j-version>1.7.25</slf4j-version>
+        <slf4j-version>1.7.25</slf4j-version>
         <testcontainers.version>1.11.2</testcontainers.version>
         <jacoco.version>0.8.2</jacoco.version>
+        <commons.io.version>2.5</commons.io.version>
+        <slf4j-simple.version>1.7.25</slf4j-simple.version>
     </properties>
 
     <dependencies>
@@ -99,53 +101,53 @@
         </dependency>
     </dependencies>
 
-	<dependencyManagement>
-	    <dependencies>
-	        <dependency>
-	            <groupId>org.projectlombok</groupId>
-	            <artifactId>lombok</artifactId>
-	            <version>${lombok.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.commons</groupId>
-	            <artifactId>commons-lang3</artifactId>
-	            <version>${common-lang3.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.bouncycastle</groupId>
-	            <artifactId>bcpkix-jdk15on</artifactId>
-	            <version>${bouncycastle.version}</version>
-	        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${common-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
                 <version>${bouncycastle.version}</version>
             </dependency>
-	        <dependency>
-	            <groupId>com.google.code.gson</groupId>
-	            <artifactId>gson</artifactId>
-	            <version>${gson.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.google.dagger</groupId>
-	            <artifactId>dagger</artifactId>
-	            <version>${dagger.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.google.guava</groupId>
-	            <artifactId>guava</artifactId>
-	            <version>${guava.version}</version>
-	        </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.dagger</groupId>
+                <artifactId>dagger</artifactId>
+                <version>${dagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-version}</version>
             </dependency>
-	        <dependency>
-	            <groupId>org.slf4j</groupId>
-	            <artifactId>slf4j-simple</artifactId>
-	            <version>${slf4j-version}</version>
-	        </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
@@ -194,8 +196,8 @@
                 <version>${compress.version}</version>
                 <scope>test</scope>
             </dependency>
-	    </dependencies>
-	</dependencyManagement>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -241,12 +243,16 @@
                             <failOnWarning>true</failOnWarning>
                             <outputXML>true</outputXML>
                             <ignoredUsedUndeclaredDependencies>
-                                <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
-                                <ignoredUsedUndeclaredDependency>org.projectlombok:lombok</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>javax.inject:javax.inject
+                                </ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.projectlombok:lombok
+                                </ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                             <ignoredUnusedDeclaredDependencies>
-                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine
+                                </ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple
+                                </ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>
