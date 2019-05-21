@@ -86,7 +86,6 @@
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <slf4j-version>1.7.25</slf4j-version>
         <testcontainers.version>1.11.2</testcontainers.version>
         <jacoco.version>0.8.2</jacoco.version>
         <commons.io.version>2.5</commons.io.version>
@@ -141,12 +140,12 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j-version}</version>
+                <version>${slf4j-simple.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>${slf4j-version}</version>
+                <version>${slf4j-simple.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
