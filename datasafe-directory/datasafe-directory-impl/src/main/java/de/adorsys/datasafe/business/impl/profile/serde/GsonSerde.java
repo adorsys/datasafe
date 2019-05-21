@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.profile.serde;
 
 import com.google.gson.*;
+import de.adorsys.datasafe.business.api.encryption.keystore.PublicKeySerde;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.BasePublicResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
@@ -9,6 +10,7 @@ import lombok.experimental.Delegate;
 
 import javax.inject.Inject;
 import java.net.URI;
+import java.security.PublicKey;
 
 public class GsonSerde {
 
@@ -16,13 +18,18 @@ public class GsonSerde {
     private final Gson gson;
 
     @Inject
-    public GsonSerde() {
+    public GsonSerde(PublicKeySerde pubSerde) {
         GsonBuilder gsonBuilder = new GsonBuilder();
 
         gsonBuilder.registerTypeAdapter(
                 PublicResource.class,
                 (JsonDeserializer<PublicResource>)
                         (elem, type, ctx) -> new BasePublicResource(URI.create(elem.getAsString()))
+        );
+
+        gsonBuilder.registerTypeAdapter(
+                PublicKey.class,
+                (JsonDeserializer<PublicKey>) (elem, type, ctx) -> pubSerde.readPubKey(elem.getAsString())
         );
 
         gsonBuilder.registerTypeAdapter(
@@ -41,6 +48,11 @@ public class GsonSerde {
                 PrivateResource.class,
                 (JsonSerializer<PrivateResource>)
                         (elem, type, ctx) -> new JsonPrimitive(elem.location().toString())
+        );
+
+        gsonBuilder.registerTypeAdapter(
+                PublicKey.class,
+                (JsonSerializer<PublicKey>) (elem, type, ctx) -> new JsonPrimitive(pubSerde.writePubKey(elem))
         );
 
         this.gson = gsonBuilder.create();

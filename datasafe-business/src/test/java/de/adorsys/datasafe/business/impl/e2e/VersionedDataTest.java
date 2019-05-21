@@ -8,6 +8,7 @@ import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
+import de.adorsys.datasafe.business.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.shared.Position;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,11 +58,11 @@ public class VersionedDataTest extends WithStorageProvider {
 
         registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
 
-        AbsoluteLocation<PrivateResource> latest = getFirstFileInPrivate(jane);
-        String directResult = readRawPrivateUsingPrivateKey(jane, latest.getResource());
+        AbsoluteLocation<ResolvedResource> latest = getFirstFileInPrivate(jane);
+        String directResult = readRawPrivateUsingPrivateKey(jane, latest.getResource().asPrivate());
 
         assertThat(directResult).isEqualTo(MESSAGE_THREE);
-        assertThat(latest.getResource().decryptedPath()).asString().contains(PRIVATE_FILE_PATH);
+        assertThat(latest.getResource().asPrivate().decryptedPath()).asString().contains(PRIVATE_FILE_PATH);
         validateThereAreVersions(jane, 3);
     }
 
@@ -71,12 +73,64 @@ public class VersionedDataTest extends WithStorageProvider {
 
         registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
 
-        Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version> first =
+        Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version> first =
                 Position.first(versionedListRoot(jane));
-        versionedDocusafeServices.latestPrivate().remove(RemoveRequest.forPrivate(jane, first.stripVersion()));
+        versionedDocusafeServices.latestPrivate().remove(
+                RemoveRequest.forPrivate(jane, first.stripVersion().asPrivate())
+        );
 
         assertThat(listRoot(jane)).isEmpty();
         validateThereAreVersions(jane, 3);
+    }
+
+    @ParameterizedTest
+    @MethodSource("storages")
+    void testVersionsOf(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
+
+        List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> versionedResource =
+                versionedDocusafeServices.versionInfo()
+                        .versionsOf(ListRequest.forDefaultPrivate(jane, "./"))
+                        .collect(Collectors.toList());
+
+        assertThat(versionedResource).hasSize(3);
+        assertThat(versionedResource)
+                .extracting(Versioned::stripVersion)
+                .extracting(ResourceLocation::location)
+                .extracting(URI::toString)
+                .containsExactly(PRIVATE_FILE_PATH, PRIVATE_FILE_PATH, PRIVATE_FILE_PATH);
+    }
+
+    // this test imitates removal of old file versions
+    @ParameterizedTest
+    @MethodSource("storages")
+    void testOldRemoval(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
+
+        List<Versioned<AbsoluteLocation<ResolvedResource>, ResolvedResource, DFSVersion>> versionedResource =
+                versionedDocusafeServices.versionInfo()
+                        .listJoinedWithLatest(ListRequest.forDefaultPrivate(jane, "./"))
+                        .collect(Collectors.toList());
+
+        // remove `old` versions
+        List<ResolvedResource> toRemove = versionedResource.stream()
+                .filter(it -> !it.stripVersion().location().equals(it.absolute().location()))
+                // ideally you want to filter out by time as well - i.e. older than 1 hour
+                .map(Versioned::absolute)
+                .map(AbsoluteLocation::getResource)
+                .collect(Collectors.toList());
+        toRemove.forEach(it ->
+                versionedDocusafeServices.privateService().remove(RemoveRequest.forPrivate(jane, it.asPrivate()))
+        );
+
+        // expect that latest file is still present
+        String readingResult = readPrivateUsingPrivateKey(jane, BasePrivateResource.forPrivate(PRIVATE_FILE_PATH));
+        assertThat(readingResult).isEqualTo(MESSAGE_THREE);
+        validateThereAreVersions(jane, 1);
     }
 
     @Override
@@ -110,18 +164,18 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @Override
-    protected AbsoluteLocation<PrivateResource> getFirstFileInPrivate(UserIDAuth owner) {
-        List<AbsoluteLocation<PrivateResource>> files = listRoot(owner).collect(Collectors.toList());
+    protected AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth owner) {
+        List<AbsoluteLocation<ResolvedResource>> files = listRoot(owner).collect(Collectors.toList());
 
         log.info("{} has {} in PRIVATE", owner.getUserID().getValue(), files);
         return files.get(0);
     }
 
-    private Stream<AbsoluteLocation<PrivateResource>> listRoot(UserIDAuth owner) {
+    private Stream<AbsoluteLocation<ResolvedResource>> listRoot(UserIDAuth owner) {
         return listPrivate.list(ListRequest.forDefaultPrivate(owner, "./"));
     }
 
-    private Stream<Versioned<AbsoluteLocation<PrivateResource>, PrivateResource, Version>> versionedListRoot(
+    private Stream<Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version>> versionedListRoot(
             UserIDAuth owner) {
         return versionedDocusafeServices.latestPrivate().listWithDetails(ListRequest.forDefaultPrivate(owner, "./"));
     }

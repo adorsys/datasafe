@@ -61,11 +61,6 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
                 auth.getUserID(),
                 privateKeystore))
         );
-
-        when(keystoreCache.getPublicKeys()).thenReturn(new HashMap<>(ImmutableMap.of(
-                auth.getUserID(),
-                publicKeystore))
-        );
     }
 
     @Test

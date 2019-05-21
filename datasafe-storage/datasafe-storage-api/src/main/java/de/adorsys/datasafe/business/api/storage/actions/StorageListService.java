@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.storage.actions;
 
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 
 import java.util.stream.Stream;
 
@@ -16,5 +16,5 @@ public interface StorageListService {
      * @param location absolute bucket path, with credentials, where to list data
      * @return stream of available absolute bucket paths
      */
-    Stream<AbsoluteLocation<PrivateResource>> list(AbsoluteLocation location);
+    Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location);
 }

@@ -4,7 +4,7 @@ import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
-import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,6 +36,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
 class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
+
+    private static final int TIMEOUT_S = 10;
 
     private static final String MESSAGE_ONE = "Hello here 1";
     private static final String MESSAGE_TWO = "Hello here 2";
@@ -76,7 +81,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         }
 
         log.trace("*** Main thread waiting for all threads ***");
-        finishHoldingLatch.await();
+        finishHoldingLatch.await(TIMEOUT_S, TimeUnit.SECONDS);
         executor.shutdown();
         log.trace("*** All threads are finished work ***");
 
@@ -84,7 +89,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             UserIDAuth user = createJohnTestUser(i);
 
-            List<AbsoluteLocation<PrivateResource>> resourceList = listPrivate.list(
+            List<AbsoluteLocation<ResolvedResource>> resourceList = listPrivate.list(
                     forDefaultPrivate(user, "./")).collect(Collectors.toList());
             log.debug("Read files for user: " + user.getUserID().getValue());
 
@@ -120,28 +125,24 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         AtomicInteger counter = new AtomicInteger();
         CountDownLatch countDownLatch = new CountDownLatch(4);
         for (int i = 0; i < 2; i++) {
-            executor.execute(() -> {
-                readOriginUserInboxAndWriteToTargetUserPrivate(
-                        john,
-                        jane,
-                        countDownLatch,
-                        prefixes.get(counter.getAndIncrement())
-                );
-            });
-            executor.execute(() -> {
-                readOriginUserInboxAndWriteToTargetUserPrivate(
-                        jane,
-                        john,
-                        countDownLatch,
-                        prefixes.get(counter.getAndIncrement())
-                );
-            });
+            executor.execute(() -> readOriginUserInboxAndWriteToTargetUserPrivate(
+                    john,
+                    jane,
+                    countDownLatch,
+                    prefixes.get(counter.getAndIncrement())
+            ));
+            executor.execute(() -> readOriginUserInboxAndWriteToTargetUserPrivate(
+                    jane,
+                    john,
+                    countDownLatch,
+                    prefixes.get(counter.getAndIncrement())
+            ));
         }
-        countDownLatch.await();
+        countDownLatch.await(TIMEOUT_S, TimeUnit.SECONDS);
         executor.shutdown();
 
-        List<AbsoluteLocation<PrivateResource>> privateJohnFiles = getAllFilesInPrivate(john);
-        List<AbsoluteLocation<PrivateResource>> privateJaneFiles = getAllFilesInPrivate(jane);
+        List<AbsoluteLocation<ResolvedResource>> privateJohnFiles = getAllFilesInPrivate(john);
+        List<AbsoluteLocation<ResolvedResource>> privateJaneFiles = getAllFilesInPrivate(jane);
 
         List<String> expectedData = Arrays.asList(MESSAGE_ONE, MESSAGE_TWO);
 
@@ -169,7 +170,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         for (int j = 0; j < NUMBER_OF_TEST_FILES; j++) {
             executor.execute(() -> {
                 try {
-                    holdingLatch.await();
+                    holdingLatch.await(TIMEOUT_S, TimeUnit.SECONDS);
 
                     long measurementOfWritingTextToFile = System.currentTimeMillis();
                     Thread.currentThread().setName(john.getUserID().getValue());
@@ -189,10 +190,10 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     }
 
     private String calculateDecryptedContentChecksum(UserIDAuth user,
-                                                     AbsoluteLocation<PrivateResource> item) {
+                                                     AbsoluteLocation<ResolvedResource> item) {
         try {
             InputStream decryptedFileStream = readFromPrivate.read(
-                    ReadRequest.forPrivate(user, item.getResource()));
+                    ReadRequest.forPrivate(user, item.getResource().asPrivate()));
             String checksumOfDecryptedTestFile = checksum(decryptedFileStream);
             decryptedFileStream.close();
             return checksumOfDecryptedTestFile;
@@ -215,21 +216,21 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     }
 
     private void validateUserPrivateStorage(List<String> testPath,
-                                            List<AbsoluteLocation<PrivateResource>> privateJohnFiles,
+                                            List<AbsoluteLocation<ResolvedResource>> privateJohnFiles,
                                             List<String> expectedData, UserIDAuth john) {
         assertThat(privateJohnFiles).hasSize(2);
         privateJohnFiles.forEach(item -> {
-            String data = readPrivateUsingPrivateKey(john, item.getResource());
-            assertThat(testPath).contains(item.getResource().decryptedPath().getPath());
+            String data = readPrivateUsingPrivateKey(john, item.getResource().asPrivate());
+            assertThat(testPath).contains(item.getResource().asPrivate().decryptedPath().getPath());
             assertThat(expectedData.contains(data)).isTrue();
         });
     }
 
     private void readOriginUserInboxAndWriteToTargetUserPrivate(UserIDAuth originUser, UserIDAuth targetUser,
                                                                 CountDownLatch countDownLatch, String prefixes) {
-        AbsoluteLocation<PrivateResource> inbox = getFirstFileInInbox(originUser);
+        AbsoluteLocation<ResolvedResource> inbox = getFirstFileInInbox(originUser);
 
-        String result = readInboxUsingPrivateKey(originUser, inbox.getResource());
+        String result = readInboxUsingPrivateKey(originUser, inbox.getResource().asPrivate());
 
         writeDataToPrivate(targetUser, FOLDER + "/" + prefixes + PRIVATE_FILE, result);
 

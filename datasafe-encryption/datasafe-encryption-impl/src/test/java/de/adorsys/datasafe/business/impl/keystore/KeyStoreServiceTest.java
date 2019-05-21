@@ -34,14 +34,14 @@ public class KeyStoreServiceTest {
 
     @Test
     public void createKeyStore() throws Exception {
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 0, 1);
+        KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
 
         Assertions.assertNotNull(keyStore);
 
         List<String> list = Collections.list(keyStore.aliases());
         // One additional secret key being generated for path encryption and one for private doc encryption.
-        Assertions.assertEquals(4, list.size());
+        Assertions.assertEquals(3, list.size());
 
         Assertions.assertEquals("UBER", keyStore.getType());
         Assertions.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
@@ -53,14 +53,16 @@ public class KeyStoreServiceTest {
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
         // One additional secret key being generated for path encryption and one for private doc encryption.
-        Assertions.assertEquals(17, list.size());
+        Assertions.assertEquals(12, list.size());
     }
 
     @Test
     public void createKeyStoreException() {
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 0);
+        KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0);
 
-            Assertions.assertThrows(KeyStoreConfigException.class, () ->keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config));
+            Assertions.assertThrows(KeyStoreConfigException.class, () ->
+                    keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config, Collections.emptyMap())
+            );
     }
 
     @Test
@@ -105,11 +107,11 @@ public class KeyStoreServiceTest {
 
     @Test
     public void getSecretKey() throws Exception {
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0, 1);
+        KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
-        String keyID = keyStore.aliases().nextElement();
+        String keyID = KeyStoreCreationConfig.SYMM_KEY_ID.getValue();
         SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID(keyID));
         Assertions.assertNotNull(secretKey);
     }

@@ -1,0 +1,30 @@
+package de.adorsys.datasafe.business.api.version;
+
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+
+/**
+ * Manages `latest` file version link location and provides capability to read its path.
+ */
+public interface EncryptedLatestLinkService {
+
+    /**
+     * Provides location of latest link.
+     * @param owner user authorization
+     * @param resource relative resource
+     * @return Absolute resource location of file with link
+     */
+    AbsoluteLocation<PrivateResource> resolveLatestLinkLocation(
+            UserIDAuth owner, PrivateResource resource);
+
+    /**
+     * Reads content of latest link.
+     * @param owner user authorization
+     * @param latestLink location of link-file
+     * @return Location of latest resource version
+     */
+    AbsoluteLocation<PrivateResource> readLinkAndDecrypt(
+            UserIDAuth owner,
+            AbsoluteLocation<PrivateResource> latestLink);
+}

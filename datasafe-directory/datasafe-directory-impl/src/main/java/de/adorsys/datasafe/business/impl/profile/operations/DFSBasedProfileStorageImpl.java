@@ -8,9 +8,7 @@ import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalServi
 import de.adorsys.datasafe.business.api.storage.actions.*;
 import de.adorsys.datasafe.business.api.types.*;
 import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreCreationConfig;
-import de.adorsys.datasafe.business.api.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.business.impl.profile.serde.GsonSerde;
@@ -22,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.security.KeyStore;
+import java.util.List;
 
 /**
  * FIXME: it should be broken down.
@@ -80,11 +79,17 @@ public class DFSBasedProfileStorageImpl implements
         }
         log.debug("Register private {}", profile.getId());
 
-        // TODO: check if we need to create it
-        createKeyStore(
-                profile.getId(),
-                profile.getKeystore().getResource()
+        if (checkService.objectExists(profile.getKeystore())) {
+            return;
+        }
+
+        List<PublicKeyIDWithPublicKey> publicKeys = createKeyStore(
+                profile.getId().getUserID(),
+                dfsSystem.privateKeyStoreAuth(profile.getId()),
+                profile.getKeystore()
         );
+
+        publishPublicKeysIfNeeded(profile.getPublishPubKeysTo(), publicKeys);
     }
 
     @Override
@@ -140,19 +145,31 @@ public class DFSBasedProfileStorageImpl implements
     }
 
     @SneakyThrows
-    private void createKeyStore(UserIDAuth forUser, PrivateResource keystore) {
-        KeyStoreAuth auth = dfsSystem.privateKeyStoreAuth(forUser);
-
-        KeyStore store = keyStoreService.createKeyStore(
+    private <T extends ResourceLocation<T>> List<PublicKeyIDWithPublicKey> createKeyStore(
+            UserID forUser, KeyStoreAuth auth, AbsoluteLocation<T> keystore) {
+        KeyStore keystoreBlob = keyStoreService.createKeyStore(
                 auth,
                 KeyStoreType.DEFAULT,
-                new KeyStoreCreationConfig(1, 1, 1)
+                new KeyStoreCreationConfig(1, 1)
         );
 
-        try (OutputStream os = writeService.write(new AbsoluteLocation<>(keystore))) {
-            os.write(keyStoreService.serialize(store, forUser.getUserID().getValue(), auth.getReadStorePassword()));
+        try (OutputStream os = writeService.write(keystore)) {
+            os.write(keyStoreService.serialize(keystoreBlob, forUser.getValue(), auth.getReadStorePassword()));
         }
         log.debug("Keystore created for user {} in path {}", forUser, keystore);
+
+        return keyStoreService.getPublicKeys(new KeyStoreAccess(keystoreBlob, auth));
+    }
+
+    @SneakyThrows
+    private void publishPublicKeysIfNeeded(AbsoluteLocation publishTo,
+                                           List<PublicKeyIDWithPublicKey> publicKeys) {
+
+        if (null != publishTo && !checkService.objectExists(publishTo)) {
+            try (OutputStream os = writeService.write(publishTo)) {
+                os.write(serde.toJson(publicKeys).getBytes());
+            }
+        }
     }
 
     @SneakyThrows
