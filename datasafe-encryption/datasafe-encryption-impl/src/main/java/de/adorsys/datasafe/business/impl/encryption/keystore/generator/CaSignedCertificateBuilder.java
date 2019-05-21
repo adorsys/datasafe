@@ -141,20 +141,6 @@ public class CaSignedCertificateBuilder {
 
     }
 
-/*
-	private void copyKeyUsage(X509CertificateHolder issuerCertificate) {
-		int ku = KeyUsageUtils.getKeyUsage(issuerCertificate);
-		if(ku!=-1)withKeyUsage(ku);
-	}
-*/
-
-/*
-	public CaSignedCertificateBuilder withSignatureAlgo(String signatureAlgo) {
-		this.signatureAlgo = signatureAlgo;
-		return this;
-	}
-*/
-
     public CaSignedCertificateBuilder withCa(boolean ca) {
         this.createCaCert = ca;
         return this;
@@ -196,27 +182,4 @@ public class CaSignedCertificateBuilder {
         }
         return this;
     }
-
-/*
-    public CaSignedCertificateBuilder withSubjectAltNames(GeneralNames subjectAltNames) {
-        if (this.subjectAltNames == null) {
-            this.subjectAltNames = new GeneralNames(subjectAltNames.getNames());
-        } else {
-            ArrayList<GeneralName> nameList = new ArrayList<GeneralName>();
-            GeneralName[] names1 = this.subjectAltNames.getNames();
-            for (GeneralName generalName : names1) {
-                if (!nameList.contains(generalName))
-                    nameList.add(generalName);
-            }
-            GeneralName[] names2 = subjectAltNames.getNames();
-            for (GeneralName generalName : names2) {
-                if (!nameList.contains(generalName))
-                    nameList.add(generalName);
-            }
-            GeneralName[] names = nameList.toArray(new GeneralName[nameList.size()]);
-            this.subjectAltNames = new GeneralNames(names);
-        }
-        return this;
-    }
-*/
 }

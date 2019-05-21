@@ -19,17 +19,6 @@ public class V3CertificateUtils {
 			return new JcaX509CertificateConverter().setProvider(ProviderUtils.bcProvider).getCertificate(holder);
 	}
 
-	/*
-	public static X509Certificate getX509JavaCertificate(org.bouncycastle.asn1.x509.Certificate certificate) {
-		return getX509JavaCertificate(new X509CertificateHolder(certificate));
-	}
-
-	@SneakyThrows
-	public static PublicKey extractPublicKey(X509CertificateHolder subjectCertificate) {
-			return PublicKeyUtils.getPublicKey(subjectCertificate, ProviderUtils.bcProvider);
-	}
-	 */
-
 	@SneakyThrows
 	public static JcaX509ExtensionUtils getJcaX509ExtensionUtils() {
 			return new JcaX509ExtensionUtils();
