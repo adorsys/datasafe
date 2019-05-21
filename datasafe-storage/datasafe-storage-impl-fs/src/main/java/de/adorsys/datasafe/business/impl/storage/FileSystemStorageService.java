@@ -71,8 +71,10 @@ public class FileSystemStorageService implements StorageService {
     @SneakyThrows
     @Override
     public void remove(AbsoluteLocation location) {
+        Path path = resolve(location.location(), false);
+        boolean isFile = !path.toFile().isDirectory();
         Files.delete(resolve(location.location(), false));
-        log.debug("deleted directory at: {}", location);
+        log.debug("deleted {} at: {}", isFile ? "file" : "directory", location);
     }
 
     @Override
@@ -85,7 +87,7 @@ public class FileSystemStorageService implements StorageService {
     protected Path resolve(URI uri, boolean mkDirs) {
         Path path = Paths.get(dir.resolve(uri));
         if (!path.getParent().toFile().exists() && mkDirs) {
-            log.debug("Creating directories at: {}", Log.secure(path));
+            log.debug("Creating directories for: {}", Log.secure(path));
             path.getParent().toFile().mkdirs();
         }
 

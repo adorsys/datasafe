@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.impl.version.latest;
 
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.actions.ListRequest;
+import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
+import de.adorsys.datasafe.business.api.types.actions.RemoveRequest;
+import de.adorsys.datasafe.business.api.types.actions.WriteRequest;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.business.api.version.actions.VersionedList;

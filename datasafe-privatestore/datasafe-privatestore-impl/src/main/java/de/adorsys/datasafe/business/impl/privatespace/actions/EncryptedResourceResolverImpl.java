@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.privatespace.actions;
 
 import de.adorsys.datasafe.business.api.encryption.pathencryption.PathEncryption;
+import de.adorsys.datasafe.business.api.privatespace.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;

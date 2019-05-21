@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.business.api.version.actions;
 
-import de.adorsys.datasafe.business.api.types.action.VersionStrategy;
+import de.adorsys.datasafe.business.api.types.actions.VersionStrategy;
 import de.adorsys.datasafe.business.api.version.WithVersionStrategy;
-import de.adorsys.datasafe.business.impl.privatespace.actions.ReadFromPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.ReadFromPrivate;
 
 /**
  * Reads latest resource version.
