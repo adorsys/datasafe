@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
 import de.adorsys.datasafe.business.api.types.keystore.*;
-import de.adorsys.datasafe.business.impl.encryption.keystore.types.CertificationResult;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
 import lombok.SneakyThrows;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -122,8 +121,7 @@ public class KeyStoreServiceImplBaseFunctions {
     @SneakyThrows
     private static void addToKeyStore(final KeyStore ks, KeyPairEntry keyPairHolder) {
         List<Certificate> chainList = new ArrayList<>();
-        CertificationResult certification = keyPairHolder.getCertification();
-        X509CertificateHolder subjectCert = certification != null ? certification.getSubjectCert() : keyPairHolder.getKeyPair().getSubjectCert();
+        X509CertificateHolder subjectCert = keyPairHolder.getKeyPair().getSubjectCert();
         chainList.add(V3CertificateUtils.getX509JavaCertificate(subjectCert));
 /*
         if (certification != null) {

@@ -5,6 +5,4 @@ import de.adorsys.datasafe.business.api.types.keystore.KeyEntry;
 
 public interface KeyPairEntry extends KeyEntry {
     SelfSignedKeyPairData getKeyPair();
-
-    CertificationResult getCertification();
 }
