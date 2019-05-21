@@ -7,7 +7,7 @@ import de.adorsys.datasafe.business.api.types.action.ReadRequest;
 import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
 import de.adorsys.datasafe.business.api.types.action.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.resource.DefaultPrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
@@ -41,7 +41,7 @@ public class DocumentController {
                              @RequestParam String path,
                              HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = DefaultPrivateResource.forPrivate(URI.create(path));
+        PrivateResource resource = BasePrivateResource.forPrivate(URI.create(path));
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
         InputStream inputStream = dataSafeService.privateService().read(request);
         OutputStream outputStream = response.getOutputStream();
@@ -70,7 +70,7 @@ public class DocumentController {
                                       @RequestParam String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         return dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
-                        .map(e -> e.getResource().decryptedPath().getPath())
+                        .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
                         .collect(Collectors.toList());
     }
 
@@ -79,7 +79,7 @@ public class DocumentController {
                                @RequestHeader String password,
                                @RequestParam String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = DefaultPrivateResource.forPrivate(URI.create(path));
+        PrivateResource resource = BasePrivateResource.forPrivate(URI.create(path));
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         dataSafeService.privateService().remove(request);
     }

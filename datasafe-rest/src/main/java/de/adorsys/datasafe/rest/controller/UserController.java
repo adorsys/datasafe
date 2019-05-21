@@ -72,11 +72,11 @@ public class UserController {
         dataSafeService.userProfile().deregister(userIDAuth);
     }
 
-    private AbsoluteResourceLocation<PublicResource> access(URI path) {
-        return new AbsoluteResourceLocation<>(new DefaultPublicResource(path));
+    private AbsoluteLocation<PublicResource> access(URI path) {
+        return new AbsoluteLocation<>(new BasePublicResource(path));
     }
 
-    private AbsoluteResourceLocation<PrivateResource> accessPrivate(URI path) {
-        return new AbsoluteResourceLocation<>(new DefaultPrivateResource(path, URI.create(""), URI.create("")));
+    private AbsoluteLocation<PrivateResource> accessPrivate(URI path) {
+        return new AbsoluteLocation<>(new BasePrivateResource(path, URI.create(""), URI.create("")));
     }
 }
