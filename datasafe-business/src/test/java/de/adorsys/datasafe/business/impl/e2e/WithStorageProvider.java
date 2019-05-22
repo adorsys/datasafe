@@ -5,7 +5,10 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.storage.StorageService;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import lombok.Getter;
@@ -126,6 +129,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                         new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
                 )
                 .withRegion(amazonRegion)
+                .enablePathStyleAccess()
                 .build();
     }
 
