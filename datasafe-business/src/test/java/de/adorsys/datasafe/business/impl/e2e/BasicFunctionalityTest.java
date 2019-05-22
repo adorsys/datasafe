@@ -50,7 +50,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
         registerJohnAndJane(descriptor.getLocation());
 
-        writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
+        writeDataToPrivate(jane, PRIVATE_FILE_PATH, message_one);
 
         AbsoluteLocation<ResolvedResource> privateJane = getFirstFileInPrivate(jane);
 

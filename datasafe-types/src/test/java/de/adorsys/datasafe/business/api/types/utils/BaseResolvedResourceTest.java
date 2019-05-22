@@ -17,13 +17,13 @@ public class BaseResolvedResourceTest {
     @Test
     @SneakyThrows
     public void testResolveMethods() {
-        String URI_STRING = "uri";
+        String uriString = "uri";
         URI uri = new URI("uri");
         PrivateResource privateResource = new BasePrivateResource(uri, uri, uri);
         Instant i = null;
         BaseResolvedResource baseResolvedResource = new BaseResolvedResource(privateResource, i);
-        Assertions.assertEquals(URI_STRING, baseResolvedResource.resolve(privateResource).location().toString());
-        Assertions.assertEquals(URI_STRING, baseResolvedResource.asPrivate().location().toString());
-        Assertions.assertEquals(URI_STRING, baseResolvedResource.location().toString());
+        Assertions.assertEquals(uriString, baseResolvedResource.resolve(privateResource).location().toString());
+        Assertions.assertEquals(uriString, baseResolvedResource.asPrivate().location().toString());
+        Assertions.assertEquals(uriString, baseResolvedResource.location().toString());
     }
 }
