@@ -7,7 +7,6 @@ import de.adorsys.datasafe.business.api.inbox.actions.RemoveFromInbox;
 import de.adorsys.datasafe.business.api.inbox.actions.WriteToInbox;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
-import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.business.api.types.UserID;
@@ -29,12 +28,15 @@ import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.*;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,9 +61,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
     protected UserIDAuth john;
     protected UserIDAuth jane;
-
-    private URI location;
-    private StorageService storage;
 
     protected void initialize(DefaultDatasafeServices datasafeServices) {
         this.listPrivate = datasafeServices.privateService();
@@ -222,27 +221,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 userName,
                 new ReadKeyPassword("secure-password " + userName.getValue())
         );
-    }
-
-    protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, String filePathForReading,
-                                          CountDownLatch latch) throws IOException {
-        OutputStream write = writeToPrivate.write(WriteRequest.forDefaultPrivate(john, filePathForWriting));
-
-        FileInputStream fis = new FileInputStream(filePathForReading);
-        ByteStreams.copy(fis, write);
-        fis.close();
-        write.close();
-
-        latch.countDown();
-    }
-
-    protected void initStorageProvides(WithStorageProvider.StorageDescriptor descriptor) {
-        DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
-                .defaultDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
-        initialize(datasafeServices);
-
-        this.location = descriptor.getLocation();
-        this.storage = descriptor.getStorageService();
     }
 
 }

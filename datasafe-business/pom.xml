@@ -11,6 +11,10 @@
 
     <artifactId>datasafe-business</artifactId>
 
+    <properties>
+        <jackson.version>2.9.8</jackson.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.adorsys</groupId>
@@ -151,6 +155,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
             <scope>test</scope>
         </dependency>
 

@@ -12,16 +12,15 @@ import java.util.*;
 
 @Data
 @Slf4j
-public class TestMetricCollector<T extends TestRecord> {
+public class TestMetricCollector {
 
-
-    Map<String, List<TestRecord>> saveRecords = Collections.synchronizedMap(new HashMap<>());
-    Map<String, List<TestRecord>> registerRecords = Collections.synchronizedMap(new HashMap<>());
-    int dataSize;
-    String storageType;
-    RecordCollection saveMetrics;
-    RecordCollection registerMetrics;
-    int numberOfThreads;
+    private Map<String, List<Long>> saveRecords = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, List<Long>> registerRecords = Collections.synchronizedMap(new HashMap<>());
+    private int dataSize;
+    private String storageType;
+    private RecordCollection saveMetrics;
+    private RecordCollection registerMetrics;
+    private int numberOfThreads;
 
     public void writeToJSON() {
         saveMetrics = RecordCollection
@@ -60,14 +59,20 @@ public class TestMetricCollector<T extends TestRecord> {
         return "./target/metrics_save_" + storageType + "_" + dataSize + "bytes_" + numberOfThreads + "pool_size.json";
     }
 
-    public void addRegisterRecords(String userName, T record) {
-        if(registerRecords.get(userName) == null) registerRecords.put(userName, Collections.synchronizedList(new ArrayList<>()));
-        registerRecords.get(userName).add(record);
+    public void addRegisterRecords(String userName, Long operationDuration) {
+        if(registerRecords.get(userName) == null) {
+            registerRecords.put(userName, Collections.synchronizedList(new ArrayList<>()));
+        }
+
+        registerRecords.get(userName).add(operationDuration);
     }
 
-    public void addSaveRecord(String user, SaveTestRecord record) {
-        if(saveRecords.get(user) == null) saveRecords.put(user, Collections.synchronizedList(new ArrayList<>()));
-        saveRecords.get(user).add(record);
+    public void addSaveRecord(String user, Long operationDuration) {
+        if(saveRecords.get(user) == null) {
+            saveRecords.put(user, Collections.synchronizedList(new ArrayList<>()));
+        }
+
+        saveRecords.get(user).add(operationDuration);
     }
 
 }

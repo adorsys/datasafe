@@ -8,11 +8,11 @@ import java.util.Map;
 
 @Data
 @Builder
-public class RecordCollection<T extends TestRecord> {
+public class RecordCollection {
 
     private String description;
     private String storage;
     private int dataSize;
-    private Map<String, List<T>> records;
+    private Map<String, List<Long>> records;
 
 }
