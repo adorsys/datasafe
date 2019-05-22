@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  */
 class RandomActionPerformanceTest extends WithStorageProvider {
 
-    private final Map<OperationType, Consumer<Operation>> HANDLERS = ImmutableMap.of(
+    private final Map<OperationType, Consumer<Operation>> handlers = ImmutableMap.of(
             OperationType.WRITE, this::doWrite,
             OperationType.READ, this::doRead,
             OperationType.LIST, this::doList,
@@ -76,7 +76,7 @@ class RandomActionPerformanceTest extends WithStorageProvider {
     }
 
     private void executeOperations() {
-        fixture.getOperations().forEach(it -> HANDLERS.get(it.getType()).accept(it));
+        fixture.getOperations().forEach(it -> handlers.get(it.getType()).accept(it));
     }
 
     private void initVersioned(WithStorageProvider.StorageDescriptor descriptor) {

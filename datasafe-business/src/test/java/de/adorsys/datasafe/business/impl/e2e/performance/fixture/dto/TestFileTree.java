@@ -30,7 +30,7 @@ public class TestFileTree {
     @Synchronized
     public void write(String path, ContentId id) {
         if (null == id) {
-            throw new NullPointerException("No content");
+            throw new IllegalArgumentException("No content");
         }
 
         log.info(">PUT [{}]:{} to {}", storageTag(), id, path);
@@ -43,7 +43,7 @@ public class TestFileTree {
     public ContentId read(String path) {
         ContentId value = files.get(path);
         if (null == value) {
-            throw new NullPointerException("Reading null path");
+            throw new IllegalArgumentException("Reading null path");
         }
 
         log.info(">GET [{}]:{}:{}", storageTag(), path, value);
@@ -64,7 +64,7 @@ public class TestFileTree {
     public void delete(String path) {
         ContentId value = files.get(path);
         if (null == value) {
-            throw new NullPointerException("Deleting non-existing path");
+            throw new IllegalArgumentException("Deleting non-existing path");
         }
 
         log.info(">DELETE [{}]:{}:{}", storageTag(), path, value);
