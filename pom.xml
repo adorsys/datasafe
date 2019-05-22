@@ -326,16 +326,7 @@
                         <exclude>**/*_Factory*/**</exclude>
                         <exclude>**/*_MembersInjector.class</exclude>
                         <exclude>**/*Dagger*</exclude>
-                        <exclude>**/DefaultPathEncryptionModule.class</exclude>
-                        <exclude>**/DefaultCMSEncryptionModule.class</exclude>
-                        <exclude>**/DefaultCredentialsModule.class</exclude>
-                        <exclude>**/DefaultProfileModule.class</exclude>
-                        <exclude>**/DefaultDocumentModule.class</exclude>
-                        <exclude>**/DefaultInboxActionsModule.class</exclude>
-                        <exclude>**/DefaultKeyStoreModule.class</exclude>
-                        <exclude>**/DefaultPathEncryptionModule.class</exclude>
-                        <exclude>**/DefaultPrivateActionsModule.class</exclude>
-                        <exclude>**/DefaultVersionedPrivateActionsModule.class</exclude>
+                        <exclude>**/datasafe-business/Default*Module.class</exclude>
                     </excludes>
                     <propertyName>surefireArgLine</propertyName>
                 </configuration>

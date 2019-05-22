@@ -49,14 +49,14 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
     @Test
     void objectExists() {
         createFileWithMessage();
-        assertThat(storageService.objectExists(storageService.list(root).findFirst().get()));
+        assertThat(storageService.objectExists(storageService.list(root).findFirst().get())).isTrue();
     }
 
     @Test
     void listEmpty() {
         Path nonExistingFile = storageDir.resolve(UUID.randomUUID().toString());
         AbsoluteLocation<PrivateResource> nonExistingFileLocation = new AbsoluteLocation<>(BasePrivateResource.forPrivate(nonExistingFile.toUri()));
-        assertThat(storageService.list(nonExistingFileLocation).collect(Collectors.toList()).isEmpty());
+        assertThat(storageService.list(nonExistingFileLocation).collect(Collectors.toList())).isEmpty();
     }
 
     @SneakyThrows
@@ -69,7 +69,7 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
         try (OutputStream os = storageService.write(newFileLocation)) {
             os.write(MESSAGE.getBytes());
         }
-        assertThat(storageService.objectExists(newFileLocation));
+        assertThat(storageService.objectExists(newFileLocation)).isTrue();
     }
 
     @SneakyThrows
@@ -108,11 +108,11 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
         Path dotFile = storageDir.resolve(".dotfile");
         AbsoluteLocation<PrivateResource> newFileLocation = new AbsoluteLocation<>(BasePrivateResource.forPrivate(dotFile.toUri()));
 
-        assertThat(storageService.list(root).collect(Collectors.toList()).isEmpty());
+        assertThat(storageService.list(root).collect(Collectors.toList())).isEmpty();
         try (OutputStream os = storageService.write(newFileLocation)) {
             os.write(MESSAGE.getBytes());
         }
-        assertThat(!storageService.list(root).collect(Collectors.toList()).isEmpty());
+        assertThat(storageService.list(root).collect(Collectors.toList())).isNotEmpty();
     }
 
     @Test

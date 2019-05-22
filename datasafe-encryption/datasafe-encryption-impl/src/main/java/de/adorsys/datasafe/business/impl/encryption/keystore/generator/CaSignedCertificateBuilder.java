@@ -67,7 +67,6 @@ public class CaSignedCertificateBuilder {
         Date now = new Date();
         Date notAfter = notAfterInDays != null ? DateUtils.addDays(now, notAfterInDays) : null;
         Date notBefore = notBeforeInDays != null ? DateUtils.addDays(now, notBeforeInDays) : null;
-        ;
 
         List<KeyValue> notNullCheckList = ListOfKeyValueBuilder.newBuilder()
                 .add("X509CertificateBuilder_missing_subject_DN", subjectDN)

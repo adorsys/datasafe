@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class DFSSystemTest {
     @Test
     public void getKeyStoreAuth() {
@@ -22,6 +24,6 @@ public class DFSSystemTest {
                 return null;
             }
         });
-        Assertions.assertEquals(PASS, dfsSystem.publicKeyStoreAuth().getReadKeyPassword().getValue());
+        assertEquals(PASS, dfsSystem.publicKeyStoreAuth().getReadKeyPassword().getValue());
     }
 }

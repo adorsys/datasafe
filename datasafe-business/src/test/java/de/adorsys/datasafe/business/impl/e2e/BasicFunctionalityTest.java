@@ -1,6 +1,9 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.storage.StorageService;
+import de.adorsys.datasafe.business.api.types.UserID;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
@@ -32,11 +35,12 @@ class BasicFunctionalityTest extends WithStorageProvider {
     @MethodSource("storages")
     public void testDFSBasedProfileStorage(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
-        // assertThat(!profileRetrievalService.userExists(john.getUserID()));
-        john = registerUser("john", descriptor.getLocation());
-        assertThat(profileRetrievalService.userExists(john.getUserID()));
+        UserID userJohn = new UserID("john");
+        assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
+        john = registerUser(userJohn.getValue(), descriptor.getLocation());
+        assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
         profileRemovalService.deregister(john);
-        assertThat(profileRetrievalService.userExists(john.getUserID()));
+        assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
     }
 
     @ParameterizedTest

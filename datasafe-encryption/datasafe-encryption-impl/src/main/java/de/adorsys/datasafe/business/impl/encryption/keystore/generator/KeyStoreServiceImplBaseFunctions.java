@@ -34,11 +34,6 @@ public class KeyStoreServiceImplBaseFunctions {
      */
     @SneakyThrows
     public static KeyStore newKeyStore(KeyStoreType keyStoreType) {
-/*
-        if (keyStoreType == null) {
-            keyStoreType = KeyStoreType.DEFAULT;
-        }
- */
         KeyStore ks = KeyStore.getInstance(keyStoreType.getValue());
         ks.load(null, null);
         return ks;
@@ -111,11 +106,6 @@ public class KeyStoreServiceImplBaseFunctions {
         } else if (keyEntry instanceof SecretKeyEntry) {
             addToKeyStore(ks, (SecretKeyEntry) keyEntry);
         }
-/*
-        else if (keyEntry instanceof TrustedCertEntry) {
-            addToKeyStore(ks, (TrustedCertEntry) keyEntry);
-        }
- */
     }
 
     @SneakyThrows
@@ -123,15 +113,6 @@ public class KeyStoreServiceImplBaseFunctions {
         List<Certificate> chainList = new ArrayList<>();
         X509CertificateHolder subjectCert = keyPairHolder.getKeyPair().getSubjectCert();
         chainList.add(V3CertificateUtils.getX509JavaCertificate(subjectCert));
-/*
-        if (certification != null) {
-            List<X509CertificateHolder> issuerChain = certification.getIssuerChain();
-            for (X509CertificateHolder x509CertificateHolder : issuerChain) {
-                chainList.add(V3CertificateUtils.getX509JavaCertificate(x509CertificateHolder));
-            }
-        }
-
- */
         Certificate[] chain = chainList.toArray(new Certificate[chainList.size()]);
         ks.setKeyEntry(keyPairHolder.getAlias(), keyPairHolder.getKeyPair().getKeyPair().getPrivate(),
                 keyPairHolder.getReadKeyPassword().getValue().toCharArray(), chain);
@@ -147,12 +128,5 @@ public class KeyStoreServiceImplBaseFunctions {
     private static ProtectionParameter getPasswordProtectionParameter(ReadKeyPassword readKeyPassword) {
         return new KeyStore.PasswordProtection(readKeyPassword.getValue().toCharArray());
     }
-/*
-    @SneakyThrows
-    private static void addToKeyStore(final KeyStore ks, TrustedCertEntry trustedCertHolder) {
-        ks.setCertificateEntry(trustedCertHolder.getAlias(), V3CertificateUtils.getX509JavaCertificate(trustedCertHolder.getCertificate()));
-    }
-
- */
 }
 

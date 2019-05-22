@@ -52,19 +52,19 @@ public class LogTest {
     @Test
     void secureNullPath() {
         Path path = null;
-        assertThat(Log.secure(path) == null);
+        assertThat(Log.secure(path)).isNull();
     }
 
     @Test
     void secureNullUri() {
         URI uri = null;
-        assertThat(Log.secure(uri) == null);
+        assertThat(Log.secure(uri)).isNull();
     }
 
     @Test
     void secureNullObject() {
         Object uri = null;
-        assertThat(Log.secure(uri) == null);
+        assertThat(Log.secure(uri)).isNull();
     }
 
     @Test

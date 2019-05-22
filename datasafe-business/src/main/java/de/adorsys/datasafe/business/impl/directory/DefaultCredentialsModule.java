@@ -9,7 +9,6 @@ import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.business.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.business.api.types.UserID;
-import de.adorsys.datasafe.business.api.types.cobertura.CoberturaIgnore;
 import de.adorsys.datasafe.business.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.business.impl.profile.keys.DFSPrivateKeyServiceImpl;
@@ -28,7 +27,6 @@ import java.util.function.Supplier;
 @Module
 public abstract class DefaultCredentialsModule {
 
-    @CoberturaIgnore
     @Provides
     @Singleton
     static KeyStoreCache keyStoreCache() {
@@ -43,15 +41,12 @@ public abstract class DefaultCredentialsModule {
         return new DefaultKeyStoreCache(cachePubKeys.get().asMap(), cacheKeystore.get().asMap());
     }
 
-    @CoberturaIgnore
     @Binds
     abstract BucketAccessService bucketAccessService(BucketAccessServiceImpl impl);
 
-    @CoberturaIgnore
     @Binds
     abstract PublicKeyService publicKeyService(DFSPublicKeyServiceImpl impl);
 
-    @CoberturaIgnore
     @Binds
     abstract PrivateKeyService privateKeyService(DFSPrivateKeyServiceImpl impl);
 }

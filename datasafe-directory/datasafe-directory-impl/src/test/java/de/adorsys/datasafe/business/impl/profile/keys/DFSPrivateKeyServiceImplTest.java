@@ -64,7 +64,22 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
     }
 
     @Test
-    void justOneTestToTestBeforeEach() {
+    void pathEncryptionSecretKey() {
+        //privateKeyService.pathEncryptionSecretKey(auth);
     }
 
+    @Test
+    void documentEncryptionSecretKey() {
+        //privateKeyService.documentEncryptionSecretKey(auth);
+    }
+
+    @Test
+    void keyById() {
+        //privateKeyService.documentEncryptionSecretKey(auth);
+    }
+
+    @Test
+    void keyByIdCaches() {
+        // privateKeyService.documentEncryptionSecretKey(auth);
+    }
 }
