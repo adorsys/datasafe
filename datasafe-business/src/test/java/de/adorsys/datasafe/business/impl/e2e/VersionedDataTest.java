@@ -133,6 +133,37 @@ public class VersionedDataTest extends WithStorageProvider {
         validateThereAreVersions(jane, 1);
     }
 
+    @ParameterizedTest
+    @MethodSource("storages")
+    void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerJohnAndJane(descriptor.getLocation());
+
+        writeDataToPrivate(jane, "root.file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "root.file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "root.file", MESSAGE_THREE);
+        writeDataToPrivate(jane, "level1/file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "level1/level2/file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "level1/level2/file", MESSAGE_THREE);
+
+        assertPrivateSpaceList(jane, "./", "root.file", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, ".", "root.file", "level1/file", "level1/level2/file");
+
+        assertPrivateSpaceList(jane, "root.file", "root.file");
+        assertPrivateSpaceList(jane, "./root.file", "root.file");
+
+        assertPrivateSpaceList(jane, "level1", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1/", "level1/file", "level1/level2/file");
+
+        assertPrivateSpaceList(jane, "./level1/level2", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1/level2/", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/level2", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/level2/", "level1/level2/file");
+    }
+
     @Override
     @SneakyThrows
     protected void writeDataToPrivate(UserIDAuth auth, String path, String data) {

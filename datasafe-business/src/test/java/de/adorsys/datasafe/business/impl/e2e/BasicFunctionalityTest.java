@@ -6,6 +6,7 @@ import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 class BasicFunctionalityTest extends WithStorageProvider {
 
     private static final String MESSAGE_ONE = "Hello here 1";
@@ -56,6 +58,34 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
         removeFromPrivate(jane, privateJane.getResource().asPrivate());
         removeFromInbox(john, inboxJohn.getResource().asPrivate());
+    }
+
+    @ParameterizedTest
+    @MethodSource("storages")
+    void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerJohnAndJane(descriptor.getLocation());
+
+        writeDataToPrivate(jane, "root.file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "level1/file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "level1/level2/file", MESSAGE_ONE);
+
+        assertPrivateSpaceList(jane, "./", "root.file", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, ".", "root.file", "level1/file", "level1/level2/file");
+
+        assertPrivateSpaceList(jane, "root.file", "root.file");
+        assertPrivateSpaceList(jane, "./root.file", "root.file");
+
+        assertPrivateSpaceList(jane, "level1", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1/", "level1/file", "level1/level2/file");
+
+        assertPrivateSpaceList(jane, "./level1/level2", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1/level2/", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/level2", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/level2/", "level1/level2/file");
     }
 
     @SneakyThrows

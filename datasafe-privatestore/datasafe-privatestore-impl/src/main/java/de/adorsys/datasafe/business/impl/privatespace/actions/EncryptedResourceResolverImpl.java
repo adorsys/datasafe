@@ -51,7 +51,15 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
             );
         }
 
-        URI encryptedPath = relativize(root.location(), resource.location());
+        URI encryptedPath;
+        URI relative = relativize(root.location(), resource.location());
+        if (!root.encryptedPath().toString().endsWith("/") && !relative.toString().isEmpty()) {
+            encryptedPath = URI.create(root.encryptedPath().toString() + "/")
+                    .resolve(relativize(root.location(), resource.location()));
+        } else {
+            encryptedPath = root.encryptedPath().resolve(relative);
+        }
+
         URI decryptedPath = pathEncryption.decrypt(auth, encryptedPath);
 
         return new AbsoluteLocation<>(
@@ -68,6 +76,7 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
         String rootString = root.toASCIIString();
         String resourceString = resource.toASCIIString();
 
-        return URI.create(resourceString.substring(resourceString.indexOf(rootString) + rootString.length()));
+        String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
+        return URI.create(relative);
     }
 }

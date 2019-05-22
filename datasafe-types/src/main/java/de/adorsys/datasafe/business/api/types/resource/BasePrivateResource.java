@@ -80,8 +80,13 @@ public final class BasePrivateResource implements PrivateResource {
     @Override
     public PrivateResource resolve(ResourceLocation absolute) {
         if (!container.isAbsolute()) {
+            URI absoluteUri = absolute.location();
+            if (!absoluteUri.getPath().endsWith("/")) {
+                absoluteUri = URI.create(absoluteUri.toASCIIString() + "/");
+            }
+
             return new BasePrivateResource(
-                    absolute.location().resolve(container), encryptedPath, decryptedPath
+                    absoluteUri.resolve(container), encryptedPath, decryptedPath
             );
         }
         return new BasePrivateResource(absolute.location(), encryptedPath, decryptedPath);
