@@ -371,7 +371,7 @@
                                     <ignoreTrivial>true</ignoreTrivial>
                                     <ignoreMethodAnnotation>de.adorsys.datasafe.business.api.types.cobertura.CoberturaIgnore</ignoreMethodAnnotation>
                                     <ignores>
-                                        <ignore>de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionModule</ignore>
+                                        <ignore>de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionModule.class</ignore>
                                     </ignores>
                                 </instrumentation>
 
