@@ -11,12 +11,9 @@ import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -38,7 +35,7 @@ public class DocumentController {
     }
 
     @SneakyThrows
-    @GetMapping(value = "/document/{path}", produces = APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/document/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
     public void readDocument(@RequestHeader String user,
                              @RequestHeader String password,
                              @PathVariable String path,
@@ -54,18 +51,11 @@ public class DocumentController {
     }
 
     @SneakyThrows
-    @PutMapping(value = "/document/**", consumes = APPLICATION_OCTET_STREAM_VALUE)
+    @PutMapping(value = "/document/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
     public void writeDocument(@RequestHeader String user,
                               @RequestHeader String password,
                               InputStream inputStream,
-                              HttpServletRequest request) {
-
-        final String fullPath =
-                request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
-        final String bestMatchingPattern =
-                request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
-        String path = new AntPathMatcher().extractPathWithinPattern(bestMatchingPattern, fullPath);
-
+                              @PathVariable String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         OutputStream stream = dataSafeService.privateService().write(WriteRequest.forDefaultPrivate(userIDAuth, path));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -78,14 +68,13 @@ public class DocumentController {
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
                                       @PathVariable String path) {
-
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         return dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                         .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
                         .collect(Collectors.toList());
     }
 
-    @DeleteMapping("/document/{path}")
+    @DeleteMapping("/document/{path:.*}")
     public void deleteDocument(@RequestHeader String user,
                                @RequestHeader String password,
                                @PathVariable String path) {
