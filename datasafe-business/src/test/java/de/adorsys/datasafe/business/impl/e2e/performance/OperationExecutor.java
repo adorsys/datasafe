@@ -45,7 +45,7 @@ public class OperationExecutor {
 
     public void execute(Operation oper) {
         long cnt = counter.incrementAndGet();
-        
+
         log.trace("[{}] Executing {}", cnt, oper);
         handlers.get(oper.getType()).accept(oper);
         if (0 == cnt % 100) {
