@@ -44,9 +44,10 @@ public class OperationExecutor {
     private final Map<String, UserSpec> users;
 
     public void execute(Operation oper) {
-        log.trace("Executing {}", oper);
-        handlers.get(oper.getType()).accept(oper);
         long cnt = counter.incrementAndGet();
+        
+        log.trace("[{}] Executing {}", cnt, oper);
+        handlers.get(oper.getType()).accept(oper);
         if (0 == cnt % 100) {
             log.info("[{}] Done operations", cnt);
         }
