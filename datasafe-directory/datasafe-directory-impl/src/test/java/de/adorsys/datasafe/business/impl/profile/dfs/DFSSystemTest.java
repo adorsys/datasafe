@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DFSSystemTest {
     @Test
     public void getKeyStoreAuth() {
-        String PASS = "keystorepassword";
+        String passwordString = "keystorepassword";
         DFSSystem dfsSystem = new DFSSystem(new DFSConfig() {
             @Override
             public String keystorePassword() {
-                return PASS;
+                return passwordString;
             }
 
             @Override
@@ -24,6 +24,6 @@ public class DFSSystemTest {
                 return null;
             }
         });
-        assertEquals(PASS, dfsSystem.publicKeyStoreAuth().getReadKeyPassword().getValue());
+        assertEquals(passwordString, dfsSystem.publicKeyStoreAuth().getReadKeyPassword().getValue());
     }
 }
