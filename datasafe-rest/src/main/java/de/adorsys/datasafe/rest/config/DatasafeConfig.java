@@ -32,7 +32,7 @@ public class DatasafeConfig {
     }
 
     @Bean
-    DefaultDatasafeServices datasafeService() {
+    DefaultDatasafeServices datasafeService(StorageService storageService) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -49,11 +49,11 @@ public class DatasafeConfig {
                         return URI.create(properties.getSystemRoot());
                     }
                 })
-                .storageList(new S3StorageService(s3, properties.getBucketName()))
-                .storageRead(new S3StorageService(s3, properties.getBucketName()))
-                .storageWrite(new S3StorageService(s3, properties.getBucketName()))
-                .storageRemove(new S3StorageService(s3, properties.getBucketName()))
-                .storageCheck(new S3StorageService(s3, properties.getBucketName()))
+                .storageList(storageService)
+                .storageRead(storageService)
+                .storageWrite(storageService)
+                .storageRemove(storageService)
+                .storageCheck(storageService)
                 .build();
     }
 }
