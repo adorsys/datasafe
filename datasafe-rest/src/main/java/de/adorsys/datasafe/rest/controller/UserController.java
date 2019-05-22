@@ -16,7 +16,7 @@ import java.net.URI;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@RestController()
+@RestController
 @RequestMapping(value = "/user", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 public class UserController {
 
@@ -25,6 +25,7 @@ public class UserController {
     private static final String PRIVATE_COMPONENT = "private";
     private static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     private static final String INBOX_COMPONENT = "inbox";
+    private static final String VERSION_COMPONENT = "versions";
 
     private final DefaultDatasafeServices dataSafeService;
 
@@ -60,14 +61,16 @@ public class UserController {
                 .privateStorage(accessPrivate(filesUri))
                 .keystore(accessPrivate(keyStoreUri))
                 .inboxWithWriteAccess(accessPrivate(inboxUri))
+                .documentVersionStorage(accessPrivate(rootLocation.resolve("./" + VERSION_COMPONENT + "/")))
+                .publishPubKeysTo(access(keyStoreUri))
                 .build()
         );
     }
 
-    @DeleteMapping("/{user}")
+    @DeleteMapping
     @ApiOperation("Delete user")
-    public void deleteUser(@PathVariable String user,
-                           @RequestParam String password) {
+    public void deleteUser(@RequestHeader String user,
+                           @RequestHeader String password) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         dataSafeService.userProfile().deregister(userIDAuth);
     }

@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class DatasafeProperties {
 
-    String bucketName;
-    String systemRoot;
-    String keystorePassword;
+    private String bucketName;
+    private String systemRoot;
+    private String keystorePassword;
 }

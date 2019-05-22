@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.rest.config;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.adorsys.datasafe.business.api.config.DFSConfig;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -19,14 +18,12 @@ import java.security.Security;
 public class DatasafeConfig {
 
     private final DatasafeProperties properties;
-
-    private final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-            .enablePathStyleAccess()
-            .build();
+    private final AmazonS3 s3;
 
     @Autowired
-    public DatasafeConfig(DatasafeProperties properties) {
+    public DatasafeConfig(DatasafeProperties properties, AmazonS3 s3) {
         this.properties = properties;
+        this.s3 = s3;
     }
 
     @Bean
