@@ -3,6 +3,7 @@ package de.adorsys.datasafe.business.impl.privatestore.actions;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
+import de.adorsys.datasafe.business.api.types.cobertura.CoberturaIgnore;
 import de.adorsys.datasafe.business.api.version.EncryptedLatestLinkService;
 import de.adorsys.datasafe.business.api.version.VersionEncoder;
 import de.adorsys.datasafe.business.api.version.VersionInfoService;
@@ -28,32 +29,41 @@ import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;
 @Module
 public abstract class DefaultVersionedPrivateActionsModule {
 
+    @CoberturaIgnore
     @Provides
     static LatestDFSVersion latestDFSVersion() {
         return new LatestDFSVersion();
     }
 
+    @CoberturaIgnore
     @Binds
     abstract VersionEncoder versionEncoder(DefaultVersionEncoder impl);
 
+    @CoberturaIgnore
     @Binds
     abstract VersionInfoService<DFSVersion> versionInfoService(DefaultVersionInfoServiceImpl impl);
 
+    @CoberturaIgnore
     @Binds
     abstract EncryptedLatestLinkService latestLink(EncryptedLatestLinkServiceImpl impl);
 
+    @CoberturaIgnore
     @Binds
     abstract VersionedList<LatestDFSVersion> latestList(LatestListImpl<LatestDFSVersion> impl);
 
+    @CoberturaIgnore
     @Binds
     abstract VersionedRead<LatestDFSVersion> latestRead(LatestReadImpl<LatestDFSVersion> impl);
 
+    @CoberturaIgnore
     @Binds
     abstract VersionedRemove<LatestDFSVersion> latestRemove(LatestRemoveImpl<LatestDFSVersion> impl);
 
+    @CoberturaIgnore
     @Binds
     abstract VersionedWrite<LatestDFSVersion> latestWrite(LatestWriteImpl<LatestDFSVersion> impl);
 
+    @CoberturaIgnore
     @Binds
     abstract VersionedPrivateSpaceService<LatestDFSVersion> versionVersionedPrivateSpaceService(
             LatestPrivateSpaceImpl<LatestDFSVersion> impl

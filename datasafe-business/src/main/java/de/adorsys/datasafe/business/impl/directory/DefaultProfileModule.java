@@ -11,6 +11,7 @@ import de.adorsys.datasafe.business.api.resource.ResourceResolver;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.UserPublicProfile;
+import de.adorsys.datasafe.business.api.types.cobertura.CoberturaIgnore;
 import de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.business.impl.profile.operations.DefaultUserProfileCache;
 import de.adorsys.datasafe.business.impl.profile.operations.UserProfileCache;
@@ -24,6 +25,7 @@ import javax.inject.Singleton;
 @Module
 public abstract class DefaultProfileModule {
 
+    @CoberturaIgnore
     @Provides
     @Singleton
     static UserProfileCache userProfileCache() {
@@ -37,12 +39,15 @@ public abstract class DefaultProfileModule {
         return new DefaultUserProfileCache(publicProfileCache.asMap(), privateProfileCache.asMap());
     }
 
+    @CoberturaIgnore
     @Binds
     abstract ProfileRetrievalService profileService(DFSBasedProfileStorageImpl impl);
 
+    @CoberturaIgnore
     @Binds
     abstract ProfileRegistrationService creationService(DFSBasedProfileStorageImpl impl);
 
+    @CoberturaIgnore
     @Binds
     abstract ResourceResolver resourceResolver(ResourceResolverImpl impl);
 }
