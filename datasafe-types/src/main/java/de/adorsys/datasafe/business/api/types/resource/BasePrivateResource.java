@@ -94,6 +94,11 @@ public final class BasePrivateResource implements PrivateResource {
 
     private static URI resolveContainer(URI root, URI encryptedPath) {
         String pathStr = encryptedPath.toASCIIString();
+
+        if (pathStr.contains("/")) {
+            pathStr = pathStr.split("/", 2)[0];
+        }
+
         if (pathStr.isEmpty()) {
             return root;
         }

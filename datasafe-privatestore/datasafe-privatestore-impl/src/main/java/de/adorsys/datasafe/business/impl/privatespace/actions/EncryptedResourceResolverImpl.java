@@ -20,6 +20,18 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
         this.pathEncryption = pathEncryption;
     }
 
+    private static URI relativize(URI root, URI resource) {
+        if (root.isAbsolute()) {
+            return root.relativize(resource);
+        }
+
+        String rootString = root.toASCIIString();
+        String resourceString = resource.toASCIIString();
+
+        String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
+        return URI.create(relative);
+    }
+
     @Override
     public PrivateResource encrypt(UserIDAuth auth, PrivateResource resource) {
         URI decryptedPath = resource.location();
@@ -39,44 +51,49 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
 
     @Override
     public AbsoluteLocation<PrivateResource> decryptAndResolvePath(
-            UserIDAuth auth, PrivateResource resource, PrivateResource root) {
+        UserIDAuth auth, PrivateResource resource, PrivateResource root) {
         if (!resolver.isAbsolute(resource)) {
             URI encryptedPath = resource.location();
             URI decryptedPath = pathEncryption.decrypt(auth, encryptedPath);
 
             return new AbsoluteLocation<>(
-                    resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(
-                            encryptedPath,
-                            decryptedPath)
+                resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(
+                    encryptedPath,
+                    decryptedPath)
             );
         }
 
-        URI encryptedPath;
         URI relative = relativize(root.location(), resource.location());
-        if (!root.encryptedPath().toString().endsWith("/") && !relative.toString().isEmpty()) {
-            encryptedPath = URI.create(root.encryptedPath().toString() + "/")
-                    .resolve(relativize(root.location(), resource.location()));
-        } else {
-            encryptedPath = root.encryptedPath().resolve(relative);
-        }
 
+        URI encryptedPath = computeEncryptedPath(root, relative);
         URI decryptedPath = pathEncryption.decrypt(auth, encryptedPath);
 
         return new AbsoluteLocation<>(
-                resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(encryptedPath, decryptedPath)
+            resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(encryptedPath, decryptedPath)
         );
     }
 
-
-    private static URI relativize(URI root, URI resource) {
-        if (root.isAbsolute()) {
-            return root.relativize(resource);
+    private URI computeEncryptedPath(PrivateResource root, URI relative) {
+        if (hasRelativePath(relative)) {
+            return handleResourceRelativeToRoot(root, relative);
         }
 
-        String rootString = root.toASCIIString();
-        String resourceString = resource.toASCIIString();
+        return handleEmptyRelative(root);
+    }
 
-        String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
-        return URI.create(relative);
+    private boolean hasRelativePath(URI relative) {
+        return !relative.toString().isEmpty();
+    }
+
+    private URI handleEmptyRelative(PrivateResource root) {
+        return root.encryptedPath();
+    }
+
+    private URI handleResourceRelativeToRoot(PrivateResource root, URI relative) {
+        if (root.encryptedPath().toString().isEmpty()) {
+            return relative;
+        }
+
+        return URI.create(root.encryptedPath().toString() + "/").resolve(relative);
     }
 }

@@ -71,6 +71,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
         writeDataToPrivate(jane, "level1/file", MESSAGE_ONE);
         writeDataToPrivate(jane, "level1/level2/file", MESSAGE_ONE);
 
+        assertPrivateSpaceList(jane, "", "root.file", "level1/file", "level1/level2/file");
         assertPrivateSpaceList(jane, "./", "root.file", "level1/file", "level1/level2/file");
         assertPrivateSpaceList(jane, ".", "root.file", "level1/file", "level1/level2/file");
 
