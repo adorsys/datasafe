@@ -38,7 +38,7 @@ public class DocumentController {
     }
 
     @SneakyThrows
-    @GetMapping(value = "/document/**", produces = APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/document/{path}", produces = APPLICATION_OCTET_STREAM_VALUE)
     public void readDocument(@RequestHeader String user,
                              @RequestHeader String password,
                              @PathVariable String path,
@@ -74,15 +74,10 @@ public class DocumentController {
         stream.close();
     }
 
-    @GetMapping("/documents/**")
+    @GetMapping("/documents/{path:.*}")
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
-                                      HttpServletRequest request) {
-        final String fullPath =
-                request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
-        final String bestMatchingPattern =
-                request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
-        String path = new AntPathMatcher().extractPathWithinPattern(bestMatchingPattern, fullPath);
+                                      @PathVariable String path) {
 
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         return dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
