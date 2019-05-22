@@ -23,6 +23,7 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -37,11 +38,17 @@ public class OperationExecutor {
             OperationType.DELETE, this::doDelete
     );
 
+    private final AtomicLong counter = new AtomicLong();
+
     private final PrivateSpaceService privateSpace;
     private final Map<String, UserSpec> users;
 
     public void execute(Operation oper) {
         handlers.get(oper.getType()).accept(oper);
+        long cnt = counter.incrementAndGet();
+        if (0 == cnt % 100) {
+            log.info("[{}] Done operations", cnt);
+        }
     }
 
     @SneakyThrows

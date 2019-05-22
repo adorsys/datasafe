@@ -32,11 +32,11 @@ public class ContentGenerator {
         @Override
         public int read() {
             int sz = sizeRemaining.decrementAndGet();
-            if (sz == 0) {
+            if (sz <= 0) {
                 return -1;
             }
 
-            return pattern[sz % pattern.length];
+            return pattern[sz % pattern.length] & 0xFF;
         }
     }
 }

@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -58,6 +59,7 @@ class RandomActionPerformanceTest extends WithStorageProvider {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "PERFORMANCE_TEST", matches = "true")
     void testMinioVersionedPerformance() {
         executor = new OperationExecutor(versionedDatasafeServices.latestPrivate(), users);
 
