@@ -2,7 +2,6 @@ package de.adorsys.datasafe.business.impl.e2e.metrtics;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -54,7 +53,6 @@ public class TestMetricCollector {
         return "./target/metrics_register_user_" + storageType + "_" + numberOfThreads + "pool_size.json";
     }
 
-    @NotNull
     private String getFilePathForResultOfSaveTest() {
         return "./target/metrics_save_" + storageType + "_" + dataSize + "bytes_" + numberOfThreads + "pool_size.json";
     }
