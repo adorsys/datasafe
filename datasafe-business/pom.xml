@@ -166,7 +166,8 @@
                             <failOnWarning>true</failOnWarning>
                             <outputXML>true</outputXML>
                             <ignoredUsedUndeclaredDependencies>
-                                <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>javax.inject:javax.inject
+                                </ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>com.amazonaws</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                         </configuration>
