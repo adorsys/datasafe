@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AmazonConfig {
 
-    //@Bean
+    @Bean
     AmazonS3 amazonS3() {
         return AmazonS3ClientBuilder.standard()
                 .enablePathStyleAccess()
