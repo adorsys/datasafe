@@ -2,7 +2,10 @@ package de.adorsys.datasafe.rest.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -20,6 +23,20 @@ public class MvcConfig extends WebMvcConfigurationSupport {
         RequestMappingHandlerMapping handlerMapping = super.requestMappingHandlerMapping();
         handlerMapping.setPathMatcher(new ExtendedMatcher());
         return handlerMapping;
+    }
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer
+                .favorPathExtension(false)
+                .favorParameter(false)
+                .ignoreAcceptHeader(false)
+                .defaultContentType(MediaType.APPLICATION_JSON);
+    }
+
+    @Override
+    protected void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
     }
 
     public static class ExtendedMatcher extends AntPathMatcher {

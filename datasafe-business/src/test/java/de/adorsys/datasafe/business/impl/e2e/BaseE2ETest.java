@@ -37,6 +37,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -223,4 +224,13 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         );
     }
 
+    protected void assertPrivateSpaceList(UserIDAuth user, String root, String... expected) {
+        List<String> paths = listPrivate.list(ListRequest.forDefaultPrivate(user, root))
+                .map(it -> it.getResource().asPrivate().decryptedPath().toString())
+                .collect(Collectors.toList());
+
+        for (String toFind : expected) {
+            assertThat(paths.stream().anyMatch(it -> it.contains(toFind))).isTrue();
+        }
+    }
 }

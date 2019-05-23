@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
+import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -79,6 +82,25 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
                 .hasSize(1)
                 .extracting(AbsoluteLocation::location)
                 .asString().contains(FILE);
+    }
+
+    @Test
+    void listDeepLevel() {
+        s3.putObject(bucketName, "root.txt", "txt1");
+        s3.putObject(bucketName, "deeper/level1.txt", "txt2");
+        s3.putObject(bucketName, "deeper/more/level2.txt", "txt3");
+
+        List<AbsoluteLocation<ResolvedResource>> resources = storageService.list(
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(URI.create("s3://" + bucketName + "/deeper")))
+        ).collect(Collectors.toList());
+
+        assertThat(resources)
+                .extracting(AbsoluteLocation::location)
+                .extracting(URI::toString)
+                .containsExactlyInAnyOrder(
+                        "s3://" + bucketName + "/deeper/level1.txt",
+                        "s3://" + bucketName + "/deeper/more/level2.txt"
+                );
     }
 
     @Test
