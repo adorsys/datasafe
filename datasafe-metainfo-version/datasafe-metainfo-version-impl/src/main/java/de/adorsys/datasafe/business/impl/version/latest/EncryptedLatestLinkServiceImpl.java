@@ -5,12 +5,12 @@ import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.version.EncryptedLatestLinkService;
-import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
-import de.adorsys.datasafe.business.impl.privatespace.actions.EncryptedResourceResolver;
+import de.adorsys.datasafe.business.api.privatespace.PrivateSpaceService;
+import de.adorsys.datasafe.business.api.privatespace.actions.EncryptedResourceResolver;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;

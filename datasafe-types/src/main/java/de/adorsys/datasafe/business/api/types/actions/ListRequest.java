@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.api.types.action;
+package de.adorsys.datasafe.business.api.types.actions;
 
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;

@@ -3,8 +3,8 @@ package de.adorsys.datasafe.business.impl.e2e;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
+import de.adorsys.datasafe.business.api.types.actions.WriteRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.adorsys.datasafe.business.api.types.action.ListRequest.forDefaultPrivate;
+import static de.adorsys.datasafe.business.api.types.actions.ListRequest.forDefaultPrivate;
 import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,9 +47,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     private static final int TIMEOUT_S = 10;
-
-    private static final String FOLDER = "folder1";
-    private static final String PRIVATE_FILE = "secret.txt";
 
     private static int NUMBER_OF_TEST_USERS = 3;
     private static int NUMBER_OF_TEST_FILES = 5;
@@ -117,9 +114,8 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
             assertThat(resourceList.size()).isEqualTo(EXPECTED_NUMBER_OF_FILES_PER_USER);
 
-            resourceList.forEach(item -> {
-                assertEquals(checksumOfOriginTestFile, calculateDecryptedContentChecksum(user, item));
-            });
+            resourceList.forEach(
+                    item -> assertEquals(checksumOfOriginTestFile, calculateDecryptedContentChecksum(user, item)));
         }
 
         metricCollector.setDataSize(size);
@@ -188,28 +184,6 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         return Hex.toHexString(digest.digest());
     }
 
-    private void validateUserPrivateStorage(List<String> testPath,
-                                            List<AbsoluteLocation<ResolvedResource>> privateJohnFiles,
-                                            List<String> expectedData, UserIDAuth john) {
-        assertThat(privateJohnFiles).hasSize(2);
-        privateJohnFiles.forEach(item -> {
-            String data = readPrivateUsingPrivateKey(john, item.getResource().asPrivate());
-            assertThat(testPath).contains(item.getResource().asPrivate().decryptedPath().getPath());
-            assertThat(expectedData.contains(data)).isTrue();
-        });
-    }
-
-    private void readOriginUserInboxAndWriteToTargetUserPrivate(UserIDAuth originUser, UserIDAuth targetUser,
-                                                                CountDownLatch countDownLatch, String prefixes) {
-        AbsoluteLocation<ResolvedResource> inbox = getFirstFileInInbox(originUser);
-
-        String result = readInboxUsingPrivateKey(originUser, inbox.getResource().asPrivate());
-
-        writeDataToPrivate(targetUser, FOLDER + "/" + prefixes + PRIVATE_FILE, result);
-
-        countDownLatch.countDown();
-    }
-
     private static void generateTestFile(String testFile, int testFileSizeInBytes) {
         try (RandomAccessFile originTestFile = new RandomAccessFile(testFile, "rw")) {
             MappedByteBuffer out = originTestFile.getChannel()
@@ -226,7 +200,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     @ValueSource
     protected static Stream<Arguments> differentThreadsTestOptions() {
-        Stream<StorageDescriptor> storageDescriptorMap = storages();
+        Stream<StorageDescriptor> storageDescriptorMap = allStorages();
         List<Arguments> arguments = new ArrayList<>();
 
         storageDescriptorMap.forEach(storageDescriptor -> {
@@ -248,11 +222,11 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
-                .defaultDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+                .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(datasafeServices);
 
         this.location = descriptor.getLocation();
-        this.storage = descriptor.getStorageService();
+        this.storage = descriptor.getStorageService().get();
     }
 
     protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, String filePathForReading,

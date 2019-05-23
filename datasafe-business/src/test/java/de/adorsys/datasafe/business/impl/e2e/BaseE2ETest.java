@@ -12,17 +12,17 @@ import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.actions.ListRequest;
+import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
+import de.adorsys.datasafe.business.api.types.actions.RemoveRequest;
+import de.adorsys.datasafe.business.api.types.actions.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.types.utils.Log;
-import de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivate;
-import de.adorsys.datasafe.business.impl.privatespace.actions.ReadFromPrivate;
-import de.adorsys.datasafe.business.impl.privatespace.actions.RemoveFromPrivate;
-import de.adorsys.datasafe.business.impl.privatespace.actions.WriteToPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.ListPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.ReadFromPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.RemoveFromPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.WriteToPrivate;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
@@ -38,6 +38,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -227,4 +228,13 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         );
     }
 
+    protected void assertPrivateSpaceList(UserIDAuth user, String root, String... expected) {
+        List<String> paths = listPrivate.list(ListRequest.forDefaultPrivate(user, root))
+                .map(it -> it.getResource().asPrivate().decryptedPath().toString())
+                .collect(Collectors.toList());
+
+        for (String toFind : expected) {
+            assertThat(paths.stream().anyMatch(it -> it.contains(toFind))).isTrue();
+        }
+    }
 }

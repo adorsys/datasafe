@@ -22,7 +22,7 @@ public class BaseResolvedResourceTest {
         PrivateResource privateResource = new BasePrivateResource(uri, uri, uri);
         Instant i = null;
         BaseResolvedResource baseResolvedResource = new BaseResolvedResource(privateResource, i);
-        Assertions.assertEquals(uriString, baseResolvedResource.resolve(privateResource).location().toString());
+        Assertions.assertEquals(uriString + "/" + uriString, baseResolvedResource.resolve(privateResource).location().toString());
         Assertions.assertEquals(uriString, baseResolvedResource.asPrivate().location().toString());
         Assertions.assertEquals(uriString, baseResolvedResource.location().toString());
     }

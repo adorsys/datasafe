@@ -7,6 +7,7 @@ import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 class BasicFunctionalityTest extends WithStorageProvider {
 
     private static final String MESSAGE_ONE = "Hello here 1";
@@ -30,7 +32,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
     private URI location;
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     public void testDFSBasedProfileStorage(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");
@@ -42,8 +44,9 @@ class BasicFunctionalityTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
-    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(WithStorageProvider.StorageDescriptor descriptor) {
+    @MethodSource("allStorages")
+    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
+            WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane(descriptor.getLocation());
@@ -68,6 +71,35 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
         removeFromPrivate(jane, privateJane.getResource().asPrivate());
         removeFromInbox(john, inboxJohn.getResource().asPrivate());
+    }
+
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerJohnAndJane(descriptor.getLocation());
+
+        writeDataToPrivate(jane, "root.file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "level1/file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "level1/level2/file", MESSAGE_ONE);
+
+        assertPrivateSpaceList(jane, "", "root.file", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./", "root.file", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, ".", "root.file", "level1/file", "level1/level2/file");
+
+        assertPrivateSpaceList(jane, "root.file", "root.file");
+        assertPrivateSpaceList(jane, "./root.file", "root.file");
+
+        assertPrivateSpaceList(jane, "level1", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1", "level1/file", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1/", "level1/file", "level1/level2/file");
+
+        assertPrivateSpaceList(jane, "./level1/level2", "level1/level2/file");
+        assertPrivateSpaceList(jane, "./level1/level2/", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/level2", "level1/level2/file");
+        assertPrivateSpaceList(jane, "level1/level2/", "level1/level2/file");
     }
 
     @SneakyThrows
@@ -108,10 +140,10 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
-                .defaultDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+                .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(datasafeServices);
 
         this.location = descriptor.getLocation();
-        this.storage = descriptor.getStorageService();
+        this.storage = descriptor.getStorageService().get();
     }
 }
