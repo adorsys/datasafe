@@ -326,7 +326,7 @@
                         <exclude>**/*_Factory*/**</exclude>
                         <exclude>**/*_MembersInjector.class</exclude>
                         <exclude>**/*Dagger*</exclude>
-                        <exclude>**/datasafe-business/Default*Module.class</exclude>
+                        <exclude>**/datasafe-business/**/Default*Module.class</exclude>
                     </excludes>
                     <propertyName>surefireArgLine</propertyName>
                 </configuration>
