@@ -7,6 +7,7 @@ import de.adorsys.datasafe.business.impl.e2e.DatasafeServicesProvider;
 import de.adorsys.datasafe.business.impl.e2e.WithStorageProvider;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Fixture;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +31,7 @@ class RandomActionPerformanceTest extends WithStorageProvider {
 
     private Map<String, UserSpec> users;
     private OperationExecutor executor;
-    private DefaultDatasafeServices versionedDatasafeServices;
+    private VersionedDatasafeServices versionedDatasafeServices;
     private String testId;
 
     @BeforeAll
@@ -61,7 +62,11 @@ class RandomActionPerformanceTest extends WithStorageProvider {
     @Test
     @EnabledIfEnvironmentVariable(named = "PERFORMANCE_TEST", matches = "true")
     void testMinioVersionedPerformance() {
-        executor = new OperationExecutor(versionedDatasafeServices.privateService(), users);
+        executor = new OperationExecutor(
+                versionedDatasafeServices.latestPrivate(),
+                versionedDatasafeServices.inboxService(),
+                users
+        );
 
         executeOperations();
     }
@@ -72,7 +77,7 @@ class RandomActionPerformanceTest extends WithStorageProvider {
 
     private void initVersioned(WithStorageProvider.StorageDescriptor descriptor) {
         this.versionedDatasafeServices =
-                DatasafeServicesProvider.defaultDatasafeServices(
+                DatasafeServicesProvider.versionedDatasafeServices(
                         descriptor.getStorageService().get(),
                         descriptor.getLocation()
                 );

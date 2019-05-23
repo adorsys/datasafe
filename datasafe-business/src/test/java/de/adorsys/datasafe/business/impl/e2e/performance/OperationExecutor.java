@@ -1,15 +1,19 @@
 package de.adorsys.datasafe.business.impl.e2e.performance;
 
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.api.inbox.InboxService;
 import de.adorsys.datasafe.business.api.privatespace.PrivateSpaceService;
+import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.actions.ListRequest;
 import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
 import de.adorsys.datasafe.business.api.types.actions.RemoveRequest;
 import de.adorsys.datasafe.business.api.types.actions.WriteRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
+import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Operation;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.OperationType;
+import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.StorageType;
 import de.adorsys.datasafe.business.impl.profile.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,12 +46,14 @@ public class OperationExecutor {
     private final AtomicLong counter = new AtomicLong();
 
     private final PrivateSpaceService privateSpace;
+    private final InboxService inboxService;
     private final Map<String, UserSpec> users;
 
     public void execute(Operation oper) {
         long cnt = counter.incrementAndGet();
 
-        log.trace("[{}] Executing {}", cnt, oper);
+        log.trace("[{}] [{} {}/{}/{}] Executing {}",
+                cnt, oper.getType(), oper.getUserId(), oper.getStorageType(), oper.getLocation(), oper);
         handlers.get(oper.getType()).accept(oper);
         if (0 == cnt % 100) {
             log.info("[{}] Done operations", cnt);
@@ -57,7 +64,7 @@ public class OperationExecutor {
     public void doWrite(Operation oper) {
         UserSpec user = requireUser(oper);
 
-        try (OutputStream os = privateSpace.write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()))) {
+        try (OutputStream os = openWriteStream(user, oper)) {
             ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), os);
         }
     }
@@ -66,7 +73,7 @@ public class OperationExecutor {
     public void doRead(Operation oper) {
         UserSpec user = requireUser(oper);
 
-        try (InputStream is = privateSpace.read(ReadRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()))) {
+        try (InputStream is = openReadStream(user, oper)) {
             byte[] users = digest(is);
             byte[] expected = digest(user.getGenerator().generate(oper.getExpected().getId()));
 
@@ -80,9 +87,7 @@ public class OperationExecutor {
     public void doList(Operation oper) {
         UserSpec user = requireUser(oper);
 
-        List<AbsoluteLocation<ResolvedResource>> resources =
-                privateSpace.list(ListRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()))
-                        .collect(Collectors.toList());
+        List<AbsoluteLocation<ResolvedResource>> resources = listResources(user, oper).collect(Collectors.toList());
 
         if (resources.isEmpty()) {
             log.info("Empty bucket");
@@ -92,7 +97,47 @@ public class OperationExecutor {
     public void doDelete(Operation oper) {
         UserSpec user = requireUser(oper);
 
-        privateSpace.remove(RemoveRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+        RemoveRequest<UserIDAuth, PrivateResource> request =
+                RemoveRequest.forDefaultPrivate(user.getAuth(), oper.getLocation());
+
+        if (StorageType.INBOX.equals(oper.getStorageType())) {
+            inboxService.remove(request);
+            return;
+        }
+
+        privateSpace.remove(request);
+    }
+
+    private OutputStream openWriteStream(UserSpec user, Operation oper) {
+        if (StorageType.INBOX.equals(oper.getStorageType())) {
+            return inboxService.write(WriteRequest.forDefaultPublic(user.getAuth().getUserID(), oper.getLocation()));
+        }
+
+        return privateSpace.write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+    }
+
+    private InputStream openReadStream(UserSpec user, Operation oper) {
+        ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forDefaultPrivate(
+                user.getAuth(), oper.getLocation()
+        );
+
+        if (StorageType.INBOX.equals(oper.getStorageType())) {
+            return inboxService.read(request);
+        }
+
+        return privateSpace.read(ReadRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+    }
+
+    private Stream<AbsoluteLocation<ResolvedResource>> listResources(UserSpec user, Operation oper) {
+        ListRequest<UserIDAuth, PrivateResource> request = ListRequest.forDefaultPrivate(
+                user.getAuth(), oper.getLocation()
+        );
+
+        if (StorageType.INBOX.equals(oper.getStorageType())) {
+            return inboxService.list(request);
+        }
+
+        return privateSpace.list(request);
     }
 
     @SneakyThrows
