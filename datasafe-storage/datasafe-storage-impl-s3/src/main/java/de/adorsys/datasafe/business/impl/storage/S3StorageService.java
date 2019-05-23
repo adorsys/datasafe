@@ -76,7 +76,7 @@ public class S3StorageService implements StorageService {
     }
 
     private PrivateResource createResource(AbsoluteLocation root, S3ObjectSummary os, int prefixLen) {
-        String relUrl = os.getKey().substring(prefixLen);
+        String relUrl = os.getKey().substring(prefixLen).replaceFirst("^/", "");
         if ("".equals(relUrl)) {
             return BasePrivateResource.forPrivate(root.location());
         }
