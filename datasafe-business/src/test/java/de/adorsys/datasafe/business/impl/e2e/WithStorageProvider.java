@@ -5,10 +5,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import de.adorsys.datasafe.business.api.config.DFSConfig;
+import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
-import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.FileSystemStorageService;
 import de.adorsys.datasafe.business.impl.storage.S3StorageService;
 import lombok.Getter;
@@ -29,6 +27,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -46,19 +45,132 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     private static String amazonRegion = System.getProperty("AWS_REGION", "eu-central-1");
     private static String amazonBucket = System.getProperty("AWS_BUCKET", "adorsys-docusafe");
 
-    private static GenericContainer minioContainer = new GenericContainer("minio/minio")
-            .withExposedPorts(9000)
-            .withEnv("MINIO_ACCESS_KEY", "admin")
-            .withEnv("MINIO_SECRET_KEY", "password")
-            .withCommand("server /data")
-            .waitingFor(Wait.defaultWaitStrategy());
+    private static GenericContainer minioContainer;
 
     private static Path tempDir;
     private static AmazonS3 minio;
     private static AmazonS3 amazonS3;
 
+    private static Supplier<Void> MINIO;
+    private static Supplier<Void> AMAZON_S3;
+
     @BeforeAll
     static void init(@TempDir Path tempDir) {
+        WithStorageProvider.tempDir = tempDir;
+
+        MINIO = Suppliers.memoize(() -> {
+            startMinio();
+            return null;
+        });
+
+        AMAZON_S3 = Suppliers.memoize(() -> {
+            initS3();
+            return null;
+        });
+    }
+
+    @AfterEach
+    @SneakyThrows
+    void cleanup() {
+        log.info("Executing cleanup");
+        if (null != tempDir && tempDir.toFile().exists()) {
+            FileUtils.cleanDirectory(tempDir.toFile());
+        }
+
+        if (null != minio) {
+            removeObjectFromS3(minio, minioBucketName, prefix);
+        }
+
+        if (null != amazonS3) {
+            removeObjectFromS3(amazonS3, amazonBucket, prefix);
+        }
+    }
+
+    @AfterAll
+    static void shutdown() {
+        log.info("Stopping containers");
+        if (null != minioContainer) {
+            minioContainer.stop();
+            minioContainer = null;
+            minio = null;
+        }
+
+        amazonS3 = null;
+    }
+
+    @ValueSource
+    protected static Stream<WithStorageProvider.StorageDescriptor> allStorages() {
+        return Stream.of(
+                new StorageDescriptor(
+                        "FILESYSTEM",
+                        () -> new FileSystemStorageService(tempDir.toUri()),
+                        tempDir.toUri()
+                ),
+                minio(),
+                s3()
+        ).filter(Objects::nonNull);
+    }
+
+    @ValueSource
+    protected static StorageDescriptor minio() {
+        return new StorageDescriptor(
+                "MINIO S3",
+                () -> {
+                    MINIO.get();
+                    return new S3StorageService(minio, minioBucketName);
+                },
+                URI.create("s3://" + minioBucketName + "/" + prefix + "/")
+        );
+    }
+
+    @ValueSource
+    protected static StorageDescriptor s3() {
+        if (null == amazonAccessKeyID) {
+            return null;
+        }
+
+        return new StorageDescriptor(
+                "AMAZON S3",
+                () -> {
+                    AMAZON_S3.get();
+                    return new S3StorageService(amazonS3, amazonBucket);
+                },
+                URI.create("s3://" + amazonBucket + "/" + prefix + "/")
+        );
+    }
+
+    private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
+        amazonS3.listObjects(bucket, prefix)
+                .getObjectSummaries()
+                .forEach(it -> {
+                    log.debug("Remove {}", it.getKey());
+                    amazonS3.deleteObject(bucket, it.getKey());
+                });
+    }
+
+    private static void initS3() {
+        log.info("Initializing S3");
+        if (StringUtils.isBlank(amazonAccessKeyID)) {
+            return;
+        }
+
+        amazonS3 = AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(
+                        new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
+                )
+                .withRegion(amazonRegion)
+                .build();
+    }
+
+    private static void startMinio() {
+        log.info("Starting MINIO");
+        minioContainer = new GenericContainer("minio/minio")
+                .withExposedPorts(9000)
+                .withEnv("MINIO_ACCESS_KEY", "admin")
+                .withEnv("MINIO_SECRET_KEY", "password")
+                .withCommand("server /data")
+                .waitingFor(Wait.defaultWaitStrategy());
+
         minioContainer.start();
         Integer mappedPort = minioContainer.getMappedPort(9000);
         log.info("Mapped port: " + mappedPort);
@@ -76,83 +188,6 @@ public abstract class WithStorageProvider extends BaseE2ETest {
 
 
         minio.createBucket(minioBucketName);
-        WithStorageProvider.tempDir = tempDir;
-        initS3();
-    }
-
-    @AfterEach
-    @SneakyThrows
-    void cleanup() {
-        if (null != tempDir && tempDir.toFile().exists()) {
-            FileUtils.cleanDirectory(tempDir.toFile());
-        }
-
-        if (null != minio) {
-            removeObjectFromS3(minio, minioBucketName, prefix);
-        }
-
-        if (null != amazonS3) {
-            removeObjectFromS3(amazonS3, amazonBucket, prefix);
-        }
-    }
-
-    @AfterAll
-    static void shutdown() {
-        minioContainer.stop();
-    }
-
-    @ValueSource
-    protected static Stream<WithStorageProvider.StorageDescriptor> storages() {
-        return Stream.of(
-                new StorageDescriptor("FILESYSTEM", new FileSystemStorageService(tempDir.toUri()), tempDir.toUri()),
-                minio(),
-                s3()
-        ).filter(Objects::nonNull);
-    }
-
-    private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
-        amazonS3.listObjects(bucket, prefix)
-                .getObjectSummaries()
-                .forEach(it -> {
-                    log.debug("Remove {}", it.getKey());
-                    amazonS3.deleteObject(bucket, it.getKey());
-                });
-    }
-
-    private static void initS3() {
-        if (StringUtils.isBlank(amazonAccessKeyID)) {
-            return;
-        }
-
-        amazonS3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(
-                        new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
-                )
-                .withRegion(amazonRegion)
-                .enablePathStyleAccess()
-                .build();
-    }
-
-    private static StorageDescriptor minio() {
-        if (null == minio) {
-            return null;
-        }
-
-        return new StorageDescriptor(
-                "MINIO S3",
-                new S3StorageService(minio, minioBucketName), URI.create("s3://" + minioBucketName + "/" + prefix + "/")
-        );
-    }
-
-    private static StorageDescriptor s3() {
-        if (null == amazonS3) {
-            return null;
-        }
-
-        return new StorageDescriptor(
-                "AMAZON S3",
-                new S3StorageService(amazonS3, amazonBucket), URI.create("s3://" + amazonBucket + "/" + prefix + "/")
-        );
     }
 
     @Getter
@@ -160,10 +195,10 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     static class StorageDescriptor {
 
         private final String name;
-        private final StorageService storageService;
+        private final Supplier<StorageService> storageService;
         private final URI location;
 
-        StorageDescriptor(String name, StorageService storageService, URI location) {
+        StorageDescriptor(String name, Supplier<StorageService> storageService, URI location) {
             this.name = name;
             this.storageService = storageService;
             this.location = location;

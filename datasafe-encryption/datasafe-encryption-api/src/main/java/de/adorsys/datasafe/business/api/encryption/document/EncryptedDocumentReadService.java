@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.encryption.document;
 
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
+import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 

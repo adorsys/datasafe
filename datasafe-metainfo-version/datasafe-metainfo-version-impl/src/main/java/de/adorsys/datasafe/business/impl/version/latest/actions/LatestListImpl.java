@@ -1,11 +1,11 @@
 package de.adorsys.datasafe.business.impl.version.latest.actions;
 
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.actions.ListRequest;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.version.VersionEncoder;
 import de.adorsys.datasafe.business.api.version.actions.VersionedList;
-import de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.ListPrivate;
 import de.adorsys.datasafe.business.impl.version.latest.EncryptedLatestLinkServiceImpl;
 import de.adorsys.datasafe.business.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.business.impl.version.types.LatestDFSVersion;

@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.api.version;
 
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.actions.ListRequest;
 import de.adorsys.datasafe.business.api.types.resource.*;
 
 import java.util.stream.Stream;

@@ -7,7 +7,7 @@ import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.storage.actions.*;
 import de.adorsys.datasafe.business.api.types.*;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.actions.ListRequest;
 import de.adorsys.datasafe.business.api.types.keystore.*;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.profile.exceptions.UserNotFoundException;

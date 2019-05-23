@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.business.api.version;
 
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.action.VersionStrategy;
+import de.adorsys.datasafe.business.api.types.actions.ListRequest;
+import de.adorsys.datasafe.business.api.types.actions.VersionStrategy;
 import de.adorsys.datasafe.business.api.types.resource.*;
-import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceService;
+import de.adorsys.datasafe.business.api.privatespace.PrivateSpaceService;
 
 import java.util.stream.Stream;
 

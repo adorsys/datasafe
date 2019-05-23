@@ -31,7 +31,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
     private URI location;
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
             WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
@@ -61,7 +61,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -127,10 +127,10 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
-                .defaultDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+                .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(datasafeServices);
 
         this.location = descriptor.getLocation();
-        this.storage = descriptor.getStorageService();
+        this.storage = descriptor.getStorageService().get();
     }
 }

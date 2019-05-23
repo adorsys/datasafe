@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.api.version;
 
-import de.adorsys.datasafe.business.api.types.action.VersionStrategy;
+import de.adorsys.datasafe.business.api.types.actions.VersionStrategy;
 
 /**
  * Versioning strategy - i.e. read only latest.

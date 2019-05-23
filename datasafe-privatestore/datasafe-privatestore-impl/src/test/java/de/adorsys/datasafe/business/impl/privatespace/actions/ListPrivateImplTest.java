@@ -1,9 +1,10 @@
 package de.adorsys.datasafe.business.impl.privatespace.actions;
 
+import de.adorsys.datasafe.business.api.privatespace.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.business.api.storage.actions.StorageListService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
+import de.adorsys.datasafe.business.api.types.actions.ListRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;

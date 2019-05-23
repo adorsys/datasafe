@@ -2,10 +2,10 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.action.ListRequest;
-import de.adorsys.datasafe.business.api.types.action.ReadRequest;
-import de.adorsys.datasafe.business.api.types.action.RemoveRequest;
-import de.adorsys.datasafe.business.api.types.action.WriteRequest;
+import de.adorsys.datasafe.business.api.types.actions.ListRequest;
+import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
+import de.adorsys.datasafe.business.api.types.actions.RemoveRequest;
+import de.adorsys.datasafe.business.api.types.actions.WriteRequest;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.business.impl.version.types.DFSVersion;
@@ -39,7 +39,7 @@ public class VersionedDataTest extends WithStorageProvider {
     private VersionedDatasafeServices versionedDocusafeServices;
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionedWriteTopLevel(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -52,7 +52,7 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionedWriteUsingDirectAccess(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -67,7 +67,7 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionedWriteUsingAbsoluteAccess(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -83,7 +83,7 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionedRemove(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -100,7 +100,7 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testVersionsOf(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -121,7 +121,7 @@ public class VersionedDataTest extends WithStorageProvider {
 
     // this test imitates removal of old file versions
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void testOldRemoval(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -150,7 +150,7 @@ public class VersionedDataTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -234,7 +234,7 @@ public class VersionedDataTest extends WithStorageProvider {
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         VersionedDatasafeServices datasafeServices = DatasafeServicesProvider
-                .versionedDatasafeServices(descriptor.getStorageService(), descriptor.getLocation());
+                .versionedDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
 
         initialize(datasafeServices);
         this.versionedDocusafeServices = datasafeServices;
