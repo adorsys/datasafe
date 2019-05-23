@@ -204,40 +204,6 @@
         <finalName>${project.artifactId}</finalName>
 
         <plugins>
-            <!-- not working at all but slows down build time  from 4 to 8 minutes
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>${cobertura-maven-plugin.version}</version>
-                <configuration>
-                    <instrumentation>
-                        <ignoreTrivial>true</ignoreTrivial>
-                        <ignoreMethodAnnotation>de.adorsys.datasafe.business.api.types.cobertura.CoberturaIgnore</ignoreMethodAnnotation>
-                        <ignores>
-                            <ignore>de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionModule.class</ignore>
-                        </ignores>
-                    </instrumentation>
-                    <check>
-                        <branchRate>0</branchRate>
-                        <lineRate>0</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>0</totalBranchRate>
-                        <totalLineRate>0</totalLineRate>
-                        <packageLineRate>0</packageLineRate>
-                        <packageBranchRate>0</packageBranchRate>
-                    </check>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>clean</goal>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -278,16 +244,12 @@
                             <failOnWarning>true</failOnWarning>
                             <outputXML>true</outputXML>
                             <ignoredUsedUndeclaredDependencies>
-                                <ignoredUsedUndeclaredDependency>javax.inject:javax.inject
-                                </ignoredUsedUndeclaredDependency>
-                                <ignoredUsedUndeclaredDependency>org.projectlombok:lombok
-                                </ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.projectlombok:lombok</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                             <ignoredUnusedDeclaredDependencies>
-                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine
-                                </ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple
-                                </ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>
@@ -326,20 +288,7 @@
                         <exclude>**/*_Factory*/**</exclude>
                         <exclude>**/*_MembersInjector.class</exclude>
                         <exclude>**/*Dagger*</exclude>
-                        <!--
-                        <exclude>**/datasafe-business/**/Default*Module.class</exclude>
-                        -->
-                        <exclude>**/DefaultPathEncryptionModule.class</exclude>
-                        <exclude>**/DefaultCMSEncryptionModule.class</exclude>
-                        <exclude>**/DefaultCredentialsModule.class</exclude>
-                        <exclude>**/DefaultProfileModule.class</exclude>
-                        <exclude>**/DefaultDocumentModule.class</exclude>
-                        <exclude>**/DefaultInboxActionsModule.class</exclude>
-                        <exclude>**/DefaultKeyStoreModule.class</exclude>
-                        <exclude>**/DefaultPathEncryptionModule.class</exclude>
-                        <exclude>**/DefaultPrivateActionsModule.class</exclude>
-                        <exclude>**/DefaultVersionedPrivateActionsModule.class</exclude>
-
+                        <exclude>**/Default*Module.class</exclude>
                     </excludes>
                     <propertyName>surefireArgLine</propertyName>
                 </configuration>
