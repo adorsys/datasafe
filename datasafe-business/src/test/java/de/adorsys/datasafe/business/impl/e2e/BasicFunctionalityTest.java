@@ -2,8 +2,6 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.UserID;
-import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
@@ -50,7 +48,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
         registerJohnAndJane(descriptor.getLocation());
 
-        writeDataToPrivate(jane, PRIVATE_FILE_PATH, message_one);
+        writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
 
         AbsoluteLocation<ResolvedResource> privateJane = getFirstFileInPrivate(jane);
 
