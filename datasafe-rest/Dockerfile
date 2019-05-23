@@ -1,5 +1,5 @@
 FROM openjdk:8-jre-alpine
-ENV JAR_FILE datasafe-rest-0.0.6-SNAPSHOT.jar
+ARG JAR_FILE=datasafe-rest-${project.version}.jar
 ENV APP_HOME /usr/app
 EXPOSE 8080
 COPY target/$JAR_FILE $APP_HOME/

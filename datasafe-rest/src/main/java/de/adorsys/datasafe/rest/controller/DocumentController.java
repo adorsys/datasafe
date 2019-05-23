@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -41,7 +42,7 @@ public class DocumentController {
                              @PathVariable String path,
                              HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate(URI.create(path));
+        PrivateResource resource = BasePrivateResource.forPrivate(URI.create("./" + path));
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
         InputStream inputStream = dataSafeService.privateService().read(request);
         OutputStream outputStream = response.getOutputStream();
@@ -67,11 +68,12 @@ public class DocumentController {
     @GetMapping("/documents/{path:.*}")
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
-                                      @PathVariable String path) {
+                                      @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        path = "./" + Objects.toString(path, "");
         return dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
-                        .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
-                        .collect(Collectors.toList());
+                .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
+                .collect(Collectors.toList());
     }
 
     @DeleteMapping("/document/{path:.*}")
