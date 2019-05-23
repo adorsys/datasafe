@@ -5,6 +5,10 @@ import de.adorsys.datasafe.business.api.inbox.actions.ListInbox;
 import de.adorsys.datasafe.business.api.inbox.actions.ReadFromInbox;
 import de.adorsys.datasafe.business.api.inbox.actions.RemoveFromInbox;
 import de.adorsys.datasafe.business.api.inbox.actions.WriteToInbox;
+import de.adorsys.datasafe.business.api.privatespace.actions.ListPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.ReadFromPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.RemoveFromPrivate;
+import de.adorsys.datasafe.business.api.privatespace.actions.WriteToPrivate;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
@@ -18,25 +22,20 @@ import de.adorsys.datasafe.business.api.types.actions.WriteRequest;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.types.utils.Log;
-import de.adorsys.datasafe.business.api.privatespace.actions.ListPrivate;
-import de.adorsys.datasafe.business.api.privatespace.actions.ReadFromPrivate;
-import de.adorsys.datasafe.business.api.privatespace.actions.RemoveFromPrivate;
-import de.adorsys.datasafe.business.api.privatespace.actions.WriteToPrivate;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.utils.IOUtils;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j

@@ -2,6 +2,8 @@ package de.adorsys.datasafe.business.impl.version.latest;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.api.privatespace.PrivateSpaceService;
+import de.adorsys.datasafe.business.api.privatespace.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
@@ -9,11 +11,10 @@ import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.version.EncryptedLatestLinkService;
-import de.adorsys.datasafe.business.api.privatespace.PrivateSpaceService;
-import de.adorsys.datasafe.business.api.privatespace.actions.EncryptedResourceResolver;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
+import java.io.InputStream;
 import java.net.URI;
 
 public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkService {
@@ -65,9 +66,8 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
 
     @SneakyThrows
     private String readLink(UserIDAuth owner, AbsoluteLocation<PrivateResource> latestLink) {
-        return new String(
-                ByteStreams.toByteArray(privateSpace.read(ReadRequest.forPrivate(owner, latestLink.getResource()))),
-                Charsets.UTF_8
-        );
+        try (InputStream is = privateSpace.read(ReadRequest.forPrivate(owner, latestLink.getResource()))) {
+            return new String(ByteStreams.toByteArray(is), Charsets.UTF_8);
+        }
     }
 }
