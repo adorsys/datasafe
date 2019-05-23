@@ -28,16 +28,16 @@ import de.adorsys.datasafe.shared.BaseMockitoTest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.compress.utils.IOUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,7 +48,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String PUBLIC_COMPONENT = "public";
     protected static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
     protected static final String VERSION_COMPONENT = "versions";
-    protected static final List<String> loadReport = Lists.newArrayList();
 
     protected ListPrivate listPrivate;
     protected ReadFromPrivate readFromPrivate;
@@ -208,11 +207,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return auth;
     }
 
-    protected void removeUser(UserIDAuth userIDAuth) {
-        profileRemovalService.deregister(userIDAuth);
-        log.info("User deleted: {}", Log.secure(userIDAuth));
-    }
-
     private AbsoluteLocation<PublicResource> access(URI path) {
         return new AbsoluteLocation<>(new BasePublicResource(path));
     }
@@ -230,18 +224,13 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         );
     }
 
-    protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, byte[] bytes,
-                                          CountDownLatch latch) throws IOException {
-        WriteRequest<UserIDAuth, PrivateResource> writeRequest = WriteRequest.<UserIDAuth, PrivateResource>builder()
-                .owner(john)
-                .location(BasePrivateResource.forPrivate(URI.create(filePathForWriting)))
-                .build();
+    protected void assertPrivateSpaceList(UserIDAuth user, String root, String... expected) {
+        List<String> paths = listPrivate.list(ListRequest.forDefaultPrivate(user, root))
+                .map(it -> it.getResource().asPrivate().decryptedPath().toString())
+                .collect(Collectors.toList());
 
-        try (OutputStream os = writeToPrivate.write(writeRequest)) {
-            os.write(bytes);
+        for (String toFind : expected) {
+            assertThat(paths.stream().anyMatch(it -> it.contains(toFind))).isTrue();
         }
-
-        latch.countDown();
     }
-
 }
