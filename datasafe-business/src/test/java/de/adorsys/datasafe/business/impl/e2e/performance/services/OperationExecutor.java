@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.e2e.performance;
+package de.adorsys.datasafe.business.impl.e2e.performance.services;
 
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.api.inbox.InboxService;
@@ -11,6 +11,7 @@ import de.adorsys.datasafe.business.api.types.actions.WriteRequest;
 import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
+import de.adorsys.datasafe.business.impl.e2e.performance.dto.UserSpec;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Operation;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.OperationType;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.StorageType;
@@ -24,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -48,13 +50,19 @@ public class OperationExecutor {
     private final PrivateSpaceService privateSpace;
     private final InboxService inboxService;
     private final Map<String, UserSpec> users;
+    private final StatisticService statisticService;
 
     public void execute(Operation oper) {
         long cnt = counter.incrementAndGet();
 
         log.trace("[{}] [{} {}/{}/{}] Executing {}",
                 cnt, oper.getType(), oper.getUserId(), oper.getStorageType(), oper.getLocation(), oper);
+
+        long start = System.currentTimeMillis();
         handlers.get(oper.getType()).accept(oper);
+        long end = System.currentTimeMillis();
+        statisticService.reportOperationPerformance(oper, (int) (end - start));
+
         if (0 == cnt % 100) {
             log.info("[{}] Done operations", cnt);
         }

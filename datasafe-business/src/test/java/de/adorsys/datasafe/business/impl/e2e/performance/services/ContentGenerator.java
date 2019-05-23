@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.e2e.performance;
+package de.adorsys.datasafe.business.impl.e2e.performance.services;
 
 import lombok.RequiredArgsConstructor;
 

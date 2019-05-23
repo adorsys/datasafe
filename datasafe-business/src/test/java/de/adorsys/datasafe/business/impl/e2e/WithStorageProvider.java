@@ -51,19 +51,19 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     private static AmazonS3 minio;
     private static AmazonS3 amazonS3;
 
-    private static Supplier<Void> MINIO;
-    private static Supplier<Void> AMAZON_S3;
+    private static Supplier<Void> minioStorage;
+    private static Supplier<Void> amazonSotrage;
 
     @BeforeAll
     static void init(@TempDir Path tempDir) {
         WithStorageProvider.tempDir = tempDir;
 
-        MINIO = Suppliers.memoize(() -> {
+        minioStorage = Suppliers.memoize(() -> {
             startMinio();
             return null;
         });
 
-        AMAZON_S3 = Suppliers.memoize(() -> {
+        amazonSotrage = Suppliers.memoize(() -> {
             initS3();
             return null;
         });
@@ -115,7 +115,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         return new StorageDescriptor(
                 "MINIO S3",
                 () -> {
-                    MINIO.get();
+                    minioStorage.get();
                     return new S3StorageService(minio, minioBucketName);
                 },
                 URI.create("s3://" + minioBucketName + "/" + prefix + "/")
@@ -130,7 +130,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         return new StorageDescriptor(
                 "AMAZON S3",
                 () -> {
-                    AMAZON_S3.get();
+                    amazonSotrage.get();
                     return new S3StorageService(amazonS3, amazonBucket);
                 },
                 URI.create("s3://" + amazonBucket + "/" + prefix + "/")
