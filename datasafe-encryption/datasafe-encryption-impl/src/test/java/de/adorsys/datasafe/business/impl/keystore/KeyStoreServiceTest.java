@@ -6,7 +6,6 @@ import de.adorsys.datasafe.business.api.types.keystore.exceptions.KeyStoreConfig
 import de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreServiceImplBaseFunctions;
-import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairGenerator;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
-import javax.security.auth.callback.CallbackHandler;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -80,11 +78,10 @@ public class KeyStoreServiceTest {
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreType.DEFAULT); // UBER
 
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
-        CallbackHandler readKeyHandler = new PasswordCallbackHandler(readKeyPassword.getValue().toCharArray());
         KeyStoreCreationConfigImpl keyStoreCreationConfig = new KeyStoreCreationConfigImpl(null);
         KeyPairGenerator encKeyPairGenerator = keyStoreCreationConfig.getEncKeyPairGenerator("KEYSTORE-ID-0");
         String alias = "KEYSTORE-ID-0" + UUID.randomUUID().toString();
-        KeyPairEntry keyPairEntry = encKeyPairGenerator.generateEncryptionKey(alias, readKeyHandler);
+        KeyPairEntry keyPairEntry = encKeyPairGenerator.generateEncryptionKey(alias, readKeyPassword);
         KeyStoreServiceImplBaseFunctions.addToKeyStore(keyStore, keyPairEntry);
 
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
@@ -118,5 +115,7 @@ public class KeyStoreServiceTest {
         SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID(keyID));
         Assertions.assertNotNull(secretKey);
     }
+
+
 
 }

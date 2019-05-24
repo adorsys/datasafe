@@ -13,7 +13,7 @@ public class KeyStoreType extends BaseTypeString {
         super(value);
     }
 
-    private static KeyStoreType getDefaultKeyStoreType() {
+    protected static KeyStoreType getDefaultKeyStoreType() {
         String serverKeystoreType = System.getProperty("SERVER_KEYSTORE_TYPE");
         if (null != serverKeystoreType && !serverKeystoreType.isEmpty()) {
             return new KeyStoreType(serverKeystoreType);

@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.keystore.SecretKeyGenerator;
 
 import javax.crypto.SecretKey;
@@ -16,13 +17,13 @@ public class SecretKeyGeneratorImpl implements SecretKeyGenerator {
     }
 
     @Override
-    public SecretKeyData generate(String alias, CallbackHandler secretKeyPassHandler) {
+    public SecretKeyData generate(String alias, ReadKeyPassword readKeyPassword) {
         SecretKey secretKey = new SecretKeyBuilder()
                 .withKeyAlg(secretKeyAlgo)
                 .withKeyLength(keySize)
                 .build();
 
-        return SecretKeyData.builder().secretKey(secretKey).alias(alias).passwordSource(secretKeyPassHandler).keyAlgo(secretKeyAlgo).build();
+        return SecretKeyData.builder().secretKey(secretKey).alias(alias).readKeyPassword(readKeyPassword).keyAlgo(secretKeyAlgo).build();
 
     }
 }

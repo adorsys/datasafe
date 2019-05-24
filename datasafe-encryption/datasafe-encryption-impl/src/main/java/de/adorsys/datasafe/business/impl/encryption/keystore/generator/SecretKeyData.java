@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.impl.encryption.keystore.generator;
 
+import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.keystore.SecretKeyEntry;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,8 +15,8 @@ public class SecretKeyData extends KeyEntryData implements SecretKeyEntry {
 	private final String keyAlgo;
 
 	@Builder
-	private SecretKeyData(CallbackHandler passwordSource, String alias, SecretKey secretKey, String keyAlgo) {
-		super(passwordSource, alias);
+	private SecretKeyData(ReadKeyPassword readKeyPassword, String alias, SecretKey secretKey, String keyAlgo) {
+		super(readKeyPassword, alias);
 		this.secretKey = secretKey;
 		this.keyAlgo = keyAlgo;
 	}

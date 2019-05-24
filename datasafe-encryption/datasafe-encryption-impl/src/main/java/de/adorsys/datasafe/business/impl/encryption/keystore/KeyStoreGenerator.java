@@ -5,7 +5,6 @@ import de.adorsys.datasafe.business.api.types.keystore.exceptions.KeyStoreConfig
 import de.adorsys.datasafe.business.api.types.utils.Log;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.business.impl.encryption.keystore.generator.KeystoreBuilder;
-import de.adorsys.datasafe.business.impl.encryption.keystore.generator.PasswordCallbackHandler;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.business.impl.encryption.keystore.types.KeyPairGenerator;
 import lombok.Builder;
@@ -53,7 +52,7 @@ public class KeyStoreGenerator {
         this.secretKeys = secretKeys;
         log.debug("Keystore ID ignored {}", Log.secure(serverKeyPairAliasPrefix));
     }
-    
+
     public KeyStore generate() {
         if (config.getEncKeyNumber() == 0 &&
                 secretKeys.isEmpty() &&
@@ -64,7 +63,6 @@ public class KeyStoreGenerator {
         Date startTime = new Date();
         try {
             String keyStoreID = serverKeyPairAliasPrefix;
-            CallbackHandler readKeyHandler = new PasswordCallbackHandler(readKeyPassword.getValue().toCharArray());
             KeystoreBuilder keystoreBuilder = new KeystoreBuilder().withStoreType(keyStoreType);
 
             {
@@ -73,7 +71,7 @@ public class KeyStoreGenerator {
                 for (int i = 0; i < numberOfEncKeyPairs; i++) {
                     KeyPairEntry signatureKeyPair = encKeyPairGenerator.generateEncryptionKey(
                             serverKeyPairAliasPrefix + UUID.randomUUID().toString(),
-                            readKeyHandler
+                            readKeyPassword
                     );
 
                     keystoreBuilder = keystoreBuilder.withKeyEntry(signatureKeyPair);
@@ -85,7 +83,7 @@ public class KeyStoreGenerator {
                 for (int i = 0; i < numberOfSignKeyPairs; i++) {
                     KeyPairEntry signatureKeyPair = signKeyPairGenerator.generateSignatureKey(
                             serverKeyPairAliasPrefix + UUID.randomUUID().toString(),
-                            readKeyHandler
+                            readKeyPassword
                     );
 
                     keystoreBuilder = keystoreBuilder.withKeyEntry(signatureKeyPair);
@@ -98,7 +96,7 @@ public class KeyStoreGenerator {
                     keystoreBuilder = buildSecretKey(
                             keyEntry,
                             secretKeyGenerator,
-                            readKeyHandler,
+                            readKeyPassword,
                             keystoreBuilder
                     );
                 }
@@ -115,13 +113,13 @@ public class KeyStoreGenerator {
     private KeystoreBuilder buildSecretKey(
             Map.Entry<KeyID, Optional<SecretKeyEntry>> keyEntry,
             SecretKeyGenerator secretKeyGenerator,
-            CallbackHandler readKeyHandler,
+            ReadKeyPassword readKeyPassword,
             KeystoreBuilder keystoreBuilder) {
 
         SecretKeyEntry secretKeyData = keyEntry.getValue().orElse(
                 secretKeyGenerator.generate(
                         keyEntry.getKey().getValue(),
-                        readKeyHandler
+                        readKeyPassword
                 )
         );
 

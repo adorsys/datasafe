@@ -1,22 +1,17 @@
 package de.adorsys.datasafe.business.impl.profile.keys;
 
 import com.google.common.collect.ImmutableMap;
-import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.business.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.business.api.storage.actions.StorageReadService;
 import de.adorsys.datasafe.business.api.types.UserID;
 import de.adorsys.datasafe.business.api.types.UserIDAuth;
 import de.adorsys.datasafe.business.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.business.api.types.UserPublicProfile;
 import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.*;
-import de.adorsys.datasafe.business.impl.profile.operations.DFSSystem;
 import de.adorsys.datasafe.shared.BaseMockitoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.net.URI;
@@ -56,25 +51,7 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
     private KeyStoreCache keystoreCache;
 
     @Mock
-    private KeyStoreService keyStoreService;
-
-    @Mock
-    private DFSSystem dfsSystem;
-
-    @Mock
-    private BucketAccessService bucketAccessService;
-
-    @Mock
     private ProfileRetrievalService profile;
-
-    @Mock
-    private StreamReadUtil streamReadUtil;
-
-    @Mock
-    private StorageReadService readService;
-
-    @InjectMocks
-    private DFSPrivateKeyServiceImpl privateKeyService;
 
     @BeforeEach
     void init() {
@@ -103,6 +80,6 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
 
     @Test
     void keyByIdCaches() {
-       // privateKeyService.documentEncryptionSecretKey(auth);
+        // privateKeyService.documentEncryptionSecretKey(auth);
     }
 }

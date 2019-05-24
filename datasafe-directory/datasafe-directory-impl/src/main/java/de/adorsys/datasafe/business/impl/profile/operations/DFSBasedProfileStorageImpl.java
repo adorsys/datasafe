@@ -119,7 +119,6 @@ public class DFSBasedProfileStorageImpl implements
     }
 
     @Override
-    @SneakyThrows
     public UserPublicProfile publicProfile(UserID ofUser) {
         UserPublicProfile userPublicProfile = userProfileCache.getPublicProfile().computeIfAbsent(
                 ofUser,
@@ -130,7 +129,6 @@ public class DFSBasedProfileStorageImpl implements
     }
 
     @Override
-    @SneakyThrows
     public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
         UserPrivateProfile userPrivateProfile = userProfileCache.getPrivateProfile().computeIfAbsent(
                 ofUser.getUserID(),
