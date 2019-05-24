@@ -11,6 +11,7 @@ import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
+@Slf4j
 @RestController
 public class DocumentController {
 
@@ -48,6 +50,7 @@ public class DocumentController {
         StreamUtils.copy(inputStream, outputStream);
         inputStream.close();
         outputStream.close();
+        log.debug("User: {}, read private file from: {}", user, resource);
     }
 
     @SneakyThrows
@@ -62,6 +65,7 @@ public class DocumentController {
         StreamUtils.copy(inputStream, outputStream);
         stream.write(outputStream.toByteArray());
         stream.close();
+        log.debug("User: {}, write private file to: {}", user, path);
     }
 
     @GetMapping("/documents/{path:.*}")
@@ -70,9 +74,11 @@ public class DocumentController {
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = "./" + Objects.toString(path, "");
-        return dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
+        List<String> documetnList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                 .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
                 .collect(Collectors.toList());
+        log.debug("List for path {} returned {} items", path, documetnList.size());
+        return documetnList;
     }
 
     @DeleteMapping("/document/{path:.*}")
@@ -83,5 +89,6 @@ public class DocumentController {
         PrivateResource resource = BasePrivateResource.forPrivate(URI.create(path));
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         dataSafeService.privateService().remove(request);
+        log.debug("User: {}, delete private file: {}", user, resource);
     }
 }

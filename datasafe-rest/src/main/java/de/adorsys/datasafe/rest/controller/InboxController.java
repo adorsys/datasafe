@@ -10,6 +10,7 @@ import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+@Slf4j
 @RestController
 @RequestMapping("/inbox")
 public class InboxController {
@@ -40,6 +42,7 @@ public class InboxController {
         StreamUtils.copy(inputStream, outputStream);
         stream.write(outputStream.toByteArray());
         stream.close();
+        log.debug("User {}, write to INBOX file: {}", toUser, path);
     }
 
     @SneakyThrows
@@ -55,6 +58,7 @@ public class InboxController {
         StreamUtils.copy(inputStream, outputStream);
         inputStream.close();
         outputStream.close();
+        log.debug("User {}, read from INBOX file {}", user, resource);
     }
 
     @DeleteMapping("/{path:.*}")
@@ -65,5 +69,6 @@ public class InboxController {
         PrivateResource resource = BasePrivateResource.forPrivate(URI.create("./" + path));
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         dataSafeService.inboxService().remove(request);
+        log.debug("User {}, delete from INBOX file {}", user, resource);
     }
 }

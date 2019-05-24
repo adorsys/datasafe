@@ -11,9 +11,16 @@ before_deploy:
   - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
 
 deploy:
-  -
+  - provider: openshift
+    user: $OPENSHIFT_USER
+    password: $OPENSHIFT_PASSWORD
+    domain: $OPENSHIFT_DOMAIN
+    app: datasafe-rest-service
+    on:
+      branch: feature/DOC-142_inbox_endpoints
+
+  - provider: script
     skip_cleanup: true
-    provider: script
     script: /bin/bash .travis/deploy.sh
     on:
       tags: true
