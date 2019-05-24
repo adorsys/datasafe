@@ -9,13 +9,13 @@ import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -23,25 +23,22 @@ import java.net.URI;
 @Slf4j
 @RestController
 @RequestMapping("/inbox")
+@RequiredArgsConstructor
 public class InboxController {
 
     private final DefaultDatasafeServices dataSafeService;
-
-    public InboxController(DefaultDatasafeServices dataSafeService) {
-        this.dataSafeService = dataSafeService;
-    }
 
     @SneakyThrows
     @PutMapping("/{path:.*}")
     public void sendDocumentToInbox(@RequestHeader String user,
                                     @PathVariable String path,
-                                    InputStream inputStream) {
+                                    InputStream is) {
         UserID toUser = new UserID(user);
-        OutputStream stream = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUser, path));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        StreamUtils.copy(inputStream, outputStream);
-        stream.write(outputStream.toByteArray());
-        stream.close();
+        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUser, path))) {
+            StreamUtils.copy(is, os);
+        } finally {
+            is.close();
+        }
         log.debug("User {}, write to INBOX file: {}", toUser, path);
     }
 
@@ -53,11 +50,11 @@ public class InboxController {
                               HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         PrivateResource resource = BasePrivateResource.forPrivate(URI.create("./" + path));
-        InputStream inputStream = dataSafeService.inboxService().read(ReadRequest.forPrivate(userIDAuth, resource));
-        OutputStream outputStream = response.getOutputStream();
-        StreamUtils.copy(inputStream, outputStream);
-        inputStream.close();
-        outputStream.close();
+        try (InputStream is = dataSafeService.inboxService().read(ReadRequest.forPrivate(userIDAuth, resource));
+             OutputStream os = response.getOutputStream()
+        ) {
+            StreamUtils.copy(is, os);
+        }
         log.debug("User {}, read from INBOX file {}", user, resource);
     }
 

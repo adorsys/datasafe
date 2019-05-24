@@ -10,13 +10,13 @@ import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
 import de.adorsys.datasafe.business.api.types.resource.PrivateResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -28,13 +28,10 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class DocumentController {
 
     private final DefaultDatasafeServices dataSafeService;
-
-    public DocumentController(DefaultDatasafeServices dataSafeService) {
-        this.dataSafeService = dataSafeService;
-    }
 
     @SneakyThrows
     @GetMapping(value = "/document/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
@@ -45,11 +42,11 @@ public class DocumentController {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         PrivateResource resource = BasePrivateResource.forPrivate(URI.create("./" + path));
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
-        InputStream inputStream = dataSafeService.privateService().read(request);
-        OutputStream outputStream = response.getOutputStream();
-        StreamUtils.copy(inputStream, outputStream);
-        inputStream.close();
-        outputStream.close();
+        try (InputStream is = dataSafeService.privateService().read(request);
+             OutputStream os = response.getOutputStream()
+        ) {
+            StreamUtils.copy(is, os);
+        }
         log.debug("User: {}, read private file from: {}", user, resource);
     }
 
@@ -57,14 +54,15 @@ public class DocumentController {
     @PutMapping(value = "/document/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
     public void writeDocument(@RequestHeader String user,
                               @RequestHeader String password,
-                              InputStream inputStream,
-                              @PathVariable String path) {
+                              @PathVariable String path,
+                              InputStream is) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        OutputStream stream = dataSafeService.privateService().write(WriteRequest.forDefaultPrivate(userIDAuth, path));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        StreamUtils.copy(inputStream, outputStream);
-        stream.write(outputStream.toByteArray());
-        stream.close();
+        WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(userIDAuth, path);
+        try (OutputStream os = dataSafeService.privateService().write(request)) {
+            StreamUtils.copy(is, os);
+        } finally {
+            is.close();
+        }
         log.debug("User: {}, write private file to: {}", user, path);
     }
 
@@ -74,11 +72,11 @@ public class DocumentController {
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = "./" + Objects.toString(path, "");
-        List<String> documetnList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
+        List<String> documentList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                 .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
                 .collect(Collectors.toList());
-        log.debug("List for path {} returned {} items", path, documetnList.size());
-        return documetnList;
+        log.debug("List for path {} returned {} items", path, documentList.size());
+        return documentList;
     }
 
     @DeleteMapping("/document/{path:.*}")

@@ -1,4 +1,4 @@
-package de.adorsys.datasafe;
+package de.adorsys.datasafe.rest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
