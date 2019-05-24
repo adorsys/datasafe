@@ -9,13 +9,13 @@ For details see :
 Performance statistic per operation:
 
 ## Delete operation on 1000Kb files
-![Delete operation](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/feature/DOC-153-api-versioning/datasafe-metainfo-version/docs/perf/delete_1000Kb.svg&vvv=1&sanitize=true)
+![Delete operation](./datasafe-metainfo-version/docs/perf/delete_1000Kb.svg)
 
 ## List operation on 1000Kb files
-![List operation](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/feature/DOC-153-api-versioning/datasafe-metainfo-version/docs/perf/list_1000Kb.svg&vvv=1&sanitize=true)
+![List operation](./datasafe-metainfo-version/docs/perf/list_1000Kb.svg)
 
 ## Read operation on 1000Kb files
-![Read operation](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/feature/DOC-153-api-versioning/datasafe-metainfo-version/docs/perf/read_1000Kb.svg&vvv=1&sanitize=true)
+![Read operation](./datasafe-metainfo-version/docs/perf/read_1000Kb.svg)
 
 ## Write operation on 1000Kb files
-![Write operation](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/feature/DOC-153-api-versioning/datasafe-metainfo-version/docs/perf/write_1000Kb.svg&vvv=1&sanitize=true)
+![Write operation](./datasafe-metainfo-version/docs/perf/write_1000Kb.svg)
