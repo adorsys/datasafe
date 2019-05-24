@@ -30,7 +30,6 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
     @SneakyThrows
     void write() {
         String testFileName = tempDir.toString() + "/test.txt";
-        System.out.println("Temp: " + tempDir);
 
         int loadS3TestFileSizeMb = 100;//1024;//1;
 
@@ -47,11 +46,10 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
                 BasePrivateResource.forPrivate(URI.create("s3://" + bucketName + "/bigfile.txt")));
 
         try (OutputStream os = storageService.write(privateLocation)) {
-            int cycles = loadS3TestFileSizeMb < 5 ? 1 : loadS3TestFileSizeMb / 5;
-            int _5mb = 1024 * 1024 * 5;
-            for (int i = 1; i <= cycles; i++) {
-                os.write(generateArrayWithSize(_5mb));
-                log.trace("Wrote {}mb of test file from {}mb", _5mb * i, loadS3TestFileSizeMb);
+            int _1mb = 1024 * 1024;
+            for (int i = 1; i <= loadS3TestFileSizeMb; i++) {
+                os.write(generateArrayWithSize(_1mb));
+                log.trace("Wrote {}mb of test file from {}mb", _1mb * i, loadS3TestFileSizeMb);
             }
         }
 
@@ -67,11 +65,10 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
     private void generateTestFile(String testFileName, int loadS3TestFileSizeMb) {
         log.info("Starting write {} Mb file into {}", loadS3TestFileSizeMb, tempDir.toString());
         try(FileOutputStream stream = new FileOutputStream(testFileName)) {
-            int cycles = loadS3TestFileSizeMb < 5 ? 1 : loadS3TestFileSizeMb / 5;
-            int _5mb = 1024 * 1024 * 5;
-            for (int i = 1; i <= cycles; i++) {
-                stream.write(generateArrayWithSize(_5mb));
-                log.trace("Wrote {}mb of test file from {}mb", _5mb * i, loadS3TestFileSizeMb);
+            int _1mb = 1024 * 1024;
+            for (int i = 1; i <= loadS3TestFileSizeMb; i++) {
+                stream.write(generateArrayWithSize(_1mb));
+                log.trace("Wrote {}mb of test file from {}mb", _1mb * i, loadS3TestFileSizeMb);
             }
         } catch (IOException e) {
             fail(e.getMessage());
@@ -104,7 +101,7 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
         while ((length = input.read(block)) > 0) {
             digest.update(block, 0, length);
 
-            log.debug("Counter: " + (bufferCounter++));
+            log.debug("Counter checksum calculation: " + (bufferCounter++));
         }
         return Hex.toHexString(digest.digest());
     }
