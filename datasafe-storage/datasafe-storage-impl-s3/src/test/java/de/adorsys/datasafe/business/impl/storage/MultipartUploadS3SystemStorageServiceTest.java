@@ -7,14 +7,12 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.platform.commons.util.StringUtils;
 import org.testcontainers.shaded.org.bouncycastle.util.encoders.Hex;
 
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +32,7 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
         int loadS3TestFileSizeMb = 100;//1024;//1;
 
         String loadS3TestfileSizeMb = System.getenv("LOAD_S3_TESTFILE_SIZE_MB");
-        if(StringUtils.isNotBlank(loadS3TestfileSizeMb)) {
+        if(loadS3TestfileSizeMb != null && loadS3TestfileSizeMb.length() != 0) {
             loadS3TestFileSizeMb = Integer.parseInt(loadS3TestfileSizeMb);
         }
 
