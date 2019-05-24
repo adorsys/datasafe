@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,6 +62,30 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
     private TestMetricCollector metricCollector = new TestMetricCollector();
 
+    private Function<Runnable, Long> measurePerformanceAndReturnValue = (measuredMethod) -> {
+        Instant start = Instant.now();
+
+        measuredMethod.run();
+
+        long durationOfSavingFile = Duration.between(start, Instant.now()).toMillis();
+
+        return durationOfSavingFile;
+    };
+
+    private BiFunction<Supplier<UserIDAuth>, BiConsumer<String, Long>, UserIDAuth> measurePerformance = (measuredMethod, collector) -> {
+        Instant start = Instant.now();
+
+        UserIDAuth user = measuredMethod.get();
+
+        long durationOfUserRegistration = Duration.between(start, Instant.now()).toMillis();
+
+        collector.accept(user.getUserID().getValue(), durationOfUserRegistration);
+
+        log.debug("Registered user: {} in {}ms", user.getUserID().getValue(), durationOfUserRegistration);
+
+        return user;
+    };
+
     @SneakyThrows
     @ParameterizedTest(name = "Run #{index} service storage: {0} with data size: {1} bytes and {2} threads.")
     @MethodSource("differentThreadsTestOptions")
@@ -82,15 +107,14 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
         log.trace("*** Starting write threads ***");
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
-            long userRegisterTime = System.currentTimeMillis();
+
             String userName = "john_" + i;
+
             executor.execute(() -> {
-                UserIDAuth user = registerUser(userName, location);
-                long durationUserCreation = System.currentTimeMillis() - userRegisterTime;
-
-                metricCollector.addRegisterRecords(user.getUserID().getValue(), durationUserCreation);
-
-                log.debug("Registered user: {} in {}ms", user.getUserID().getValue(), durationUserCreation);
+                UserIDAuth user = measurePerformance.apply(
+                        () -> registerUser(userName, location),
+                        metricCollector::addRegisterRecords
+                );
 
                 createFileForUserParallelly(executor, holdingLatch, finishHoldingLatch,
                         testFile, user);
@@ -141,15 +165,15 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
                     log.debug("Saving file: {}", filePath);
 
-                    Instant startSaving = Instant.now();
+                    long durationOfSavingFile = measurePerformanceAndReturnValue.apply(
+                            () -> writeDataToFileForUser(user, filePath, testFilePath, finishHoldingLatch)
+                    );
 
-                    writeDataToFileForUser(user, filePath, testFilePath, finishHoldingLatch);
-
-                    long durationOfSavingFile = Duration.between(startSaving, Instant.now()).toMillis();
                     metricCollector.addSaveRecord(
                            user.getUserID().getValue(),
                            durationOfSavingFile
                     );
+
                     log.debug("Save file in {} ms", durationOfSavingFile);
                 } catch (InterruptedException e) {
                     fail(e);
