@@ -9,13 +9,13 @@ For details see :
 Performance statistic per operation:
 
 ## Delete operation on 1000Kb files
-![Delete operation](./datasafe-metainfo-version/docs/perf/delete_1000Kb.svg)
+![Delete operation](./perf/delete_1000Kb.svg)
 
 ## List operation on 1000Kb files
-![List operation](./datasafe-metainfo-version/docs/perf/list_1000Kb.svg)
+![List operation](./perf/list_1000Kb.svg)
 
 ## Read operation on 1000Kb files
-![Read operation](./datasafe-metainfo-version/docs/perf/read_1000Kb.svg)
+![Read operation](./perf/read_1000Kb.svg)
 
 ## Write operation on 1000Kb files
-![Write operation](./datasafe-metainfo-version/docs/perf/write_1000Kb.svg)
+![Write operation](./perf/write_1000Kb.svg)
