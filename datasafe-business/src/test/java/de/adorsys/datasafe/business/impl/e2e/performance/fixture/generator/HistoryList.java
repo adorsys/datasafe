@@ -1,0 +1,22 @@
+package de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator;
+
+import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Operation;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+@Getter
+@RequiredArgsConstructor
+public class HistoryList {
+
+    private final List<Operation> operations;
+    private final int maxSize;
+
+    /**
+     * This will not hard-enforce operation count, rather only soft limit is enforced
+     */
+    public boolean canContinue() {
+        return operations.size() < maxSize;
+    }
+}

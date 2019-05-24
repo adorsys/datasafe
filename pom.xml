@@ -91,7 +91,7 @@
         <jacoco.version>0.8.2</jacoco.version>
         <commons.io.version>2.5</commons.io.version>
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
-        <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
+        <drools.version>6.5.0.Final</drools.version>
     </properties>
 
     <dependencies>
@@ -197,8 +197,20 @@
                 <version>${compress.version}</version>
                 <scope>test</scope>
             </dependency>
-        </dependencies>
-    </dependencyManagement>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-core</artifactId>
+                <version>${drools.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-compiler</artifactId>
+                <version>${drools.version}</version>
+                <scope>test</scope>
+            </dependency>
+	    </dependencies>
+	</dependencyManagement>
 
     <build>
         <finalName>${project.artifactId}</finalName>

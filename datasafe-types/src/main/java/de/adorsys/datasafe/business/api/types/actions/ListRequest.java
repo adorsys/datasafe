@@ -22,6 +22,10 @@ public class ListRequest<T, L extends ResourceLocation> {
     @NonNull
     private final L location;
 
+    public static <T> ListRequest<T, PrivateResource> forDefaultPrivate(T owner, URI path) {
+        return new ListRequest<>(owner, BasePrivateResource.forPrivate(path));
+    }
+
     public static <T> ListRequest<T, PrivateResource> forDefaultPrivate(T owner, String path) {
         return new ListRequest<>(owner, BasePrivateResource.forPrivate(URI.create(path)));
     }

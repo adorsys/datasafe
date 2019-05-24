@@ -40,30 +40,44 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     private static String minioUrl = "http://localhost";
     private static String prefix = UUID.randomUUID().toString();
 
+    private static String cephAccessKeyID = "admin";
+    private static String cephSecretAccessKey = "password";
+    private static String cephRegion = "eu-central-1";
+    private static String cephBucketName = "home";
+    private static String cephUrl = "http://localhost";
+
     private static String amazonAccessKeyID = System.getProperty("AWS_ACCESS_KEY");
     private static String amazonSecretAccessKey = System.getProperty("AWS_SECRET_KEY");
     private static String amazonRegion = System.getProperty("AWS_REGION", "eu-central-1");
     private static String amazonBucket = System.getProperty("AWS_BUCKET", "adorsys-docusafe");
 
     private static GenericContainer minioContainer;
+    private static GenericContainer cephContainer;
 
     private static Path tempDir;
     private static AmazonS3 minio;
+    private static AmazonS3 ceph;
     private static AmazonS3 amazonS3;
 
-    private static Supplier<Void> MINIO;
-    private static Supplier<Void> AMAZON_S3;
+    private static Supplier<Void> cephStorage;
+    private static Supplier<Void> minioStorage;
+    private static Supplier<Void> amazonSotrage;
 
     @BeforeAll
     static void init(@TempDir Path tempDir) {
         WithStorageProvider.tempDir = tempDir;
 
-        MINIO = Suppliers.memoize(() -> {
+        minioStorage = Suppliers.memoize(() -> {
             startMinio();
             return null;
         });
 
-        AMAZON_S3 = Suppliers.memoize(() -> {
+        cephStorage = Suppliers.memoize(() -> {
+            startCeph();
+            return null;
+        });
+
+        amazonSotrage = Suppliers.memoize(() -> {
             initS3();
             return null;
         });
@@ -95,6 +109,12 @@ public abstract class WithStorageProvider extends BaseE2ETest {
             minio = null;
         }
 
+        if (null != cephContainer) {
+            cephContainer.stop();
+            cephContainer = null;
+            ceph = null;
+        }
+
         amazonS3 = null;
     }
 
@@ -111,19 +131,28 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         ).filter(Objects::nonNull);
     }
 
-    @ValueSource
     protected static StorageDescriptor minio() {
         return new StorageDescriptor(
                 "MINIO S3",
                 () -> {
-                    MINIO.get();
+                    minioStorage.get();
                     return new S3StorageService(minio, minioBucketName);
                 },
                 URI.create("s3://" + minioBucketName + "/" + prefix + "/")
         );
     }
 
-    @ValueSource
+    protected static StorageDescriptor ceph() {
+        return new StorageDescriptor(
+                "CEPH S3",
+                () -> {
+                    cephStorage.get();
+                    return new S3StorageService(ceph, cephBucketName);
+                },
+                URI.create("s3://" + cephBucketName + "/" + prefix + "/")
+        );
+    }
+
     protected static StorageDescriptor s3() {
         if (null == amazonAccessKeyID) {
             return null;
@@ -132,7 +161,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         return new StorageDescriptor(
                 "AMAZON S3",
                 () -> {
-                    AMAZON_S3.get();
+                    amazonSotrage.get();
                     return new S3StorageService(amazonS3, amazonBucket);
                 },
                 URI.create("s3://" + amazonBucket + "/" + prefix + "/")
@@ -190,9 +219,40 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         minio.createBucket(minioBucketName);
     }
 
+    private static void startCeph() {
+        log.info("Starting CEPH");
+        cephContainer = new GenericContainer("localrepo/ceph-nano")
+                .withExposedPorts(5000)
+                .withEnv("MON_IP", "0.0.0.0")
+                .withEnv("CEPH_PUBLIC_NETWORK", "0.0.0.0/0")
+                .withEnv("CEPH_DEMO_UID", "ceph")
+                .withEnv("CEPH_DEMO_ACCESS_KEY", cephAccessKeyID)
+                .withEnv("CEPH_DEMO_SECRET_KEY", cephSecretAccessKey)
+                .withEnv("CEPH_DEMO_BUCKET", cephBucketName)
+                .waitingFor(Wait.defaultWaitStrategy());
+
+        cephContainer.start();
+        Integer mappedPort = cephContainer.getMappedPort(9000);
+        log.info("Mapped port: " + mappedPort);
+        ceph = AmazonS3ClientBuilder.standard()
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(cephUrl + ":" + mappedPort, cephRegion)
+                )
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(cephAccessKeyID, cephSecretAccessKey)
+                        )
+                )
+                .enablePathStyleAccess()
+                .build();
+
+
+        ceph.createBucket(cephBucketName);
+    }
+
     @Getter
     @ToString(of = "name")
-    static class StorageDescriptor {
+    public static class StorageDescriptor {
 
         private final String name;
         private final Supplier<StorageService> storageService;
