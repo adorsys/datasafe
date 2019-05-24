@@ -29,7 +29,7 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
     void write() {
         String testFileName = tempDir.toString() + "/test.txt";
 
-        int loadS3TestFileSizeMb = 100;//1024;//1;
+        int loadS3TestFileSizeMb = 100;
 
         String loadS3TestfileSizeMb = System.getenv("LOAD_S3_TESTFILE_SIZE_MB");
         if(loadS3TestfileSizeMb != null && loadS3TestfileSizeMb.length() != 0) {
