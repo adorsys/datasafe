@@ -6,9 +6,9 @@ jdk:
 script:
   - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
 
-before_deploy:
-  - echo $GPG_SECRET_KEY | base64 --decode | $GPG_EXECUTABLE --import
-  - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
+#before_deploy:
+#  - echo $GPG_SECRET_KEY | base64 --decode | $GPG_EXECUTABLE --import
+#  - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
 
 deploy:
   - provider: openshift
@@ -19,12 +19,12 @@ deploy:
     on:
       branch: feature/DOC-142_inbox_endpoints
 
-  - provider: script
-    skip_cleanup: true
-    script: /bin/bash .travis/deploy.sh
-    on:
-      tags: true
-      condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
+#  - provider: script
+#    skip_cleanup: true
+#    script: /bin/bash .travis/deploy.sh
+#    on:
+#      tags: true
+#      condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests
