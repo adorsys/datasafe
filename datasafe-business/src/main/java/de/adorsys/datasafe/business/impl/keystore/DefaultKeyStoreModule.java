@@ -2,10 +2,10 @@ package de.adorsys.datasafe.business.impl.keystore;
 
 import dagger.Binds;
 import dagger.Module;
-import de.adorsys.datasafe.business.api.encryption.keystore.KeyStoreService;
-import de.adorsys.datasafe.business.api.encryption.keystore.PublicKeySerde;
-import de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl;
-import de.adorsys.datasafe.business.impl.encryption.keystore.PublicKeySerdeImpl;
+import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
+import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImpl;
 
 /**
  * This module provides keystore management operations.

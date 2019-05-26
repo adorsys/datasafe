@@ -1,11 +1,11 @@
 package de.adorsys.datasafe.rest.config;
 
 import com.amazonaws.services.s3.AmazonS3;
-import de.adorsys.datasafe.business.api.config.DFSConfig;
-import de.adorsys.datasafe.business.api.storage.StorageService;
+import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
-import de.adorsys.datasafe.business.impl.storage.S3StorageService;
+import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

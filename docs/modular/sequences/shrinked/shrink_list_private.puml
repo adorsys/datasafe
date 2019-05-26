@@ -3,11 +3,11 @@
 skinparam SequenceMessageAlign center
 
 activate PRIVATE
-' de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImpl
 PRIVATE -> PRIVATE : resolvePrivateLocation
 
 activate PRIVATE
-' de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImpl
 PRIVATE -> Profile : privateProfile
 
 activate Profile
@@ -73,7 +73,7 @@ deactivate Profile
 
 deactivate PRIVATE
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImpl
 PRIVATE -> Credentials : privateAccessFor
 
 activate Credentials
@@ -113,7 +113,7 @@ deactivate Credentials
 PRIVATE <-- Credentials : DFSAccess
 deactivate Credentials
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImpl
 PRIVATE -> Document : list
 
 activate Document

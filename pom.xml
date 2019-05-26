@@ -5,6 +5,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>datasafe-types-api</module>
         <module>datasafe-business</module>
         <module>datasafe-metainfo-version</module>
         <module>datasafe-privatestore</module>
@@ -12,14 +13,13 @@
         <module>datasafe-encryption</module>
         <module>datasafe-inbox</module>
         <module>datasafe-storage</module>
-        <module>datasafe-types</module>
         <module>datasafe-test-shared</module>
         <module>datasafe-rest</module>
     </modules>
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.7-SNAPSHOT</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>

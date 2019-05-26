@@ -1,12 +1,12 @@
 package de.adorsys.datasafe.rest.controller;
 
-import de.adorsys.datasafe.business.api.types.CreateUserPrivateProfile;
-import de.adorsys.datasafe.business.api.types.CreateUserPublicProfile;
-import de.adorsys.datasafe.business.api.types.UserID;
-import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.api.types.resource.*;
+import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
+import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.rest.config.DatasafeProperties;
 import de.adorsys.datasafe.rest.dto.UserCreateRequestDTO;
 import io.swagger.annotations.ApiOperation;

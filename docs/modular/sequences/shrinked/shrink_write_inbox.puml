@@ -265,7 +265,7 @@ activate KeyStore
 KeyStore -> KeyStore : getPublicKeys
 
 activate KeyStore
-' de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl
 KeyStore <-- KeyStore : List
 deactivate KeyStore
 
@@ -289,7 +289,7 @@ activate Document
 Document -> Document : write
 
 activate Document
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentWriteServiceriteService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceriteService
 Document -> DFS : obtain
 
 activate DFS
@@ -305,7 +305,7 @@ deactivate DFS
 Document <-- DFS : DFSConnection
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentWriteServiceriteService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceriteService
 Document -> CMS : encrypt
 
 activate CMS
@@ -313,7 +313,7 @@ activate CMS
 CMS -> CMS : encrypt
 
 activate CMS
-' de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl
 CMS <-- CMS : CMSEnvelopedData
 deactivate CMS
 
@@ -321,7 +321,7 @@ deactivate CMS
 Document <-- CMS : CMSEnvelopedData
 deactivate CMS
 
-' de.adorsys.datasafe.business.impl.encryption.document.cmsocument.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentWriteService
 Document -> DFS : putBlob
 
 activate DFS
@@ -329,7 +329,7 @@ activate DFS
 Document <-- DFS :
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentWriteServiceriteService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceriteService
 Document <-- Document :
 deactivate Document
 

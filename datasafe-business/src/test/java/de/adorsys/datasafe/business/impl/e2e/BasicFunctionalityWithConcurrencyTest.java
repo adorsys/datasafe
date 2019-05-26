@@ -1,12 +1,12 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.api.types.UserIDAuth;
-import de.adorsys.datasafe.business.api.types.actions.ReadRequest;
-import de.adorsys.datasafe.business.api.types.actions.WriteRequest;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
-import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
+import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
@@ -38,7 +38,7 @@ import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.adorsys.datasafe.business.api.types.actions.ListRequest.forDefaultPrivate;
+import static de.adorsys.datasafe.types.api.actions.ListRequest.forDefaultPrivate;
 import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
