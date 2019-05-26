@@ -283,7 +283,7 @@ activate Document
 Document -> Document : read
 
 activate Document
-' de.adorsys.datasafe.business.impl.encryption.document.cmsocument.CMSDocumentReadService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentReadService
 Document -> DFS : obtain
 
 activate DFS
@@ -299,7 +299,7 @@ deactivate DFS
 Document <-- DFS : DFSConnection
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentReadServiceReadService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadServiceReadService
 Document -> DFS : getBlob
 
 activate DFS
@@ -307,7 +307,7 @@ activate DFS
 Document <-- DFS : Payload
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentReadServiceReadService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadServiceReadService
 Document -> CMS : decrypt
 
 activate CMS
@@ -315,7 +315,7 @@ activate CMS
 CMS -> CMS : decrypt
 
 activate CMS
-' de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl
 CMS <-- CMS : DocumentContent
 deactivate CMS
 
@@ -323,7 +323,7 @@ deactivate CMS
 Document <-- CMS : DocumentContent
 deactivate CMS
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentReadServiceReadService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadServiceReadService
 Document <-- Document :
 deactivate Document
 

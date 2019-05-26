@@ -3,11 +3,11 @@
 skinparam SequenceMessageAlign center
 
 activate ListPrivateImpl
-' de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImpl
 ListPrivateImpl -> ListPrivateImpl : resolvePrivateLocation
 
 activate ListPrivateImpl
-' de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImpl
 ListPrivateImpl -> ProfileRetrievalService : privateProfile
 
 activate ProfileRetrievalService
@@ -73,7 +73,7 @@ deactivate ProfileRetrievalService
 
 deactivate ListPrivateImpl
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImpl
 ListPrivateImpl -> BucketAccessService : privateAccessFor
 
 activate BucketAccessService
@@ -113,7 +113,7 @@ deactivate BucketAccessServiceImpl
 ListPrivateImpl <-- BucketAccessService : DFSAccess
 deactivate BucketAccessService
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.ListPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImpl
 ListPrivateImpl -> DocumentListService : list
 
 activate DocumentListService
