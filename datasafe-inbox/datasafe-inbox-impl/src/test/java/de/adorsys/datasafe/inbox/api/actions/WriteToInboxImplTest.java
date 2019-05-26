@@ -11,7 +11,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import de.adorsys.datasafe.inbox.impl.actions.WriteToInboxImpl;
-import de.adorsys.datasafe.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

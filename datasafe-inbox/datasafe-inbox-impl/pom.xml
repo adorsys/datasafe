@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>de.adorsys</groupId>
 		<artifactId>datasafe-inbox</artifactId>
-		<version>0.0.7-SNAPSHOT</version>
+		<version>0.0.8-SNAPSHOT</version>
 	</parent>
 	<artifactId>datasafe-inbox-impl</artifactId>
 	<dependencies>
@@ -40,12 +40,13 @@
 			<artifactId>dagger</artifactId>
 		</dependency>
 
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-test-shared</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>de.adorsys</groupId>
+			<artifactId>datasafe-types-api</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
