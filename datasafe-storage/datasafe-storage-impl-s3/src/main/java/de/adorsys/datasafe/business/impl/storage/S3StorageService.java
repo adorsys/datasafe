@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.business.api.storage.StorageService;
 import de.adorsys.datasafe.business.api.types.resource.*;
 import de.adorsys.datasafe.business.api.types.utils.Log;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -55,7 +54,9 @@ public class S3StorageService implements StorageService {
 
     @Override
     public OutputStream write(AbsoluteLocation location) {
-        return new PutBlobOnClose(s3, bucketName, location);
+        MultipartS3StorageOutputStream simpleStorageOutputStream = new MultipartS3StorageOutputStream(
+                bucketName, location.getResource(), s3);
+        return simpleStorageOutputStream;
     }
 
     @Override
@@ -82,30 +83,5 @@ public class S3StorageService implements StorageService {
         }
 
         return BasePrivateResource.forPrivate(relUrl).resolve(root);
-    }
-
-    @Slf4j
-    @RequiredArgsConstructor
-    private static final class PutBlobOnClose extends ByteArrayOutputStream {
-
-        private final AmazonS3 s3;
-        private final String bucketName;
-        private final ResourceLocation resource;
-
-        @Override
-        public void close() throws IOException {
-
-            ObjectMetadata metadata = new ObjectMetadata();
-            byte[] data = super.toByteArray();
-            metadata.setContentLength(data.length);
-
-            InputStream is = new ByteArrayInputStream(data);
-
-            String key = resource.location().getPath().replaceFirst("^/", "");
-            log.debug("Write to {}", Log.secure(key));
-            s3.putObject(bucketName, key, is, metadata);
-
-            super.close();
-        }
     }
 }
