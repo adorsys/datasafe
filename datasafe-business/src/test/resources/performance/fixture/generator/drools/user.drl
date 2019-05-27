@@ -2,7 +2,7 @@ package de.adorsys.datasafe;
 
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.UserFileSystem
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.TestUser
-import de.adorsys.datasafe.business.api.types.actions.WriteRequest
+import de.adorsys.datasafe.types.api.actions.WriteRequest
 
 global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomPassGate randomPass
 global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomPathGenerator randomPath
