@@ -1,9 +1,0 @@
-@startuml
-actor User
-User --> "datasafe-metainfo-version" as meta : List my latest `filesystem` snapshot
-meta --> "datasafe-directory" as directory : Get user version directory location
-directory --> meta : DFS location of latest directory (LATEST)
-meta --> "datasafe-storage" as s3 : List files in LATEST
-s3 --> meta : List of files
-meta --> User : Latest `filesystem` snapshot
-@enduml

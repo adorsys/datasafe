@@ -39,3 +39,12 @@ hs_err_pid*
 # Visual studio code
 .vscode/
 
+# github-pages
+_site
+Gemfile
+Gemfile.lock
+.bundle
+vendor
+
+# MacOS specific
+.DS_Store

@@ -1,5 +1,0 @@
-![create user](http://www.plantuml.com/plantuml/png/5Sqx3i8m48JXdbF01R8I9LLk4Yth8R7aXza7YDiJLoDznVohEQj7BPTRRb8Y8RHS3_TX3oBbxx9dF-8P1fNU7CqNwPKuTRMVKUeInY_SAU63qiUKapFlojN8y0uqmIOATcppPncpjwAbS_y0)
-
-![store document](http://www.plantuml.com/plantuml/png/5SrB2i9048JXlQVG2wJ1fQlS9BJJPHAOJ8_zKBozarN1Hy4_Ux157lLosrkfAKYhrosY-uF8-3kjUspvJ8SLRO4MKz63MDJyvoHQqlc5Ema-gDfF6RppQdmuETw9Lh1ug64ni2pZCVKpEQF9s3y0)
-
-![send to inbox](http://www.plantuml.com/plantuml/png/5Sqx3i8m383XdLF01Mg9aQatYTp4j94IE_Z1u_Qaqozzox-QethqThbLpYqAXRRhuJxi0Q3uMVRgHsnXf5dOYNt9qW6BgFqCYkGmVD8T2hsfoJXbSiLTiHiOlO8uKpBYabnIvKs-opYFwwJPFm00)
