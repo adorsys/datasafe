@@ -41,8 +41,6 @@ hs_err_pid*
 
 # github-pages
 _site
-Gemfile
-Gemfile.lock
 .bundle
 vendor
 
