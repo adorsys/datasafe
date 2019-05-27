@@ -1,0 +1,18 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+h1 > a {
+  text-transform: capitalize;
+}
+
+.markdown-body {
+  margin-left: 25%
+}
+
+.markdown-body > .tocmenu {
+  position: absolute;
+  left: 0;
+  width: 25%;
+}

@@ -1,0 +1,4 @@
+kramdown:
+  parse_block_html: true
+plugins:
+  - jekyll-sitemap
