@@ -54,7 +54,7 @@ public class S3StorageService implements StorageService {
 
     @Override
     public OutputStream write(AbsoluteLocation location) {
-        MultipartS3StorageOutputStream simpleStorageOutputStream = new MultipartS3StorageOutputStream(
+        MultipartUploadS3StorageOutputStream simpleStorageOutputStream = new MultipartUploadS3StorageOutputStream(
                 bucketName, location.getResource(), s3);
         return simpleStorageOutputStream;
     }

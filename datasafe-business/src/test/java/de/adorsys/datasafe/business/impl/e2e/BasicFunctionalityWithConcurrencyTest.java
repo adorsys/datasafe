@@ -62,7 +62,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     private TestMetricCollector metricCollector = new TestMetricCollector();
 
     @SneakyThrows
-    @ParameterizedTest(name = "Run #{index} service storage: {0} with data size: {1} bytes and {2} threads.")
+    @ParameterizedTest(name = "Run #{index} service storage: {0} with data contentSize: {1} bytes and {2} threads.")
     @MethodSource("differentThreadsTestOptions")
     public void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor, int size, int poolSize) {
         init(descriptor);
@@ -204,17 +204,17 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         List<Arguments> arguments = new ArrayList<>();
 
         storageDescriptorMap.forEach(storageDescriptor -> {
-            //30kb - 4 threads pool size
+            //30kb - 4 threads pool contentSize
             arguments.add(Arguments.of(storageDescriptor, 1024 * 30, 4));
-            //30kb - 8 threads pool size
+            //30kb - 8 threads pool contentSize
             arguments.add(Arguments.of(storageDescriptor, 1024 * 30, 8));
-            //60kb - 4 threads pool size
+            //60kb - 4 threads pool contentSize
             arguments.add(Arguments.of(storageDescriptor, 1024 * 60, 4));
-            //60kb - 8 threads pool size
+            //60kb - 8 threads pool contentSize
             arguments.add(Arguments.of(storageDescriptor, 1024 * 60, 8));
-            //5Mb - 4 threads pool size
+            //5Mb - 4 threads pool contentSize
             arguments.add(Arguments.of(storageDescriptor, 1024 * 1024 * 5, 4));
-            //5Mb - 8 threads pool size
+            //5Mb - 8 threads pool contentSize
             arguments.add(Arguments.of(storageDescriptor, 1024 * 1024 * 5, 8));
         });
         return arguments.stream();
