@@ -6,4 +6,4 @@ COPY Gemfile Gemfile
 RUN bundle install
 
 EXPOSE 4000
-CMD bundle exec jekyll serve --host 0.0.0.0 --source /github-pages/web/source --destination /github-pages/rendered
+CMD bundle exec jekyll serve --host 0.0.0.0 --source /github-pages/web/source --destination /github-pages/rendered --baseurl=/pages/adorsys/datasafe
