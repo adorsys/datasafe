@@ -178,6 +178,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
     }
 
     private static void initS3() {
+        log.info("Initializing S3");
         if (StringUtils.isBlank(amazonAccessKeyID)) {
             return;
         }

@@ -36,6 +36,7 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
     private static String accessKeyID = "admin";
     private static String secretAccessKey = "password";
     private static String region = "eu-central-1";
+    private static String bucketName = "home";
     private static String url = "http://localhost";
     private static BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
     private static AmazonS3 s3;
@@ -49,8 +50,7 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
             .withCommand("server /data")
             .waitingFor(Wait.defaultWaitStrategy());
 
-    protected S3StorageService storageService;
-    protected static String bucketName = "home";
+    private S3StorageService storageService;
 
     @BeforeAll
     static void beforeAll() {

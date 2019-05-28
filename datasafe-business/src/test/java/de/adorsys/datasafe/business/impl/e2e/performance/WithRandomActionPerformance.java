@@ -91,7 +91,7 @@ abstract class WithRandomActionPerformance extends WithStorageProvider {
     }
 
     protected static String named(String baseName, int size, int latency) {
-        return String.format("%s:contentSize:%d latency:%d", baseName, size, latency);
+        return String.format("%s:size:%d latency:%d", baseName, size, latency);
     }
 
     protected DelegatingStorageWithDelay storageService(
