@@ -1,9 +1,10 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
-import de.adorsys.datasafe.business.api.storage.StorageService;
-import de.adorsys.datasafe.business.api.types.resource.AbsoluteLocation;
-import de.adorsys.datasafe.business.api.types.resource.BasePrivateResource;
-import de.adorsys.datasafe.business.api.types.resource.ResolvedResource;
+import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,18 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
     private StorageService storage;
     private URI location;
+
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void testDFSBasedProfileStorage(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+        UserID userJohn = new UserID("john");
+        assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
+        john = registerUser(userJohn.getValue(), descriptor.getLocation());
+        assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
+        profileRemovalService.deregister(john);
+        assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
+    }
 
     @ParameterizedTest
     @MethodSource("allStorages")

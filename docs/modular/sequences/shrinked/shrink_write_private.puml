@@ -3,11 +3,11 @@
 skinparam SequenceMessageAlign center
 
 activate PRIVATE
-' de.adorsys.datasafe.business.impl.privatespace.actions.WriteToPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.WriteToPrivateImpl
 PRIVATE -> PRIVATE : resolveFileLocation
 
 activate PRIVATE
-' de.adorsys.datasafe.business.impl.privatespace.actions.WriteToPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.WriteToPrivateImpl
 PRIVATE -> Profile : privateProfile
 
 activate Profile
@@ -65,7 +65,7 @@ deactivate Profile
 
 deactivate PRIVATE
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.WriteToPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.WriteToPrivateImpl
 PRIVATE -> Credentials : privateAccessFor
 
 activate Credentials
@@ -105,7 +105,7 @@ deactivate Credentials
 PRIVATE <-- Credentials : DFSAccess
 deactivate Credentials
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.WriteToPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.WriteToPrivateImpl
 PRIVATE -> KeyStore : publicKey
 
 activate KeyStore
@@ -241,7 +241,7 @@ activate KeyStore
 KeyStore -> KeyStore : getPublicKeys
 
 activate KeyStore
-' de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl
 KeyStore <-- KeyStore : List
 deactivate KeyStore
 
@@ -256,7 +256,7 @@ deactivate Credentials
 PRIVATE <-- KeyStore : PublicKeyIDWithPublicKey
 deactivate KeyStore
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.WriteToPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.WriteToPrivateImpl
 PRIVATE -> Document : write
 
 activate Document
@@ -264,7 +264,7 @@ activate Document
 Document -> Document : write
 
 activate Document
-' de.adorsys.datasafe.business.impl.encryption.document.cmsocument.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentWriteService
 Document -> DFS : obtain
 
 activate DFS
@@ -272,7 +272,7 @@ activate DFS
 Document <-- DFS : DFSConnection
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.encryption.document.cmsocument.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentWriteService
 Document -> CMS : encrypt
 
 activate CMS
@@ -280,7 +280,7 @@ activate CMS
 CMS -> CMS : encrypt
 
 activate CMS
-' de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl
 CMS <-- CMS : CMSEnvelopedData
 deactivate CMS
 
@@ -288,7 +288,7 @@ deactivate CMS
 Document <-- CMS : CMSEnvelopedData
 deactivate CMS
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentWriteServiceriteService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceriteService
 Document -> DFS : putBlob
 
 activate DFS
@@ -296,7 +296,7 @@ activate DFS
 Document <-- DFS :
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.encryption.document.cmsocument.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentWriteService
 Document <-- Document :
 deactivate Document
 

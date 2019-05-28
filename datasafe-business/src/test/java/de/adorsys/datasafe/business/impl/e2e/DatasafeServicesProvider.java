@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
-import de.adorsys.datasafe.business.api.config.DFSConfig;
-import de.adorsys.datasafe.business.api.storage.StorageService;
+import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DaggerVersionedDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;

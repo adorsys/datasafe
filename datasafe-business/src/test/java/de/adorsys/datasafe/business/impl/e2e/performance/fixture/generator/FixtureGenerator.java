@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator;
 
 import com.google.gson.Gson;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.*;
-import de.adorsys.datasafe.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
