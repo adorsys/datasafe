@@ -2,21 +2,23 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreAuthException;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class KeyStoreAuthTest {
+class KeyStoreAuthTest extends BaseMockitoTest {
+
     @Test
-    public void noPasswords() {
+    void noPasswords() {
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(null, null);
         assertThrows(KeyStoreAuthException.class, () -> keyStoreAuth.getReadKeyPassword());
         assertThrows(KeyStoreAuthException.class, () -> keyStoreAuth.getReadKeyPassword());
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         String s = new KeyStoreAuth(null, null).toString();
         assertThat(s.contains("null")).isTrue();
     }

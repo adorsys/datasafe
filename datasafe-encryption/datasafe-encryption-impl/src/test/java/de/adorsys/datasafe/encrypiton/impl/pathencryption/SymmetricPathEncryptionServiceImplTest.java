@@ -1,11 +1,9 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.DefaultPathDigestConfig;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.DefaultPathEncryption;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.SymmetricPathEncryptionServiceImpl;
+import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-class SymmetricPathEncryptionServiceImplTest {
+class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     private SymmetricPathEncryptionServiceImpl bucketPathEncryptionService = new SymmetricPathEncryptionServiceImpl(
             new DefaultPathEncryption(new DefaultPathDigestConfig())
