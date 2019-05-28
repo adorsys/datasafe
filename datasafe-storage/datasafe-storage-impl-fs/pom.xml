@@ -5,7 +5,7 @@
     <parent>
         <artifactId>datasafe-storage</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.0.6-SNAPSHOT</version>
+        <version>0.0.9-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-types</artifactId>
+            <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -38,8 +38,22 @@
 
         <dependency>
             <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-test-shared</artifactId>
+            <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j-simple.version}</version>
             <scope>test</scope>
         </dependency>
 

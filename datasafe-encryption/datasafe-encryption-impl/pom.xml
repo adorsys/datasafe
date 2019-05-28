@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>de.adorsys</groupId>
 		<artifactId>datasafe-encryption</artifactId>
-		<version>0.0.6-SNAPSHOT</version>
+		<version>0.0.9-SNAPSHOT</version>
 	</parent>
 	<artifactId>datasafe-encryption-impl</artifactId>
 	<dependencies>
         <dependency>
             <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-types</artifactId>
+            <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
