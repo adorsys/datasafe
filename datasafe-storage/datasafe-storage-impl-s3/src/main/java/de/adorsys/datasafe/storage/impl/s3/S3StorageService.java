@@ -37,7 +37,7 @@ public class S3StorageService implements StorageService {
      */
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
-        log.debug("List at {}", location);
+        log.debug("List at {}", Log.secure(location));
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
         listObjectsV2Request.setBucketName(bucketName);
         String prefix = location.location().getPath().replaceFirst("^/", "");
