@@ -16,7 +16,7 @@ public class ChunkUploadRequest {
     private String bucketName;
     private String objectName;
     private String uploadId;
-    private int chuckNumberCounter;
+    private int chunkNumberCounter;
     private boolean lastChunk;
 
 }

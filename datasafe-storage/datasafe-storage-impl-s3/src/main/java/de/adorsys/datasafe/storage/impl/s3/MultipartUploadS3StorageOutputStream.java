@@ -88,7 +88,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                                 .bucketName(bucketName)
                                 .objectName(objectName)
                                 .uploadId(multiPartUploadResult.getUploadId())
-                                .chuckNumberCounter(partCounter++)
+                                .chunkNumberCounter(partCounter++)
                                 .lastChunk(false)
                                 .build()
                 ));
@@ -150,7 +150,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                         .bucketName(bucketName)
                         .objectName(objectName)
                         .uploadId(multiPartUploadResult.getUploadId())
-                        .chuckNumberCounter(partCounter)
+                        .chunkNumberCounter(partCounter)
                         .lastChunk(true)
                         .build()
                 )

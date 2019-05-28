@@ -42,12 +42,7 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
     private static AbsoluteLocation<PrivateResource> root;
     private static AbsoluteLocation<PrivateResource> fileWithMsg;
 
-    private static GenericContainer minio = new GenericContainer("minio/minio")
-            .withExposedPorts(9000)
-            .withEnv("MINIO_ACCESS_KEY", "admin")
-            .withEnv("MINIO_SECRET_KEY", "password")
-            .withCommand("server /data")
-            .waitingFor(Wait.defaultWaitStrategy());
+    private static GenericContainer minio;
 
     protected static String bucketName = "home";
 
@@ -55,6 +50,13 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
 
     @BeforeAll
     static void beforeAll() {
+        minio = new GenericContainer("minio/minio")
+                .withExposedPorts(9000)
+                .withEnv("MINIO_ACCESS_KEY", "admin")
+                .withEnv("MINIO_SECRET_KEY", "password")
+                .withCommand("server /data")
+                .waitingFor(Wait.defaultWaitStrategy());
+
         minio.start();
         Integer mappedPort = minio.getMappedPort(9000);
         log.info("Mapped port: " + mappedPort);

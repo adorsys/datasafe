@@ -29,7 +29,7 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
 
     private static final int ONE_MB_IN_BYTES = 1024 * 1024;
     private static final int ONE_MB = 1;
-    private static final int DEFAULT_TEST_FILE_SIZE_MB = 100;
+    private static final int DEFAULT_TEST_FILE_SIZE_MB = 10;
 
     @MethodSource("testFileSize")
     @ParameterizedTest(name = "Run #{index} with data size: {0} Mb")

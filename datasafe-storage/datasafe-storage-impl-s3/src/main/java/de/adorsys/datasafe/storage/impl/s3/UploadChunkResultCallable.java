@@ -51,7 +51,7 @@ public class UploadChunkResultCallable implements Callable<UploadPartResult> {
         this.amazonS3 = request.getAmazonS3();
         this.content = request.getContent();
         this.contentLength = request.getContentSize();
-        this.partNumber = request.getChuckNumberCounter();
+        this.partNumber = request.getChunkNumberCounter();
         this.last = request.isLastChunk();
         this.bucketName = request.getBucketName();
         this.fileName = request.getObjectName();
