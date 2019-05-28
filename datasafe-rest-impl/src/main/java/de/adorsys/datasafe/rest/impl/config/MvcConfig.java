@@ -14,9 +14,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Custom configuration of Spring MVC that allows using PathVariables that contain slash. For example, when
+ * doing request path matching mapping {@code /documents/{path:.*}} will be converted to {@code /documents/**}.
+ */
 @Configuration
 public class MvcConfig extends WebMvcConfigurationSupport {
 
+    /**
+     * Register customized request matcher that maps /{path:.*} to /** and extracts variables properly.
+     */
     @Bean
     @Override
     public RequestMappingHandlerMapping requestMappingHandlerMapping() {
@@ -25,6 +32,9 @@ public class MvcConfig extends WebMvcConfigurationSupport {
         return handlerMapping;
     }
 
+    /**
+     * Spring MVC uses URL-ending extension to deduce stream format, we override that to use endpoint output format.
+     */
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer

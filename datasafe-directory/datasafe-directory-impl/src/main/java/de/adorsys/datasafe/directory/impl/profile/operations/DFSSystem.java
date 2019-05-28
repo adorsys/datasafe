@@ -3,7 +3,6 @@ package de.adorsys.datasafe.directory.impl.profile.operations;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
@@ -31,13 +30,6 @@ public class DFSSystem {
         return new KeyStoreAuth(
             new ReadStorePassword(config.keystorePassword()),
             auth.getReadKeyPassword()
-        );
-    }
-
-    public KeyStoreAuth publicKeyStoreAuth() {
-        return new KeyStoreAuth(
-            new ReadStorePassword(config.keystorePassword()),
-            new ReadKeyPassword(config.keystorePassword())
         );
     }
 

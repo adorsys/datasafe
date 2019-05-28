@@ -16,6 +16,9 @@ import java.net.URI;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * User profile REST api.
+ */
 @RestController
 @RequestMapping(value = "/user", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 public class UserController {
@@ -34,6 +37,19 @@ public class UserController {
         this.dataSafeService = dataSafeService;
     }
 
+    /**
+     * Registers user profile using default Datasafe convention - user profile, user private and inbox space
+     * are located within {@link DatasafeProperties#getSystemRoot()} storage root, using convention:
+     * User profile {@link de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl}:
+     * public-profile: ${systemRoot}/profiles/public/${userName}
+     * private-profile: ${systemRoot}/profiles/private/${userName}
+     * User files:
+     * privatespace-raw-files: ${systemRoot}/${userName}/private/files
+     * privatespace-latest-file-version: ${systemRoot}/${userName}/versions
+     * privatespace-keystore: ${systemRoot}/${userName}/private/keystore
+     * inbox: ${systemRoot}/${userName}/inbox
+     * public-keys: ${systemRoot}/${userName}/public/keystore
+     */
     @PutMapping
     @ApiOperation("Create user")
     public void createUser(@RequestBody UserCreateRequestDTO requestDTO) {

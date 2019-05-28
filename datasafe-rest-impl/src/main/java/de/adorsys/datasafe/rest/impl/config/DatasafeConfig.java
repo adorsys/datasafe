@@ -14,6 +14,10 @@ import org.springframework.context.annotation.Configuration;
 import java.net.URI;
 import java.security.Security;
 
+/**
+ * Configures default (non-versioned) Datasafe service that uses S3 client as storage provider.
+ * Encryption provider: BouncyCastle.
+ */
 @Configuration
 public class DatasafeConfig {
 
@@ -26,11 +30,17 @@ public class DatasafeConfig {
         this.s3 = s3;
     }
 
+    /**
+     * @return S3 based storage service
+     */
     @Bean
     StorageService storageService() {
         return new S3StorageService(s3, properties.getBucketName());
     }
 
+    /**
+     * @return Default implementation of Datasafe services.
+     */
     @Bean
     DefaultDatasafeServices datasafeService(StorageService storageService) {
 

@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
+/**
+ * User privatespace REST api.
+ */
 @RestController
 @RequestMapping
 public class DocumentController {
