@@ -3,11 +3,11 @@
 skinparam SequenceMessageAlign center
 
 activate ReadFromPrivateImpl
-' de.adorsys.datasafe.business.impl.privatespace.actions.ReadFromPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ReadFromPrivateImpl
 ReadFromPrivateImpl -> ReadFromPrivateImpl : resolveFileLocation
 
 activate ReadFromPrivateImpl
-' de.adorsys.datasafe.business.impl.privatespace.actions.ReadFromPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ReadFromPrivateImpl
 ReadFromPrivateImpl -> ProfileRetrievalService : privateProfile
 
 activate ProfileRetrievalService
@@ -73,7 +73,7 @@ deactivate ProfileRetrievalService
 
 deactivate ReadFromPrivateImpl
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.ReadFromPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ReadFromPrivateImpl
 ReadFromPrivateImpl -> BucketAccessService : privateAccessFor
 
 activate BucketAccessService
@@ -113,7 +113,7 @@ deactivate BucketAccessServiceImpl
 ReadFromPrivateImpl <-- BucketAccessService : DFSAccess
 deactivate BucketAccessService
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.ReadFromPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ReadFromPrivateImpl
 ReadFromPrivateImpl -> PrivateKeyService : keystore
 
 activate PrivateKeyService
@@ -273,7 +273,7 @@ deactivate DFSPrivateKeyServiceImpl
 ReadFromPrivateImpl <-- PrivateKeyService : KeyStoreAccess
 deactivate PrivateKeyService
 
-' de.adorsys.datasafe.business.impl.privatespace.actions.ReadFromPrivateImpl
+' de.adorsys.datasafe.privatestore.impl.actions.ReadFromPrivateImpl
 ReadFromPrivateImpl -> DocumentReadService : read
 
 activate DocumentReadService
@@ -281,7 +281,7 @@ activate DocumentReadService
 DocumentReadService -> CMSDocumentReadService : read
 
 activate CMSDocumentReadService
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentReadServiceReadService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadServiceReadService
 CMSDocumentReadService -> DFSConnectionService : obtain
 
 activate DFSConnectionService
@@ -297,7 +297,7 @@ deactivate DFSConnectionServiceImpl
 CMSDocumentReadService <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
-' de.adorsys.datasafe.business.impl.encryption.document.cmsocument.CMSDocumentReadService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentReadService
 CMSDocumentReadService -> DFSConnection : getBlob
 
 activate DFSConnection
@@ -305,7 +305,7 @@ activate DFSConnection
 CMSDocumentReadService <-- DFSConnection : Payload
 deactivate DFSConnection
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentReadServiceReadService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadServiceReadService
 CMSDocumentReadService -> CMSEncryptionService : decrypt
 
 activate CMSEncryptionService
@@ -313,7 +313,7 @@ activate CMSEncryptionService
 CMSEncryptionService -> CMSEncryptionServiceImpl : decrypt
 
 activate CMSEncryptionServiceImpl
-' de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl
 CMSEncryptionService <-- CMSEncryptionServiceImpl : DocumentContent
 deactivate CMSEncryptionServiceImpl
 
@@ -321,7 +321,7 @@ deactivate CMSEncryptionServiceImpl
 CMSDocumentReadService <-- CMSEncryptionService : DocumentContent
 deactivate CMSEncryptionService
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentReadServiceReadService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadServiceReadService
 DocumentReadService <-- CMSDocumentReadService :  
 deactivate CMSDocumentReadService
 

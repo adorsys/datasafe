@@ -265,7 +265,7 @@ activate KeyStoreService
 KeyStoreService -> KeyStoreServiceImpl : getPublicKeys
 
 activate KeyStoreServiceImpl
-' de.adorsys.datasafe.business.impl.encryption.keystore.KeyStoreServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl
 KeyStoreService <-- KeyStoreServiceImpl : List
 deactivate KeyStoreServiceImpl
 
@@ -289,7 +289,7 @@ activate DocumentWriteService
 DocumentWriteService -> CMSDocumentWriteService : write
 
 activate CMSDocumentWriteService
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentWriteServiceriteService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceriteService
 CMSDocumentWriteService -> DFSConnectionService : obtain
 
 activate DFSConnectionService
@@ -305,7 +305,7 @@ deactivate DFSConnectionServiceImpl
 CMSDocumentWriteService <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
-' de.adorsys.datasafe.business.impl.encryption.document.cmsocument.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentWriteService
 CMSDocumentWriteService -> CMSEncryptionService : encrypt
 
 activate CMSEncryptionService
@@ -313,7 +313,7 @@ activate CMSEncryptionService
 CMSEncryptionService -> CMSEncryptionServiceImpl : encrypt
 
 activate CMSEncryptionServiceImpl
-' de.adorsys.datasafe.business.impl.encryption.cmsencryption.CMSEncryptionServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl
 CMSEncryptionService <-- CMSEncryptionServiceImpl : CMSEnvelopedData
 deactivate CMSEncryptionServiceImpl
 
@@ -321,7 +321,7 @@ deactivate CMSEncryptionServiceImpl
 CMSDocumentWriteService <-- CMSEncryptionService : CMSEnvelopedData
 deactivate CMSEncryptionService
 
-' de.adorsys.datasafe.business.impl.encryption.document.cmsocument.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentWriteService
 CMSDocumentWriteService -> DFSConnection : putBlob
 
 activate DFSConnection
@@ -329,7 +329,7 @@ activate DFSConnection
 CMSDocumentWriteService <-- DFSConnection :  
 deactivate DFSConnection
 
-' de.adorsys.datasafe.business.impl.encryption.document.CMSDocumentWriteServiceriteService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceriteService
 DocumentWriteService <-- CMSDocumentWriteService :  
 deactivate CMSDocumentWriteService
 
