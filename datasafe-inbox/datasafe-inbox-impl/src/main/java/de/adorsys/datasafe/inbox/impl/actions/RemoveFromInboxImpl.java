@@ -1,14 +1,18 @@
 package de.adorsys.datasafe.inbox.impl.actions;
 
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
-import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
+import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
 
 import javax.inject.Inject;
 
+/**
+ * Default removal service that locates resource to remove using {@link ResourceResolver} and
+ * directly calls {@link StorageRemoveService} to delete resolved resource within INBOX.
+ */
 public class RemoveFromInboxImpl implements RemoveFromInbox {
 
     private final ResourceResolver resolver;

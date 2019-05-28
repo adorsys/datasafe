@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.inbox.impl.actions;
+package de.adorsys.datasafe.inbox.impl;
 
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.inbox.api.actions.ListInbox;
@@ -9,6 +9,9 @@ import lombok.experimental.Delegate;
 
 import javax.inject.Inject;
 
+/**
+ * Default aggregate view of actions doable on users' INBOX.
+ */
 public class InboxServiceImpl implements InboxService {
 
     @Delegate

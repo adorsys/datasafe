@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.inbox.impl.actions;
 
+import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
@@ -12,6 +13,11 @@ import de.adorsys.datasafe.inbox.api.actions.WriteToInbox;
 import javax.inject.Inject;
 import java.io.OutputStream;
 
+/**
+ * Default implementation for stream writing that resolves incoming resource path using
+ * {@link ResourceResolver} against INBOX and then reads and asymmetrically encrypts data into it
+ * using {@link EncryptedDocumentReadService}
+ */
 public class WriteToInboxImpl implements WriteToInbox {
 
     private final PublicKeyService publicKeyService;

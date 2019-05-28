@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.service;
 import dagger.BindsInstance;
 import dagger.Component;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
-import de.adorsys.datasafe.inbox.impl.actions.InboxServiceImpl;
+import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultCredentialsModule;
 import de.adorsys.datasafe.business.impl.directory.DefaultProfileModule;
