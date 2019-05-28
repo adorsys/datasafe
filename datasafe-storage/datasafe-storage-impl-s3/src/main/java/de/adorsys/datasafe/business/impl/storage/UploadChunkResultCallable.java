@@ -42,7 +42,7 @@ public class UploadChunkResultCallable implements Callable<UploadPartResult> {
 
     @Override
     public UploadPartResult call() {
-        log.debug("Upload chunk result call with part: {}", partNumber);
+        log.trace("Upload chunk result call with part: {}", partNumber);
         try {
             return amazonS3.uploadPart(new UploadPartRequest()
                     .withBucketName(bucketName).withKey(fileName)

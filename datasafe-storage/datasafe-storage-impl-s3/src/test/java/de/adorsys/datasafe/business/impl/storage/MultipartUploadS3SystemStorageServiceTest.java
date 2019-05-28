@@ -111,7 +111,7 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
         while ((length = input.read(block)) > 0) {
             digest.update(block, 0, length);
 
-            log.debug("Counter checksum calculation: " + (bufferCounter++));
+            log.trace("Counter checksum calculation: " + (bufferCounter++));
         }
         return Hex.toHexString(digest.digest());
     }
