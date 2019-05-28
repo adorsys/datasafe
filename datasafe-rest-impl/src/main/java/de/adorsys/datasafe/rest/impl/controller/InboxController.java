@@ -21,6 +21,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+/**
+ * User INBOX REST api.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/inbox")
@@ -29,6 +32,9 @@ public class InboxController {
 
     private final DefaultDatasafeServices dataSafeService;
 
+    /**
+     * Sends file to users' INBOX.
+     */
     @SneakyThrows
     @PutMapping("/{path:.*}")
     public void sendDocumentToInbox(@RequestHeader String user,
@@ -43,6 +49,9 @@ public class InboxController {
         log.debug("User {}, write to INBOX file: {}", toUser, path);
     }
 
+    /**
+     * Reads file from users' INBOX.
+     */
     @SneakyThrows
     @GetMapping("/{path:.*}")
     public void readFromInbox(@RequestHeader String user,

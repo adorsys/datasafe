@@ -10,6 +10,11 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import javax.inject.Inject;
 import java.net.URI;
 
+/**
+ * Default encrypted resource resolver that delegates the task of encrypting/decrypting path to
+ * {@link PathEncryption} and resolves relative paths using {@link PathEncryption}, also decrypts
+ * absolute paths by relativizing path against users' privatespace directory and decrypting it.
+ */
 public class EncryptedResourceResolverImpl implements EncryptedResourceResolver {
 
     private final ResourceResolver resolver;
@@ -19,26 +24,6 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
     public EncryptedResourceResolverImpl(ResourceResolver resolver, PathEncryption pathEncryption) {
         this.resolver = resolver;
         this.pathEncryption = pathEncryption;
-    }
-
-    private static URI relativize(URI root, URI resource) {
-        if (root.isAbsolute()) {
-            return root.relativize(resource);
-        }
-
-        String rootString = root.toASCIIString();
-        String resourceString = resource.toASCIIString();
-
-        String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
-        return URI.create(relative);
-    }
-
-    @Override
-    public PrivateResource encrypt(UserIDAuth auth, PrivateResource resource) {
-        URI decryptedPath = resource.location();
-        URI encryptedRelativePath = pathEncryption.encrypt(auth, decryptedPath);
-
-        return resource.resolve(encryptedRelativePath, decryptedPath);
     }
 
     @Override
@@ -74,6 +59,13 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
         );
     }
 
+    private PrivateResource encrypt(UserIDAuth auth, PrivateResource resource) {
+        URI decryptedPath = resource.location();
+        URI encryptedRelativePath = pathEncryption.encrypt(auth, decryptedPath);
+
+        return resource.resolve(encryptedRelativePath, decryptedPath);
+    }
+
     private URI computeEncryptedPath(PrivateResource root, URI relative) {
         if (hasRelativePath(relative)) {
             return handleResourceRelativeToRoot(root, relative);
@@ -96,5 +88,17 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
         }
 
         return URI.create(root.encryptedPath().toString() + "/").resolve(relative);
+    }
+
+    private static URI relativize(URI root, URI resource) {
+        if (root.isAbsolute()) {
+            return root.relativize(resource);
+        }
+
+        String rootString = root.toASCIIString();
+        String resourceString = resource.toASCIIString();
+
+        String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
+        return URI.create(relative);
     }
 }

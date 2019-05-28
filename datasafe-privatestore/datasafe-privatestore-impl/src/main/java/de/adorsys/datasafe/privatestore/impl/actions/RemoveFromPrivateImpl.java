@@ -9,6 +9,10 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
 import javax.inject.Inject;
 
+/**
+ * Default removal service that locates resource to remove using {@link EncryptedResourceResolver} and
+ * directly calls {@link StorageRemoveService} to delete resolved resource
+ */
 public class RemoveFromPrivateImpl implements RemoveFromPrivate {
     private final EncryptedResourceResolver resolver;
     private final StorageRemoveService remover;
