@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.BinaryUtils;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.utils.Log;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
@@ -20,6 +21,26 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
+/**
+ * Copyright 2013-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * NOTE:
+ * SimpleStorageResource.java from spring-cloud-aws
+ * located by https://github.com/spring-cloud/spring-cloud-aws/blob/master/spring-cloud-aws-core/src/main/java/org/springframework/cloud/aws/core/io/s3/SimpleStorageResource.java
+ * is used and was modified according Adorsys project needs.
+ **/
 @Slf4j
 public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
@@ -100,28 +121,24 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         return multiPartUploadResult != null;
     }
 
+    @SneakyThrows
     private void finishSimpleUpload() {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(currentOutputStream.size());
 
         byte[] content = currentOutputStream.toByteArray();
 
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
-            objectMetadata.setContentMD5(md5Digest);
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                    "MessageDigest could not be initialized because it uses an unknown algorithm", e);
-        }
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
+        objectMetadata.setContentMD5(md5Digest);
 
         amazonS3.putObject(
                 bucketName,
                 objectName,
-                new ByteArrayInputStream(content), objectMetadata);
+                new ByteArrayInputStream(content),
+                objectMetadata);
 
-        // Release the memory early
+        // Release the memory
         currentOutputStream = null;
     }
 
@@ -189,8 +206,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         }
     }
 
-    private List<PartETag> getMultiPartsUploadResults()
-            throws ExecutionException, InterruptedException {
+    private List<PartETag> getMultiPartsUploadResults() throws ExecutionException, InterruptedException {
         List<PartETag> result = new ArrayList<>(partCounter);
         for (int i = 0; i < partCounter; i++) {
             result.add(completionService.take().get().getPartETag());
