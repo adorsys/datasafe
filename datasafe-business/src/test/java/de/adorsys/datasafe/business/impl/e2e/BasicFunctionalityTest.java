@@ -33,7 +33,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    public void testDFSBasedProfileStorage(WithStorageProvider.StorageDescriptor descriptor) {
+    void testDFSBasedProfileStorage(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
