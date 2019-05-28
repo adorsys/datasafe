@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.iterable.S3Objects;
 import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
@@ -11,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.*;
 import java.util.List;
+import java.util.Spliterator;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 public class S3StorageService implements StorageService {
@@ -28,17 +31,14 @@ public class S3StorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         log.debug("List at {}", location);
-        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
-        listObjectsV2Request.setBucketName(bucketName);
         String prefix = location.location().getPath().replaceFirst("^/", "");
-        int len = prefix.length();
-        listObjectsV2Request.setPrefix(prefix);
-        ListObjectsV2Result listObjectsV2Result = s3.listObjectsV2(listObjectsV2Request);
-        List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-        return objectSummaries.stream()
+
+        S3Objects s3ObjectSummaries = S3Objects.inBucket(s3, bucketName);
+        Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);
+        return objectStream
                 .map(os -> new AbsoluteLocation<>(
                         new BaseResolvedResource(
-                                createResource(location, os, len),
+                                createResource(location, os, prefix.length()),
                                 os.getLastModified().toInstant()
                         ))
                 );
