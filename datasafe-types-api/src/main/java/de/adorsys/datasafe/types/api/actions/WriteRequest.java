@@ -7,6 +7,11 @@ import lombok.Value;
 
 import java.net.URI;
 
+/**
+ * Request to write data at some location.
+ * @param <T> Resource owner.
+ * @param <L> Resource path (either relative or absolute).
+ */
 @Value
 @Builder(toBuilder = true)
 public class WriteRequest<T, L extends ResourceLocation> {

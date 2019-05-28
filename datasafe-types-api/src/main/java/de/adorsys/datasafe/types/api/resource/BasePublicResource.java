@@ -5,6 +5,9 @@ import lombok.ToString;
 
 import java.net.URI;
 
+/**
+ * Base class for public (shareable) resource.
+ */
 @ToString
 @RequiredArgsConstructor
 public class BasePublicResource implements PublicResource {

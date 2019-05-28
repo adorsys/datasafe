@@ -5,6 +5,10 @@ import lombok.Getter;
 
 import java.net.URI;
 
+/**
+ * Wrapper that forces underlying resource {@code T} to be absolute (same meaning as absolute URI).
+ * @param <T> Wrapped resource
+ */
 public class AbsoluteLocation<T extends ResourceLocation<T>> implements ResourceLocation<T> {
 
     @Getter

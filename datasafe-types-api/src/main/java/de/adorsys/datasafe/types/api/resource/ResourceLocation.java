@@ -3,7 +3,7 @@ package de.adorsys.datasafe.types.api.resource;
 import java.net.URI;
 
 /**
- * Interface for concrete class that may contain extra information like file metadata.
+ * Interface for resource path, both physical and logical that may contain extra information like file metadata.
  */
 public interface ResourceLocation<T> {
 

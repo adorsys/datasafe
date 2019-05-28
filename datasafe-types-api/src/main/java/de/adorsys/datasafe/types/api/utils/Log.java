@@ -11,6 +11,14 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Base64;
 
+/**
+ * This class hides sensitive information that may appear in logs. While hiding information it preserves the capability
+ * to find the same words in logs - that is useful for debugging.
+ * How it obscures sensitive information depends on SECURE_LOGS system property:
+ * SECURE_LOGS=off - nothing is obscured
+ * SECURE_LOGS=stars - only first 2 symbols and last 2 symbols, i.e. password -> pa****rd, cat -> ****
+ * all other values of SECURE_LOGS - input content will be hashed with SHA-256
+ */
 @UtilityClass
 public class Log {
 

@@ -5,11 +5,25 @@ import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
 
+/**
+ * This is the wrapper for URI resource that contains a version tag.
+ */
 @Getter
 @RequiredArgsConstructor
 public class VersionedUri {
 
+    /**
+     * Path to the resource, that contains version (typically physical path to the resource).
+     */
     private final URI pathWithVersion;
+
+    /**
+     * Path to the resource without version (typically logical path used to identify latest resource version)
+     */
     private final URI pathWithoutVersion;
+
+    /**
+     * Version associated with the resource
+     */
     private final String version;
 }

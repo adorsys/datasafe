@@ -5,9 +5,16 @@ import lombok.ToString;
 
 import java.net.URI;
 
+/**
+ * Basic class that represents some private resource path. This private resource path has 3 components:
+ * 1. container - some unencrypted path that identifies root location (i.e. s3 bucket URI)
+ * 2. encryptedPath - encrypted path of absolute resource location, so that container + encryptedPath is absolute
+ * resource location
+ * 3. decryptedPath - decrypted representation of encryptedPath component.
+ */
 @ToString
 @RequiredArgsConstructor
-public final class BasePrivateResource implements PrivateResource {
+public class BasePrivateResource implements PrivateResource {
 
     private static final URI URI_ROOT = URI.create("./");
     private static final URI EMPTY_URI = URI.create("");

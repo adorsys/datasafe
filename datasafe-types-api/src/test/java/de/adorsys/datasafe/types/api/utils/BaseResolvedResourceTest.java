@@ -12,11 +12,11 @@ import java.net.URI;
 import java.time.Instant;
 
 @Slf4j
-public class BaseResolvedResourceTest {
+class BaseResolvedResourceTest {
 
     @Test
     @SneakyThrows
-    public void testResolveMethods() {
+    void testResolveMethods() {
         String uriString = "uri";
         URI uri = new URI("uri");
         PrivateResource privateResource = new BasePrivateResource(uri, uri, uri);

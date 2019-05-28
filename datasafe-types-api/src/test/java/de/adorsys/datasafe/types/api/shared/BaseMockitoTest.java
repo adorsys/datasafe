@@ -8,6 +8,8 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.validateMockitoUsage;
 
 /**
+ * This class configures Mockito so that it will inject annotated mocks and display exceptions always
+ * at correct places.
  * Tests that use Mockito should use this class.
  */
 public abstract class BaseMockitoTest {

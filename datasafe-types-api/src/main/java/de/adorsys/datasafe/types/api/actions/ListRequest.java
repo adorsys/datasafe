@@ -10,6 +10,11 @@ import lombok.Value;
 
 import java.net.URI;
 
+/**
+ * Request to list available resources at some location
+ * @param <T> Location owner
+ * @param <L> Path to the location
+ */
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)

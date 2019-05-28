@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LogTest {
+class LogTest {
 
     private static final String TEST_STRING = "/path/to/file";
     private static final URI TEST_URI = URI.create("http://www.example.com/uniform/resource/identifier");

@@ -9,6 +9,11 @@ import lombok.Value;
 
 import java.net.URI;
 
+/**
+ * Request to remove data at some location.
+ * @param <T> Resource owner
+ * @param <L> Resource location
+ */
 @Value
 @Builder(toBuilder = true)
 public class RemoveRequest<T, L extends ResourceLocation> {
