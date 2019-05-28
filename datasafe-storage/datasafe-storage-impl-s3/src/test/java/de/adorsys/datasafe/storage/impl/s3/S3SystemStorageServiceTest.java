@@ -13,11 +13,10 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.io.OutputStream;
 import java.net.URI;
@@ -28,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
+//TODO: Extract stuff related container start/stop/clear to separate class. Used in datasafe-business and in datasafe-storage-impl-s3
 class S3SystemStorageServiceTest extends BaseMockitoTest {
 
     private static final String FILE = "file";
@@ -138,5 +138,32 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     private void createFileWithMessage() {
         s3.putObject(bucketName, FILE, MESSAGE);
+    }
+
+    @AfterEach
+    @SneakyThrows
+    void cleanup() {
+        log.info("Executing cleanup");
+        if (null != minio) {
+            removeObjectFromS3(s3, bucketName, "");
+        }
+    }
+
+    private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
+        amazonS3.listObjects(bucket, prefix)
+                .getObjectSummaries()
+                .forEach(it -> {
+                    log.debug("Remove {}", it.getKey());
+                    amazonS3.deleteObject(bucket, it.getKey());
+                });
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        log.info("Stopping containers");
+        if (null != minio) {
+            minio.stop();
+            minio = null;
+        }
     }
 }
