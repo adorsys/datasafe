@@ -3,13 +3,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
+
     <modules>
-        <module>datasafe-business-api</module>
-        <module>datasafe-business-impl</module>
+        <module>datasafe-types-api</module>
+        <module>datasafe-business</module>
+        <module>datasafe-metainfo-version</module>
+        <module>datasafe-privatestore</module>
+        <module>datasafe-directory</module>
+        <module>datasafe-encryption</module>
+        <module>datasafe-inbox</module>
+        <module>datasafe-storage</module>
+        <module>datasafe-rest-impl</module>
     </modules>
+
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.9-SNAPSHOT</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -53,76 +62,154 @@
         </developer>
     </developers>
 
-
-
     <properties>
+        <!-- TODO: should be maven.multiModuleProjectDirectory but not using it because Intellij does not support it -->
+        <jacoco.reportPath>${basedir}/../../target/jacoco.exec</jacoco.reportPath>
+        <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
+
         <java.version>1.8</java.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
+        <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
         <lombok.version>1.18.6</lombok.version>
         <common-lang3.version>3.5</common-lang3.version>
-        <dfs-connection.version>0.0.4</dfs-connection.version>
-        <common-basetypes.version>0.0.7</common-basetypes.version>
-        <bcpkix-jdk15on.version>1.58</bcpkix-jdk15on.version>
+        <bouncycastle.version>1.58</bouncycastle.version>
         <gson.version>2.8.5</gson.version>
         <dagger.version>2.17</dagger.version>
         <guava.version>27.0.1-jre</guava.version>
         <jupiter.version>5.4.1</jupiter.version>
+        <junit.platform.version>1.4.1</junit.platform.version>
         <assertj.version>3.12.2</assertj.version>
         <mockito.version>2.25.1</mockito.version>
         <surefire.version>2.22.1</surefire.version>
+        <compress.version>1.18</compress.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <testcontainers.version>1.11.2</testcontainers.version>
+        <jacoco.version>0.8.2</jacoco.version>
+        <commons.io.version>2.5</commons.io.version>
+        <slf4j-simple.version>1.7.25</slf4j-simple.version>
+        <drools.version>6.5.0.Final</drools.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection-api</artifactId>
-            <version>${dfs-connection.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>dfs-connection-impl-factory</artifactId>
-            <version>${dfs-connection.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>common-basetypes</artifactId>
-            <version>${common-basetypes.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${common-lang3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${bcpkix-jdk15on.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.dagger</groupId>
-            <artifactId>dagger</artifactId>
-            <version>${dagger.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${common-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.dagger</groupId>
+                <artifactId>dagger</artifactId>
+                <version>${dagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-simple.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j-simple.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-commons</artifactId>
+                <version>${junit.platform.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${compress.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-core</artifactId>
+                <version>${drools.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-compiler</artifactId>
+                <version>${drools.version}</version>
+                <scope>test</scope>
+            </dependency>
+	    </dependencies>
+	</dependencyManagement>
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -151,6 +238,85 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
+                <configuration>
+                    <argLine>${surefireArgLine}</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.dependency.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>analyze</id>
+                        <goals>
+                            <goal>analyze-only</goal>
+                        </goals>
+                        <configuration>
+                            <failOnWarning>true</failOnWarning>
+                            <outputXML>true</outputXML>
+                            <ignoredUsedUndeclaredDependencies>
+                                <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.projectlombok:lombok</ignoredUsedUndeclaredDependency>
+                            </ignoredUsedUndeclaredDependencies>
+                            <ignoredUnusedDeclaredDependencies>
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
+                            </ignoredUnusedDeclaredDependencies>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <append>true</append>
+                    <excludes>
+                        <!-- Exclude Dagger2 generated code -->
+                        <exclude>**/*_Provide*/**</exclude>
+                        <exclude>**/*_Factory*/**</exclude>
+                        <exclude>**/*_MembersInjector.class</exclude>
+                        <exclude>**/*Dagger*</exclude>
+                        <!-- LOOKS LIKE COVERAGE IS NOT DONE AT ALL WITH THIS
+                        <exclude>**/Default*Module.class</exclude>
+                        -->
+                        <exclude>**/DefaultPathEncryptionModule.class</exclude>
+                        <exclude>**/DefaultCMSEncryptionModule.class</exclude>
+                        <exclude>**/DefaultCredentialsModule.class</exclude>
+                        <exclude>**/DefaultProfileModule.class</exclude>
+                        <exclude>**/DefaultDocumentModule.class</exclude>
+                        <exclude>**/DefaultInboxActionsModule.class</exclude>
+                        <exclude>**/DefaultKeyStoreModule.class</exclude>
+                        <exclude>**/DefaultPathEncryptionModule.class</exclude>
+                        <exclude>**/DefaultPrivateActionsModule.class</exclude>
+                        <exclude>**/DefaultVersionedPrivateActionsModule.class</exclude>
+
+
+                    </excludes>
+                    <propertyName>surefireArgLine</propertyName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -300,7 +466,7 @@
                                 <skip>${deploy.disabled}</skip>
                             </configuration>
                         </plugin>
-                    </plugins>
+                </plugins>
                 </pluginManagement>
             </build>
         </profile>

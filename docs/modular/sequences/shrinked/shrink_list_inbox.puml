@@ -3,11 +3,11 @@
 skinparam SequenceMessageAlign center
 
 activate INBOX
-' de.adorsys.datasafe.business.impl.inbox.actions.ListInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.ListInboxImpl
 INBOX -> INBOX : resolveInboxLocation
 
 activate INBOX
-' de.adorsys.datasafe.business.impl.inbox.actions.ListInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.ListInboxImpl
 INBOX -> Profile : publicProfile
 
 activate Profile
@@ -15,15 +15,15 @@ activate Profile
 Profile -> Profile : publicProfile
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> Profile : systemDfs
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 Profile <-- Profile : DFSAccess
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : obtain
 
 activate DFS
@@ -39,15 +39,15 @@ deactivate DFS
 Profile <-- DFS : DFSConnection
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> Profile : locatePublicProfile
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile <-- Profile : BucketPath
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : getBlob
 
 activate DFS
@@ -55,15 +55,15 @@ activate DFS
 Profile <-- DFS : Payload
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> SERDE : fromJson
 
 activate SERDE
-' de.adorsys.datasafe.business.impl.serde.GsonSerde
+' de.adorsys.datasafe.business.impl.profile.serde.GsonSerde
 Profile <-- SERDE : T
 deactivate SERDE
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile <-- Profile : UserPublicProfile
 deactivate Profile
 
@@ -73,7 +73,7 @@ deactivate Profile
 
 deactivate INBOX
 
-' de.adorsys.datasafe.business.impl.inbox.actions.ListInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.ListInboxImpl
 INBOX -> Credentials : privateAccessFor
 
 activate Credentials
@@ -81,7 +81,7 @@ activate Credentials
 Credentials -> Credentials : privateAccessFor
 
 activate Credentials
-' de.adorsys.datasafe.business.impl.credentials.BucketAccessServiceImpl
+' de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl
 Credentials -> Credentials : privateUserCredentials
 
 activate Credentials
@@ -93,7 +93,7 @@ activate Credentials
 Credentials -> Profile : systemDfs
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 Credentials <-- Profile : DFSAccess
 deactivate Profile
 
@@ -105,7 +105,7 @@ deactivate Credentials
 Credentials <-- Credentials : DFSCredentials
 deactivate Credentials
 
-' de.adorsys.datasafe.business.impl.credentials.BucketAccessServiceImpl
+' de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl
 Credentials <-- Credentials : DFSAccess
 deactivate Credentials
 
@@ -113,13 +113,13 @@ deactivate Credentials
 INBOX <-- Credentials : DFSAccess
 deactivate Credentials
 
-' de.adorsys.datasafe.business.impl.inbox.actions.ListInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.ListInboxImpl
 INBOX -> Document : list
 
 activate Document
 ' de.adorsys.datasafe.business.api.deployment.document.DocumentListService
 
-' de.adorsys.datasafe.business.impl.inbox.actions.ListInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.ListInboxImpl
 Document -> Document : list
 
 activate Document

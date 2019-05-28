@@ -11,7 +11,7 @@ activate DocusafeServiceAdapterImpl
 DocusafeServiceAdapterImpl -> DefaultDocusafeServices : userProfile
 
 activate DefaultDocusafeServices
-' de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices
+' de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices
 DefaultDocusafeServices -> DaggerDefaultDocusafeServices : userProfile
 
 activate DaggerDefaultDocusafeServices
@@ -19,7 +19,7 @@ activate DaggerDefaultDocusafeServices
 DefaultDocusafeServices <-- DaggerDefaultDocusafeServices : DFSBasedProfileStorageImpl
 deactivate DaggerDefaultDocusafeServices
 
-' de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices
+' de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices
 DocusafeServiceAdapterImpl <-- DefaultDocusafeServices : DFSBasedProfileStorageImpl
 deactivate DefaultDocusafeServices
 
@@ -27,15 +27,15 @@ deactivate DefaultDocusafeServices
 DocusafeServiceAdapterImpl -> Profile : registerPublic
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> Profile : systemDfs
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 Profile <-- Profile : DFSAccess
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : obtain
 
 activate DFS
@@ -51,15 +51,15 @@ deactivate DFS
 Profile <-- DFS : DFSConnection
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> Profile : locatePublicProfile
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile <-- Profile : BucketPath
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : createContainer
 
 activate DFS
@@ -67,15 +67,15 @@ activate DFS
 Profile <-- DFS :
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> SERDE : toJson
 
 activate SERDE
-' de.adorsys.datasafe.business.impl.serde.GsonSerde
+' de.adorsys.datasafe.business.impl.profile.serde.GsonSerde
 Profile <-- SERDE : String
 deactivate SERDE
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : putBlob
 
 activate DFS
@@ -83,7 +83,7 @@ activate DFS
 Profile <-- DFS :
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DocusafeServiceAdapterImpl <-- Profile :
 deactivate Profile
 
@@ -91,7 +91,7 @@ deactivate Profile
 DocusafeServiceAdapterImpl -> DefaultDocusafeServices : userProfile
 
 activate DefaultDocusafeServices
-' de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices
+' de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices
 DefaultDocusafeServices -> DaggerDefaultDocusafeServices : userProfile
 
 activate DaggerDefaultDocusafeServices
@@ -99,7 +99,7 @@ activate DaggerDefaultDocusafeServices
 DefaultDocusafeServices <-- DaggerDefaultDocusafeServices : DFSBasedProfileStorageImpl
 deactivate DaggerDefaultDocusafeServices
 
-' de.adorsys.datasafe.business.impl.service.DefaultDocusafeServices
+' de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices
 DocusafeServiceAdapterImpl <-- DefaultDocusafeServices : DFSBasedProfileStorageImpl
 deactivate DefaultDocusafeServices
 
@@ -107,15 +107,15 @@ deactivate DefaultDocusafeServices
 DocusafeServiceAdapterImpl -> Profile : registerPrivate
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> Profile : systemDfs
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 Profile <-- Profile : DFSAccess
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : obtain
 
 activate DFS
@@ -131,15 +131,15 @@ deactivate DFS
 Profile <-- DFS : DFSConnection
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> Profile : locatePrivateProfile
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile <-- Profile : BucketPath
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : createContainer
 
 activate DFS
@@ -147,15 +147,15 @@ activate DFS
 Profile <-- DFS :
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> SERDE : toJson
 
 activate SERDE
-' de.adorsys.datasafe.business.impl.serde.GsonSerde
+' de.adorsys.datasafe.business.impl.profile.serde.GsonSerde
 Profile <-- SERDE : String
 deactivate SERDE
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : putBlob
 
 activate DFS
@@ -163,19 +163,19 @@ activate DFS
 Profile <-- DFS :
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> Profile : createKeyStore
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> Profile : privateKeyStoreAuth
 
 activate Profile
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 Profile <-- Profile : KeyStoreAuth
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> KeyStore : createKeyStore
 
 activate KeyStore
@@ -183,7 +183,7 @@ activate KeyStore
 Profile <-- KeyStore : KeyStore
 deactivate KeyStore
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : obtain
 
 activate DFS
@@ -199,7 +199,7 @@ deactivate DFS
 Profile <-- DFS : DFSConnection
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : createContainer
 
 activate DFS
@@ -207,7 +207,7 @@ activate DFS
 Profile <-- DFS :
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile -> DFS : putBlob
 
 activate DFS
@@ -215,11 +215,11 @@ activate DFS
 Profile <-- DFS :
 deactivate DFS
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 Profile <-- Profile :
 deactivate Profile
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DocusafeServiceAdapterImpl <-- Profile :
 deactivate Profile
 

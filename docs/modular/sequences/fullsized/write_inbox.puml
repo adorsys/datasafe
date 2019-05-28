@@ -3,11 +3,11 @@
 skinparam SequenceMessageAlign center
 
 activate WriteToInboxImpl
-' de.adorsys.datasafe.business.impl.inbox.actions.WriteToInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.WriteToInboxImpl
 WriteToInboxImpl -> WriteToInboxImpl : resolveFileLocation
 
 activate WriteToInboxImpl
-' de.adorsys.datasafe.business.impl.inbox.actions.WriteToInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.WriteToInboxImpl
 WriteToInboxImpl -> ProfileRetrievalService : publicProfile
 
 activate ProfileRetrievalService
@@ -15,15 +15,15 @@ activate ProfileRetrievalService
 ProfileRetrievalService -> DFSBasedProfileStorageImpl : publicProfile
 
 activate DFSBasedProfileStorageImpl
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> DFSSystem : systemDfs
 
 activate DFSSystem
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 DFSBasedProfileStorageImpl <-- DFSSystem : DFSAccess
 deactivate DFSSystem
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> DFSConnectionService : obtain
 
 activate DFSConnectionService
@@ -39,15 +39,15 @@ deactivate DFSConnectionServiceImpl
 DFSBasedProfileStorageImpl <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> DFSBasedProfileStorageImpl : locatePublicProfile
 
 activate DFSBasedProfileStorageImpl
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl <-- DFSBasedProfileStorageImpl : BucketPath
 deactivate DFSBasedProfileStorageImpl
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> DFSConnection : getBlob
 
 activate DFSConnection
@@ -55,15 +55,15 @@ activate DFSConnection
 DFSBasedProfileStorageImpl <-- DFSConnection : Payload
 deactivate DFSConnection
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> GsonSerde : fromJson
 
 activate GsonSerde
-' de.adorsys.datasafe.business.impl.serde.GsonSerde
+' de.adorsys.datasafe.business.impl.profile.serde.GsonSerde
 DFSBasedProfileStorageImpl <-- GsonSerde : T
 deactivate GsonSerde
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 ProfileRetrievalService <-- DFSBasedProfileStorageImpl : UserPublicProfile
 deactivate DFSBasedProfileStorageImpl
 
@@ -73,7 +73,7 @@ deactivate ProfileRetrievalService
 
 deactivate WriteToInboxImpl
 
-' de.adorsys.datasafe.business.impl.inbox.actions.WriteToInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.WriteToInboxImpl
 WriteToInboxImpl -> BucketAccessService : publicAccessFor
 
 activate BucketAccessService
@@ -81,7 +81,7 @@ activate BucketAccessService
 BucketAccessService -> BucketAccessServiceImpl : publicAccessFor
 
 activate BucketAccessServiceImpl
-' de.adorsys.datasafe.business.impl.credentials.BucketAccessServiceImpl
+' de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl
 BucketAccessServiceImpl -> DFSCredentialsService : publicUserCredentials
 
 activate DFSCredentialsService
@@ -93,7 +93,7 @@ activate DFSCredentialsServiceImpl
 DFSCredentialsServiceImpl -> DFSSystem : systemDfs
 
 activate DFSSystem
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 DFSCredentialsServiceImpl <-- DFSSystem : DFSAccess
 deactivate DFSSystem
 
@@ -105,7 +105,7 @@ deactivate DFSCredentialsServiceImpl
 BucketAccessServiceImpl <-- DFSCredentialsService : DFSCredentials
 deactivate DFSCredentialsService
 
-' de.adorsys.datasafe.business.impl.credentials.BucketAccessServiceImpl
+' de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl
 BucketAccessService <-- BucketAccessServiceImpl : DFSAccess
 deactivate BucketAccessServiceImpl
 
@@ -113,7 +113,7 @@ deactivate BucketAccessServiceImpl
 WriteToInboxImpl <-- BucketAccessService : DFSAccess
 deactivate BucketAccessService
 
-' de.adorsys.datasafe.business.impl.inbox.actions.WriteToInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.WriteToInboxImpl
 WriteToInboxImpl -> PublicKeyService : publicKey
 
 activate PublicKeyService
@@ -121,7 +121,7 @@ activate PublicKeyService
 PublicKeyService -> DFSPublicKeyServiceImpl : publicKey
 
 activate DFSPublicKeyServiceImpl
-' de.adorsys.datasafe.business.impl.credentials.DFSPublicKeyServiceImpl
+' de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl
 DFSPublicKeyServiceImpl -> BucketAccessService : publicAccessFor
 
 activate BucketAccessService
@@ -129,7 +129,7 @@ activate BucketAccessService
 BucketAccessService -> BucketAccessServiceImpl : publicAccessFor
 
 activate BucketAccessServiceImpl
-' de.adorsys.datasafe.business.impl.credentials.BucketAccessServiceImpl
+' de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl
 BucketAccessServiceImpl -> DFSCredentialsService : publicUserCredentials
 
 activate DFSCredentialsService
@@ -141,7 +141,7 @@ activate DFSCredentialsServiceImpl
 DFSCredentialsServiceImpl -> DFSSystem : systemDfs
 
 activate DFSSystem
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 DFSCredentialsServiceImpl <-- DFSSystem : DFSAccess
 deactivate DFSSystem
 
@@ -153,7 +153,7 @@ deactivate DFSCredentialsServiceImpl
 BucketAccessServiceImpl <-- DFSCredentialsService : DFSCredentials
 deactivate DFSCredentialsService
 
-' de.adorsys.datasafe.business.impl.credentials.BucketAccessServiceImpl
+' de.adorsys.datasafe.business.impl.profile.dfs.BucketAccessServiceImpl
 BucketAccessService <-- BucketAccessServiceImpl : DFSAccess
 deactivate BucketAccessServiceImpl
 
@@ -161,7 +161,7 @@ deactivate BucketAccessServiceImpl
 DFSPublicKeyServiceImpl <-- BucketAccessService : DFSAccess
 deactivate BucketAccessService
 
-' de.adorsys.datasafe.business.impl.credentials.DFSPublicKeyServiceImpl
+' de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl
 DFSPublicKeyServiceImpl -> ProfileRetrievalService : publicProfile
 
 activate ProfileRetrievalService
@@ -169,15 +169,15 @@ activate ProfileRetrievalService
 ProfileRetrievalService -> DFSBasedProfileStorageImpl : publicProfile
 
 activate DFSBasedProfileStorageImpl
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> DFSSystem : systemDfs
 
 activate DFSSystem
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 DFSBasedProfileStorageImpl <-- DFSSystem : DFSAccess
 deactivate DFSSystem
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> DFSConnectionService : obtain
 
 activate DFSConnectionService
@@ -193,15 +193,15 @@ deactivate DFSConnectionServiceImpl
 DFSBasedProfileStorageImpl <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> DFSBasedProfileStorageImpl : locatePublicProfile
 
 activate DFSBasedProfileStorageImpl
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl <-- DFSBasedProfileStorageImpl : BucketPath
 deactivate DFSBasedProfileStorageImpl
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> DFSConnection : getBlob
 
 activate DFSConnection
@@ -209,15 +209,15 @@ activate DFSConnection
 DFSBasedProfileStorageImpl <-- DFSConnection : Payload
 deactivate DFSConnection
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 DFSBasedProfileStorageImpl -> GsonSerde : fromJson
 
 activate GsonSerde
-' de.adorsys.datasafe.business.impl.serde.GsonSerde
+' de.adorsys.datasafe.business.impl.profile.serde.GsonSerde
 DFSBasedProfileStorageImpl <-- GsonSerde : T
 deactivate GsonSerde
 
-' de.adorsys.datasafe.business.impl.profile.DFSBasedProfileStorageImpl
+' de.adorsys.datasafe.business.impl.profile.operations.DFSBasedProfileStorageImpl
 ProfileRetrievalService <-- DFSBasedProfileStorageImpl : UserPublicProfile
 deactivate DFSBasedProfileStorageImpl
 
@@ -225,7 +225,7 @@ deactivate DFSBasedProfileStorageImpl
 DFSPublicKeyServiceImpl <-- ProfileRetrievalService : UserPublicProfile
 deactivate ProfileRetrievalService
 
-' de.adorsys.datasafe.business.impl.credentials.DFSPublicKeyServiceImpl
+' de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl
 DFSPublicKeyServiceImpl -> DFSConnectionService : obtain
 
 activate DFSConnectionService
@@ -241,15 +241,15 @@ deactivate DFSConnectionServiceImpl
 DFSPublicKeyServiceImpl <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
-' de.adorsys.datasafe.business.impl.credentials.DFSPublicKeyServiceImpl
+' de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl
 DFSPublicKeyServiceImpl -> DFSSystem : publicKeyStoreAuth
 
 activate DFSSystem
-' de.adorsys.datasafe.business.impl.profile.DFSSystem
+' de.adorsys.datasafe.business.impl.profile.operations.DFSSystem
 DFSPublicKeyServiceImpl <-- DFSSystem : KeyStoreAuth
 deactivate DFSSystem
 
-' de.adorsys.datasafe.business.impl.credentials.DFSPublicKeyServiceImpl
+' de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl
 DFSPublicKeyServiceImpl -> DFSConnection : getBlob
 
 activate DFSConnection
@@ -257,7 +257,7 @@ activate DFSConnection
 DFSPublicKeyServiceImpl <-- DFSConnection : Payload
 deactivate DFSConnection
 
-' de.adorsys.datasafe.business.impl.credentials.DFSPublicKeyServiceImpl
+' de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl
 DFSPublicKeyServiceImpl -> KeyStoreService : getPublicKeys
 
 activate KeyStoreService
@@ -265,7 +265,7 @@ activate KeyStoreService
 KeyStoreService -> KeyStoreServiceImpl : getPublicKeys
 
 activate KeyStoreServiceImpl
-' de.adorsys.datasafe.business.impl.keystore.service.KeyStoreServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl
 KeyStoreService <-- KeyStoreServiceImpl : List
 deactivate KeyStoreServiceImpl
 
@@ -273,7 +273,7 @@ deactivate KeyStoreServiceImpl
 DFSPublicKeyServiceImpl <-- KeyStoreService : List
 deactivate KeyStoreService
 
-' de.adorsys.datasafe.business.impl.credentials.DFSPublicKeyServiceImpl
+' de.adorsys.datasafe.business.impl.profile.keys.DFSPublicKeyServiceImpl
 PublicKeyService <-- DFSPublicKeyServiceImpl : PublicKeyIDWithPublicKey
 deactivate DFSPublicKeyServiceImpl
 
@@ -281,7 +281,7 @@ deactivate DFSPublicKeyServiceImpl
 WriteToInboxImpl <-- PublicKeyService : PublicKeyIDWithPublicKey
 deactivate PublicKeyService
 
-' de.adorsys.datasafe.business.impl.inbox.actions.WriteToInboxImpl
+' de.adorsys.datasafe.business.api.inbox.actions.WriteToInboxImpl
 WriteToInboxImpl -> DocumentWriteService : write
 
 activate DocumentWriteService
@@ -289,7 +289,7 @@ activate DocumentWriteService
 DocumentWriteService -> CMSDocumentWriteService : write
 
 activate CMSDocumentWriteService
-' de.adorsys.datasafe.business.impl.document.cms.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceriteService
 CMSDocumentWriteService -> DFSConnectionService : obtain
 
 activate DFSConnectionService
@@ -305,7 +305,7 @@ deactivate DFSConnectionServiceImpl
 CMSDocumentWriteService <-- DFSConnectionService : DFSConnection
 deactivate DFSConnectionService
 
-' de.adorsys.datasafe.business.impl.document.cms.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentWriteService
 CMSDocumentWriteService -> CMSEncryptionService : encrypt
 
 activate CMSEncryptionService
@@ -313,7 +313,7 @@ activate CMSEncryptionService
 CMSEncryptionService -> CMSEncryptionServiceImpl : encrypt
 
 activate CMSEncryptionServiceImpl
-' de.adorsys.datasafe.business.impl.cmsencryption.services.CMSEncryptionServiceImpl
+' de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl
 CMSEncryptionService <-- CMSEncryptionServiceImpl : CMSEnvelopedData
 deactivate CMSEncryptionServiceImpl
 
@@ -321,7 +321,7 @@ deactivate CMSEncryptionServiceImpl
 CMSDocumentWriteService <-- CMSEncryptionService : CMSEnvelopedData
 deactivate CMSEncryptionService
 
-' de.adorsys.datasafe.business.impl.document.cms.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.cmsocument.CMSDocumentWriteService
 CMSDocumentWriteService -> DFSConnection : putBlob
 
 activate DFSConnection
@@ -329,7 +329,7 @@ activate DFSConnection
 CMSDocumentWriteService <-- DFSConnection :  
 deactivate DFSConnection
 
-' de.adorsys.datasafe.business.impl.document.cms.CMSDocumentWriteService
+' de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceriteService
 DocumentWriteService <-- CMSDocumentWriteService :  
 deactivate CMSDocumentWriteService
 
