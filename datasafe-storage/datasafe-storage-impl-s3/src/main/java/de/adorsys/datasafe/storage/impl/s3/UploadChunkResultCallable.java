@@ -1,13 +1,3 @@
-package de.adorsys.datasafe.storage.impl.s3;
-
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.UploadPartRequest;
-import com.amazonaws.services.s3.model.UploadPartResult;
-import lombok.extern.slf4j.Slf4j;
-
-import java.io.ByteArrayInputStream;
-import java.util.concurrent.Callable;
-
 /**
  * Copyright 2013-2019 the original author or authors.
  *
@@ -28,6 +18,16 @@ import java.util.concurrent.Callable;
  * located by https://github.com/spring-cloud/spring-cloud-aws/blob/master/spring-cloud-aws-core/src/main/java/org/springframework/cloud/aws/core/io/s3/SimpleStorageResource.java
  * is used and was modified according Adorsys project needs.
  **/
+package de.adorsys.datasafe.storage.impl.s3;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.UploadPartRequest;
+import com.amazonaws.services.s3.model.UploadPartResult;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.ByteArrayInputStream;
+import java.util.concurrent.Callable;
+
 @Slf4j
 public class UploadChunkResultCallable implements Callable<UploadPartResult> {
 
