@@ -54,6 +54,7 @@ public class S3StorageService implements StorageService {
 
     @Override
     public OutputStream write(AbsoluteLocation location) {
+        log.debug("Write data by path: {}", Log.secure(location.location()));
         MultipartUploadS3StorageOutputStream simpleStorageOutputStream = new MultipartUploadS3StorageOutputStream(
                 bucketName, location.getResource(), s3);
         return simpleStorageOutputStream;

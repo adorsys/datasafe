@@ -83,8 +83,12 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
             if (isMultiPartUpload()) {
                 finishMultiPartUpload();
+
+                log.debug("Finished multi part upload");
             } else {
                 finishSimpleUpload();
+
+                log.debug("Finished simple upload");
             }
         }
     }
@@ -188,7 +192,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         for (int i = 0; i < partCounter; i++) {
             result.add(completionService.take().get().getPartETag());
 
-            log.info("Upload {} part from {}", i, partCounter);
+            log.info("Get upload part #{} from {}", i, partCounter);
         }
         return result;
     }

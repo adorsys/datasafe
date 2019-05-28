@@ -32,15 +32,17 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
 
     @MethodSource("testFileSize")
     @ParameterizedTest(name = "Run #{index} with data size: {0} bytes")
-    void testMultiPartUpload(int testFileSize) {
+    void testMultiPartUpload(int testFileSizeInBytes) {
         String testFileName = tempDir.toString() + "/test.txt";
 
-        generateTestFile(testFileName, testFileSize);
+        generateTestFile(testFileName, testFileSizeInBytes);
+        log.info("Created test file {} with size {} bytes", testFileName, testFileSizeInBytes);
 
         AbsoluteLocation<PrivateResource> privateLocation = new AbsoluteLocation<>(
                 BasePrivateResource.forPrivate(URI.create("s3://" + bucketName + "/file.txt")));
 
         writeTestFileToS3(testFileName, privateLocation);
+        log.info("Data has been written to S3");
 
         assertThat(checksumOfTestFile(testFileName)).isEqualTo(checksumOfFileFromS3(privateLocation));
     }
@@ -61,9 +63,10 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
         }
     }
 
-    private void writeTestFileToS3(String testFileName, AbsoluteLocation<PrivateResource> privateLocation) {
+    private void writeTestFileToS3(String testFilePath, AbsoluteLocation<PrivateResource> privateLocation) {
+        log.info("Copy stream of test file to s3");
         try (OutputStream os = storageService.write(privateLocation)) {
-            try(FileInputStream is = new FileInputStream(testFileName)) {
+            try(FileInputStream is = new FileInputStream(testFilePath)) {
                 ByteStreams.copy(is, os);
             }
         } catch (IOException e) {
@@ -73,9 +76,7 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
 
     private String checksumOfFileFromS3(AbsoluteLocation<PrivateResource> privateLocation) {
         try(InputStream is = storageService.read(privateLocation)) {
-            String checksumOfFileFromS3 = checksum(is);
-
-            return checksumOfFileFromS3;
+            return checksum(is);
         } catch (IOException e) {
             fail(e.getMessage(), e);
         }
@@ -85,7 +86,7 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
     private void generateTestFile(String testFileName, int loadS3TestFileSizeMb) {
         log.info("Starting write {} Mb file into {}", loadS3TestFileSizeMb, tempDir.toString());
         try(FileOutputStream stream = new FileOutputStream(testFileName)) {
-            ByteStreams.copy(new ContentGenerator(loadS3TestFileSizeMb).generate("xxx"), stream);
+            ByteStreams.copy(new ContentGenerator(loadS3TestFileSizeMb).generate(this.getClass().getSimpleName()), stream);
         } catch (IOException e) {
             fail(e.getMessage());
         }
