@@ -1,4 +1,5 @@
 #!/bin/bash
+# Launches Jekyll server that will serve code from repository, note that you should be in `developing` dir.
 
 DIR=$( cd ".." && pwd )
 docker run -p 4000:4000 \
