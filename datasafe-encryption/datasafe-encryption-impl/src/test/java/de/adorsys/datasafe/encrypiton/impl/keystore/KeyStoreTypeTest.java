@@ -1,28 +1,35 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreType;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-public class KeyStoreTypeTest {
+class KeyStoreTypeTest extends BaseMockitoTest {
 
     @Test
-    public void typeBySystemEnv() {
-        String value = UUID.randomUUID().toString();
+    void typeBySystemEnv() {
+        String value = this.getClass().getSimpleName() + UUID.randomUUID().toString();
         System.setProperty("SERVER_KEYSTORE_TYPE", value);
-        Assertions.assertEquals(value, ExtendedKeyStoreType.getStaticDefaultKeyStoreType().getValue());
-        System.getProperties().remove("SERVER_KEYSTORE_TYPE");
+        Assertions.assertEquals(value, TestableKeyStoreType.getStaticDefaultKeyStoreType().getValue());
+        System.clearProperty("SERVER_KEYSTORE_TYPE");
+        TestableKeyStoreType.resetType();
     }
 
-    public static class ExtendedKeyStoreType extends KeyStoreType {
-        public ExtendedKeyStoreType(String value) {
+    public static class TestableKeyStoreType extends KeyStoreType {
+
+        public TestableKeyStoreType(String value) {
             super(value);
         }
 
-        public static KeyStoreType getStaticDefaultKeyStoreType() {
+        static KeyStoreType getStaticDefaultKeyStoreType() {
             return KeyStoreType.getDefaultKeyStoreType();
+        }
+
+        static void resetType() {
+            DEFAULT = getStaticDefaultKeyStoreType();
         }
     }
 }

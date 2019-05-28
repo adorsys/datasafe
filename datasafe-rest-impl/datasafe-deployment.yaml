@@ -1,16 +1,16 @@
 kind: "DeploymentConfig"
 apiVersion: "v1"
 metadata:
-  name: "datasafe-service"
+  name: "datasafe-rest-service"
 spec:
   template:
     metadata:
       labels:
-        name: "datasafe-service"
+        name: "datasafe-rest-service"
     spec:
       containers:
-        - name: "datasafe-service"
-          image: "datasafe:latest"
+        - name: "datasafe-rest-service"
+          image: "datasafe-rest-service:latest"
           ports:
             - containerPort: 8080
               protocol: "TCP"
@@ -22,10 +22,10 @@ spec:
       imageChangeParams:
         automatic: true
         containerNames:
-          - "datasafe-service"
+          - "datasafe-rest-service"
         from:
           kind: "ImageStreamTag"
-          name: "datasafe-service:latest"
+          name: "datasafe-rest-service:latest"
   strategy:
     type: "Rolling"
   paused: false

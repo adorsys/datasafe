@@ -2,8 +2,8 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.CMSException;

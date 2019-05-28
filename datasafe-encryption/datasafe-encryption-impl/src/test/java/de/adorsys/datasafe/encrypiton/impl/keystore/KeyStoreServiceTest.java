@@ -3,11 +3,11 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,20 +20,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class KeyStoreServiceTest {
+class KeyStoreServiceTest extends BaseMockitoTest {
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl();
     private KeyStoreAuth keyStoreAuth;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ReadStorePassword readStorePassword = new ReadStorePassword("keystorepass");
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
         keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     }
 
     @Test
-    public void createKeyStore() throws Exception {
+    void createKeyStore() throws Exception {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
 
@@ -48,7 +48,7 @@ public class KeyStoreServiceTest {
     }
 
     @Test
-    public void createKeyStoreEmptyConfig() throws Exception {
+    void createKeyStoreEmptyConfig() throws Exception {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
@@ -57,7 +57,7 @@ public class KeyStoreServiceTest {
     }
 
     @Test
-    public void createKeyStoreException() {
+    void createKeyStoreException() {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 0);
 
             Assertions.assertThrows(KeyStoreConfigException.class, () ->
@@ -66,7 +66,7 @@ public class KeyStoreServiceTest {
     }
 
     @Test
-    public void getPublicKeys() {
+    void getPublicKeys() {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(keyStoreAccess);
@@ -74,7 +74,7 @@ public class KeyStoreServiceTest {
     }
 
     @Test
-    public void getPrivateKey() throws Exception {
+    void getPrivateKey() throws Exception {
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreType.DEFAULT); // UBER
 
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
@@ -94,7 +94,7 @@ public class KeyStoreServiceTest {
     }
 
     @Test
-    public void getPrivateKeyException() throws Exception {
+    void getPrivateKeyException() throws Exception {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<String> list = Collections.list(keyStore.aliases());
@@ -106,7 +106,7 @@ public class KeyStoreServiceTest {
     }
 
     @Test
-    public void getSecretKey() throws Exception {
+    void getSecretKey() throws Exception {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);

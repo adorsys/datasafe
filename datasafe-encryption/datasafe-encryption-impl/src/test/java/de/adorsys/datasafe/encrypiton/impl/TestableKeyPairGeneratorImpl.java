@@ -2,8 +2,9 @@ package de.adorsys.datasafe.encrypiton.impl;
 
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyPairGeneratorImpl;
 
-public class ExtendedKeyPairGeneratorImpl extends KeyPairGeneratorImpl {
-    public ExtendedKeyPairGeneratorImpl(String keyAlgo, Integer keySize, String serverSigAlgo, String serverKeyPairName) {
+public class TestableKeyPairGeneratorImpl extends KeyPairGeneratorImpl {
+
+    public TestableKeyPairGeneratorImpl(String keyAlgo, Integer keySize, String serverSigAlgo, String serverKeyPairName) {
         super(keyAlgo, keySize, serverSigAlgo, serverKeyPairName);
     }
 

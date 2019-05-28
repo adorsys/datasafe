@@ -25,13 +25,13 @@ public class PrivateSpaceServiceImpl implements PrivateSpaceService {
 
     @Inject
     public PrivateSpaceServiceImpl(
-            ListPrivate listInbox,
-            ReadFromPrivate readDocumentFromInbox,
-            WriteToPrivate writeDocumentToInbox,
+            ListPrivate listPrivate,
+            ReadFromPrivate readFromPrivate,
+            WriteToPrivate writeToPrivate,
             RemoveFromPrivate removeFromPrivate) {
-        this.listPrivate = listInbox;
-        this.readFromPrivate = readDocumentFromInbox;
-        this.writeToPrivate = writeDocumentToInbox;
+        this.listPrivate = listPrivate;
+        this.readFromPrivate = readFromPrivate;
+        this.writeToPrivate = writeToPrivate;
         this.removefromPrivate = removeFromPrivate;
     }
 }

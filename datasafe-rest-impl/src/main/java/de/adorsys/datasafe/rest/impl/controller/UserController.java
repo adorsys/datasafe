@@ -28,6 +28,7 @@ public class UserController {
     private static final String PRIVATE_COMPONENT = "private";
     private static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     private static final String INBOX_COMPONENT = "inbox";
+    private static final String PUBLIC_COMPONENT = "public";
     private static final String VERSION_COMPONENT = "versions";
 
     private final DefaultDatasafeServices dataSafeService;
@@ -63,10 +64,14 @@ public class UserController {
 
         URI keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
 
+        AbsoluteLocation<PublicResource> publicKeys = access(
+                rootLocation.resolve("./" + PUBLIC_COMPONENT + "/keystore")
+        );
+
         dataSafeService.userProfile().registerPublic(CreateUserPublicProfile.builder()
                 .id(auth.getUserID())
                 .inbox(access(inboxUri))
-                .publicKeys(access(keyStoreUri))
+                .publicKeys(publicKeys)
                 .build()
         );
 
@@ -78,7 +83,7 @@ public class UserController {
                 .keystore(accessPrivate(keyStoreUri))
                 .inboxWithWriteAccess(accessPrivate(inboxUri))
                 .documentVersionStorage(accessPrivate(rootLocation.resolve("./" + VERSION_COMPONENT + "/")))
-                .publishPubKeysTo(access(keyStoreUri))
+                .publishPubKeysTo(publicKeys)
                 .build()
         );
     }
