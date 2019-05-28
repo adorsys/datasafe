@@ -11,6 +11,7 @@ import lombok.ToString;
 public class ChunkUploadRequest {
 
     private AmazonS3 amazonS3;
+    @ToString.Exclude
     private byte[] content;
     private int contentSize;
     private String bucketName;
