@@ -25,6 +25,7 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.BinaryUtils;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.utils.Log;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
@@ -32,10 +33,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 public class MultipartUploadS3StorageOutputStream extends OutputStream {
@@ -117,28 +120,24 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         return multiPartUploadResult != null;
     }
 
+    @SneakyThrows
     private void finishSimpleUpload() {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(currentOutputStream.size());
 
         byte[] content = currentOutputStream.toByteArray();
 
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
-            objectMetadata.setContentMD5(md5Digest);
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                    "MessageDigest could not be initialized because it uses an unknown algorithm", e);
-        }
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
+        objectMetadata.setContentMD5(md5Digest);
 
         amazonS3.putObject(
                 bucketName,
                 objectName,
-                new ByteArrayInputStream(content), objectMetadata);
+                new ByteArrayInputStream(content),
+                objectMetadata);
 
-        // Release the memory early
+        // Release the memory
         currentOutputStream = null;
     }
 
@@ -206,8 +205,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         }
     }
 
-    private List<PartETag> getMultiPartsUploadResults()
-            throws ExecutionException, InterruptedException {
+    private List<PartETag> getMultiPartsUploadResults() throws ExecutionException, InterruptedException {
         List<PartETag> result = new ArrayList<>(partCounter);
         for (int i = 0; i < partCounter; i++) {
             result.add(completionService.take().get().getPartETag());
