@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * Encodes and decodes URI into/from URI with version.
  */
-public interface VersionEncoder {
+public interface VersionEncoderDecoder {
 
     /**
      * Generates URI tagged with version.

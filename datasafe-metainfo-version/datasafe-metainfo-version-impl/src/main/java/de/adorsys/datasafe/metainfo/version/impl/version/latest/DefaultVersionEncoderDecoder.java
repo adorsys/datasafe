@@ -1,19 +1,24 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
+import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.types.api.resource.VersionedUri;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoder;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
-public class DefaultVersionEncoder implements VersionEncoder {
+/**
+ * Encoder/decoder that creates URI versions using UUID generator and path separator, so that versioned resource
+ * http://example.com/some/path--75943a83-ae8a-4eaf-bffb-1a20f235416c
+ * means version 75943a83-ae8a-4eaf-bffb-1a20f235416c of http://example.com/some/path
+ */
+public class DefaultVersionEncoderDecoder implements VersionEncoderDecoder {
 
     private static final String SEPARATOR = "--";
 
     @Inject
-    public DefaultVersionEncoder() {
+    public DefaultVersionEncoderDecoder() {
     }
 
     public VersionedUri newVersion(URI resource) {

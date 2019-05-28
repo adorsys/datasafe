@@ -9,12 +9,12 @@ import java.net.URI;
 import java.util.UUID;
 
 @Slf4j
-public class DefaultVersionEncoderTest {
+public class DefaultVersionEncoderDecoderTest {
 
     @Test
     @SneakyThrows
     public void testLimits() {
-        DefaultVersionEncoder defaultVersionEncoder = new DefaultVersionEncoder();
+        DefaultVersionEncoderDecoder defaultVersionEncoder = new DefaultVersionEncoderDecoder();
 
         URI uri = new URI("uri");
         Assertions.assertFalse(defaultVersionEncoder.decodeVersion(uri).isPresent());

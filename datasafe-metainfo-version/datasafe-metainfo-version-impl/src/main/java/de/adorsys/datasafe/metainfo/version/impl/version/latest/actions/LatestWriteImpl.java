@@ -1,17 +1,17 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest.actions;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.metainfo.version.api.actions.VersionedWrite;
+import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
+import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
+import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
+import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
+import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.utils.Log;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoder;
-import de.adorsys.datasafe.metainfo.version.api.actions.VersionedWrite;
-import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
-import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
-import de.adorsys.datasafe.metainfo.version.impl.version.latest.EncryptedLatestLinkServiceImpl;
-import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,19 +22,27 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 
+/**
+ * Default versioned resource writer that resolves latest resource link location using
+ * {@link EncryptedLatestLinkService}, writes versioned with {@link VersionEncoderDecoder} and encrypted blob into
+ * privatespace using {@link WriteToPrivate} then updates latest link content, so that it points to written blob.
+ * Link content is the resource that is relative to user privatespace.
+ * Relativization against privatespace root of written blob is done by {@link EncryptedResourceResolver}.
+ * @param <V> version tag
+ */
 public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWrite<V> {
 
     @Getter
     private final V strategy;
 
-    private final VersionEncoder encoder;
+    private final VersionEncoderDecoder encoder;
     private final EncryptedResourceResolver encryptedResourceResolver;
     private final WriteToPrivate writeToPrivate;
-    private final EncryptedLatestLinkServiceImpl latestVersionLinkLocator;
+    private final EncryptedLatestLinkService latestVersionLinkLocator;
 
     @Inject
-    public LatestWriteImpl(V strategy, VersionEncoder encoder, EncryptedResourceResolver encryptedResourceResolver,
-                           WriteToPrivate writeToPrivate, EncryptedLatestLinkServiceImpl latestVersionLinkLocator) {
+    public LatestWriteImpl(V strategy, VersionEncoderDecoder encoder, EncryptedResourceResolver encryptedResourceResolver,
+                           WriteToPrivate writeToPrivate, EncryptedLatestLinkService latestVersionLinkLocator) {
         this.strategy = strategy;
         this.encoder = encoder;
         this.encryptedResourceResolver = encryptedResourceResolver;

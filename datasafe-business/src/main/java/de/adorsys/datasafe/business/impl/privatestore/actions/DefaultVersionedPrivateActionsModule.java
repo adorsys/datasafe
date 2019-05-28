@@ -4,14 +4,14 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoder;
+import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionInfoService;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedList;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedRead;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedRemove;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedWrite;
-import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionEncoder;
+import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionInfoServiceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.EncryptedLatestLinkServiceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.LatestPrivateSpaceImpl;
@@ -34,7 +34,7 @@ public abstract class DefaultVersionedPrivateActionsModule {
     }
 
     @Binds
-    abstract VersionEncoder versionEncoder(DefaultVersionEncoder impl);
+    abstract VersionEncoderDecoder versionEncoder(DefaultVersionEncoderDecoder impl);
 
     @Binds
     abstract VersionInfoService<DFSVersion> versionInfoService(DefaultVersionInfoServiceImpl impl);
