@@ -21,12 +21,18 @@ import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.stream.Stream;
 
+/**
+ * Filesystem ({@link java.nio.file}) compatible storage service default implementation.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class FileSystemStorageService implements StorageService {
 
     private final URI dir;
 
+    /**
+     * Lists resources and returns their location without access credentials.
+     */
     @SneakyThrows
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation path) {
