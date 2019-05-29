@@ -8,14 +8,20 @@ import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImp
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.DefaultCMSEncryptionConfig;
 
 /**
- * This module is responsible for providing CMS pathencryption of document.
+ * This module is responsible for providing CMS encryption of document.
  */
 @Module
 public abstract class DefaultCMSEncryptionModule {
 
+    /**
+     * Default CMS-encryption config using AES256_CBC.
+     */
     @Binds
     abstract CMSEncryptionConfig defaultCMSEncryptionConfig(DefaultCMSEncryptionConfig defaultCMSEncryptionConfig);
 
+    /**
+     * Default BouncyCastle based CMS encryption for document.
+     */
     @Binds
     abstract CMSEncryptionService cmsEncryptionService(CMSEncryptionServiceImpl impl);
 }

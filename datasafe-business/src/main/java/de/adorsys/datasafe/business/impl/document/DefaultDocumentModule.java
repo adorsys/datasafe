@@ -13,9 +13,15 @@ import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteService;
 @Module
 public abstract class DefaultDocumentModule {
 
+    /**
+     * By default, encrypt document using CMS-encryption provided by BouncyCastle.
+     */
     @Binds
     abstract EncryptedDocumentReadService documentReadService(CMSDocumentReadService impl);
 
+    /**
+     * By default, decrypt document using CMS-encryption provided by BouncyCastle.
+     */
     @Binds
     abstract EncryptedDocumentWriteService documentWriteService(CMSDocumentWriteService impl);
 }

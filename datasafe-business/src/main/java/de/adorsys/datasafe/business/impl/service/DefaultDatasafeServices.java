@@ -34,8 +34,19 @@ import javax.inject.Singleton;
 })
 public interface DefaultDatasafeServices {
 
+    /**
+     * Services to access users' privatespace.
+     */
     PrivateSpaceServiceImpl privateService();
+
+    /**
+     * Services to access users' inbox.
+     */
     InboxServiceImpl inboxService();
+
+    /**
+     * Services to access users' profiles.
+     */
     DFSBasedProfileStorageImpl userProfile();
 
     @Component.Builder
