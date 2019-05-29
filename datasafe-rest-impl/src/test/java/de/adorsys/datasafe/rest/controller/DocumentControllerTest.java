@@ -45,7 +45,6 @@ public class DocumentControllerTest {
 
     @BeforeEach
     public void setup() {
-        log.info("************************** SETUP IS CALLED *************");
         MockitoAnnotations.initMocks(this);
         when(dataSafeService.privateService()).thenReturn(privateSpaceService);
     }

@@ -14,7 +14,11 @@
         <module>datasafe-encryption</module>
         <module>datasafe-inbox</module>
         <module>datasafe-storage</module>
+        <module>datasafe-business</module>
         <module>datasafe-rest-impl</module>
+
+        <!-- done as last to get a nice codecoverage -->
+        <module>last-module-codecoverage</module>
         <module>datasafe-examples</module>
         <module>last-module-codecoverage-check</module>
     </modules>
