@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.rest.controller;
 
-import de.adorsys.datasafe.business.impl.privatespace.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.inbox.impl.actions.InboxServiceImpl;
 import lombok.SneakyThrows;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DocumentControllerTest {
+public class InboxControllerTest {
 
     private static final String TEST_USER = "test";
     private static final String TEST_PASS = "test";
+    private static final String TEST_PATH = "test.txt";
 
     @Autowired
     MockMvc mvc;
@@ -38,21 +39,32 @@ public class DocumentControllerTest {
     DefaultDatasafeServices dataSafeService;
 
     @MockBean
-    private PrivateSpaceServiceImpl privateSpaceService;
+    private InboxServiceImpl inboxService;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        when(dataSafeService.privateService()).thenReturn(privateSpaceService);
+        when(dataSafeService.inboxService()).thenReturn(inboxService);
     }
 
     @SneakyThrows
     @Test
-    public void readDocumentTest() {
-        when(dataSafeService.privateService().read(any())).thenReturn(new ByteArrayInputStream("hello".getBytes()));
+    public void sendDocumentToInboxTest() {
+        when(dataSafeService.inboxService().write(any())).thenReturn(new ByteArrayOutputStream());
 
-        String path = "path/to/file";
-        mvc.perform(get("/document/{path}", path)
+        mvc.perform(put("/inbox/{path}", TEST_PATH)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                .header("user", TEST_USER)
+        )
+                .andExpect(status().isOk());
+    }
+
+    @SneakyThrows
+    @Test
+    public void readFromInboxTest() {
+        when(dataSafeService.inboxService().read(any())).thenReturn(new ByteArrayInputStream("hello".getBytes()));
+
+        mvc.perform(get("/inbox/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
@@ -61,32 +73,9 @@ public class DocumentControllerTest {
 
     @SneakyThrows
     @Test
-    public void writeDocumentTest() {
-        when(dataSafeService.privateService().write(any())).thenReturn(new ByteArrayOutputStream());
-        String path = "path/to/file";
-        mvc.perform(put("/document/{path}", path)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header("user", TEST_USER)
-                .header("password", TEST_PASS)
-        )
-                .andExpect(status().isOk());
-    }
+    public void deleteFromInboxTest() {
 
-    @SneakyThrows
-    @Test
-    public void listDocumentsTest() {
-        String path = "";
-        mvc.perform(get("/documents/{path}", path)
-                .header("user", TEST_USER)
-                .header("password", TEST_PASS)
-        ).andExpect(status().isOk());
-    }
-
-    @SneakyThrows
-    @Test
-    public void deleteDocumentTest() {
-        String path = "path/to/file";
-        mvc.perform(delete("/document/{path}", path)
+        mvc.perform(delete("/inbox/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
         ).andExpect(status().isOk());
