@@ -8,6 +8,9 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+/**
+ * Amazon performance and stability test using random action execution.
+ */
 class AmazonPerformance extends WithRandomActionPerformance {
 
     @ParameterizedTest

@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests that validates basic functionality - storing data to inbox, privatespace, listing files, etc.
+ */
 @Slf4j
 class BasicFunctionalityTest extends WithStorageProvider {
 

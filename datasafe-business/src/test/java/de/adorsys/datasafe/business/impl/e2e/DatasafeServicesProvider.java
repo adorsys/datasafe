@@ -9,6 +9,9 @@ import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.experimental.UtilityClass;
 
+/**
+ * Factory to get Datasafe services.
+ */
 @UtilityClass
 public class DatasafeServicesProvider {
 

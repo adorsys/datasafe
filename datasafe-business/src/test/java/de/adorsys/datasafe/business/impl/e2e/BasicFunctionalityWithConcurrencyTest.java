@@ -47,6 +47,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Multithreaded test of basic operations.
+ */
 @Slf4j
 class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 

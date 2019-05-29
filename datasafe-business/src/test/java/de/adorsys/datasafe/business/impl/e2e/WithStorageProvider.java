@@ -30,6 +30,9 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * Provides different storage types - filesystem, minio, etc. to be used in tests.
+ */
 @Slf4j
 public abstract class WithStorageProvider extends BaseE2ETest {
 

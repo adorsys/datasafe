@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 
 import static com.google.common.math.Quantiles.percentiles;
 
+/**
+ * Calculates performance statistics (percentile-based) by operation (read/write...).
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class StatisticService {

@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
- * This test computes minio versioned and non-versioned performance based on same request fixture.
+ * This test executes {@link Fixture} operations and validates them against some real storage.
  */
 @Slf4j
 abstract class WithRandomActionPerformance extends WithStorageProvider {
@@ -49,6 +49,9 @@ abstract class WithRandomActionPerformance extends WithStorageProvider {
     private WithStorageProvider.StorageDescriptor descriptor;
     private String testId;
 
+    /**
+     * Initializes {@link Fixture} from performance/fixture/fixture.json resource file.
+     */
     @BeforeAll
     @SneakyThrows
     static void init() {
@@ -106,6 +109,9 @@ abstract class WithRandomActionPerformance extends WithStorageProvider {
         );
     }
 
+    /**
+     * Delegate that waits for some time until doing real operations.
+     */
     @RequiredArgsConstructor
     static class DelegatingStorageWithDelay implements StorageService {
 

@@ -13,6 +13,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * Represents users' file tree (virtual tree).
+ */
 @Data
 @Slf4j
 public class TestFileTree {
@@ -27,6 +30,9 @@ public class TestFileTree {
         return files.isEmpty();
     }
 
+    /**
+     * Perform write operation with some content on virtual tree.
+     */
     @Synchronized
     public void write(String path, ContentId id) {
         if (null == id) {
@@ -39,6 +45,9 @@ public class TestFileTree {
                 testUser.getUsername(), OperationType.WRITE, storageType, id, URI.create(path), null));
     }
 
+    /**
+     * Perform read operation with some content on virtual tree.
+     */
     @Synchronized
     public ContentId read(String path) {
         ContentId value = files.get(path);
@@ -52,6 +61,9 @@ public class TestFileTree {
         return value;
     }
 
+    /**
+     * Perform list operation on virtual tree.
+     */
     @Synchronized
     public Set<String> list(String path) {
         log.info(">LIST [{}]:{}", storageTag(), path);
@@ -60,6 +72,9 @@ public class TestFileTree {
         return files.keySet().stream().filter(it -> it.startsWith(path)).collect(Collectors.toSet());
     }
 
+    /**
+     * Perform delete operation on virtual tree.
+     */
     @Synchronized
     public void delete(String path) {
         ContentId value = files.get(path);
@@ -73,6 +88,9 @@ public class TestFileTree {
                 testUser.getUsername(), OperationType.DELETE, storageType, null, URI.create(path), value));
     }
 
+    /**
+     * Select random path from virtual tree
+     */
     public String getPathRandomly() {
         log.info("GET RANDOMLY [{}]", storageTag());
         return Iterables.get(files.keySet(), random.nextInt(files.size()));

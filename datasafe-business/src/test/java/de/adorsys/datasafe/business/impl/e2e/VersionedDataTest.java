@@ -24,6 +24,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Validates software versioned operations.
+ */
 @Slf4j
 public class VersionedDataTest extends WithStorageProvider {
 

@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * Generates some random path using path components and filename pools.
+ */
 @RequiredArgsConstructor
 public class RandomPathGenerator {
 

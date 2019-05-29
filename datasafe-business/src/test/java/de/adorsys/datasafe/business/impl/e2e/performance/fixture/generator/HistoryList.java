@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Acts as a counter when to stop drools operation generation.
+ */
 @Getter
 @RequiredArgsConstructor
 public class HistoryList {

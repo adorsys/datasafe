@@ -23,7 +23,7 @@ import de.adorsys.datasafe.storage.api.actions.*;
 import javax.inject.Singleton;
 
 /**
- * This is Datasafe services that always work with latest file version.
+ * This is Datasafe services that always work with latest file version using `software` versioning.
  */
 @Singleton
 @Component(modules = {
