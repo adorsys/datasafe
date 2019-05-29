@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * Write CMS-encrypted document to DFS.
+ * Writes CMS-encrypted document to DFS.
  */
 public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 

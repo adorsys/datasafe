@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Read CMS-encrypted document location DFS.
+ * Reads CMS-encrypted document from DFS.
  */
 public class CMSDocumentReadService implements EncryptedDocumentReadService {
 

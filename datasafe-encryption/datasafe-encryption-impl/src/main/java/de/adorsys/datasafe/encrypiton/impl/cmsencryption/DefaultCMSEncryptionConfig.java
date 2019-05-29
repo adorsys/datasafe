@@ -5,6 +5,9 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import javax.inject.Inject;
 
+/**
+ * Default CMS encryption algorithm.
+ */
 @Getter
 public class DefaultCMSEncryptionConfig implements CMSEncryptionConfig {
 

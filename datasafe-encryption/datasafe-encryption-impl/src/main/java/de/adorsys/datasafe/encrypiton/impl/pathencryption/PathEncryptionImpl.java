@@ -11,6 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 
+/**
+ * Default path encryption service that uses {@link PrivateKeyService#pathEncryptionSecretKey(UserIDAuth)} as
+ * path encryption key.
+ */
 @Slf4j
 public class PathEncryptionImpl implements PathEncryption {
 
@@ -24,6 +28,9 @@ public class PathEncryptionImpl implements PathEncryption {
         this.privateKeyService = privateKeyService;
     }
 
+    /**
+     * Simply pipes {@link SymmetricPathEncryptionService} and {@link PrivateKeyService} to encrypt URI
+     */
     @Override
     public Uri encrypt(UserIDAuth forUser, Uri path) {
         SecretKeyIDWithKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);
@@ -33,6 +40,9 @@ public class PathEncryptionImpl implements PathEncryption {
         return encrypt;
     }
 
+    /**
+     * Simply pipes {@link SymmetricPathEncryptionService} and {@link PrivateKeyService} to decrypt URI
+     */
     @Override
     public Uri decrypt(UserIDAuth forUser, Uri path) {
         SecretKeyIDWithKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);

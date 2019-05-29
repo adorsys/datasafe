@@ -12,6 +12,11 @@ import java.util.function.Function;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Path encryption service that maintains URI segments integrity.
+ * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of i.e.
+ * cipher(path) will yield same string.
+ */
 @Slf4j
 public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncryptionService {
 
@@ -24,6 +29,9 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         this.encryptionConfig = encryptionConfig;
     }
 
+    /**
+     * Encrypts each URI segment separately and composes them back in same order.
+     */
     @Override
     @SneakyThrows
     public Uri encrypt(SecretKey secretKey, Uri bucketPath) {
@@ -38,6 +46,9 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         );
     }
 
+    /**
+     * Decrypts each URI segment separately and composes them back in same order.
+     */
     @Override
     @SneakyThrows
     public Uri decrypt(SecretKey secretKey, Uri bucketPath) {

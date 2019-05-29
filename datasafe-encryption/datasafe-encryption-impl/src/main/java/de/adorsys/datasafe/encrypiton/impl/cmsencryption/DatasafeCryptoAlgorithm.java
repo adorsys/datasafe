@@ -4,6 +4,9 @@ import lombok.experimental.UtilityClass;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 
+/**
+ * Usable crypto-algorithms registry.
+ */
 @UtilityClass
 public class DatasafeCryptoAlgorithm {
 

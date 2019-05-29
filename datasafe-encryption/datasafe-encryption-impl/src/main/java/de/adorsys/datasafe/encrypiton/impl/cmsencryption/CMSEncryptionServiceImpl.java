@@ -37,6 +37,10 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         this.encryptionConfig = encryptionConfig;
     }
 
+    /**
+     * Asymmetrical encryption-based stream, algorithm is provided by {@link CMSEncryptionConfig#getAlgorithm()}
+     * Uses {@link RecipientId#keyTrans} recipient id.
+     */
     @Override
     @SneakyThrows
     public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey,
@@ -47,6 +51,10 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
     }
 
+    /**
+     * Symmetrical encryption-based stream, algorithm is provided by {@link CMSEncryptionConfig#getAlgorithm()}
+     * Uses {@link RecipientId#kek} recipient id.
+     */
     @Override
     @SneakyThrows
     public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID keyID) {
@@ -55,6 +63,11 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
     }
 
+    /**
+     * Decryption stream using {@link CMSEnvelopedDataParser}, supported recipients ids are:
+     * - {@link RecipientId#keyTrans} for asymmetric encryption
+     * - {@link RecipientId#kek} for symmetric encryption
+     */
     @Override
     @SneakyThrows
     public InputStream buildDecryptionInputStream(InputStream inputStream, Function<String, Key> keyById) {
