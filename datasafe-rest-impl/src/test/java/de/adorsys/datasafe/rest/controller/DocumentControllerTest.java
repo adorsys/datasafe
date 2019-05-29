@@ -1,14 +1,18 @@
-package de.adorsys.datasafe.rest.impl.controller;
+package de.adorsys.datasafe.rest.controller;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
 import lombok.SneakyThrows;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
@@ -19,20 +23,22 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class DocumentControllerTest extends BaseDatasafeEndpointTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+public class DocumentControllerTest {
 
     private static final String TEST_USER = "test";
     private static final String TEST_PASS = "test";
 
+    @Autowired
+    MockMvc mvc;
 
     @MockBean
-    private DefaultDatasafeServices dataSafeService;
+    DefaultDatasafeServices dataSafeService;
 
     @MockBean
     private PrivateSpaceServiceImpl privateSpaceService;
-
-    @Autowired
-    private MockMvc mvc;
 
     @Before
     public void setup() {
