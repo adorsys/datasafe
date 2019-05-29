@@ -41,6 +41,63 @@
             <artifactId>datasafe-storage-impl-s3</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-directory-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-encryption-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-inbox-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-privatestore-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-types-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-directory-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-encryption-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-inbox-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-privatestore-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-metainfo-version-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-metainfo-version-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -127,8 +184,8 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+
 
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
