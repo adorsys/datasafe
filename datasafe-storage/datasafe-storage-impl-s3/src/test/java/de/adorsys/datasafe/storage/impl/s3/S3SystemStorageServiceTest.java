@@ -88,12 +88,14 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
     void testListOutOfStandardListFilesLimit() {
         int numberOfFilesOverLimit = 1010;
         for (int i = 0; i < numberOfFilesOverLimit; i++) {
-            s3.putObject(bucketName, FILE + i, MESSAGE);
+            s3.putObject(bucketName, "over_limit/" + FILE + i, MESSAGE);
 
             log.trace("Save #" + i + " file");
         }
 
-        assertThat(storageService.list(root)).hasSize(numberOfFilesOverLimit);
+        assertThat(storageService.list(
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(URI.create("s3://" + bucketName + "/over_limit")))))
+        .hasSize(numberOfFilesOverLimit);
     }
 
     @Test

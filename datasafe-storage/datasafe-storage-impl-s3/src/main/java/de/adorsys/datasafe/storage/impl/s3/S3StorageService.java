@@ -33,7 +33,7 @@ public class S3StorageService implements StorageService {
         log.debug("List at {}", location);
         String prefix = location.location().getPath().replaceFirst("^/", "");
 
-        S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, "");
+        S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, prefix);
         Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);
         return objectStream
                 .map(os -> new AbsoluteLocation<>(
