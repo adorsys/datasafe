@@ -49,7 +49,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private AmazonS3 amazonS3;
 
-    // The minimum contentSize for a multi part request is 5 MB, hence the buffer contentSize of 5 MB
+    // The minimum size for a multi part request is 5 MB, hence the buffer size of 5 MB
     private static final int BUFFER_SIZE = 1024 * 1024 * 5;
 
     private final Object monitor = new Object();
@@ -69,7 +69,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
         log.debug("Write to bucket: {} with name: {}", Log.secure(bucketName), Log.secure(objectName));
 
-        completionService  = new ExecutorCompletionService<>(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        completionService = new ExecutorCompletionService<>(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 
     @Override
@@ -106,12 +106,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
             if (isMultiPartUpload()) {
                 finishMultiPartUpload();
-
-                log.debug("Finished multi part upload");
             } else {
                 finishSimpleUpload();
-
-                log.debug("Finished simple upload");
             }
         }
     }
@@ -139,6 +135,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
         // Release the memory
         currentOutputStream = null;
+
+        log.info("Finished simple upload");
     }
 
     private void finishMultiPartUpload() throws IOException {
@@ -168,6 +166,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                             partETags
                     )
             );
+
+            log.info("Finished multi part upload");
         }
         catch (ExecutionException e) {
             abortMultiPartUpload();
