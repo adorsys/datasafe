@@ -1,6 +1,8 @@
-FROM adorsys/openjdk-jre-base:8-minideb
-ENV JAVA_OPTS -Xmx512m
-WORKDIR /home/datasafe
-COPY target/datasafe-rest-server.jar .
-EXPOSE 9999
-CMD exec $JAVA_HOME/bin/java $JAVA_OPTS -jar /home/datasafe/datasafe-rest-server.jar
+FROM openjdk:8-jre-alpine
+ARG JAR_FILE=datasafe-rest-${project.version}.jar
+ENV APP_HOME /usr/app
+EXPOSE 8080
+COPY target/$JAR_FILE $APP_HOME/
+WORKDIR $APP_HOME
+ENTRYPOINT ["sh", "-c"]
+CMD ["exec java -jar $JAR_FILE"]
