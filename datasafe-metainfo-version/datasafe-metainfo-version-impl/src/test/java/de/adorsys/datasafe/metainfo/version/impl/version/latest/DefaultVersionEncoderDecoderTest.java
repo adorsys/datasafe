@@ -1,11 +1,11 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.net.URI;
 import java.util.UUID;
 
 @Slf4j
@@ -16,15 +16,15 @@ public class DefaultVersionEncoderDecoderTest {
     public void testLimits() {
         DefaultVersionEncoderDecoder defaultVersionEncoder = new DefaultVersionEncoderDecoder();
 
-        URI uri = new URI("uri");
+        Uri uri = new Uri("uri");
         Assertions.assertFalse(defaultVersionEncoder.decodeVersion(uri).isPresent());
 
-        uri = new URI("uri/uri");
+        uri = new Uri("uri/uri");
         Assertions.assertFalse(defaultVersionEncoder.decodeVersion(uri).isPresent());
 
         String peter = "peter";
         String uuid = UUID.randomUUID().toString();
-        uri = new URI("uri/" +  peter + "--" + uuid);
+        uri = new Uri("uri/" +  peter + "--" + uuid);
         Assertions.assertEquals(uuid, defaultVersionEncoder.decodeVersion(uri).get().getVersion());
     }
 }

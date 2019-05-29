@@ -3,6 +3,7 @@ package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyStore;
 
@@ -38,15 +38,15 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
         log.info("Test path: {}", testPath);
 
-        URI testURI = new URI(testPath);
+        Uri testURI = new Uri(testPath);
 
         SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, KeyStoreCreationConfig.PATH_KEY_ID);
-        URI encrypted = bucketPathEncryptionService.encrypt(secretKey, testURI);
-        URI decrypted = bucketPathEncryptionService.decrypt(secretKey, encrypted);
+        Uri encrypted = bucketPathEncryptionService.encrypt(secretKey, testURI);
+        Uri decrypted = bucketPathEncryptionService.decrypt(secretKey, encrypted);
 
         log.debug("Encrypted path: {}", encrypted);
 
-        assertEquals(testPath, decrypted.toString());
+        assertEquals(testPath, decrypted.toASCIIString());
     }
 
     @Test
@@ -55,7 +55,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
         log.info("Test path: {}", testPath);
 
-        URI testURI = new URI(testPath);
+        Uri testURI = new Uri(testPath);
 
         SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID("Invalid key"));
         // secret keys is null, because during key obtain was used incorrect KeyID,
@@ -69,7 +69,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
         assertThrows(BadPaddingException.class,
                 () -> bucketPathEncryptionService.decrypt(secretKey,
-                        new URI("bRQiW8qLNPEy5tO7shfV0w==/k0HooCVlmhHkQFw8mc_BROKEN_PATH")));
+                        new Uri("bRQiW8qLNPEy5tO7shfV0w==/k0HooCVlmhHkQFw8mc_BROKEN_PATH")));
     }
 
     @Test
@@ -77,6 +77,6 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, KeyStoreCreationConfig.PATH_KEY_ID);
         assertThrows(IllegalBlockSizeException.class,
                 () -> bucketPathEncryptionService.decrypt(secretKey,
-                        new URI("/simple/text/path/")));
+                        new Uri("/simple/text/path/")));
     }
 }

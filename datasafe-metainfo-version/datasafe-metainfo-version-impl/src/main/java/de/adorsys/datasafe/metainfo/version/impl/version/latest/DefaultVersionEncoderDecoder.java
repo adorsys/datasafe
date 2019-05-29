@@ -5,7 +5,6 @@ import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.resource.VersionedUri;
 
 import javax.inject.Inject;
-import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,17 +21,19 @@ public class DefaultVersionEncoderDecoder implements VersionEncoderDecoder {
     public DefaultVersionEncoderDecoder() {
     }
 
-    public VersionedUri newVersion(URI resource) {
+    @Override
+    public VersionedUri newVersion(Uri resource) {
         String version = UUID.randomUUID().toString();
 
         return new VersionedUri(
-                Uri.build(resource.toASCIIString() + SEPARATOR + version),
+                new Uri(resource.toASCIIString() + SEPARATOR + version),
                 resource,
                 version
         );
     }
 
-    public Optional<VersionedUri> decodeVersion(URI uri) {
+    @Override
+    public Optional<VersionedUri> decodeVersion(Uri uri) {
         String[] parts = uri.getPath().split("/");
         String name = parts[parts.length - 1];
         String[] withUuid = name.split(SEPARATOR, 2);

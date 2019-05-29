@@ -3,6 +3,7 @@ package de.adorsys.datasafe.types.api.utils;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
@@ -14,8 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LogTest {
 
     private static final String TEST_STRING = "/path/to/file";
-    private static final URI TEST_URI = URI.create("http://www.example.com/uniform/resource/identifier");
-    private static final URI TEST_URI_ENDS_SLASH = URI.create("http://www.example.com/uniform/resource/identifier/");
+    private static final Uri TEST_URI = new Uri("http://www.example.com/uniform/resource/identifier");
+    private static final Uri TEST_URI_ENDS_SLASH = new Uri("http://www.example.com/uniform/resource/identifier/");
 
     @Test
     void disabledHidingLog() {

@@ -1,10 +1,11 @@
 package de.adorsys.datasafe.encrypiton.api.pathencryption.encryption;
 
+import de.adorsys.datasafe.types.api.resource.Uri;
+
 import javax.crypto.SecretKey;
-import java.net.URI;
 
 public interface SymmetricPathEncryptionService {
 
-    URI encrypt(SecretKey secretKey, URI bucketPath);
-    URI decrypt(SecretKey secretKey, URI bucketPath);
+    Uri encrypt(SecretKey secretKey, Uri bucketPath);
+    Uri decrypt(SecretKey secretKey, Uri bucketPath);
 }

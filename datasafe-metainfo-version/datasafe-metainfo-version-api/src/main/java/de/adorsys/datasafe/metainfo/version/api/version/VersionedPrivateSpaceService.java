@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.metainfo.version.api.version;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.VersionStrategy;
-import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.types.api.resource.*;
 
 import java.util.stream.Stream;

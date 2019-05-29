@@ -4,16 +4,17 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
-import de.adorsys.datasafe.storage.api.StorageService;
-import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.business.impl.e2e.WithStorageProvider;
 import de.adorsys.datasafe.business.impl.e2e.performance.dto.UserSpec;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Fixture;
 import de.adorsys.datasafe.business.impl.e2e.performance.services.ContentGenerator;
 import de.adorsys.datasafe.business.impl.e2e.performance.services.OperationExecutor;
 import de.adorsys.datasafe.business.impl.e2e.performance.services.StatisticService;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,7 +27,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,7 +110,7 @@ abstract class WithRandomActionPerformance extends WithStorageProvider {
     static class DelegatingStorageWithDelay implements StorageService {
 
         @Getter
-        private final URI rootLocation;
+        private final Uri rootLocation;
 
         private final StorageService delegate;
         private final Supplier<Long> delayProvider;

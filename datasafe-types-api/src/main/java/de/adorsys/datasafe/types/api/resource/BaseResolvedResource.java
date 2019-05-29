@@ -3,7 +3,6 @@ package de.adorsys.datasafe.types.api.resource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.net.URI;
 import java.time.Instant;
 
 /**
@@ -29,7 +28,7 @@ public class BaseResolvedResource implements ResolvedResource {
      * @return Location as URI of associated resource
      */
     @Override
-    public URI location() {
+    public Uri location() {
         return resource.location();
     }
 

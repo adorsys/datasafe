@@ -1,11 +1,10 @@
 package de.adorsys.datasafe.encrypiton.api.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-
-import java.net.URI;
+import de.adorsys.datasafe.types.api.resource.Uri;
 
 public interface PathEncryption {
 
-    URI encrypt(UserIDAuth forUser, URI path);
-    URI decrypt(UserIDAuth forUser, URI path);
+    Uri encrypt(UserIDAuth forUser, Uri path);
+    Uri decrypt(UserIDAuth forUser, Uri path);
 }

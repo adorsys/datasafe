@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 
 /**
  * Default versioned resource writer that resolves latest resource link location using
@@ -58,7 +57,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
                         request.getOwner(), request.getLocation()
                 );
 
-        URI decryptedPath = encoder.newVersion(request.getLocation().location()).getPathWithVersion();
+        Uri decryptedPath = encoder.newVersion(request.getLocation().location()).getPathWithVersion();
 
         PrivateResource resourceRelativeToPrivate = encryptPath(
                 request.getOwner(),
@@ -76,10 +75,10 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
         );
     }
 
-    private PrivateResource encryptPath(UserIDAuth auth, URI uri, PrivateResource base) {
+    private PrivateResource encryptPath(UserIDAuth auth, Uri uri, PrivateResource base) {
         AbsoluteLocation<PrivateResource> resource = encryptedResourceResolver.encryptAndResolvePath(
                 auth,
-                base.resolve(uri, Uri.build(""))
+                base.resolve(uri, new Uri(""))
         );
 
         return BasePrivateResource.forPrivate(resource.getResource().encryptedPath());

@@ -6,10 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +17,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.OutputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,8 +60,8 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
                 .build();
 
         s3.createBucket(bucketName);
-        root = new AbsoluteLocation<>(BasePrivateResource.forPrivate(URI.create("s3://" + bucketName)));
-        fileWithMsg = new AbsoluteLocation<>(BasePrivateResource.forPrivate(URI.create("./" + FILE))
+        root = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("s3://" + bucketName)));
+        fileWithMsg = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("./" + FILE))
                 .resolve(root));
     }
 
@@ -91,12 +87,12 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
         s3.putObject(bucketName, "deeper/more/level2.txt", "txt3");
 
         List<AbsoluteLocation<ResolvedResource>> resources = storageService.list(
-                new AbsoluteLocation<>(BasePrivateResource.forPrivate(URI.create("s3://" + bucketName + "/deeper")))
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("s3://" + bucketName + "/deeper")))
         ).collect(Collectors.toList());
 
         assertThat(resources)
                 .extracting(AbsoluteLocation::location)
-                .extracting(URI::toString)
+                .extracting(Uri::toASCIIString)
                 .containsExactlyInAnyOrder(
                         "s3://" + bucketName + "/deeper/level1.txt",
                         "s3://" + bucketName + "/deeper/more/level2.txt"

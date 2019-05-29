@@ -2,10 +2,10 @@ package de.adorsys.datasafe.directory.impl.profile.keys;
 
 import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.mockito.Mock;
 
-import java.net.URI;
 import java.security.KeyStore;
 import java.util.HashMap;
 
@@ -23,9 +22,9 @@ import static org.mockito.Mockito.when;
 class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
 
     private static final AbsoluteLocation<PrivateResource> PRIVATE = BasePrivateResource
-            .forAbsolutePrivate(URI.create("s3://bucket"));
+            .forAbsolutePrivate(new Uri("s3://bucket"));
     private static final AbsoluteLocation<PublicResource> PUBLIC = BasePublicResource
-            .forAbsolutePublic(URI.create("s3://bucket"));
+            .forAbsolutePublic(new Uri("s3://bucket"));
 
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
 

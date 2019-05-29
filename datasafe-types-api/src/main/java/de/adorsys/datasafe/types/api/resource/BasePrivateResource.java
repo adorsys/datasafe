@@ -15,12 +15,12 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class BasePrivateResource implements PrivateResource {
 
-    private static final URI URI_ROOT = Uri.build("./");
-    private static final URI EMPTY_URI = Uri.build("");
+    private static final Uri URI_ROOT = new Uri("./");
+    private static final Uri EMPTY_URI = new Uri("");
 
-    private final URI container;
-    private final URI encryptedPath;
-    private final URI decryptedPath;
+    private final Uri container;
+    private final Uri encryptedPath;
+    private final Uri decryptedPath;
 
     private BasePrivateResource() {
         this.container = URI_ROOT;
@@ -29,17 +29,21 @@ public class BasePrivateResource implements PrivateResource {
     }
 
     // TODO: Hide it
-    public BasePrivateResource(URI containerUri) {
+    public BasePrivateResource(Uri containerUri) {
         this.container = containerUri;
         this.decryptedPath = EMPTY_URI;
         this.encryptedPath = EMPTY_URI;
     }
 
     public static PrivateResource forPrivate(String path) {
-        return forPrivate(Uri.build(path));
+        return forPrivate(new Uri(path));
     }
 
     public static PrivateResource forPrivate(URI path) {
+        return forPrivate(new Uri(path));
+    }
+
+    public static PrivateResource forPrivate(Uri path) {
         if (path.isAbsolute()) {
             return new BasePrivateResource(path).resolve(EMPTY_URI, EMPTY_URI);
         }
@@ -48,21 +52,25 @@ public class BasePrivateResource implements PrivateResource {
     }
 
     public static AbsoluteLocation<PrivateResource> forAbsolutePrivate(URI path) {
+        return forAbsolutePrivate(new Uri(path));
+    }
+
+    public static AbsoluteLocation<PrivateResource> forAbsolutePrivate(Uri path) {
         return new AbsoluteLocation<>(new BasePrivateResource(path).resolve(EMPTY_URI, EMPTY_URI));
     }
 
     @Override
-    public URI encryptedPath() {
+    public Uri encryptedPath() {
         return encryptedPath;
     }
 
     @Override
-    public URI decryptedPath() {
+    public Uri decryptedPath() {
         return decryptedPath;
     }
 
     @Override
-    public PrivateResource resolve(URI encryptedPath, URI decryptedPath) {
+    public PrivateResource resolve(Uri encryptedPath, Uri decryptedPath) {
         if (encryptedPath.isAbsolute()) {
             throw new IllegalArgumentException("Encrypted path must be relative");
         }
@@ -75,8 +83,8 @@ public class BasePrivateResource implements PrivateResource {
     }
 
     @Override
-    public URI location() {
-        if (encryptedPath.toString().isEmpty()) {
+    public Uri location() {
+        if (encryptedPath.isEmpty()) {
             return container;
         }
 
@@ -86,9 +94,9 @@ public class BasePrivateResource implements PrivateResource {
     @Override
     public PrivateResource resolve(ResourceLocation absolute) {
         if (!container.isAbsolute()) {
-            URI absoluteUri = absolute.location();
-            if (!absoluteUri.getPath().endsWith("/")) {
-                absoluteUri = Uri.build(absoluteUri.toASCIIString() + "/");
+            Uri absoluteUri = absolute.location();
+            if (!absoluteUri.isDir()) {
+                absoluteUri = absoluteUri.asDir();
             }
 
             return new BasePrivateResource(
@@ -107,7 +115,7 @@ public class BasePrivateResource implements PrivateResource {
                 '}';
     }
 
-    private static URI resolveContainer(URI root, URI encryptedPath) {
+    private static Uri resolveContainer(Uri root, Uri encryptedPath) {
         String pathStr = encryptedPath.toASCIIString();
 
         if (pathStr.contains("/")) {
@@ -125,6 +133,6 @@ public class BasePrivateResource implements PrivateResource {
             return root;
         }
 
-        return Uri.build(rootStr.substring(0, pos));
+        return new Uri(rootStr.substring(0, pos));
     }
 }

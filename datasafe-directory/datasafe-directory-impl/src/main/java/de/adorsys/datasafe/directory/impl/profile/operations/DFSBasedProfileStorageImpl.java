@@ -1,17 +1,21 @@
 package de.adorsys.datasafe.directory.impl.profile.operations;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.storage.api.actions.*;
-import de.adorsys.datasafe.directory.api.types.*;
-import de.adorsys.datasafe.encrypiton.api.types.*;
-import de.adorsys.datasafe.types.api.actions.ListRequest;
+import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
+import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
+import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
+import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
+import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.storage.api.actions.*;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.security.KeyStore;
 import java.util.List;
 
@@ -33,8 +36,8 @@ public class DFSBasedProfileStorageImpl implements
         ProfileRetrievalService,
         ProfileRemovalService {
 
-    private static final URI PRIVATE = Uri.build("./profiles/private/");
-    private static final URI PUBLIC = Uri.build("./profiles/public/");
+    private static final Uri PRIVATE = new Uri("./profiles/private/");
+    private static final Uri PUBLIC = new Uri("./profiles/public/");
 
     private final StorageReadService readService;
     private final StorageWriteService writeService;

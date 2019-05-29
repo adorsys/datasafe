@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.directory.api.config;
 
-import java.net.URI;
+import de.adorsys.datasafe.types.api.resource.Uri;
 
 public interface DFSConfig {
 
     String keystorePassword();
-    URI systemRoot();
+    Uri systemRoot();
 }

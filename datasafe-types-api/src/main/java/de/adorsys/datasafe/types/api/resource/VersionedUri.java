@@ -3,8 +3,6 @@ package de.adorsys.datasafe.types.api.resource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.net.URI;
-
 /**
  * This is the wrapper for URI resource that contains a version tag.
  */
@@ -15,12 +13,12 @@ public class VersionedUri {
     /**
      * Path to the resource, that contains version (typically physical path to the resource).
      */
-    private final URI pathWithVersion;
+    private final Uri pathWithVersion;
 
     /**
      * Path to the resource without version (typically logical path used to identify latest resource version)
      */
-    private final URI pathWithoutVersion;
+    private final Uri pathWithoutVersion;
 
     /**
      * Version associated with the resource

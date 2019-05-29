@@ -29,10 +29,14 @@ public class ListRequest<T, L extends ResourceLocation> {
     private final L location;
 
     public static <T> ListRequest<T, PrivateResource> forDefaultPrivate(T owner, URI path) {
+        return forDefaultPrivate(owner, new Uri(path));
+    }
+
+    public static <T> ListRequest<T, PrivateResource> forDefaultPrivate(T owner, Uri path) {
         return new ListRequest<>(owner, BasePrivateResource.forPrivate(path));
     }
 
     public static <T> ListRequest<T, PrivateResource> forDefaultPrivate(T owner, String path) {
-        return new ListRequest<>(owner, BasePrivateResource.forPrivate(Uri.build(path)));
+        return new ListRequest<>(owner, BasePrivateResource.forPrivate(new Uri(path)));
     }
 }

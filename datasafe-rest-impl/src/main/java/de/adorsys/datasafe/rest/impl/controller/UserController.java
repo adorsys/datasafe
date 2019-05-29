@@ -1,18 +1,16 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
-import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.rest.impl.config.DatasafeProperties;
 import de.adorsys.datasafe.rest.impl.dto.UserCreateRequestDTO;
+import de.adorsys.datasafe.types.api.resource.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -58,11 +56,11 @@ public class UserController {
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(requestDTO.getPassword());
         UserIDAuth auth = new UserIDAuth(new UserID(requestDTO.getUserName()), readKeyPassword);
 
-        URI rootLocation = URI.create(properties.getSystemRoot());
+        Uri rootLocation = new Uri(properties.getSystemRoot());
         rootLocation = rootLocation.resolve(requestDTO.getUserName() + "/");
-        URI inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
+        Uri inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
 
-        URI keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
+        Uri keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
 
         AbsoluteLocation<PublicResource> publicKeys = access(
                 rootLocation.resolve("./" + PUBLIC_COMPONENT + "/keystore")
@@ -75,7 +73,7 @@ public class UserController {
                 .build()
         );
 
-        URI filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
+        Uri filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
 
         dataSafeService.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
                 .id(auth)
@@ -96,11 +94,11 @@ public class UserController {
         dataSafeService.userProfile().deregister(userIDAuth);
     }
 
-    private AbsoluteLocation<PublicResource> access(URI path) {
+    private AbsoluteLocation<PublicResource> access(Uri path) {
         return new AbsoluteLocation<>(new BasePublicResource(path));
     }
 
-    private AbsoluteLocation<PrivateResource> accessPrivate(URI path) {
-        return new AbsoluteLocation<>(new BasePrivateResource(path, URI.create(""), URI.create("")));
+    private AbsoluteLocation<PrivateResource> accessPrivate(Uri path) {
+        return new AbsoluteLocation<>(new BasePrivateResource(path, new Uri(""), new Uri("")));
     }
 }

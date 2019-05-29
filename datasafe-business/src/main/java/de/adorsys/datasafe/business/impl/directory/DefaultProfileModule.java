@@ -8,13 +8,13 @@ import dagger.Provides;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
-import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.directory.impl.profile.operations.DefaultUserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.resource.ResourceResolverImpl;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
 
 import javax.inject.Singleton;
 

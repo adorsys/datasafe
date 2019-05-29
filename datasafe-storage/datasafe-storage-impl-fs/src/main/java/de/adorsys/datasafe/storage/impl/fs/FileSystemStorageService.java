@@ -2,10 +2,7 @@ package de.adorsys.datasafe.storage.impl.fs;
 
 import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.storage.api.StorageService;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.BaseResolvedResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,7 +25,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class FileSystemStorageService implements StorageService {
 
-    private final URI dir;
+    private final Uri dir;
 
     /**
      * Lists resources and returns their location without access credentials.
@@ -37,7 +34,7 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation path) {
         log.debug("List file request: {}", Log.secure(path));
-        Path filePath = resolve(path.location(), false);
+        Path filePath = resolve(path.location().asURI(), false);
         log.debug("List file: {}", Log.secure(filePath));
 
         // FS should be compatible with s3 behavior:
@@ -50,7 +47,7 @@ public class FileSystemStorageService implements StorageService {
                 .filter(it -> !it.toFile().isDirectory())
                 .map(it -> new AbsoluteLocation<>(
                         new BaseResolvedResource(
-                                new BasePrivateResource(it.toUri()),
+                                new BasePrivateResource(new Uri(it.toUri())),
                                 Instant.ofEpochMilli(it.toFile().lastModified()))
                         )
                 );
@@ -60,7 +57,7 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public InputStream read(AbsoluteLocation path) {
         log.debug("Read file request: {}", Log.secure(path));
-        Path filePath = resolve(path.location(), false);
+        Path filePath = resolve(path.location().asURI(), false);
         log.debug("Read file: {}", Log.secure(filePath));
         return MoreFiles.asByteSource(filePath, StandardOpenOption.READ).openStream();
     }
@@ -69,7 +66,7 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public OutputStream write(AbsoluteLocation path) {
         log.debug("Write file request: {}", Log.secure(path.location()));
-        Path filePath = resolve(path.location(), true);
+        Path filePath = resolve(path.location().asURI(), true);
         log.debug("Write file: {}", Log.secure(filePath));
         return MoreFiles.asByteSink(filePath, StandardOpenOption.CREATE).openStream();
     }
@@ -82,26 +79,26 @@ public class FileSystemStorageService implements StorageService {
             return;
         }
 
-        Path path = resolve(location.location(), false);
+        Path path = resolve(location.location().asURI(), false);
         boolean isFile = !path.toFile().isDirectory();
-        Files.delete(resolve(location.location(), false));
+        Files.delete(resolve(location.location().asURI(), false));
         log.debug("deleted {} at: {}", isFile ? "file" : "directory", Log.secure(location));
     }
 
     @Override
     public boolean objectExists(AbsoluteLocation location) {
-        boolean exists = Files.exists(resolve(location.location(), false));
+        boolean exists = Files.exists(resolve(location.location().asURI(), false));
         log.debug("exists {} directory at: {}", exists, Log.secure(location));
         return exists;
     }
 
     protected Path resolve(URI uri, boolean mkDirs) {
-        Path path = Paths.get(dir.resolve(uri));
+        Path path = Paths.get(dir.resolve(uri).asURI());
         if (!path.getParent().toFile().exists() && mkDirs) {
             log.debug("Creating directories for: {}", Log.secure(path));
             path.getParent().toFile().mkdirs();
         }
 
-        return Paths.get(dir.resolve(uri));
+        return Paths.get(dir.resolve(uri).asURI());
     }
 }

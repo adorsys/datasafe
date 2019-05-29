@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.types.api.utils;
 
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
@@ -58,6 +59,14 @@ public class Log {
         }
 
         return secure(path.toUri());
+    }
+
+    public static String secure(Uri uri) {
+        if (uri == null) {
+            return null;
+        }
+
+        return secure(uri.getWrapped());
     }
 
     public static String secure(URI uri) {

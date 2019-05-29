@@ -5,8 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.validateMockitoUsage;
-
 /**
  * This class configures Mockito so that it will inject annotated mocks and display exceptions always
  * at correct places.

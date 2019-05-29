@@ -16,7 +16,6 @@ import lombok.SneakyThrows;
 
 import javax.inject.Inject;
 import java.io.InputStream;
-import java.net.URI;
 
 /**
  * Default latest link service that stores latest resource links within
@@ -64,8 +63,8 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
         PrivateResource userPrivate = privateProfile.getPrivateStorage().getResource();
 
         PrivateResource resource = privateProfile.getPrivateStorage().getResource().resolve(
-                Uri.build(relativeToPrivateUri),
-                Uri.build("")
+                new Uri(relativeToPrivateUri),
+                new Uri("")
         );
 
         return resolver.decryptAndResolvePath(owner, resource, userPrivate);
