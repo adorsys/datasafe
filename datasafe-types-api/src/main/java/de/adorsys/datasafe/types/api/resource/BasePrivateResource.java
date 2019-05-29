@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.types.api.resource;
 
+import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.net.URI;
 
@@ -12,7 +12,6 @@ import java.net.URI;
  * resource location
  * 3. decryptedPath - decrypted representation of encryptedPath component.
  */
-@ToString
 @RequiredArgsConstructor
 public class BasePrivateResource implements PrivateResource {
 
@@ -97,6 +96,15 @@ public class BasePrivateResource implements PrivateResource {
             );
         }
         return new BasePrivateResource(absolute.location(), encryptedPath, decryptedPath);
+    }
+
+    @Override
+    public String toString() {
+        return "BasePrivateResource{" +
+                "container=" + Log.secure(container) +
+                ", encryptedPath=" + Log.secure(encryptedPath) +
+                ", decryptedPath=" + Log.secure(decryptedPath) +
+                '}';
     }
 
     private static URI resolveContainer(URI root, URI encryptedPath) {

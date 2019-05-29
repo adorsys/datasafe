@@ -1,14 +1,13 @@
 package de.adorsys.datasafe.types.api.resource;
 
+import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.net.URI;
 
 /**
  * Base class for public (shareable) resource.
  */
-@ToString
 @RequiredArgsConstructor
 public class BasePublicResource implements PublicResource {
 
@@ -26,5 +25,12 @@ public class BasePublicResource implements PublicResource {
     @Override
     public PublicResource resolve(ResourceLocation location) {
         return new BasePublicResource(location.location().resolve(uri));
+    }
+
+    @Override
+    public String toString() {
+        return "BasePublicResource{" +
+                "uri=" + Log.secure(uri) +
+                '}';
     }
 }
