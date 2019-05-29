@@ -33,8 +33,8 @@ public class DFSBasedProfileStorageImpl implements
         ProfileRetrievalService,
         ProfileRemovalService {
 
-    private static final URI PRIVATE = URI.create("./profiles/private/");
-    private static final URI PUBLIC = URI.create("./profiles/public/");
+    private static final URI PRIVATE = Uri.build("./profiles/private/");
+    private static final URI PUBLIC = Uri.build("./profiles/public/");
 
     private final StorageReadService readService;
     private final StorageWriteService writeService;

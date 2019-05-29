@@ -11,6 +11,7 @@ import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
@@ -63,8 +64,8 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
         PrivateResource userPrivate = privateProfile.getPrivateStorage().getResource();
 
         PrivateResource resource = privateProfile.getPrivateStorage().getResource().resolve(
-                URI.create(relativeToPrivateUri),
-                URI.create("")
+                Uri.build(relativeToPrivateUri),
+                Uri.build("")
         );
 
         return resolver.decryptAndResolvePath(owner, resource, userPrivate);

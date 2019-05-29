@@ -3,6 +3,7 @@ package de.adorsys.datasafe.types.api.actions;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
@@ -32,6 +33,6 @@ public class ListRequest<T, L extends ResourceLocation> {
     }
 
     public static <T> ListRequest<T, PrivateResource> forDefaultPrivate(T owner, String path) {
-        return new ListRequest<>(owner, BasePrivateResource.forPrivate(URI.create(path)));
+        return new ListRequest<>(owner, BasePrivateResource.forPrivate(Uri.build(path)));
     }
 }

@@ -90,6 +90,14 @@ public class Log {
         return secure(Arrays.asList(values), delim);
     }
 
+    public static String secure(String value, String delim) {
+        if (null == value) {
+            return null;
+        }
+
+        return secure(value.split(delim), delim);
+    }
+
     public static String secure(Object value) {
         if (value == null) {
             return null;

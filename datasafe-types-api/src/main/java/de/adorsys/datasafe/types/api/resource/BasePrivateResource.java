@@ -15,8 +15,8 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class BasePrivateResource implements PrivateResource {
 
-    private static final URI URI_ROOT = URI.create("./");
-    private static final URI EMPTY_URI = URI.create("");
+    private static final URI URI_ROOT = Uri.build("./");
+    private static final URI EMPTY_URI = Uri.build("");
 
     private final URI container;
     private final URI encryptedPath;
@@ -36,7 +36,7 @@ public class BasePrivateResource implements PrivateResource {
     }
 
     public static PrivateResource forPrivate(String path) {
-        return forPrivate(URI.create(path));
+        return forPrivate(Uri.build(path));
     }
 
     public static PrivateResource forPrivate(URI path) {
@@ -88,7 +88,7 @@ public class BasePrivateResource implements PrivateResource {
         if (!container.isAbsolute()) {
             URI absoluteUri = absolute.location();
             if (!absoluteUri.getPath().endsWith("/")) {
-                absoluteUri = URI.create(absoluteUri.toASCIIString() + "/");
+                absoluteUri = Uri.build(absoluteUri.toASCIIString() + "/");
             }
 
             return new BasePrivateResource(
@@ -125,6 +125,6 @@ public class BasePrivateResource implements PrivateResource {
             return root;
         }
 
-        return URI.create(rootStr.substring(0, pos));
+        return Uri.build(rootStr.substring(0, pos));
     }
 }

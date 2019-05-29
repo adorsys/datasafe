@@ -2,10 +2,7 @@ package de.adorsys.datasafe.directory.impl.profile.serde;
 
 import com.google.gson.*;
 import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.BasePublicResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.*;
 import lombok.experimental.Delegate;
 
 import javax.inject.Inject;
@@ -24,7 +21,7 @@ public class GsonSerde {
         gsonBuilder.registerTypeAdapter(
                 PublicResource.class,
                 (JsonDeserializer<PublicResource>)
-                        (elem, type, ctx) -> new BasePublicResource(URI.create(elem.getAsString()))
+                        (elem, type, ctx) -> new BasePublicResource(Uri.build(elem.getAsString()))
         );
 
         gsonBuilder.registerTypeAdapter(
@@ -35,7 +32,7 @@ public class GsonSerde {
         gsonBuilder.registerTypeAdapter(
                 PrivateResource.class,
                 (JsonDeserializer<PrivateResource>)
-                        (elem, type, ctx) -> new BasePrivateResource(URI.create(elem.getAsString()))
+                        (elem, type, ctx) -> new BasePrivateResource(Uri.build(elem.getAsString()))
         );
 
         gsonBuilder.registerTypeAdapter(

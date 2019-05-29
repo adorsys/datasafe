@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
 import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.resource.VersionedUri;
 
 import javax.inject.Inject;
@@ -25,7 +26,7 @@ public class DefaultVersionEncoderDecoder implements VersionEncoderDecoder {
         String version = UUID.randomUUID().toString();
 
         return new VersionedUri(
-                URI.create(resource.toASCIIString() + SEPARATOR + version),
+                Uri.build(resource.toASCIIString() + SEPARATOR + version),
                 resource,
                 version
         );

@@ -11,6 +11,7 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +79,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
     private PrivateResource encryptPath(UserIDAuth auth, URI uri, PrivateResource base) {
         AbsoluteLocation<PrivateResource> resource = encryptedResourceResolver.encryptAndResolvePath(
                 auth,
-                base.resolve(uri, URI.create(""))
+                base.resolve(uri, Uri.build(""))
         );
 
         return BasePrivateResource.forPrivate(resource.getResource().encryptedPath());

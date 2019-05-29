@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionConfig;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,7 +63,6 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         return encryptionConfig.byteSerializer(cipher.doFinal(str.getBytes(UTF_8)));
     }
 
-    @SneakyThrows
     private static URI processURIparts(URI bucketPath, Function<String, String> process) {
         StringBuilder result = new StringBuilder();
 
@@ -74,7 +73,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         }
 
         if (path.isEmpty()) {
-            return new URI(result.toString());
+            return Uri.build(result.toString());
         }
         boolean hasStarted = false;
         for (String part : path.split(PATH_SEPARATOR)) {
@@ -88,7 +87,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
             hasStarted = true;
         }
 
-        return new URI(result.toString());
+        return Uri.build(result.toString());
     }
 
     private static void validateArgs(SecretKey secretKey, URI bucketPath) {

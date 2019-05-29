@@ -6,6 +6,7 @@ import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 
 import javax.inject.Inject;
 import java.net.URI;
@@ -87,7 +88,7 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
             return relative;
         }
 
-        return URI.create(root.encryptedPath().toString() + "/").resolve(relative);
+        return Uri.build(root.encryptedPath().toString() + "/").resolve(relative);
     }
 
     private static URI relativize(URI root, URI resource) {
@@ -99,6 +100,6 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
         String resourceString = resource.toASCIIString();
 
         String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
-        return URI.create(relative);
+        return Uri.build(relative);
     }
 }
