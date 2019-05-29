@@ -4,6 +4,9 @@ import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
 
+/**
+ * Wrapper that represents username.
+ */
 @EqualsAndHashCode(of = "value")
 public class UserID {
 

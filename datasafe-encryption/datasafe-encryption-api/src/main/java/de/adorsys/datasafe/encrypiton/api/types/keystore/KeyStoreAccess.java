@@ -3,9 +3,10 @@ package de.adorsys.datasafe.encrypiton.api.types.keystore;
 import java.security.KeyStore;
 
 /**
- * Created by peter on 08.01.18.
+ * Wrapper for keystore with credentials at least to read public keys in it.
  */
 public class KeyStoreAccess {
+
     private final KeyStore keyStore;
     private final KeyStoreAuth keyStoreAuth;
 

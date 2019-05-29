@@ -16,14 +16,19 @@ import java.util.Base64;
  * This class hides sensitive information that may appear in logs. While hiding information it preserves the capability
  * to find the same words in logs - that is useful for debugging.
  * How it obscures sensitive information depends on SECURE_LOGS system property:
- * SECURE_LOGS=off - nothing is obscured
+ * SECURE_LOGS=off,0,false - nothing is obscured
  * SECURE_LOGS=stars - only first 2 symbols and last 2 symbols, i.e. password -> pa****rd, cat -> ****
  * all other values of SECURE_LOGS - input content will be hashed with SHA-256
+ * For highly sensitive information there is additional flag SECURE_SENSITIVE:
+ * SECURE_SENSITIVE=off,0,false - passwords are not obscured in logs
+ * SECURE_SENSITIVE=hash - first 4 chars of SHA-256 hashed value is logged
+ * all other values yield string with stars
  */
 @UtilityClass
 public class Log {
 
     static String secureLogs = System.getProperty("SECURE_LOGS");
+    static String secureSensitive = System.getProperty("SECURE_SENSITIVE");
     private static MessageDigest digest = getDigest();
     private static Base64.Encoder encoder = Base64.getEncoder();
 
@@ -113,7 +118,7 @@ public class Log {
         }
 
         String s = value.toString();
-        if ("0".equals(secureLogs) || "false".equalsIgnoreCase(secureLogs) || "off".equalsIgnoreCase(secureLogs)) {
+        if (isDisabled(secureLogs)) {
             return s;
         }
 
@@ -125,9 +130,39 @@ public class Log {
         }
 
         // by default return hash
+        return computeSha(s);
+    }
+
+    /**
+     * Returns only couple of bytes of hash from sensitive data
+     */
+    public static String secureSensitive(Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        String str = value.toString();
+        if (isDisabled(secureSensitive)) {
+            return str;
+        }
+
+        if ("hash".equalsIgnoreCase(secureSensitive)) {
+            return computeSha(str).substring(0, 4);
+        }
+
+        return "****";
+    }
+
+    private static String computeSha(String s) {
         byte[] originalBytes = s.getBytes(StandardCharsets.UTF_8);
         byte[] hash = digest.digest(originalBytes);
         return encoder.encodeToString(hash);
+    }
+
+    private static boolean isDisabled(String value) {
+        return "0".equals(value)
+                || "false".equalsIgnoreCase(value)
+                || "off".equalsIgnoreCase(value);
     }
 
     @SneakyThrows

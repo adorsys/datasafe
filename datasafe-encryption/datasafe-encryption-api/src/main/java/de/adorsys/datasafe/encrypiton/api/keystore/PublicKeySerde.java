@@ -7,6 +7,17 @@ import java.security.PublicKey;
  */
 public interface PublicKeySerde {
 
+    /**
+     * Deserializes public key out of its string representation.
+     * @param encoded String representation of key (typically Base64 encoded bytes)
+     * @return Deserialized public key
+     */
     PublicKey readPubKey(String encoded);
+
+    /**
+     * Serializes public key out into string representation.
+     * @param publicKey Public key to serialize
+     * @return String representation of public key (typically Base64 encoded bytes)
+     */
     String writePubKey(PublicKey publicKey);
 }

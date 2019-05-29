@@ -89,4 +89,36 @@ class LogTest {
                 new AbsoluteLocation<>(BasePrivateResource.forPrivate(TEST_URI_ENDS_SLASH));
         assertThat(Log.secure(resource)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er/");
     }
+
+    @Test
+    void disabledHidingSecret() {
+        Log.secureSensitive = "OFF";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo(TEST_STRING);
+    }
+
+    @Test
+    void hidingSecretWithHash() {
+        Log.secureSensitive = "HASH";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("9eRM");
+    }
+
+    @Test
+    void hidingSecretTrue() {
+        Log.secureSensitive = "TRUE";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+        Log.secureSensitive = "true";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+    }
+
+    @Test
+    void hidingSecretNull() {
+        Log.secureSensitive = null;
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+    }
+
+    @Test
+    void hidingSecretEmpty() {
+        Log.secureSensitive = "";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+    }
 }
