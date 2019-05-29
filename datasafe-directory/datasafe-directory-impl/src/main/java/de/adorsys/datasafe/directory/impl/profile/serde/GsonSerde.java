@@ -37,13 +37,13 @@ public class GsonSerde {
         gsonBuilder.registerTypeAdapter(
                 PublicResource.class,
                 (JsonSerializer<PublicResource>)
-                        (elem, type, ctx) -> new JsonPrimitive(elem.location().asURI().toString())
+                        (elem, type, ctx) -> new JsonPrimitive(elem.location().toASCIIString())
         );
 
         gsonBuilder.registerTypeAdapter(
                 PrivateResource.class,
                 (JsonSerializer<PrivateResource>)
-                        (elem, type, ctx) -> new JsonPrimitive(elem.location().asURI().toString())
+                        (elem, type, ctx) -> new JsonPrimitive(elem.location().toASCIIString())
         );
 
         gsonBuilder.registerTypeAdapter(
