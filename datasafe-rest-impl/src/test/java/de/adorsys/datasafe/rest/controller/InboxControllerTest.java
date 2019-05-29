@@ -3,7 +3,7 @@ package de.adorsys.datasafe.rest.controller;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.inbox.impl.actions.InboxServiceImpl;
 import lombok.SneakyThrows;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -41,7 +41,7 @@ public class InboxControllerTest {
     @MockBean
     private InboxServiceImpl inboxService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         when(dataSafeService.inboxService()).thenReturn(inboxService);

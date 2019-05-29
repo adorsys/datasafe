@@ -6,13 +6,15 @@
 
     <modules>
         <module>datasafe-types-api</module>
-        <module>datasafe-business</module>
         <module>datasafe-metainfo-version</module>
         <module>datasafe-privatestore</module>
         <module>datasafe-directory</module>
         <module>datasafe-encryption</module>
         <module>datasafe-inbox</module>
         <module>datasafe-storage</module>
+        <module>datasafe-business</module>
+
+        <!-- done as last to get a nice codecoverage, see data-business/pom.xml -->
         <module>datasafe-rest-impl</module>
     </modules>
 

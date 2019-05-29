@@ -134,6 +134,7 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
@@ -164,6 +165,7 @@
             <artifactId>drools-compiler</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>

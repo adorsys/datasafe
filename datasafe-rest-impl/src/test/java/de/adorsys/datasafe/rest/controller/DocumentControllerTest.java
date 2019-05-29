@@ -3,7 +3,9 @@ package de.adorsys.datasafe.rest.controller;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
 import lombok.SneakyThrows;
-import org.junit.Before;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -23,6 +25,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,11 +43,13 @@ public class DocumentControllerTest {
     @MockBean
     private PrivateSpaceServiceImpl privateSpaceService;
 
-    @Before
+    @BeforeEach
     public void setup() {
+        log.info("************************** SETUP IS CALLED *************");
         MockitoAnnotations.initMocks(this);
         when(dataSafeService.privateService()).thenReturn(privateSpaceService);
     }
+
 
     @SneakyThrows
     @Test
