@@ -37,8 +37,8 @@ public class BaseResolvedResource implements ResolvedResource {
      * @return New resource that has {@code absolute} as the container
      */
     @Override
-    public ResolvedResource resolve(ResourceLocation absolute) {
-        return new BaseResolvedResource(resource.resolve(absolute), modifiedAt);
+    public ResolvedResource resolveFrom(ResourceLocation absolute) {
+        return new BaseResolvedResource(resource.resolveFrom(absolute), modifiedAt);
     }
 
     /**

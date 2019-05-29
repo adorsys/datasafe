@@ -35,7 +35,7 @@ public class BasePublicResource implements PublicResource {
     }
 
     @Override
-    public PublicResource resolve(ResourceLocation location) {
+    public PublicResource resolveFrom(ResourceLocation location) {
         return new BasePublicResource(location.location().resolve(uri));
     }
 

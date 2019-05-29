@@ -14,6 +14,7 @@ public interface ResourceLocation<T> {
      * Rebases/resolves relative uri - called when resolving relative path against absolute.
      * @param absolute uri to resolve against
      * @return path of resource relative to the absolute uri
+     * I.e. when calling "/path/to/files/".resolveFrom("s3://bucket/") result will be s3://bucket/path/to/files/
      */
-    T resolve(ResourceLocation absolute);
+    T resolveFrom(ResourceLocation absolute);
 }

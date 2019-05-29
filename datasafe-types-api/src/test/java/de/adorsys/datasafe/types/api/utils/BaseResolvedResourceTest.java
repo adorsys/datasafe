@@ -24,7 +24,7 @@ class BaseResolvedResourceTest {
         BaseResolvedResource baseResolvedResource = new BaseResolvedResource(privateResource, i);
         Assertions.assertEquals(
                 uriString + "/" + uriString,
-                baseResolvedResource.resolve(privateResource).location().toASCIIString()
+                baseResolvedResource.resolveFrom(privateResource).location().toASCIIString()
         );
         Assertions.assertEquals(uriString, baseResolvedResource.asPrivate().location().toASCIIString());
         Assertions.assertEquals(uriString, baseResolvedResource.location().toASCIIString());

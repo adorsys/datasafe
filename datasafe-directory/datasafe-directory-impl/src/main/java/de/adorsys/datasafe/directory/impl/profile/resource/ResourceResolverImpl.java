@@ -59,6 +59,6 @@ public class ResourceResolverImpl implements ResourceResolver {
             return new AbsoluteLocation<>(resource);
         }
 
-        return new AbsoluteLocation<>(resource.resolve(resolveTo.get()));
+        return new AbsoluteLocation<>(resource.resolveFrom(resolveTo.get()));
     }
 }

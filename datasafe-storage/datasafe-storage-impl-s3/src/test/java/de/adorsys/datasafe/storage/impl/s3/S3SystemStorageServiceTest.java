@@ -62,7 +62,7 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
         s3.createBucket(bucketName);
         root = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("s3://" + bucketName)));
         fileWithMsg = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("./" + FILE))
-                .resolve(root));
+                .resolveFrom(root));
     }
 
     @BeforeEach

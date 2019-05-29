@@ -91,7 +91,7 @@ public class S3StorageService implements StorageService {
             return BasePrivateResource.forPrivate(root.location());
         }
 
-        return BasePrivateResource.forPrivate(relUrl).resolve(root);
+        return BasePrivateResource.forPrivate(relUrl).resolveFrom(root);
     }
 
     /**

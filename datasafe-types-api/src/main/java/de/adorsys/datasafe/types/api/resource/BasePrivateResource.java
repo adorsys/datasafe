@@ -92,7 +92,7 @@ public class BasePrivateResource implements PrivateResource {
     }
 
     @Override
-    public PrivateResource resolve(ResourceLocation absolute) {
+    public PrivateResource resolveFrom(ResourceLocation absolute) {
         if (!container.isAbsolute()) {
             Uri absoluteUri = absolute.location();
             if (!absoluteUri.isDir()) {

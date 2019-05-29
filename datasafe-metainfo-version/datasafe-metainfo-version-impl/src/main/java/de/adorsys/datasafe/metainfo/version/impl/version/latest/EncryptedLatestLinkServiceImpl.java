@@ -48,7 +48,7 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
         );
 
         return new AbsoluteLocation<>(
-                encryptedPath.resolve(privateProfile.getDocumentVersionStorage().getResource())
+                encryptedPath.resolveFrom(privateProfile.getDocumentVersionStorage().getResource())
         );
     }
 

@@ -21,8 +21,8 @@ public class AbsoluteLocation<T extends ResourceLocation<T>> implements Resource
     }
 
     @Override
-    public T resolve(ResourceLocation absolute) {
-        return resource.resolve(absolute);
+    public T resolveFrom(ResourceLocation absolute) {
+        return resource.resolveFrom(absolute);
     }
 
     @Override
