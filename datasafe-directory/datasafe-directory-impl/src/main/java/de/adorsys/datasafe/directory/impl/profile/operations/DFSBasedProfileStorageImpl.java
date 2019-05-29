@@ -26,10 +26,10 @@ import java.io.OutputStream;
 import java.security.KeyStore;
 import java.util.List;
 
+// FIXME: it should be broken down.
 /**
- * FIXME: it should be broken down.
+ * Profile operations for user profile located on DFS.
  */
-
 @Slf4j
 public class DFSBasedProfileStorageImpl implements
         ProfileRegistrationService,
@@ -66,6 +66,9 @@ public class DFSBasedProfileStorageImpl implements
         this.userProfileCache = userProfileCache;
     }
 
+    /**
+     * Register users' public profile at the location specified by {@link DFSSystem}, overwrites it if exists.
+     */
     @Override
     @SneakyThrows
     public void registerPublic(CreateUserPublicProfile profile) {
@@ -75,6 +78,10 @@ public class DFSBasedProfileStorageImpl implements
         log.debug("Register public {}", profile.getId());
     }
 
+    /**
+     * Register users' private profile at the location specified by {@link DFSSystem}, creates keystore and publishes
+     * public keys, but only if keystore doesn't exist.
+     */
     @Override
     @SneakyThrows
     public void registerPrivate(CreateUserPrivateProfile profile) {
@@ -96,6 +103,9 @@ public class DFSBasedProfileStorageImpl implements
         publishPublicKeysIfNeeded(profile.getPublishPubKeysTo(), publicKeys);
     }
 
+    /**
+     * Removes users' public and private profile, keystore, public keys and INBOX and private files
+     */
     @Override
     public void deregister(UserIDAuth userID) {
         if (!userExists(userID.getUserID())) {
@@ -117,11 +127,9 @@ public class DFSBasedProfileStorageImpl implements
         log.debug("Deregistered user {}", userID);
     }
 
-    private void removeStorageByLocation(UserIDAuth userID, AbsoluteLocation<PrivateResource> privateStorage) {
-        listService.list(new ListRequest<>(userID, privateStorage).getLocation())
-                .forEach(removeService::remove);
-    }
-
+    /**
+     * Reads user public profile from DFS, uses {@link UserProfileCache} for caching it
+     */
     @Override
     public UserPublicProfile publicProfile(UserID ofUser) {
         UserPublicProfile userPublicProfile = userProfileCache.getPublicProfile().computeIfAbsent(
@@ -132,6 +140,9 @@ public class DFSBasedProfileStorageImpl implements
         return userPublicProfile;
     }
 
+    /**
+     * Reads user private profile from DFS, uses {@link UserProfileCache} for caching it
+     */
     @Override
     public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
         UserPrivateProfile userPrivateProfile = userProfileCache.getPrivateProfile().computeIfAbsent(
@@ -142,10 +153,18 @@ public class DFSBasedProfileStorageImpl implements
         return userPrivateProfile;
     }
 
+    /**
+     * Checks if user exists by validating that his both public and private profile files do exist.
+     */
     @Override
     public boolean userExists(UserID ofUser) {
         return checkService.objectExists(locatePrivateProfile(ofUser)) &&
                 checkService.objectExists(locatePublicProfile(ofUser));
+    }
+
+    private void removeStorageByLocation(UserIDAuth userID, AbsoluteLocation<PrivateResource> privateStorage) {
+        listService.list(new ListRequest<>(userID, privateStorage).getLocation())
+                .forEach(removeService::remove);
     }
 
     @SneakyThrows

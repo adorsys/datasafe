@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.impl.profile.keys;
 
+import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
@@ -14,6 +15,7 @@ import lombok.SneakyThrows;
 
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
+import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
 
@@ -30,23 +32,24 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     private final DFSSystem dfsSystem;
     private final BucketAccessService bucketAccessService;
     private final ProfileRetrievalService profile;
-    private final StreamReadUtil streamReadUtil;
     private final StorageReadService readService;
 
     @Inject
     public DFSPrivateKeyServiceImpl(KeyStoreCache keystoreCache,
                                     KeyStoreService keyStoreService, DFSSystem dfsSystem,
                                     BucketAccessService bucketAccessService, ProfileRetrievalService profile,
-                                    StreamReadUtil streamReadUtil, StorageReadService readService) {
+                                    StorageReadService readService) {
         this.keystoreCache = keystoreCache;
         this.keyStoreService = keyStoreService;
         this.dfsSystem = dfsSystem;
         this.bucketAccessService = bucketAccessService;
         this.profile = profile;
-        this.streamReadUtil = streamReadUtil;
         this.readService = readService;
     }
 
+    /**
+     * Reads path encryption secret key from DFS and caches the result.
+     */
     @Override
     public SecretKeyIDWithKey pathEncryptionSecretKey(UserIDAuth forUser) {
         return new SecretKeyIDWithKey(
@@ -55,6 +58,9 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         );
     }
 
+    /**
+     * Reads document encryption secret key from DFS and caches the result.
+     */
     @Override
     public SecretKeyIDWithKey documentEncryptionSecretKey(UserIDAuth forUser) {
         return new SecretKeyIDWithKey(
@@ -63,10 +69,13 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         );
     }
 
+    /**
+     * Reads private or secret key from DFS and caches the keystore associated with it.
+     */
     @Override
     @SneakyThrows
     public Key keyById(UserIDAuth forUser, String keyId) {
-        KeyStore keyStore = keystoreCache.getPrivateKeys().computeIfAbsent(
+        KeyStore keyStore = keystoreCache.getKeystore().computeIfAbsent(
                 forUser.getUserID(),
                 userId -> keystore(forUser)
         );
@@ -77,18 +86,22 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         );
     }
 
+    @SneakyThrows
     private KeyStore keystore(UserIDAuth forUser) {
         AbsoluteLocation<PrivateResource> access = bucketAccessService.privateAccessFor(
                 forUser,
                 profile.privateProfile(forUser).getKeystore()
         );
 
-        byte[] payload = streamReadUtil.readStream(readService.read(access));
+        byte[] payload;
+        try (InputStream is = readService.read(access)) {
+            payload = ByteStreams.toByteArray(is);
+        }
 
         return keyStoreService.deserialize(
                 payload,
                 forUser.getUserID().getValue(),
-                dfsSystem.systemKeystoreAuth()
+                dfsSystem.privateKeyStoreAuth(forUser).getReadStorePassword()
         );
     }
 }

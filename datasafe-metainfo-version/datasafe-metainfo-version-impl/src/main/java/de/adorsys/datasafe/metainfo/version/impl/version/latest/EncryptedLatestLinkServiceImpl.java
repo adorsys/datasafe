@@ -12,7 +12,9 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.InputStream;
@@ -23,6 +25,7 @@ import java.io.InputStream;
  * {@link EncryptedResourceResolver} and point to versioned blobs within privatespace (so that link
  * content is always relative resource location inside privatespace)
  */
+@Slf4j
 public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkService {
 
     private final ProfileRetrievalService profiles;
@@ -41,6 +44,11 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
     public AbsoluteLocation<PrivateResource> resolveLatestLinkLocation(
             UserIDAuth owner, PrivateResource resource) {
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
+
+        if (null == privateProfile.getDocumentVersionStorage()) {
+            log.error("Missing version storage for {}", Log.secure(owner.getUserID().getValue()));
+            throw new IllegalStateException("User private profile is missing document version storage");
+        }
 
         AbsoluteLocation<PrivateResource> encryptedPath = resolver.encryptAndResolvePath(
                 owner,

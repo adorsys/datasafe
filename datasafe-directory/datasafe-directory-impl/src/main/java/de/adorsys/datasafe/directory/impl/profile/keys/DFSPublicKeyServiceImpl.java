@@ -39,6 +39,9 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
         this.serde = serde;
     }
 
+    /**
+     * Reads users' public key from DFS and caches the result.
+     */
     @Override
     public PublicKeyIDWithPublicKey publicKey(UserID forUser) {
         return keystoreCache.getPublicKeys().computeIfAbsent(

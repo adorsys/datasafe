@@ -8,25 +8,45 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+/**
+ * Request to create private user profile part.
+ */
 @Value
 @Builder
 public class CreateUserPrivateProfile {
 
+    /**
+     * Users' credentials used to access underlying systems.
+     */
     @NonNull
     private final UserIDAuth id;
 
+    /**
+     * Users' keystore location
+     */
     @NonNull
     private final AbsoluteLocation<PrivateResource> keystore;
 
+    /**
+     * Users' privatespace location (where his private files are stored)
+     */
     @NonNull
     private final AbsoluteLocation<PrivateResource> privateStorage;
 
+    /**
+     * Users' INBOX as privatespace location (INBOX folder with full control)
+     */
     @NonNull
     private final AbsoluteLocation<PrivateResource> inboxWithWriteAccess;
 
-    @NonNull
+    /**
+     * Where to store users' links to latest documents if software versioning is enabled.
+     */
     private final AbsoluteLocation<PrivateResource> documentVersionStorage;
 
+    /**
+     * Where to publish users' public keys if it is necessary.
+     */
     private final AbsoluteLocation<PublicResource> publishPubKeysTo;
 
     public UserPrivateProfile removeAccess() {

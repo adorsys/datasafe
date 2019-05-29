@@ -56,7 +56,7 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
     void init() {
         when(profile.publicProfile(auth.getUserID())).thenReturn(publicProfile);
         when(profile.privateProfile(auth)).thenReturn(privateProfile);
-        when(keystoreCache.getPrivateKeys()).thenReturn(new HashMap<>(ImmutableMap.of(
+        when(keystoreCache.getKeystore()).thenReturn(new HashMap<>(ImmutableMap.of(
                 auth.getUserID(),
                 privateKeystore))
         );

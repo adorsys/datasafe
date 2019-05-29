@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 
 /**
- * Specifies how to access desired user resource (i.e. private bucket).
+ * Specifies how to access desired user resource (i.e. private bucket). By default is no-op - simply wraps
+ * resource into {@link AbsoluteLocation}
  */
-
 @Slf4j
 public class BucketAccessServiceImpl implements BucketAccessService {
 
@@ -19,15 +19,21 @@ public class BucketAccessServiceImpl implements BucketAccessService {
     public BucketAccessServiceImpl() {
     }
 
+    /**
+     * Do nothing, just wrap.
+     */
     @Override
-    public AbsoluteLocation<PrivateResource> privateAccessFor(UserIDAuth user, ResourceLocation bucket) {
-        log.debug("get private access for user {} and bucket {}", user, bucket);
-        return new AbsoluteLocation<>(new BasePrivateResource(bucket.location()));
+    public AbsoluteLocation<PrivateResource> privateAccessFor(UserIDAuth user, ResourceLocation resource) {
+        log.debug("get private access for user {} and bucket {}", user, resource);
+        return new AbsoluteLocation<>(new BasePrivateResource(resource.location()));
     }
 
+    /**
+     * Do nothing, just wrap.
+     */
     @Override
-    public AbsoluteLocation<PublicResource> publicAccessFor(UserID user, ResourceLocation bucket) {
-        log.debug("get public access for user {} and bucket {}", user, bucket.location());
-        return new AbsoluteLocation<>(new BasePublicResource(bucket.location()));
+    public AbsoluteLocation<PublicResource> publicAccessFor(UserID user, ResourceLocation resource) {
+        log.debug("get public access for user {} and bucket {}", user, resource.location());
+        return new AbsoluteLocation<>(new BasePublicResource(resource.location()));
     }
 }

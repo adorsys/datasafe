@@ -12,6 +12,10 @@ import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import javax.inject.Inject;
 import java.util.function.Supplier;
 
+/**
+ * Default resource resolver that simply resolves users' internal resource location into absolute
+ * resources by prepending proper resource root.
+ */
 public class ResourceResolverImpl implements ResourceResolver {
 
     private final ProfileRetrievalService profile;
@@ -21,6 +25,9 @@ public class ResourceResolverImpl implements ResourceResolver {
         this.profile = profile;
     }
 
+    /**
+     * @return Prepends INBOX location before {@code resource}.
+     */
     @Override
     public AbsoluteLocation<PublicResource> resolveRelativeToPublicInbox(
             UserID userID, PublicResource resource) {
@@ -30,6 +37,11 @@ public class ResourceResolverImpl implements ResourceResolver {
         );
     }
 
+    /**
+     * @return Prepends INBOX-private location before {@code resource}
+     * @implNote typically INBOX-private location is not different from INBOX, it might simply have extra
+     * credentials
+     */
     @Override
     public AbsoluteLocation<PrivateResource> resolveRelativeToPrivateInbox(
             UserIDAuth userID, PrivateResource resource) {
@@ -39,6 +51,9 @@ public class ResourceResolverImpl implements ResourceResolver {
         );
     }
 
+    /**
+     * @return Prepends privatespace location before {@code resource}.
+     */
     @Override
     public AbsoluteLocation<PrivateResource> resolveRelativeToPrivate(
             UserIDAuth userID, PrivateResource resource) {
@@ -48,6 +63,9 @@ public class ResourceResolverImpl implements ResourceResolver {
         );
     }
 
+    /**
+     * Simply calls absolute check on location.
+     */
     @Override
     public  <T extends ResourceLocation<T>> boolean isAbsolute(T resource) {
         return resource.location().isAbsolute();
