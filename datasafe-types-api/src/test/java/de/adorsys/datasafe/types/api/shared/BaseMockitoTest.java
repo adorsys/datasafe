@@ -15,6 +15,7 @@ public abstract class BaseMockitoTest {
     @BeforeEach
     public void setup() {
         System.setProperty("SECURE_LOGS", "off");
+        System.setProperty("SECURE_SENSITIVE", "off");
         MockitoAnnotations.initMocks(this);
     }
 

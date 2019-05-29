@@ -91,15 +91,19 @@ class LogTest {
     }
 
     @Test
-    void disabledHidingSecret() {
+    void disabledHidingSecretRequiresSecureLogsOff() {
         Log.secureSensitive = "OFF";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+
+        Log.secureSensitive = "OFF";
+        Log.secureLogs = "OFF";
         assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo(TEST_STRING);
     }
 
     @Test
     void hidingSecretWithHash() {
         Log.secureSensitive = "HASH";
-        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("9eRM");
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("hash:9eRM");
     }
 
     @Test
