@@ -22,6 +22,12 @@ In his private space, each document and its path is encrypted.
 # Project overview
 * [Possible future achitecture](general/docusafe_future_client.md)
 
+# [JavaDoc](javadoc/0.0.9/index.html)
+You can read JavaDocs' [here](javadoc/0.0.9/index.html)
+
+Command to generate JavaDoc from sources:
+```mvn clean javadoc:aggregate -P javadoc ```
+
 # Usage examples
 
 # Modular design overview
