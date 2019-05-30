@@ -137,7 +137,7 @@ public class VersionedDataTest extends WithStorageProvider {
         // remove `old` versions
         List<ResolvedResource> toRemove = versionedResource.stream()
                 .filter(it -> !it.stripVersion().location().equals(it.absolute().location()))
-                // ideally you want to filter out by time as well - i.e. older than 1 hour
+                // ideally you want to filter out by time as well - example: older than 1 hour
                 .map(Versioned::absolute)
                 .map(AbsoluteLocation::getResource)
                 .collect(Collectors.toList());

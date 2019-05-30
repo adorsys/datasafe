@@ -3,7 +3,7 @@ package de.adorsys.datasafe.encrypiton.api.types.keystore;
 import de.adorsys.datasafe.encrypiton.api.types.BaseTypeString;
 
 /**
- * Wrapper for keystore type - i.e. PKCS12,JKS,UBER.
+ * Wrapper for keystore type - example: PKCS12,JKS,UBER.
  */
 public class KeyStoreType extends BaseTypeString {
 

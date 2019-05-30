@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 
 /**
- * Specifies how to access desired user resource (i.e. private bucket). By default is no-op - simply wraps
+ * Specifies how to access desired user resource (example: private bucket). By default is no-op - simply wraps
  * resource into {@link AbsoluteLocation}
  */
 @Slf4j

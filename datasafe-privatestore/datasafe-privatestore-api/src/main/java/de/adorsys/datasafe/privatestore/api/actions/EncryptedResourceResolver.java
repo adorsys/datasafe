@@ -7,8 +7,8 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 /**
  * Resolves logical resource location into encrypted absolute location and vice-versa. For example, when
  * user requests some/path/to/file this resolver will provide physical location of this resource by
- * encrypting its relative path (i.e. some/path/to/file -> encryptedSome/encryptedPath/encryptedTo/encryptedFile)
- * and resolving it against user private files folder, so that some/path/to/file will be converted to i.e.
+ * encrypting its relative path (example: some/path/to/file -> encryptedSome/encryptedPath/encryptedTo/encryptedFile)
+ * and resolving it against user private files folder, so that some/path/to/file will be converted to example:
  * s3://bucket/user/privatespace/encryptedSome/encryptedPath/encryptedTo/encryptedFile
  */
 public interface EncryptedResourceResolver {

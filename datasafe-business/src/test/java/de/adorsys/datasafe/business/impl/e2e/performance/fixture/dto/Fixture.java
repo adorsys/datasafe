@@ -12,7 +12,7 @@ import java.util.Map;
 public class Fixture {
 
     /**
-     * Operation list - i.e. READ/WRITE/DELETE...
+     * Operation list - for example READ/WRITE/DELETE...
      */
     private final List<Operation> operations;
 

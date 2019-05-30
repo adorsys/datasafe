@@ -14,7 +14,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Path encryption service that maintains URI segments integrity.
- * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of i.e.
+ * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of example:
  * cipher(path) will yield same string.
  */
 @Slf4j

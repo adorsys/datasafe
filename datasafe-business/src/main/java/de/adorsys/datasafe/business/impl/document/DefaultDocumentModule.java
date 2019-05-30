@@ -8,7 +8,7 @@ import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadService;
 import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteService;
 
 /**
- * This module is responsible for document storage (i.e. which pathencryption to use) and listing bucket content.
+ * This module is responsible for document storage (example: which pathencryption to use) and listing bucket content.
  */
 @Module
 public abstract class DefaultDocumentModule {

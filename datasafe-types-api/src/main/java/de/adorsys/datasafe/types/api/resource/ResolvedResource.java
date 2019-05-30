@@ -15,7 +15,7 @@ public interface ResolvedResource extends ResourceLocation<ResolvedResource> {
 
     /**
      * @param resource New path for this resource
-     * @return Relocated resource (i.e. relative -> absolute) that preserves metadata, but drops path.
+     * @return Relocated resource (example: relative to absolute) that preserves metadata, but drops path.
      */
     ResolvedResource withResource(PrivateResource resource);
 

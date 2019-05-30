@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+/**
+ * Request to create user public profile part.
+ */
 @Value
 @Builder
 public class CreateUserPublicProfile {

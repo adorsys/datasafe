@@ -64,27 +64,51 @@ public interface VersionedDatasafeServices {
      */
     DFSBasedProfileStorageImpl userProfile();
 
+    /**
+     * Binds DFS connection (for example filesystem, minio) and system storage and access
+     */
     @Component.Builder
     interface Builder {
 
+        /**
+         * Binds (configures) system root uri and system keystore password.
+         */
         @BindsInstance
         Builder config(DFSConfig config);
 
+        /**
+         * Binds (configures) storage list operation.
+         */
         @BindsInstance
         Builder storageList(StorageListService listService);
 
+        /**
+         * Binds (configures) storage read operation.
+         */
         @BindsInstance
         Builder storageRead(StorageReadService readService);
 
+        /**
+         * Binds (configures) storage write operation.
+         */
         @BindsInstance
         Builder storageWrite(StorageWriteService writeService);
 
+        /**
+         * Binds (configures) storage remove operation.
+         */
         @BindsInstance
         Builder storageRemove(StorageRemoveService removeService);
 
+        /**
+         * Binds (configures) storage check operation.
+         */
         @BindsInstance
         Builder storageCheck(StorageCheckService checkService);
 
+        /**
+         * @return Software-versioned Datasafe services.
+         */
         VersionedDatasafeServices build();
     }
 }

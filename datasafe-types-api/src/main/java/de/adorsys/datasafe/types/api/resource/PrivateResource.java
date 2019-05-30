@@ -26,7 +26,7 @@ public interface PrivateResource extends ResourceLocation<PrivateResource> {
      * @param encryptedPath encrypted URI value, should be used to construct absolute URI.
      * @param decryptedPath decrypted URI value, used for easy navigation
      * @return new private resource that points to resource identified by encryptedPath
-     * I.e. when calling "s3://bucket/".resolve(file/root, aaa/bbb) result will be located at s3://bucket/aaa/bbb
+     * When calling "s3://bucket/".resolve(file/root, aaa/bbb) result will be located at s3://bucket/aaa/bbb
      */
     PrivateResource resolve(Uri encryptedPath, Uri decryptedPath);
 }
