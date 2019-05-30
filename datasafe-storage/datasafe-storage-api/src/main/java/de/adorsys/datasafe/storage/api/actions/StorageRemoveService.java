@@ -10,7 +10,7 @@ public interface StorageRemoveService {
 
     /**
      * Removes bucket contents.
-     * @param location absolute bucket path, with credentials, which should be removed
+     * @param location absolute bucket path, with credentials (if necessary), which should be removed
      */
     void remove(AbsoluteLocation location);
 }

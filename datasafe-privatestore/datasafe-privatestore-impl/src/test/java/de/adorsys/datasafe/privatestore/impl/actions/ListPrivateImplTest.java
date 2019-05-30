@@ -1,15 +1,12 @@
 package de.adorsys.datasafe.privatestore.impl.actions;
 
-import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
-import de.adorsys.datasafe.storage.api.actions.StorageListService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
+import de.adorsys.datasafe.storage.api.actions.StorageListService;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
+import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +44,7 @@ class ListPrivateImplTest extends BaseMockitoTest {
     @BeforeEach
     void init() {
         when(absoluteResolvedResource.getResource()).thenReturn(resolvedResource);
-        when(resolvedResource.location()).thenReturn(ABSOLUTE_PATH);
+        when(resolvedResource.location()).thenReturn(new Uri(ABSOLUTE_PATH));
     }
 
     @Test

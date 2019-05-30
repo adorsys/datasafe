@@ -1,27 +1,27 @@
 package de.adorsys.datasafe.metainfo.version.api.version;
 
+import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.resource.VersionedUri;
 
-import java.net.URI;
 import java.util.Optional;
 
 /**
  * Encodes and decodes URI into/from URI with version.
  */
-public interface VersionEncoder {
+public interface VersionEncoderDecoder {
 
     /**
      * Generates URI tagged with version.
      * @param resource URI to tag with version
      * @return URI with version
      */
-    VersionedUri newVersion(URI resource);
+    VersionedUri newVersion(Uri resource);
 
     /**
      * Parses versioned URI.
      * @param uri resource with encoded version
      * @return decoded resource and version
-     * @apiNote While this method can accidentally misdetect version it is relatively safe.
+     * @apiNote It won't work on non-versioned resources.
      */
-    Optional<VersionedUri> decodeVersion(URI uri);
+    Optional<VersionedUri> decodeVersion(Uri uri);
 }

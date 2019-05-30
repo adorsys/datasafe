@@ -9,8 +9,6 @@ import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
-import java.net.URI;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BucketAccessServiceImplTest extends BaseMockitoTest {
@@ -26,7 +24,7 @@ class BucketAccessServiceImplTest extends BaseMockitoTest {
     void privateAccessFor() {
         assertThat(bucketAccessService.privateAccessFor(
                 auth,
-                BasePrivateResource.forPrivate(URI.create(ABSOLUTE_BUCKET))).location()
+                BasePrivateResource.forPrivate(ABSOLUTE_BUCKET)).location().asURI()
         ).asString().isEqualTo(ABSOLUTE_BUCKET);
     }
 
@@ -34,7 +32,7 @@ class BucketAccessServiceImplTest extends BaseMockitoTest {
     void publicAccessFor() {
         assertThat(bucketAccessService.publicAccessFor(
                 auth.getUserID(),
-                BasePublicResource.forAbsolutePublic(URI.create(ABSOLUTE_BUCKET))).location()
+                BasePublicResource.forAbsolutePublic(ABSOLUTE_BUCKET)).location().asURI()
         ).asString().isEqualTo(ABSOLUTE_BUCKET);
     }
 }

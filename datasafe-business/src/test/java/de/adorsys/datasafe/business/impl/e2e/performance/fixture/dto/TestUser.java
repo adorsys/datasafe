@@ -6,6 +6,9 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * Represents user that performs some operations on virtual tree.
+ */
 @Data
 @EqualsAndHashCode(of = "username")
 public class TestUser {

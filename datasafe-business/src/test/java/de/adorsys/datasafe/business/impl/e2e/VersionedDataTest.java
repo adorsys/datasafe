@@ -1,13 +1,13 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
-import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
-import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.Position;
 import lombok.SneakyThrows;
@@ -18,13 +18,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Validates software versioned operations.
+ */
 @Slf4j
 public class VersionedDataTest extends WithStorageProvider {
 
@@ -115,7 +117,7 @@ public class VersionedDataTest extends WithStorageProvider {
         assertThat(versionedResource)
                 .extracting(Versioned::stripVersion)
                 .extracting(ResourceLocation::location)
-                .extracting(URI::toString)
+                .extracting(Uri::toASCIIString)
                 .containsExactly(PRIVATE_FILE_PATH, PRIVATE_FILE_PATH, PRIVATE_FILE_PATH);
     }
 
@@ -135,7 +137,7 @@ public class VersionedDataTest extends WithStorageProvider {
         // remove `old` versions
         List<ResolvedResource> toRemove = versionedResource.stream()
                 .filter(it -> !it.stripVersion().location().equals(it.absolute().location()))
-                // ideally you want to filter out by time as well - i.e. older than 1 hour
+                // ideally you want to filter out by time as well - example: older than 1 hour
                 .map(Versioned::absolute)
                 .map(AbsoluteLocation::getResource)
                 .collect(Collectors.toList());

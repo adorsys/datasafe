@@ -10,9 +10,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import static springfox.documentation.builders.RequestHandlerSelectors.basePackage;
 
+/**
+ * Swagger2 UI for REST api.
+ */
 @EnableSwagger2
 @Configuration
 public class SwaggerConfig {
+
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)

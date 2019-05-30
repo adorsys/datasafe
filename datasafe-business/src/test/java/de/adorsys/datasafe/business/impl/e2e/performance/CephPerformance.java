@@ -8,6 +8,9 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+/**
+ * Ceph performance and stability test using random action execution.
+ */
 class CephPerformance extends WithRandomActionPerformance {
 
     @ParameterizedTest

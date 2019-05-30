@@ -7,8 +7,18 @@ import java.security.KeyStore;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Cache delegating class to read users' public and private or secret keys.
+ */
 public interface KeyStoreCache {
 
+    /**
+     * Cache for users' public keys
+     */
     Map<UserID, List<PublicKeyIDWithPublicKey>> getPublicKeys();
-    Map<UserID, KeyStore> getPrivateKeys();
+
+    /**
+     * Cache for users' private/secret keys
+     */
+    Map<UserID, KeyStore> getKeystore();
 }

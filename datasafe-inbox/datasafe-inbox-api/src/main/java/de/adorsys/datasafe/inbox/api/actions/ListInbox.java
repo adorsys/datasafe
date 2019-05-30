@@ -8,7 +8,15 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 
 import java.util.stream.Stream;
 
+/**
+ * Lists files shared with user inside his INBOX.
+ */
 public interface ListInbox {
 
-    Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> forUser);
+    /**
+     * List files/entries at the location (possibly absolute) within INBOX, specified by {@code request}
+     * @param request Where to list entries
+     * @return Stream of absolute resource locations, by default location is not encrypted
+     */
+    Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request);
 }

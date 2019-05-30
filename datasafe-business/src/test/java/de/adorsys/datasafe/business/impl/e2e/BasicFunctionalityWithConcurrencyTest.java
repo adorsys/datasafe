@@ -1,14 +1,15 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
-import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
-import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
@@ -20,7 +21,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.*;
-import java.net.URI;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -34,7 +34,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,6 +47,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Multithreaded test of basic operations.
+ */
 @Slf4j
 class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
@@ -58,7 +64,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     @TempDir
     protected Path tempTestFileFolder;
     protected StorageService storage;
-    protected URI location;
+    protected Uri location;
 
     private TestMetricCollector metricCollector = new TestMetricCollector();
 

@@ -3,9 +3,9 @@ package de.adorsys.datasafe.encrypiton.impl.document;
 import com.google.common.collect.ImmutableList;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
-import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * Write CMS-encrypted document to DFS.
+ * Writes CMS-encrypted document to DFS.
  */
 public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
@@ -60,7 +60,7 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     }
 
     /**
-     * This class fixes issue that bouncy castle does not close underlying stream - i.e. DFS stream
+     * This class fixes issue that bouncy castle does not close underlying stream - example: DFS stream
      * when wrapping it.
      */
     @RequiredArgsConstructor

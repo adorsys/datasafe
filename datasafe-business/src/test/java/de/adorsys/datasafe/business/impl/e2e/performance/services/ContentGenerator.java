@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Generate byte stream by simple repetition of ContentId string value,
+ */
 @RequiredArgsConstructor
 public class ContentGenerator {
 

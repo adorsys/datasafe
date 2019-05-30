@@ -5,12 +5,12 @@ import com.google.gson.stream.JsonReader;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.storage.api.actions.StorageReadService;
+import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
-import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
@@ -39,6 +39,9 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
         this.serde = serde;
     }
 
+    /**
+     * Reads users' public key from DFS and caches the result.
+     */
     @Override
     public PublicKeyIDWithPublicKey publicKey(UserID forUser) {
         return keystoreCache.getPublicKeys().computeIfAbsent(

@@ -4,10 +4,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreAuth
 import de.adorsys.datasafe.types.api.utils.Log;
 
 /**
- * Created by peter on 05.01.18.
- *
- * BTW, so liest man das Kennwort aus dem Handler
- * char[] password = PasswordCallbackUtils.getPassword(keyStoreAuth.getReadKeyHandler(), keyStorePassword);
+ * Authorization entity to read keystore or both keystore and key in it.
  */
 public class KeyStoreAuth {
     private final ReadStorePassword readStorePassword;
@@ -35,8 +32,8 @@ public class KeyStoreAuth {
     @Override
     public String toString() {
         return "KeyStoreAuth{" +
-                Log.secure(readStorePassword) +
-                ", " + Log.secure(readKeyPassword) +
+                Log.secureSensitive(readStorePassword) +
+                ", " + Log.secureSensitive(readKeyPassword) +
                 '}';
     }
 }

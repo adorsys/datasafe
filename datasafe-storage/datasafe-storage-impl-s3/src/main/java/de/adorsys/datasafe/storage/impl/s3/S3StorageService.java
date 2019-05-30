@@ -2,7 +2,10 @@ package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.iterable.S3Objects;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.utils.Log;
@@ -11,26 +14,34 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.util.List;
-import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * Amazon S3, minio and CEPH compatible default S3 interface adapter.
+ */
 @Slf4j
 public class S3StorageService implements StorageService {
 
     private final AmazonS3 s3;
     private final String bucketName;
 
+    /**
+     * @param s3 Connection to S3
+     * @param bucketName Bucket to use
+     */
     @Inject
     public S3StorageService(AmazonS3 s3, String bucketName) {
         this.s3 = s3;
         this.bucketName = bucketName;
     }
 
+    /**
+     * Lists all resources within bucket and returns absolute resource location for each entry without credentials.
+     */
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
-        log.debug("List at {}", location);
+        log.debug("List at {}", Log.secure(location));
         String prefix = location.location().getPath().replaceFirst("^/", "");
 
         S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, prefix);
@@ -81,9 +92,13 @@ public class S3StorageService implements StorageService {
             return BasePrivateResource.forPrivate(root.location());
         }
 
-        return BasePrivateResource.forPrivate(relUrl).resolve(root);
+        return BasePrivateResource.forPrivate(relUrl).resolveFrom(root);
     }
 
+    /**
+     * Helper class that allows us to work with streams by collecting them into byte array and writing those bytes
+     * when stream is closed.
+     */
     @Slf4j
     @RequiredArgsConstructor
     private static final class PutBlobOnClose extends ByteArrayOutputStream {

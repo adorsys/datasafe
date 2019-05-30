@@ -9,6 +9,9 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+/**
+ * Minio performance and stability test using random action execution (both for versioned and non-versioned).
+ */
 class MinioPerformance extends WithRandomActionPerformance {
 
     @ParameterizedTest

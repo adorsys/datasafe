@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * Wrapper for the String.
+ */
 @Getter
 @RequiredArgsConstructor
 @EqualsAndHashCode

@@ -1,9 +1,14 @@
 package de.adorsys.datasafe.business.impl.e2e.performance.services;
 
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.impl.e2e.performance.dto.UserSpec;
+import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Operation;
+import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.OperationType;
+import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.StorageType;
+import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
-import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -11,11 +16,6 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
-import de.adorsys.datasafe.business.impl.e2e.performance.dto.UserSpec;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Operation;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.OperationType;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.StorageType;
-import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +33,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Performs {@link Operation} on DFS storage and calculates performance statistics.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class OperationExecutor {

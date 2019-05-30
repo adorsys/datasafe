@@ -3,6 +3,7 @@ package de.adorsys.datasafe.types.api.utils;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
@@ -11,11 +12,11 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LogTest {
+class LogTest {
 
     private static final String TEST_STRING = "/path/to/file";
-    private static final URI TEST_URI = URI.create("http://www.example.com/uniform/resource/identifier");
-    private static final URI TEST_URI_ENDS_SLASH = URI.create("http://www.example.com/uniform/resource/identifier/");
+    private static final Uri TEST_URI = new Uri("http://www.example.com/uniform/resource/identifier");
+    private static final Uri TEST_URI_ENDS_SLASH = new Uri("http://www.example.com/uniform/resource/identifier/");
 
     @Test
     void disabledHidingLog() {
@@ -87,5 +88,41 @@ public class LogTest {
         AbsoluteLocation<PrivateResource> resource =
                 new AbsoluteLocation<>(BasePrivateResource.forPrivate(TEST_URI_ENDS_SLASH));
         assertThat(Log.secure(resource)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er/");
+    }
+
+    @Test
+    void disabledHidingSecretRequiresSecureLogsOff() {
+        Log.secureSensitive = "OFF";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+
+        Log.secureSensitive = "OFF";
+        Log.secureLogs = "OFF";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo(TEST_STRING);
+    }
+
+    @Test
+    void hidingSecretWithHash() {
+        Log.secureSensitive = "HASH";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("hash:9eRM");
+    }
+
+    @Test
+    void hidingSecretTrue() {
+        Log.secureSensitive = "TRUE";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+        Log.secureSensitive = "true";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+    }
+
+    @Test
+    void hidingSecretNull() {
+        Log.secureSensitive = null;
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
+    }
+
+    @Test
+    void hidingSecretEmpty() {
+        Log.secureSensitive = "";
+        assertThat(Log.secureSensitive(TEST_STRING)).isEqualTo("****");
     }
 }

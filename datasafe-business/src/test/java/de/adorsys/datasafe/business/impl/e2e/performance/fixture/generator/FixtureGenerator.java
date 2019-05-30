@@ -56,6 +56,10 @@ class FixtureGenerator extends BaseMockitoTest {
         session = prepareSession(newKieSession());
     }
 
+    /**
+     * Generates random operations done on file tree, expected filesystem content and writes resulting JSON
+     * {@link Fixture} into console
+     */
     @Test
     void generateRandomFixture() {
         do {
@@ -85,10 +89,16 @@ class FixtureGenerator extends BaseMockitoTest {
         log.info("{}", new Gson().toJson(fixture));
     }
 
+    /**
+     * Using drools to supply random actions on file tree.
+     */
     private StatelessKieSession newKieSession() {
         KieServices services = KieServices.Factory.get();
         KieFileSystem fileSystem = services.newKieFileSystem();
+
+        // rules to use when generating random actions:
         fileSystem.write(ResourceFactory.newClassPathResource("performance/fixture/generator/drools/user.drl"));
+
         KieBuilder kb = services.newKieBuilder(fileSystem);
         kb.buildAll();
         KieModule kieModule = kb.getKieModule();
@@ -99,6 +109,7 @@ class FixtureGenerator extends BaseMockitoTest {
     }
 
     private StatelessKieSession prepareSession(StatelessKieSession session) {
+        // classes that are available to the rules:
         session.setGlobal("randomPass", new RandomPassGate(random()));
         session.setGlobal("randomPath", new RandomPathGenerator(
                 random(),

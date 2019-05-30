@@ -10,6 +10,10 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Base64;
 
+/**
+ * Default path encryption/decryption that uses encryption specified by {@link DefaultPathDigestConfig} and
+ * encodes resulting bytes using Base64-urlsafe encoding.
+ */
 public class DefaultPathEncryption implements PathEncryptionConfig {
 
     private final DefaultPathDigestConfig digestConfig;

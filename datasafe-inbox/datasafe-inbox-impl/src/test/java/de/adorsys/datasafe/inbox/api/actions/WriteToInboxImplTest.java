@@ -1,16 +1,16 @@
 package de.adorsys.datasafe.inbox.api.actions;
 
-import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
+import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.inbox.impl.actions.WriteToInboxImpl;
+import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
-import de.adorsys.datasafe.inbox.impl.actions.WriteToInboxImpl;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;

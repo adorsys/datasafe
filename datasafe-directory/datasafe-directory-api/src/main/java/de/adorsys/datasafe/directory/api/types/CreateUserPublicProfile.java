@@ -7,16 +7,28 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+/**
+ * Request to create user public profile part.
+ */
 @Value
 @Builder
 public class CreateUserPublicProfile {
 
+    /**
+     * Public profile owner
+     */
     @NonNull
     private final UserID id;
 
+    /**
+     * Location of users' public keys
+     */
     @NonNull
     private final AbsoluteLocation<PublicResource> publicKeys;
 
+    /**
+     * Location of users' inbox where others can write documents (without list/read access)
+     */
     @NonNull
     private final AbsoluteLocation<PublicResource> inbox;
 

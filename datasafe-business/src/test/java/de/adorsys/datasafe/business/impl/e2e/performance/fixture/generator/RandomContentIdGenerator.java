@@ -8,6 +8,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+/**
+ * Provides random content id from content id pool.
+ */
 public class RandomContentIdGenerator {
 
     private final Random random;

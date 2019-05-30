@@ -11,6 +11,9 @@ import java.io.ObjectOutputStream;
 import java.security.PublicKey;
 import java.util.Base64;
 
+/**
+ * Public key serializer/deserializer, writes public key content as Base64 encoded string.
+ */
 public class PublicKeySerdeImpl implements PublicKeySerde {
 
     @Inject
