@@ -6,7 +6,7 @@
 # General information
 Datasafe is a cross-platform library that allows sharing and storing data and documents securely. 
 This is achieved using **CMS-envelopes** for symmetric and asymmetric encryption. Symmetric encryption is used for private files. 
- Asymmetric encryption is used file sharing. 
+ Asymmetric encryption is used for file sharing. 
 
 The library is built with the idea to be as configurable as possible - it uses Dagger2 for dependency injection and modular 
 architecture to combine everything into the business layer, so the user can override any aspect he wants - i.e. to change 
@@ -15,7 +15,7 @@ encryption algorithm or to turn path encryption off. Each module is as independe
 - Each user has private space that can reside on Amazon S3, minio, filesystem or anything else with proper adapter. 
 In his private space, each document and its path is encrypted. 
 - For document sharing user has inbox space, that can be accessed from outside. Another user can write the document he
- wants to share into users' inbox space using the recipients' public key, so that only inbox owner can read it.
+ wants to share into users' inbox space using the recipients' public key so that only inbox owner can read it.
 - For storage systems that do not support file versioning natively (i.e. minio) this library provides versioning 
 capability too.
 
