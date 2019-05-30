@@ -4,7 +4,7 @@
 
 
 # General information
-Datasafe is a cross-platform library that allows to sharing and storing user data and documents securely. 
+Datasafe is a cross-platform library that allows sharing and storing data and documents securely. 
 This is achieved using **CMS-envelopes** for symmetric and asymmetric encryption. Symmetric encryption is used for private files. 
  Asymmetric encryption is used file sharing. 
 
