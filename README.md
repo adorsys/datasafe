@@ -25,8 +25,8 @@ provides these key services:
 * [Privatespace service](datasafe-privatestore/datasafe-privatestore-impl/src/main/java/de/adorsys/datasafe/privatestore/impl/PrivateSpaceServiceImpl.java) 
 that securely stores private files by encrypting them using users' secret key.
 * [Inbox service](datasafe-inbox/datasafe-inbox-impl/src/main/java/de/adorsys/datasafe/inbox/impl/InboxServiceImpl.java) 
-that allows a user to share files with someone so that the only inbox owner can read files that that are
-shared with him using  private key. 
+that allows a user to share files with someone so that the only inbox owner can read files that are
+shared with him using private key. 
 * [User profile service](datasafe-directory/datasafe-directory-impl/src/main/java/de/adorsys/datasafe/directory/impl/profile/operations/DFSBasedProfileStorageImpl.java) 
 that provides user metadata, such as where is user privatespace, his keystore, etc.
 
