@@ -21,7 +21,7 @@ In his private space each document and its path is encrypted.
 capability too.
 
 # JavaDoc
-You can read JavaDocs' [here](https://adorsys.github.io/datasafe/javadoc/0.0.9/index.html)
+You can read JavaDoc [here](https://adorsys.github.io/datasafe/javadoc/0.0.9/index.html)
 
 ### Contributing
 * [CodingRules](docs/codingrules/CodingRules.md)
