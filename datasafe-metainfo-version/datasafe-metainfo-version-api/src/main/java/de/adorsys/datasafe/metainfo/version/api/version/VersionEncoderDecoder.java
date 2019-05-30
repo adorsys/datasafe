@@ -21,7 +21,7 @@ public interface VersionEncoderDecoder {
      * Parses versioned URI.
      * @param uri resource with encoded version
      * @return decoded resource and version
-     * @apiNote While this method can accidentally misdetect version it is relatively safe.
+     * @apiNote It won't work on non-versioned resources.
      */
     Optional<VersionedUri> decodeVersion(Uri uri);
 }

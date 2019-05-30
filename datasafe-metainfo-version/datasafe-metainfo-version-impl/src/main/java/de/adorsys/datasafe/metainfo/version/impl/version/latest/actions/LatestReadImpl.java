@@ -17,6 +17,7 @@ import java.io.InputStream;
  * Default versioned resource reader that resolves latest resource link location using
  * {@link EncryptedLatestLinkService}, follows that link by reading its content to get latest blob
  * location, reads and decrypts latest blob content using {@link ReadFromPrivate}
+ * @implNote Reads only from versioned resources - can't be used with ordinary one
  * @param <V> version tag
  */
 public class LatestReadImpl<V extends LatestDFSVersion> implements VersionedRead<V> {

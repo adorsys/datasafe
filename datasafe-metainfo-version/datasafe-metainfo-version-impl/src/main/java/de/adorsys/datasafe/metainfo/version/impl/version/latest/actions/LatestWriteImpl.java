@@ -28,6 +28,7 @@ import java.io.OutputStream;
  * privatespace using {@link WriteToPrivate} then updates latest link content, so that it points to written blob.
  * Link content is the resource that is relative to user privatespace.
  * Relativization against privatespace root of written blob is done by {@link EncryptedResourceResolver}.
+ * @implNote Writes only to versioned resources - can't be used with ordinary one
  * @param <V> version tag
  */
 public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWrite<V> {

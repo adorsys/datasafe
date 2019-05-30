@@ -20,6 +20,7 @@ import java.util.stream.Stream;
  * using {@link EncryptedLatestLinkService}, then lists raw blobs within that root
  * (inside privatespace using {@link ListPrivate}) and parses them into version, logical resource
  * using {@link VersionEncoderDecoder}
+ * @implNote Shows only versioned resources, won't show unversioned resources
  * @param <V> version tag
  */
 public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList<V> {

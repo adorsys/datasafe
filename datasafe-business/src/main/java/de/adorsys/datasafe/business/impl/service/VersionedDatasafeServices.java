@@ -40,17 +40,17 @@ import javax.inject.Singleton;
 public interface VersionedDatasafeServices {
 
     /**
-     * @return Provides version information for a given resource
+     * @return Provides version information for a given resource (shows only versioned resources)
      */
     DefaultVersionInfoServiceImpl versionInfo();
 
     /**
-     * @return Filtered view of user's private space, that shows only latest files
+     * @return Filtered view of user's private space, that shows only latest files (works only with versioned resources)
      */
     LatestPrivateSpaceImpl<LatestDFSVersion> latestPrivate();
 
     /**
-     * @return Raw view of private user space (all file versions are visible)
+     * @return Raw view of private user space (shows everything - all versioned and not versioned)
      */
     PrivateSpaceServiceImpl privateService();
 
