@@ -374,6 +374,15 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <!-- Exclude Dagger2 generated code -->
+                            <sourceFileExcludes>**/*Dagger*</sourceFileExcludes>
+                            <sourceFileExcludes>**/*Factory*</sourceFileExcludes>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
