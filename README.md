@@ -20,6 +20,9 @@ In his private space each document and its path is encrypted.
 - For storage systems that do not support file versioning natively (i.e. minio) this library provides versioning 
 capability too.
 
+# JavaDoc
+You can read JavaDocs' [here](https://adorsys.github.io/datasafe/javadoc/0.0.9/index.html)
+
 ### Contributing
 * [CodingRules](docs/codingrules/CodingRules.md)
 * [Branching and commiting](docs/branching/branch-and-commit.md)
