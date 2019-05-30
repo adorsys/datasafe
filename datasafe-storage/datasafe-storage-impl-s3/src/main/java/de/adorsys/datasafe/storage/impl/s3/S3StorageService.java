@@ -1,7 +1,11 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.iterable.S3Objects;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.utils.Log;
@@ -10,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.util.List;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Amazon S3, minio and CEPH compatible default S3 interface adapter.
@@ -38,17 +42,14 @@ public class S3StorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         log.debug("List at {}", Log.secure(location));
-        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
-        listObjectsV2Request.setBucketName(bucketName);
         String prefix = location.location().getPath().replaceFirst("^/", "");
-        int len = prefix.length();
-        listObjectsV2Request.setPrefix(prefix);
-        ListObjectsV2Result listObjectsV2Result = s3.listObjectsV2(listObjectsV2Request);
-        List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-        return objectSummaries.stream()
+
+        S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, prefix);
+        Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);
+        return objectStream
                 .map(os -> new AbsoluteLocation<>(
                         new BaseResolvedResource(
-                                createResource(location, os, len),
+                                createResource(location, os, prefix.length()),
                                 os.getLastModified().toInstant()
                         ))
                 );
