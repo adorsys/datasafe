@@ -13,7 +13,7 @@ import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActi
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultVersionedPrivateActionsModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
-import de.adorsys.datasafe.inbox.impl.actions.InboxServiceImpl;
+import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionInfoServiceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.LatestPrivateSpaceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
@@ -23,7 +23,7 @@ import de.adorsys.datasafe.storage.api.actions.*;
 import javax.inject.Singleton;
 
 /**
- * This is Datasafe services that always work with latest file version.
+ * This is Datasafe services that always work with latest file version using `software` versioning.
  */
 @Singleton
 @Component(modules = {
@@ -40,17 +40,17 @@ import javax.inject.Singleton;
 public interface VersionedDatasafeServices {
 
     /**
-     * @return Provides version information for a given resource
+     * @return Provides version information for a given resource (shows only versioned resources)
      */
     DefaultVersionInfoServiceImpl versionInfo();
 
     /**
-     * @return Filtered view of user's private space, that shows only latest files
+     * @return Filtered view of user's private space, that shows only latest files (works only with versioned resources)
      */
     LatestPrivateSpaceImpl<LatestDFSVersion> latestPrivate();
 
     /**
-     * @return Raw view of private user space (all file versions are visible)
+     * @return Raw view of private user space (shows everything - all versioned and not versioned)
      */
     PrivateSpaceServiceImpl privateService();
 
@@ -64,27 +64,51 @@ public interface VersionedDatasafeServices {
      */
     DFSBasedProfileStorageImpl userProfile();
 
+    /**
+     * Binds DFS connection (for example filesystem, minio) and system storage and access
+     */
     @Component.Builder
     interface Builder {
 
+        /**
+         * Binds (configures) system root uri and system keystore password.
+         */
         @BindsInstance
         Builder config(DFSConfig config);
 
+        /**
+         * Binds (configures) storage list operation.
+         */
         @BindsInstance
         Builder storageList(StorageListService listService);
 
+        /**
+         * Binds (configures) storage read operation.
+         */
         @BindsInstance
         Builder storageRead(StorageReadService readService);
 
+        /**
+         * Binds (configures) storage write operation.
+         */
         @BindsInstance
         Builder storageWrite(StorageWriteService writeService);
 
+        /**
+         * Binds (configures) storage remove operation.
+         */
         @BindsInstance
         Builder storageRemove(StorageRemoveService removeService);
 
+        /**
+         * Binds (configures) storage check operation.
+         */
         @BindsInstance
         Builder storageCheck(StorageCheckService checkService);
 
+        /**
+         * @return Software-versioned Datasafe services.
+         */
         VersionedDatasafeServices build();
     }
 }

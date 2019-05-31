@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.mockito.Mock;
 
-import java.net.URI;
 import java.security.KeyStore;
 import java.util.HashMap;
 
@@ -23,9 +22,9 @@ import static org.mockito.Mockito.when;
 class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
 
     private static final AbsoluteLocation<PrivateResource> PRIVATE = BasePrivateResource
-            .forAbsolutePrivate(URI.create("s3://bucket"));
+            .forAbsolutePrivate(new Uri("s3://bucket"));
     private static final AbsoluteLocation<PublicResource> PUBLIC = BasePublicResource
-            .forAbsolutePublic(URI.create("s3://bucket"));
+            .forAbsolutePublic(new Uri("s3://bucket"));
 
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
 
@@ -57,7 +56,7 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
     void init() {
         when(profile.publicProfile(auth.getUserID())).thenReturn(publicProfile);
         when(profile.privateProfile(auth)).thenReturn(privateProfile);
-        when(keystoreCache.getPrivateKeys()).thenReturn(new HashMap<>(ImmutableMap.of(
+        when(keystoreCache.getKeystore()).thenReturn(new HashMap<>(ImmutableMap.of(
                 auth.getUserID(),
                 privateKeystore))
         );

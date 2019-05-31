@@ -13,6 +13,10 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
+/**
+ * Default listing service that locates user INBOX folder using {@link ResourceResolver}
+ * and delegates request to {@link StorageListService} to list all files within it.
+ */
 public class ListInboxImpl implements ListInbox {
 
     private final ResourceResolver resolver;
@@ -25,8 +29,8 @@ public class ListInboxImpl implements ListInbox {
     }
 
     @Override
-    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> forUser) {
-        return listService.list(resolveRelative(forUser));
+    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+        return listService.list(resolveRelative(request));
     }
 
     private AbsoluteLocation<PrivateResource> resolveRelative(

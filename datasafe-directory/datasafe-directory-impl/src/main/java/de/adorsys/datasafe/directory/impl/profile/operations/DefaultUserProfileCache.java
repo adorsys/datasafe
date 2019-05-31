@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
+/**
+ * Default map-based cache that contains user profiles.
+ */
 @Getter
 @RequiredArgsConstructor
 public class DefaultUserProfileCache implements UserProfileCache {

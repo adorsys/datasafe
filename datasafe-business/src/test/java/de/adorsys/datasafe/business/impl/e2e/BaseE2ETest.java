@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -155,7 +154,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return files;
     }
 
-    protected void registerJohnAndJane(URI rootLocation) {
+    protected void registerJohnAndJane(Uri rootLocation) {
         john = registerUser("john", rootLocation);
         jane = registerUser("jane", rootLocation);
     }
@@ -172,14 +171,14 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         removeFromInbox.remove(RemoveRequest.forPrivate(inboxOwner, location));
     }
 
-    protected UserIDAuth registerUser(String userName, URI rootLocation) {
+    protected UserIDAuth registerUser(String userName, Uri rootLocation) {
         UserIDAuth auth = new UserIDAuth(new UserID(userName), new ReadKeyPassword("secure-password " + userName));
 
         rootLocation = rootLocation.resolve(userName + "/");
 
-        URI keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
+        Uri keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
         log.info("User's keystore location: {}", Log.secure(keyStoreUri));
-        URI inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
+        Uri inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
         log.info("User's inbox location: {}", Log.secure(inboxUri));
 
         AbsoluteLocation<PublicResource> publicKeys = access(
@@ -193,7 +192,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 .build()
         );
 
-        URI filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
+        Uri filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
         log.info("User's files location: {}", Log.secure(filesUri));
 
         profileRegistrationService.registerPrivate(CreateUserPrivateProfile.builder()
@@ -210,12 +209,12 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return auth;
     }
 
-    private AbsoluteLocation<PublicResource> access(URI path) {
+    private AbsoluteLocation<PublicResource> access(Uri path) {
         return new AbsoluteLocation<>(new BasePublicResource(path));
     }
 
-    private AbsoluteLocation<PrivateResource> accessPrivate(URI path) {
-        return new AbsoluteLocation<>(new BasePrivateResource(path, URI.create(""), URI.create("")));
+    private AbsoluteLocation<PrivateResource> accessPrivate(Uri path) {
+        return new AbsoluteLocation<>(new BasePrivateResource(path, new Uri(""), new Uri("")));
     }
 
     protected UserIDAuth createJohnTestUser(int i) {
@@ -229,7 +228,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
     protected void assertPrivateSpaceList(UserIDAuth user, String root, String... expected) {
         List<String> paths = listPrivate.list(ListRequest.forDefaultPrivate(user, root))
-                .map(it -> it.getResource().asPrivate().decryptedPath().toString())
+                .map(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
                 .collect(Collectors.toList());
 
         for (String toFind : expected) {

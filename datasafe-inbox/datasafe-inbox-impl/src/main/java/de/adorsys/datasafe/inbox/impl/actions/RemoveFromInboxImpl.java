@@ -9,6 +9,10 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
 import javax.inject.Inject;
 
+/**
+ * Default removal service that locates resource to remove using {@link ResourceResolver} and
+ * directly calls {@link StorageRemoveService} to delete resolved resource within INBOX.
+ */
 public class RemoveFromInboxImpl implements RemoveFromInbox {
 
     private final ResourceResolver resolver;

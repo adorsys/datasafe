@@ -11,8 +11,9 @@ import java.io.OutputStream;
 public interface StorageWriteService {
 
     /**
-     * @param location absolute bucket path with access credentials
+     * @param location absolute bucket path with credentials (if necessary)
      * @return data stream of resource to write to
+     * @apiNote Resulting stream should be closed properly
      */
     OutputStream write(AbsoluteLocation location);
 }

@@ -1,17 +1,22 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
-import java.net.URI;
 import java.util.function.Function;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Path encryption service that maintains URI segments integrity.
+ * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of example:
+ * cipher(path) will yield same string.
+ */
 @Slf4j
 public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncryptionService {
 
@@ -24,9 +29,12 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         this.encryptionConfig = encryptionConfig;
     }
 
+    /**
+     * Encrypts each URI segment separately and composes them back in same order.
+     */
     @Override
     @SneakyThrows
-    public URI encrypt(SecretKey secretKey, URI bucketPath) {
+    public Uri encrypt(SecretKey secretKey, Uri bucketPath) {
         validateArgs(secretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
@@ -38,9 +46,12 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         );
     }
 
+    /**
+     * Decrypts each URI segment separately and composes them back in same order.
+     */
     @Override
     @SneakyThrows
-    public URI decrypt(SecretKey secretKey, URI bucketPath) {
+    public Uri decrypt(SecretKey secretKey, Uri bucketPath) {
         validateArgs(secretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
@@ -62,8 +73,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         return encryptionConfig.byteSerializer(cipher.doFinal(str.getBytes(UTF_8)));
     }
 
-    @SneakyThrows
-    private static URI processURIparts(URI bucketPath, Function<String, String> process) {
+    private static Uri processURIparts(Uri bucketPath, Function<String, String> process) {
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getPath();
@@ -73,7 +83,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         }
 
         if (path.isEmpty()) {
-            return new URI(result.toString());
+            return new Uri(result.toString());
         }
         boolean hasStarted = false;
         for (String part : path.split(PATH_SEPARATOR)) {
@@ -87,10 +97,10 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
             hasStarted = true;
         }
 
-        return new URI(result.toString());
+        return new Uri(result.toString());
     }
 
-    private static void validateArgs(SecretKey secretKey, URI bucketPath) {
+    private static void validateArgs(SecretKey secretKey, Uri bucketPath) {
         if (null == secretKey) {
             throw new IllegalArgumentException("Secret key should not be null");
         }
@@ -100,7 +110,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         }
     }
 
-    private static void validateUriIsRelative(URI uri) {
+    private static void validateUriIsRelative(Uri uri) {
         if (uri.isAbsolute()) {
             throw new IllegalArgumentException("URI should be relative");
         }

@@ -11,6 +11,11 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import javax.inject.Inject;
 import java.io.InputStream;
 
+/**
+ * Default implementation for stream reading that resolves incoming resource path using
+ * {@link ResourceResolver} against INBOX and then reads and asymmetrically decrypts data from it
+ * using {@link EncryptedDocumentReadService}
+ */
 public class ReadFromInboxImpl implements ReadFromInbox {
 
     private final ResourceResolver resolver;

@@ -6,6 +6,9 @@ import lombok.ToString;
 
 import java.security.PublicKey;
 
+/**
+ * Wrapper for public key and its ID, so that public-private key pair can be found in keystore using this ID.
+ */
 @Getter
 @ToString
 @RequiredArgsConstructor

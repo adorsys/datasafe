@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Read CMS-encrypted document location DFS.
+ * Reads CMS-encrypted document from DFS.
  */
 public class CMSDocumentReadService implements EncryptedDocumentReadService {
 
@@ -48,7 +48,7 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
     }
 
     /**
-     * This class fixes issue that bouncy castle does not close underlying stream - i.e. DFS stream
+     * This class fixes issue that bouncy castle does not close underlying stream - example: DFS stream
      * when wrapping it.
      */
     @RequiredArgsConstructor

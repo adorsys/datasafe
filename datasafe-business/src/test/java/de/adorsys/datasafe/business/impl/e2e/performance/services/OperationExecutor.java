@@ -33,6 +33,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Performs {@link Operation} on DFS storage and calculates performance statistics.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class OperationExecutor {

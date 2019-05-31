@@ -11,8 +11,9 @@ import java.io.InputStream;
 public interface StorageReadService {
 
     /**
-     * @param location absolute bucket path with access credentials
+     * @param location absolute bucket path with credentials (if necessary)
      * @return data stream of resource to read from
+     * @apiNote Resulting stream should be closed properly
      */
     InputStream read(AbsoluteLocation location);
 }

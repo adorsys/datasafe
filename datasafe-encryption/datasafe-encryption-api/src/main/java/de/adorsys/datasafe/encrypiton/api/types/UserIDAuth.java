@@ -6,6 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Wrapper that represents username and password.
+ */
 @Getter
 @EqualsAndHashCode(of = "userID")
 @RequiredArgsConstructor

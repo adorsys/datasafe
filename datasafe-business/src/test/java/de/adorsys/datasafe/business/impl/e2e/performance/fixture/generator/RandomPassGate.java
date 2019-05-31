@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
+/**
+ * Checks if operation can pass based on probability.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class RandomPassGate {

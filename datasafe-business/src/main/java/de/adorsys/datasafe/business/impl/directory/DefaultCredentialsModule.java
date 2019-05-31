@@ -27,6 +27,9 @@ import java.util.function.Supplier;
 @Module
 public abstract class DefaultCredentialsModule {
 
+    /**
+     * Default keystore and public key Guava-based cache.
+     */
     @Provides
     @Singleton
     static KeyStoreCache keyStoreCache() {
@@ -41,12 +44,22 @@ public abstract class DefaultCredentialsModule {
         return new DefaultKeyStoreCache(cachePubKeys.get().asMap(), cacheKeystore.get().asMap());
     }
 
+    /**
+     * Default no-op service to get credentials to access filesystem.
+     */
     @Binds
     abstract BucketAccessService bucketAccessService(BucketAccessServiceImpl impl);
 
+    /**
+     * Default public key service that reads user public keys from the location specified by his profile inside DFS.
+     */
     @Binds
     abstract PublicKeyService publicKeyService(DFSPublicKeyServiceImpl impl);
 
+    /**
+     * Default private key service that reads user private/secret keys from the location specified by his
+     * profile inside DFS.
+     */
     @Binds
     abstract PrivateKeyService privateKeyService(DFSPrivateKeyServiceImpl impl);
 }

@@ -14,6 +14,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,7 +27,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
- * This test computes minio versioned and non-versioned performance based on same request fixture.
+ * This test executes {@link Fixture} operations and validates them against some real storage.
  */
 @Slf4j
 abstract class WithRandomActionPerformance extends WithStorageProvider {
@@ -49,6 +49,9 @@ abstract class WithRandomActionPerformance extends WithStorageProvider {
     private WithStorageProvider.StorageDescriptor descriptor;
     private String testId;
 
+    /**
+     * Initializes {@link Fixture} from performance/fixture/fixture.json resource file.
+     */
     @BeforeAll
     @SneakyThrows
     static void init() {
@@ -106,11 +109,14 @@ abstract class WithRandomActionPerformance extends WithStorageProvider {
         );
     }
 
+    /**
+     * Delegate that waits for some time until doing real operations.
+     */
     @RequiredArgsConstructor
     static class DelegatingStorageWithDelay implements StorageService {
 
         @Getter
-        private final URI rootLocation;
+        private final Uri rootLocation;
 
         private final StorageService delegate;
         private final Supplier<Long> delayProvider;

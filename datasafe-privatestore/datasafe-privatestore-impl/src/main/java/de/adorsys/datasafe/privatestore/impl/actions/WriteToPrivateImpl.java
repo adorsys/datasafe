@@ -12,6 +12,11 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import javax.inject.Inject;
 import java.io.OutputStream;
 
+/**
+ * Default privatespace resource write action that retrieves users' secret key for document encryption
+ * then resolves resource location using {@link EncryptedResourceResolver} to get absolute encrypted path
+ * and writes+encrypts stream to the returned resource using {@link EncryptedDocumentWriteService}
+ */
 public class WriteToPrivateImpl implements WriteToPrivate {
 
     private final PrivateKeyService privateKeyService;

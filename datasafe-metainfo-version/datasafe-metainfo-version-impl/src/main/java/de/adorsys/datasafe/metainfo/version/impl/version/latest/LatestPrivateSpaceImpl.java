@@ -20,9 +20,10 @@ import java.io.OutputStream;
 import java.util.stream.Stream;
 
 /**
- * Each operation will be applied to latest file version.
- *
- * @param <V>
+ * Privatespace where each operation will be applied to latest file version.
+ * @implNote Operations on  non-versioned resources are not supported. Ideally, do not mix versioned and
+ * non-versioned resources in same privatespace.
+ * @param <V> version tag
  */
 public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements VersionedPrivateSpaceService<V> {
 

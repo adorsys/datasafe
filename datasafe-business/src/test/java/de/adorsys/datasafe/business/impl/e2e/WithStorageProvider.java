@@ -9,6 +9,7 @@ import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -23,7 +24,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
-import java.net.URI;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.UUID;
@@ -32,6 +32,9 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * Provides different storage types - filesystem, minio, etc. to be used in tests.
+ */
 @Slf4j
 public abstract class WithStorageProvider extends BaseE2ETest {
 
@@ -126,8 +129,8 @@ public abstract class WithStorageProvider extends BaseE2ETest {
         return Stream.of(
                 new StorageDescriptor(
                         "FILESYSTEM",
-                        () -> new FileSystemStorageService(tempDir.toUri()),
-                        tempDir.toUri()
+                        () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
+                        new Uri(tempDir.toUri())
                 ),
                 minio(),
                 s3()
@@ -141,7 +144,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                     minioStorage.get();
                     return new S3StorageService(minio, minioBucketName, EXECUTOR_SERVICE);
                 },
-                URI.create("s3://" + minioBucketName + "/" + prefix + "/")
+                new Uri("s3://" + minioBucketName + "/" + prefix + "/")
         );
     }
 
@@ -152,7 +155,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                     cephStorage.get();
                     return new S3StorageService(ceph, cephBucketName, EXECUTOR_SERVICE);
                 },
-                URI.create("s3://" + cephBucketName + "/" + prefix + "/")
+                new Uri("s3://" + cephBucketName + "/" + prefix + "/")
         );
     }
 
@@ -167,7 +170,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                     amazonSotrage.get();
                     return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
-                URI.create("s3://" + amazonBucket + "/" + prefix + "/")
+                new Uri("s3://" + amazonBucket + "/" + prefix + "/")
         );
     }
 
@@ -259,9 +262,9 @@ public abstract class WithStorageProvider extends BaseE2ETest {
 
         private final String name;
         private final Supplier<StorageService> storageService;
-        private final URI location;
+        private final Uri location;
 
-        StorageDescriptor(String name, Supplier<StorageService> storageService, URI location) {
+        StorageDescriptor(String name, Supplier<StorageService> storageService, Uri location) {
             this.name = name;
             this.storageService = storageService;
             this.location = location;

@@ -3,7 +3,6 @@ package de.adorsys.datasafe.directory.impl.profile.operations;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
@@ -12,6 +11,10 @@ import lombok.SneakyThrows;
 
 import javax.inject.Inject;
 
+/**
+ * Class that provides system root location, system DFS access credentials
+ * and enhances user credentials with keystore opening credentials.
+ */
 public class DFSSystem {
 
     private final DFSConfig config;
@@ -21,27 +24,28 @@ public class DFSSystem {
         this.config = config;
     }
 
-    @SneakyThrows
-    public ReadStorePassword systemKeystoreAuth() {
-        return new ReadStorePassword(config.keystorePassword());
-    }
-
+    /**
+     * Get credentials to read key in users' keystore - enhance user password with password to open keystore.
+     */
     public KeyStoreAuth privateKeyStoreAuth(UserIDAuth auth) {
-
         return new KeyStoreAuth(
-            new ReadStorePassword(config.keystorePassword()),
-            auth.getReadKeyPassword()
+                systemKeystoreAuth(),
+                auth.getReadKeyPassword()
         );
     }
 
-    public KeyStoreAuth publicKeyStoreAuth() {
-        return new KeyStoreAuth(
-            new ReadStorePassword(config.keystorePassword()),
-            new ReadKeyPassword(config.keystorePassword())
-        );
-    }
-
+    /**
+     * Where system files like users' private and public profile are located within DFS.
+     */
     public AbsoluteLocation<PublicResource> dfsRoot() {
         return new AbsoluteLocation<>(new BasePublicResource(config.systemRoot()));
+    }
+
+    /**
+     * Get credentials to open and serialize/deserialize keystore.
+     */
+    @SneakyThrows
+    private ReadStorePassword systemKeystoreAuth() {
+        return new ReadStorePassword(config.keystorePassword());
     }
 }

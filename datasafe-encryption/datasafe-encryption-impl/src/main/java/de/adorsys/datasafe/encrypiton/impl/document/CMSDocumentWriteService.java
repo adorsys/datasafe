@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * Write CMS-encrypted document to DFS.
+ * Writes CMS-encrypted document to DFS.
  */
 public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
@@ -60,7 +60,7 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     }
 
     /**
-     * This class fixes issue that bouncy castle does not close underlying stream - i.e. DFS stream
+     * This class fixes issue that bouncy castle does not close underlying stream - example: DFS stream
      * when wrapping it.
      */
     @RequiredArgsConstructor

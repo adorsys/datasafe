@@ -11,6 +11,10 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import javax.inject.Inject;
 import java.io.InputStream;
 
+/**
+ * Default implementation for stream reading that encrypts incoming resource path if it is relative using
+ * {@link EncryptedResourceResolver} then reads and decrypts data from it using {@link EncryptedDocumentReadService}
+ */
 public class ReadFromPrivateImpl implements ReadFromPrivate {
 
     private final EncryptedResourceResolver resolver;
@@ -27,7 +31,8 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
         return reader.read(resolveRelative(request));
     }
 
-    private ReadRequest<UserIDAuth, AbsoluteLocation<PrivateResource>> resolveRelative(ReadRequest<UserIDAuth, PrivateResource> request) {
+    private ReadRequest<UserIDAuth, AbsoluteLocation<PrivateResource>> resolveRelative(
+            ReadRequest<UserIDAuth, PrivateResource> request) {
         return ReadRequest.<UserIDAuth, AbsoluteLocation<PrivateResource>>builder()
                 .owner(request.getOwner())
                 .location(resolver.encryptAndResolvePath(

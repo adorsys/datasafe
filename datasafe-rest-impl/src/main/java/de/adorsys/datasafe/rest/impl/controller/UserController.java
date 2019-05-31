@@ -12,10 +12,11 @@ import de.adorsys.datasafe.types.api.resource.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * User profile REST api.
+ */
 @RestController
 @RequestMapping(value = "/user", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 public class UserController {
@@ -35,6 +36,19 @@ public class UserController {
         this.dataSafeService = dataSafeService;
     }
 
+    /**
+     * Registers user profile using default Datasafe convention - user profile, user private and inbox space
+     * are located within {@link DatasafeProperties#getSystemRoot()} storage root, using convention:
+     * User profile {@link de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl}:
+     * public-profile: ${systemRoot}/profiles/public/${userName}
+     * private-profile: ${systemRoot}/profiles/private/${userName}
+     * User files:
+     * privatespace-raw-files: ${systemRoot}/${userName}/private/files
+     * privatespace-latest-file-version: ${systemRoot}/${userName}/versions
+     * privatespace-keystore: ${systemRoot}/${userName}/private/keystore
+     * inbox: ${systemRoot}/${userName}/inbox
+     * public-keys: ${systemRoot}/${userName}/public/keystore
+     */
     @PutMapping
     @ApiOperation("Create user")
     public void createUser(@RequestBody UserCreateRequestDTO requestDTO) {
@@ -42,11 +56,11 @@ public class UserController {
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(requestDTO.getPassword());
         UserIDAuth auth = new UserIDAuth(new UserID(requestDTO.getUserName()), readKeyPassword);
 
-        URI rootLocation = URI.create(properties.getSystemRoot());
+        Uri rootLocation = new Uri(properties.getSystemRoot());
         rootLocation = rootLocation.resolve(requestDTO.getUserName() + "/");
-        URI inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
+        Uri inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
 
-        URI keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
+        Uri keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
 
         AbsoluteLocation<PublicResource> publicKeys = access(
                 rootLocation.resolve("./" + PUBLIC_COMPONENT + "/keystore")
@@ -59,7 +73,7 @@ public class UserController {
                 .build()
         );
 
-        URI filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
+        Uri filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
 
         dataSafeService.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
                 .id(auth)
@@ -80,11 +94,11 @@ public class UserController {
         dataSafeService.userProfile().deregister(userIDAuth);
     }
 
-    private AbsoluteLocation<PublicResource> access(URI path) {
+    private AbsoluteLocation<PublicResource> access(Uri path) {
         return new AbsoluteLocation<>(new BasePublicResource(path));
     }
 
-    private AbsoluteLocation<PrivateResource> accessPrivate(URI path) {
-        return new AbsoluteLocation<>(new BasePrivateResource(path, URI.create(""), URI.create("")));
+    private AbsoluteLocation<PrivateResource> accessPrivate(Uri path) {
+        return new AbsoluteLocation<>(new BasePrivateResource(path, new Uri(""), new Uri("")));
     }
 }

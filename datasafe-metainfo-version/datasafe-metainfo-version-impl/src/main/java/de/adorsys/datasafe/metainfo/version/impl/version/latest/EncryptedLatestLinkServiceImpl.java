@@ -11,12 +11,21 @@ import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.InputStream;
-import java.net.URI;
 
+/**
+ * Default latest link service that stores latest resource links within
+ * {@link UserPrivateProfile#getDocumentVersionStorage()}. Those links have encrypted path by
+ * {@link EncryptedResourceResolver} and point to versioned blobs within privatespace (so that link
+ * content is always relative resource location inside privatespace)
+ */
+@Slf4j
 public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkService {
 
     private final ProfileRetrievalService profiles;
@@ -36,13 +45,18 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
             UserIDAuth owner, PrivateResource resource) {
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
 
+        if (null == privateProfile.getDocumentVersionStorage()) {
+            log.error("Missing version storage for {}", Log.secure(owner.getUserID().getValue()));
+            throw new IllegalStateException("User private profile is missing document version storage");
+        }
+
         AbsoluteLocation<PrivateResource> encryptedPath = resolver.encryptAndResolvePath(
                 owner,
                 resource
         );
 
         return new AbsoluteLocation<>(
-                encryptedPath.resolve(privateProfile.getDocumentVersionStorage().getResource())
+                encryptedPath.resolveFrom(privateProfile.getDocumentVersionStorage().getResource())
         );
     }
 
@@ -57,8 +71,8 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
         PrivateResource userPrivate = privateProfile.getPrivateStorage().getResource();
 
         PrivateResource resource = privateProfile.getPrivateStorage().getResource().resolve(
-                URI.create(relativeToPrivateUri),
-                URI.create("")
+                new Uri(relativeToPrivateUri),
+                new Uri("")
         );
 
         return resolver.decryptAndResolvePath(owner, resource, userPrivate);

@@ -19,13 +19,15 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
+/**
+ * User privatespace REST api.
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class DocumentController {
                              @PathVariable String path,
                              HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate(URI.create("./" + path));
+        PrivateResource resource = BasePrivateResource.forPrivate("./" + path);
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
         try (InputStream is = dataSafeService.privateService().read(request);
              OutputStream os = response.getOutputStream()
@@ -84,7 +86,7 @@ public class DocumentController {
                                @RequestHeader String password,
                                @PathVariable String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate(URI.create(path));
+        PrivateResource resource = BasePrivateResource.forPrivate(path);
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         dataSafeService.privateService().remove(request);
         log.debug("User: {}, delete private file: {}", user, resource);

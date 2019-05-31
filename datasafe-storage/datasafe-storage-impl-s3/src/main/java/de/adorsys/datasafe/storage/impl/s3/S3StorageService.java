@@ -1,7 +1,10 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.iterable.S3Objects;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.utils.Log;
@@ -10,10 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+/**
+ * Amazon S3, minio and CEPH compatible default S3 interface adapter.
+ */
 @Slf4j
 public class S3StorageService implements StorageService {
 
@@ -21,6 +27,11 @@ public class S3StorageService implements StorageService {
     private final String bucketName;
     private final ExecutorService executorService;
 
+    /**
+     * @param s3 Connection to S3
+     * @param bucketName Bucket to use
+     * @param executorService Multipart sending threadpool (file chunks are sent in parrallel)
+     */
     @Inject
     public S3StorageService(AmazonS3 s3, String bucketName, ExecutorService executorService) {
         this.s3 = s3;
@@ -28,20 +39,20 @@ public class S3StorageService implements StorageService {
         this.executorService = executorService;
     }
 
+    /**
+     * Lists all resources within bucket and returns absolute resource location for each entry without credentials.
+     */
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
-        log.debug("List at {}", location);
-        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request();
-        listObjectsV2Request.setBucketName(bucketName);
+        log.debug("List at {}", Log.secure(location));
         String prefix = location.location().getPath().replaceFirst("^/", "");
-        int len = prefix.length();
-        listObjectsV2Request.setPrefix(prefix);
-        ListObjectsV2Result listObjectsV2Result = s3.listObjectsV2(listObjectsV2Request);
-        List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-        return objectSummaries.stream()
+
+        S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, prefix);
+        Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);
+        return objectStream
                 .map(os -> new AbsoluteLocation<>(
                         new BaseResolvedResource(
-                                createResource(location, os, len),
+                                createResource(location, os, prefix.length()),
                                 os.getLastModified().toInstant()
                         ))
                 );
@@ -85,6 +96,6 @@ public class S3StorageService implements StorageService {
             return BasePrivateResource.forPrivate(root.location());
         }
 
-        return BasePrivateResource.forPrivate(relUrl).resolve(root);
+        return BasePrivateResource.forPrivate(relUrl).resolveFrom(root);
     }
 }

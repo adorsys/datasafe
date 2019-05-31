@@ -3,6 +3,9 @@ package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * Configures document path encryption digest.
+ */
 @Data
 @AllArgsConstructor
 public class DefaultPathDigestConfig {

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Created by peter on 26.02.18 at 17:04.
+ * Wrapper that contains count of public-key pairs and count of encryption keys.
  */
 @Getter
 @RequiredArgsConstructor

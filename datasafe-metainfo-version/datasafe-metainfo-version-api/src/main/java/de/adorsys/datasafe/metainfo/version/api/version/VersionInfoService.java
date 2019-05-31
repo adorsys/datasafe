@@ -7,7 +7,8 @@ import de.adorsys.datasafe.types.api.resource.*;
 import java.util.stream.Stream;
 
 /**
- * Links resource versions with its latest version descriptor.
+ * Links resource versions joined with its latest version descriptor.
+ * Useful for determining which resources are too old and can be removed.
  * @param <V> Versioning class
  */
 public interface VersionInfoService<V extends Version> {

@@ -9,10 +9,13 @@ import java.security.KeyStore;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Default map-based private and public keys cache implementation. Quite safe to cache since they change infrequently.
+ */
 @Getter
 @RequiredArgsConstructor
 public class DefaultKeyStoreCache implements KeyStoreCache {
 
     private final Map<UserID, List<PublicKeyIDWithPublicKey>> publicKeys;
-    private final Map<UserID, KeyStore> privateKeys;
+    private final Map<UserID, KeyStore> keystore;
 }

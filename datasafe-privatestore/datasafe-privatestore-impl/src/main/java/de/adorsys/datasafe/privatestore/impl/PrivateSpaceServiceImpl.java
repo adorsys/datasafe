@@ -9,6 +9,9 @@ import lombok.experimental.Delegate;
 
 import javax.inject.Inject;
 
+/**
+ * Default aggregate view of actions doable on users' privatespace.
+ */
 public class PrivateSpaceServiceImpl implements PrivateSpaceService {
 
     @Delegate

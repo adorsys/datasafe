@@ -63,6 +63,10 @@
     </developers>
 
     <properties>
+        <doclint>none</doclint>
+        <src.dir>src/main/java</src.dir>
+        <test.src.dir>src/test/java</test.src.dir>
+
         <!-- TODO: should be maven.multiModuleProjectDirectory but not using it because Intellij does not support it -->
         <jacoco.reportPath>${basedir}/../../target/jacoco.exec</jacoco.reportPath>
         <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
@@ -91,6 +95,7 @@
         <commons.io.version>2.5</commons.io.version>
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
         <drools.version>6.5.0.Final</drools.version>
+        <lombok-maven-plugin.version>1.18.6.0</lombok-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -214,6 +219,9 @@
     <build>
         <finalName>${project.artifactId}</finalName>
 
+        <sourceDirectory>${src.dir}</sourceDirectory>
+        <testSourceDirectory>${test.src.dir}</testSourceDirectory>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -323,6 +331,63 @@
     </build>
 
     <profiles>
+        <!--
+        This profile exist to show Lombok-generated code in javadoc without touching dev and release classes.
+        You can generate JavaDoc with comments from lombok using:
+        mvn clean javadoc:aggregate -P javadoc
+        -->
+        <profile>
+            <id>javadoc</id>
+            <properties>
+                <src.dir>target/generated-sources/delombok</src.dir>
+                <test.srt.dir>target/generated-test-sources/delombok</test.srt.dir>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>com.google.dagger</groupId>
+                                    <artifactId>dagger-compiler</artifactId>
+                                    <version>${dagger.version}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-maven-plugin</artifactId>
+                        <version>${lombok-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>delombok</goal>
+                                </goals>
+                                <configuration>
+                                    <addOutputDirectory>false</addOutputDirectory>
+                                    <sourceDirectory>src/main/java</sourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <!-- Exclude Dagger2 generated code -->
+                            <sourceFileExcludes>**/*Dagger*</sourceFileExcludes>
+                            <sourceFileExcludes>**/*Factory*</sourceFileExcludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>release</id>
             <build>
@@ -367,22 +432,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
                 <pluginManagement>
                     <plugins>
@@ -390,19 +439,6 @@
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-project-info-reports-plugin</artifactId>
                             <version>2.7</version>
-                        </plugin>
-
-                        <!-- Maven Release Build fails if javadoc comments are invalid. http://stackoverflow.com/questions/15886209/maven-is-not-working-in-java-8-when-javadoc-tags-are-incomplete -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.9.1</version>
-                            <configuration>
-                                <charset>${project.build.sourceEncoding}</charset>
-                                <encoding>${project.build.sourceEncoding}</encoding>
-                                <docencoding>${project.build.sourceEncoding}</docencoding>
-                                <additionalparam>-Xdoclint:none</additionalparam>
-                            </configuration>
                         </plugin>
                         <plugin>
                             <artifactId>maven-release-plugin</artifactId>
@@ -452,12 +488,6 @@
                                 <!-- Die commit id bei "git log -abbrev-commit" ist ebenfalls 7 Zeichen. -->
                                 <shortRevisionLength>7</shortRevisionLength>
                             </configuration>
-                        </plugin>
-
-                        <plugin>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok-maven-plugin</artifactId>
-                            <version>1.16.18.1</version>
                         </plugin>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>

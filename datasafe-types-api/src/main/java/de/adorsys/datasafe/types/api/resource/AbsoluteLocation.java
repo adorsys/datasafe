@@ -3,8 +3,10 @@ package de.adorsys.datasafe.types.api.resource;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.Getter;
 
-import java.net.URI;
-
+/**
+ * Wrapper that forces underlying resource {@code T} to be absolute (same meaning as absolute URI).
+ * @param <T> Wrapped resource
+ */
 public class AbsoluteLocation<T extends ResourceLocation<T>> implements ResourceLocation<T> {
 
     @Getter
@@ -19,12 +21,12 @@ public class AbsoluteLocation<T extends ResourceLocation<T>> implements Resource
     }
 
     @Override
-    public T resolve(ResourceLocation absolute) {
-        return resource.resolve(absolute);
+    public T resolveFrom(ResourceLocation absolute) {
+        return resource.resolveFrom(absolute);
     }
 
     @Override
-    public URI location() {
+    public Uri location() {
         return resource.location();
     }
 

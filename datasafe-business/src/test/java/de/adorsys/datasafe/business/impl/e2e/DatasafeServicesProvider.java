@@ -6,14 +6,16 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.experimental.UtilityClass;
 
-import java.net.URI;
-
+/**
+ * Factory to get Datasafe services.
+ */
 @UtilityClass
 public class DatasafeServicesProvider {
 
-    public static DefaultDatasafeServices defaultDatasafeServices(StorageService storageService, URI systemRoot) {
+    public static DefaultDatasafeServices defaultDatasafeServices(StorageService storageService, Uri systemRoot) {
         return DaggerDefaultDatasafeServices
                 .builder()
                 .config(new DFSConfig() {
@@ -23,7 +25,7 @@ public class DatasafeServicesProvider {
                     }
 
                     @Override
-                    public URI systemRoot() {
+                    public Uri systemRoot() {
                         return systemRoot;
                     }
                 })
@@ -35,7 +37,7 @@ public class DatasafeServicesProvider {
                 .build();
     }
 
-    public static VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, URI systemRoot) {
+    public static VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, Uri systemRoot) {
         return DaggerVersionedDatasafeServices
                 .builder()
                 .config(new DFSConfig() {
@@ -45,7 +47,7 @@ public class DatasafeServicesProvider {
                     }
 
                     @Override
-                    public URI systemRoot() {
+                    public Uri systemRoot() {
                         return systemRoot;
                     }
                 })

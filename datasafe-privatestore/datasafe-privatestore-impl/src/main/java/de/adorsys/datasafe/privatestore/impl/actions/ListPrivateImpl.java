@@ -12,6 +12,11 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
+/**
+ * Default listing service that encrypts the location of where to list files using {@link EncryptedResourceResolver}
+ * and delegates request to {@link StorageListService} after that it decrypts obtained resources to retrieve
+ * logical resource path (decrypted path) within users' privatespace.
+ */
 public class ListPrivateImpl implements ListPrivate {
 
     private final EncryptedResourceResolver resolver;

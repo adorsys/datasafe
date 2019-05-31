@@ -1,7 +1,8 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoder;
+import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
+import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionInfoService;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
@@ -12,15 +13,20 @@ import javax.inject.Inject;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Default implementation of version information service that determines latest resource using
+ * {@link EncryptedLatestLinkService} and reads all associated blobs with versions using {@link ListPrivate}
+ * within privatespace. Then it decrypts associated blobs into version and path using {@link VersionEncoderDecoder}
+ */
 public class DefaultVersionInfoServiceImpl implements VersionInfoService<DFSVersion> {
 
-    private final VersionEncoder encoder;
+    private final VersionEncoderDecoder encoder;
     private final ListPrivate listPrivate;
-    private final EncryptedLatestLinkServiceImpl latestVersionLinkLocator;
+    private final EncryptedLatestLinkService latestVersionLinkLocator;
 
     @Inject
-    public DefaultVersionInfoServiceImpl(VersionEncoder encoder, ListPrivate listPrivate,
-                                         EncryptedLatestLinkServiceImpl latestVersionLinkLocator) {
+    public DefaultVersionInfoServiceImpl(VersionEncoderDecoder encoder, ListPrivate listPrivate,
+                                         EncryptedLatestLinkService latestVersionLinkLocator) {
         this.encoder = encoder;
         this.listPrivate = listPrivate;
         this.latestVersionLinkLocator = latestVersionLinkLocator;
