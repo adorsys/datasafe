@@ -29,14 +29,6 @@ public class S3StorageService implements StorageService {
         this.executorService = executorService;
     }
 
-    /*@Inject
-    public S3StorageService(AmazonS3 s3, String bucketName) {
-        this.s3 = s3;
-        this.bucketName = bucketName;
-        this.completionService = new ExecutorCompletionService<>(
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
-    }*/
-
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         log.debug("List at {}", location);
