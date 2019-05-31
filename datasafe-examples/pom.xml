@@ -13,6 +13,5 @@
     <packaging>pom</packaging>
     <modules>
         <module>datasafe-examples-business</module>
-        <module>datasafe-examples-modules</module>
     </modules>
 </project>

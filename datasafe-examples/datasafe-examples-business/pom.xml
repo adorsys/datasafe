@@ -46,4 +46,16 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <!-- Disable maven-dependency-plugin - that's ok to have undeclared transitive dependencies here-->
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
