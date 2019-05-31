@@ -17,6 +17,11 @@ public class UserIDAuth {
     private final UserID userID;
     private final ReadKeyPassword readKeyPassword;
 
+    public UserIDAuth(String userID, String readKeyPassword) {
+        this.userID = new UserID(userID);
+        this.readKeyPassword = new ReadKeyPassword(readKeyPassword);
+    }
+
     @Override
     public String toString() {
         return "UserIDAuth{" +

@@ -10,6 +10,8 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.RequiredArgsConstructor;
 
+import java.net.URI;
+
 /**
  * Default DFS folders layout provider.
  */
@@ -27,6 +29,16 @@ public class DefaultDFSConfig implements DFSConfig {
 
     private final Uri systemRoot;
     private final ReadStorePassword systemPassword;
+
+    public DefaultDFSConfig(String systemRoot, String systemPassword) {
+        this.systemRoot = new Uri(systemRoot);
+        this.systemPassword = new ReadStorePassword(systemPassword);
+    }
+
+    public DefaultDFSConfig(URI systemRoot, String systemPassword) {
+        this.systemRoot = new Uri(systemRoot);
+        this.systemPassword = new ReadStorePassword(systemPassword);
+    }
 
     public DefaultDFSConfig(Uri systemRoot, String systemPassword) {
         this.systemRoot = systemRoot;

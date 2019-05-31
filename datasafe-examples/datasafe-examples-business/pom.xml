@@ -4,12 +4,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.adorsys</groupId>
-        <artifactId>datasafe</artifactId>
+        <artifactId>datasafe-examples</artifactId>
         <version>0.0.9-SNAPSHOT</version>
     </parent>
     <artifactId>datasafe-examples-business</artifactId>
     <dependencies>
-
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-business</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-fs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
