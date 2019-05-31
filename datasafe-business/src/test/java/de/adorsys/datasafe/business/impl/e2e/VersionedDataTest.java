@@ -55,21 +55,6 @@ public class VersionedDataTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void testVersionedWriteUsingDirectAccess(WithStorageProvider.StorageDescriptor descriptor) {
-        init(descriptor);
-
-        registerAndDoWritesWithDiffMessageInSameLocation();
-
-        AbsoluteLocation<ResolvedResource> latest = getFirstFileInPrivate(jane);
-        String directResult = readRawPrivateUsingPrivateKey(jane, latest.getResource().asPrivate());
-
-        assertThat(directResult).isEqualTo(MESSAGE_THREE);
-        assertThat(latest.getResource().asPrivate().decryptedPath()).asString().contains(PRIVATE_FILE_PATH);
-        validateThereAreVersions(jane, 3);
-    }
-
-    @ParameterizedTest
-    @MethodSource("allStorages")
     void testVersionedWriteUsingAbsoluteAccess(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
