@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -42,8 +41,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.adorsys.datasafe.types.api.actions.ListRequest.forDefaultPrivate;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -95,7 +96,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     @SneakyThrows
     @ParameterizedTest(name = "Run #{index} service storage: {0} with data size: {1} bytes and {2} threads.")
     @MethodSource("differentThreadsTestOptions")
-    public void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor, int size, int poolSize) {
+    void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor, int size, int poolSize) {
         init(descriptor);
 
         String testFile = tempTestFileFolder.toString() + TEST_FILENAME;
@@ -130,7 +131,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         holdingLatch.countDown();
 
         log.trace("*** Main thread waiting for all threads ***");
-        finishHoldingLatch.await(TIMEOUT_S, TimeUnit.SECONDS);
+        finishHoldingLatch.await(TIMEOUT_S, SECONDS);
         executor.shutdown();
         log.trace("*** All threads are finished work ***");
 
@@ -138,12 +139,11 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             UserIDAuth user = createJohnTestUser(i);
 
-            List<AbsoluteLocation<ResolvedResource>> resourceList = listPrivate.list(
-                    forDefaultPrivate(user, "./")).collect(Collectors.toList());
-            log.debug("Read files for user: " + user.getUserID().getValue());
-
+            await().atMost(5, SECONDS).until(
+                    () -> listAllPrivateFiles(user).size() == EXPECTED_NUMBER_OF_FILES_PER_USER
+            );
+            List<AbsoluteLocation<ResolvedResource>> resourceList = listAllPrivateFiles(user);
             assertThat(resourceList.size()).isEqualTo(EXPECTED_NUMBER_OF_FILES_PER_USER);
-
             resourceList.forEach(
                     item -> assertEquals(checksumOfOriginTestFile, calculateDecryptedContentChecksum(user, item)));
         }
@@ -152,6 +152,11 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
         metricCollector.setStorageType(storage.getClass().getSimpleName());
         metricCollector.setNumberOfThreads(poolSize);
         metricCollector.writeToJSON();//json files in target folder
+    }
+
+    private List<AbsoluteLocation<ResolvedResource>> listAllPrivateFiles(UserIDAuth user) {
+        return listPrivate.list(
+                forDefaultPrivate(user, "./")).collect(Collectors.toList());
     }
 
     private void createFileForUserParallelly(ThreadPoolExecutor executor, CountDownLatch holdingLatch,
