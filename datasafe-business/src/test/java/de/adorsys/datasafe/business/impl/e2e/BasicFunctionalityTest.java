@@ -107,6 +107,35 @@ class BasicFunctionalityTest extends WithStorageProvider {
         assertPrivateSpaceList(jane, "level1/level2/", "level1/level2/file");
     }
 
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void listingInboxValidation(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerJohnAndJane();
+
+        writeDataToInbox(jane, "root.file", MESSAGE_ONE);
+        writeDataToInbox(jane, "level1/file", MESSAGE_ONE);
+        writeDataToInbox(jane, "level1/level2/file", MESSAGE_ONE);
+
+        assertInboxSpaceList(jane, "", "root.file", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, "./", "root.file", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, ".", "root.file", "level1/file", "level1/level2/file");
+
+        assertInboxSpaceList(jane, "root.file", "root.file");
+        assertInboxSpaceList(jane, "./root.file", "root.file");
+
+        assertInboxSpaceList(jane, "level1", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, "level1/", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, "./level1", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, "./level1/", "level1/file", "level1/level2/file");
+
+        assertInboxSpaceList(jane, "./level1/level2", "level1/level2/file");
+        assertInboxSpaceList(jane, "./level1/level2/", "level1/level2/file");
+        assertInboxSpaceList(jane, "level1/level2", "level1/level2/file");
+        assertInboxSpaceList(jane, "level1/level2/", "level1/level2/file");
+    }
+
     @SneakyThrows
     private void validateInboxStructAndEncryption(AbsoluteLocation<ResolvedResource> expectedInboxResource) {
         List<AbsoluteLocation<ResolvedResource>> inbox = listFiles(it -> it.contains(INBOX_COMPONENT));

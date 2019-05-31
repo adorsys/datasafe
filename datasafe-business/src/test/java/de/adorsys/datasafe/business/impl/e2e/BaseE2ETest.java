@@ -104,6 +104,15 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 Log.secure(path.split("/"), "/"));
     }
 
+    @SneakyThrows
+    protected void writeDataToInbox(UserIDAuth auth, String path, String data) {
+        OutputStream stream = writeToInbox.write(WriteRequest.forDefaultPublic(auth.getUserID(), path));
+        stream.write(data.getBytes());
+        stream.close();
+        log.info("File {} of user {} saved to {}", Log.secure(data), Log.secure(auth),
+                Log.secure(path.split("/"), "/"));
+    }
+
     protected AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth owner) {
         return getAllFilesInPrivate(owner).get(0);
     }
@@ -200,7 +209,17 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 .collect(Collectors.toList());
 
         for (String toFind : expected) {
-            assertThat(paths.stream().anyMatch(it -> it.contains(toFind))).isTrue();
+            assertThat(paths.stream().anyMatch(it -> it.equals(toFind))).isTrue();
+        }
+    }
+
+    protected void assertInboxSpaceList(UserIDAuth user, String root, String... expected) {
+        List<String> paths = listInbox.list(ListRequest.forDefaultPrivate(user, root))
+                .map(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+                .collect(Collectors.toList());
+
+        for (String toFind : expected) {
+            assertThat(paths.stream().anyMatch(it -> it.equals(toFind))).isTrue();
         }
     }
 }

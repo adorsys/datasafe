@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -159,6 +158,78 @@ class BaseUserOperationsTestWithDefaultDatasafe {
     /**
      * This is how John can list his inbox
      */
+    @Test
+    void listInbox() {
+        // creating new user
+        UserIDAuth user = registerUser("john");
+        UserID johnUsername = new UserID("john");
+
+        // let's share 2 messages:
+        shareMessage(johnUsername, "home/my/secret.txt", "Hi there");
+        shareMessage(johnUsername, "home/watch/films.txt", "Films you will like");
+
+        // Here's how to list inbox folder root
+        List<AbsoluteLocation<ResolvedResource>> johnsInboxFilesInRoot = defaultDatasafeServices.inboxService()
+                .list(ListRequest.forDefaultPrivate(user, "")).collect(Collectors.toList());
+        // same files we created, note that on filesystem file paths in INBOX are not encrypted
+        assertThat(johnsInboxFilesInRoot)
+                .extracting(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+                .containsExactlyInAnyOrder(
+                        "home/my/secret.txt",
+                        "home/watch/films.txt"
+                );
+
+        // Now let's list John's home/watch:
+        List<AbsoluteLocation<ResolvedResource>> johnsInboxFilesInWatch = defaultDatasafeServices.inboxService()
+                .list(ListRequest.forDefaultPrivate(user, "home/watch")).collect(Collectors.toList());
+        // same files we created
+        assertThat(johnsInboxFilesInWatch)
+                .extracting(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+                .containsExactly(
+                        "home/watch/films.txt"
+                );
+    }
+
+    /**
+     * This is how John can read file from privatespace using list operation
+     */
+    @Test
+    void readFromPrivate() {
+        // creating new user
+        UserIDAuth user = registerUser("john");
+
+        // let's create 1 file:
+        writeToPrivate(user, "home/my/secret.txt", "secret");
+
+        List<AbsoluteLocation<ResolvedResource>> johnsPrivateFilesInMy = defaultDatasafeServices.privateService()
+                .list(ListRequest.forDefaultPrivate(user, "home/my")).collect(Collectors.toList());
+
+        // we have successfully read that file
+        assertThat(defaultDatasafeServices.privateService().read(
+                ReadRequest.forPrivate(user, johnsPrivateFilesInMy.get(0).getResource().asPrivate()))
+        ).hasContent("secret");
+    }
+
+    /**
+     * This is how John can read file from inbox using list operation
+     */
+    @Test
+    void readFromInbox() {
+        // creating new user
+        UserIDAuth user = registerUser("john");
+        UserID johnUsername = new UserID("john");
+
+        // let's create 1 file:
+        shareMessage(johnUsername, "home/my/shared.txt", "shared message");
+
+        List<AbsoluteLocation<ResolvedResource>> johnsInboxFilesInMy = defaultDatasafeServices.inboxService()
+                .list(ListRequest.forDefaultPrivate(user, "home/my")).collect(Collectors.toList());
+
+        // we have successfully read that file
+        assertThat(defaultDatasafeServices.inboxService().read(
+                ReadRequest.forPrivate(user, johnsInboxFilesInMy.get(0).getResource().asPrivate()))
+        ).hasContent("shared message");
+    }
 
     @SneakyThrows
     private void writeToPrivate(UserIDAuth user, String path, String fileContent) {
