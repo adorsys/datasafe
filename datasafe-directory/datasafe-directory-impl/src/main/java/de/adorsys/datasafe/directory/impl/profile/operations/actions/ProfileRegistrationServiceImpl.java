@@ -7,6 +7,7 @@ import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
@@ -74,6 +75,12 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
         );
 
         publishPublicKeysIfNeeded(profile.getPublishPubKeysTo(), publicKeys);
+    }
+
+    @Override
+    public void registerUsingDefaults(UserIDAuth user) {
+        registerPublic(dfsConfig.defaultPublicTemplate(user));
+        registerPrivate(dfsConfig.defaultPrivateTemplate(user));
     }
 
     @SneakyThrows
