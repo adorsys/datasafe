@@ -3,17 +3,17 @@ package de.adorsys.datasafe.storage.impl.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.iterable.S3Objects;
 import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.utils.Log;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -25,15 +25,18 @@ public class S3StorageService implements StorageService {
 
     private final AmazonS3 s3;
     private final String bucketName;
+    private final ExecutorService executorService;
 
     /**
      * @param s3 Connection to S3
      * @param bucketName Bucket to use
+     * @param executorService Multipart sending threadpool (file chunks are sent in parrallel)
      */
     @Inject
-    public S3StorageService(AmazonS3 s3, String bucketName) {
+    public S3StorageService(AmazonS3 s3, String bucketName, ExecutorService executorService) {
         this.s3 = s3;
         this.bucketName = bucketName;
+        this.executorService = executorService;
     }
 
     /**
@@ -66,7 +69,8 @@ public class S3StorageService implements StorageService {
 
     @Override
     public OutputStream write(AbsoluteLocation location) {
-        return new PutBlobOnClose(s3, bucketName, location);
+        log.debug("Write data by path: {}", Log.secure(location.location()));
+        return new MultipartUploadS3StorageOutputStream(bucketName, location.getResource(), s3, executorService);
     }
 
     @Override
@@ -93,34 +97,5 @@ public class S3StorageService implements StorageService {
         }
 
         return BasePrivateResource.forPrivate(relUrl).resolveFrom(root);
-    }
-
-    /**
-     * Helper class that allows us to work with streams by collecting them into byte array and writing those bytes
-     * when stream is closed.
-     */
-    @Slf4j
-    @RequiredArgsConstructor
-    private static final class PutBlobOnClose extends ByteArrayOutputStream {
-
-        private final AmazonS3 s3;
-        private final String bucketName;
-        private final ResourceLocation resource;
-
-        @Override
-        public void close() throws IOException {
-
-            ObjectMetadata metadata = new ObjectMetadata();
-            byte[] data = super.toByteArray();
-            metadata.setContentLength(data.length);
-
-            InputStream is = new ByteArrayInputStream(data);
-
-            String key = resource.location().getPath().replaceFirst("^/", "");
-            log.debug("Write to {}", Log.secure(key));
-            s3.putObject(bucketName, key, is, metadata);
-
-            super.close();
-        }
     }
 }

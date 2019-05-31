@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.security.Security;
+import java.util.concurrent.Executors;
 
 /**
  * Configures default (non-versioned) Datasafe service that uses S3 client as storage provider.
@@ -35,7 +36,11 @@ public class DatasafeConfig {
      */
     @Bean
     StorageService storageService() {
-        return new S3StorageService(s3, properties.getBucketName());
+        return new S3StorageService(
+                s3,
+                properties.getBucketName(),
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+        );
     }
 
     /**

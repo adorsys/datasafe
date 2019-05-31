@@ -10,20 +10,20 @@ import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
+//TODO: Extract stuff related container start/stop/clear to separate class. Used in datasafe-business and in datasafe-storage-impl-s3
 class S3SystemStorageServiceTest extends BaseMockitoTest {
 
     private static final String FILE = "file";
@@ -32,24 +32,27 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
     private static String accessKeyID = "admin";
     private static String secretAccessKey = "password";
     private static String region = "eu-central-1";
-    private static String bucketName = "home";
     private static String url = "http://localhost";
     private static BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
     private static AmazonS3 s3;
     private static AbsoluteLocation<PrivateResource> root;
     private static AbsoluteLocation<PrivateResource> fileWithMsg;
 
-    private static GenericContainer minio = new GenericContainer("minio/minio")
-            .withExposedPorts(9000)
-            .withEnv("MINIO_ACCESS_KEY", "admin")
-            .withEnv("MINIO_SECRET_KEY", "password")
-            .withCommand("server /data")
-            .waitingFor(Wait.defaultWaitStrategy());
+    private static GenericContainer minio;
 
-    private S3StorageService storageService;
+    protected static String bucketName = "home";
+
+    protected S3StorageService storageService;
 
     @BeforeAll
     static void beforeAll() {
+        minio = new GenericContainer("minio/minio")
+                .withExposedPorts(9000)
+                .withEnv("MINIO_ACCESS_KEY", "admin")
+                .withEnv("MINIO_SECRET_KEY", "password")
+                .withCommand("server /data")
+                .waitingFor(Wait.defaultWaitStrategy());
+
         minio.start();
         Integer mappedPort = minio.getMappedPort(9000);
         log.info("Mapped port: " + mappedPort);
@@ -67,7 +70,9 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
 
     @BeforeEach
     void init() {
-        this.storageService = new S3StorageService(s3, bucketName);
+        this.storageService = new S3StorageService(s3, bucketName, Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors())
+        );
     }
 
     @Test
@@ -148,5 +153,32 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     private void createFileWithMessage() {
         s3.putObject(bucketName, FILE, MESSAGE);
+    }
+
+    @AfterEach
+    @SneakyThrows
+    void cleanup() {
+        log.info("Executing cleanup");
+        if (null != minio) {
+            removeObjectFromS3(s3, bucketName, "");
+        }
+    }
+
+    private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
+        amazonS3.listObjects(bucket, prefix)
+                .getObjectSummaries()
+                .forEach(it -> {
+                    log.debug("Remove {}", it.getKey());
+                    amazonS3.deleteObject(bucket, it.getKey());
+                });
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        log.info("Stopping containers");
+        if (null != minio) {
+            minio.stop();
+            minio = null;
+        }
     }
 }
