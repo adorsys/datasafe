@@ -6,7 +6,6 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import de.adorsys.datasafe.types.api.concurrent.MultiPartCompletionService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -21,7 +20,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
-import java.util.concurrent.CompletionService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 

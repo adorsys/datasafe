@@ -1,14 +1,14 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
-import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.rest.impl.config.DatasafeProperties;
 import de.adorsys.datasafe.rest.impl.dto.UserCreateRequestDTO;
+import de.adorsys.datasafe.types.api.resource.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 

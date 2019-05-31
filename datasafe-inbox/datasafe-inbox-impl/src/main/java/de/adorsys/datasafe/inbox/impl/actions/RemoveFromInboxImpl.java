@@ -1,11 +1,11 @@
 package de.adorsys.datasafe.inbox.impl.actions;
 
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
-import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
+import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
 
 import javax.inject.Inject;
 

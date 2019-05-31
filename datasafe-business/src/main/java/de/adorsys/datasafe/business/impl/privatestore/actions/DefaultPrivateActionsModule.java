@@ -3,9 +3,9 @@ package de.adorsys.datasafe.business.impl.privatestore.actions;
 import dagger.Binds;
 import dagger.Module;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
+import de.adorsys.datasafe.privatestore.api.actions.*;
 import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.privatestore.impl.actions.*;
-import de.adorsys.datasafe.privatestore.api.actions.*;
 
 /**
  * This module is responsible for providing default actions on PRIVATE folder.

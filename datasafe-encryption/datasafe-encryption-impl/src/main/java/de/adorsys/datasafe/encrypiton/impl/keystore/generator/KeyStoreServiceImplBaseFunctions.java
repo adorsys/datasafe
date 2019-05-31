@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
 
-import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import lombok.SneakyThrows;
 import org.bouncycastle.cert.X509CertificateHolder;
 

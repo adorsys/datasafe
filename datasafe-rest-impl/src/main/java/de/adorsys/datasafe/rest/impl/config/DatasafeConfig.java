@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.rest.impl.config;
 
 import com.amazonaws.services.s3.AmazonS3;
-import de.adorsys.datasafe.directory.api.config.DFSConfig;
-import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,11 @@ public class DatasafeConfig {
 
     @Bean
     StorageService storageService() {
-        return new S3StorageService(s3, properties.getBucketName(),
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        return new S3StorageService(
+                s3,
+                properties.getBucketName(),
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+        );
     }
 
     @Bean

@@ -8,11 +8,10 @@ import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
-import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -60,9 +59,7 @@ public class S3StorageService implements StorageService {
     @Override
     public OutputStream write(AbsoluteLocation location) {
         log.debug("Write data by path: {}", Log.secure(location.location()));
-        MultipartUploadS3StorageOutputStream storageOutputStream = new MultipartUploadS3StorageOutputStream(
-                bucketName, location.getResource(), s3, executorService);
-        return storageOutputStream;
+        return new MultipartUploadS3StorageOutputStream(bucketName, location.getResource(), s3, executorService);
     }
 
     @Override

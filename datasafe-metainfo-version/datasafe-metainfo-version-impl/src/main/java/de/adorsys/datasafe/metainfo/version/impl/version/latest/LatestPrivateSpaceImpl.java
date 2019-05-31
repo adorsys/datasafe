@@ -1,16 +1,16 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.actions.ListRequest;
-import de.adorsys.datasafe.types.api.actions.ReadRequest;
-import de.adorsys.datasafe.types.api.actions.RemoveRequest;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedList;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedRead;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedRemove;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedWrite;
+import de.adorsys.datasafe.metainfo.version.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
+import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.RemoveRequest;
+import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.Getter;
 

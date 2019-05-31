@@ -1,18 +1,18 @@
 /**
  * Copyright 2013-2019 the original author or authors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   https://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * <p>
  * NOTE:
  * SimpleStorageResource.java from spring-cloud-aws
  * located by https://github.com/spring-cloud/spring-cloud-aws/blob/master/spring-cloud-aws-core/src/main/java/org/springframework/cloud/aws/core/io/s3/SimpleStorageResource.java
@@ -26,6 +26,7 @@ import com.amazonaws.util.BinaryUtils;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
@@ -35,7 +36,10 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
 
 @Slf4j
 public class MultipartUploadS3StorageOutputStream extends OutputStream {
@@ -49,9 +53,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     // The minimum size for a multi part request is 5 MB, hence the buffer size of 5 MB
     private static final int BUFFER_SIZE = 1024 * 1024 * 5;
 
-    private final Object monitor = new Object();
-
-    private final CompletionService completionService;
+    private final CompletionService<UploadPartResult> completionService;
 
     private ByteArrayOutputStream currentOutputStream = new ByteArrayOutputStream(BUFFER_SIZE);
 
@@ -59,56 +61,51 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private int partCounter = 1;
 
-    public MultipartUploadS3StorageOutputStream(String bucketName, ResourceLocation resource, AmazonS3 amazonS3,
+    MultipartUploadS3StorageOutputStream(String bucketName, ResourceLocation resource, AmazonS3 amazonS3,
                                                 ExecutorService executorService) {
         this.bucketName = bucketName;
-        this.objectName = resource.location().getPath().replaceFirst("^/", "");;
+        this.objectName = resource.location().getPath().replaceFirst("^/", "");
         this.amazonS3 = amazonS3;
-        /*this.completionService = new ExecutorCompletionService<>(
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-        );*/
         this.completionService = new ExecutorCompletionService<>(executorService);
 
         log.debug("Write to bucket: {} with name: {}", Log.secure(bucketName), Log.secure(objectName));
     }
 
     @Override
+    @Synchronized
     public void write(int b) {
-        synchronized (monitor) {
-            currentOutputStream.write(b);
+        currentOutputStream.write(b);
 
-            if (currentOutputStream.size() == BUFFER_SIZE) {
-                initiateMultiPartIfNeeded();
-                completionService.submit(new UploadChunkResultCallable(
-                        ChunkUploadRequest
-                                .builder()
-                                .amazonS3(amazonS3)
-                                .content(currentOutputStream.toByteArray())
-                                .contentSize(currentOutputStream.size())
-                                .bucketName(bucketName)
-                                .objectName(objectName)
-                                .uploadId(multiPartUploadResult.getUploadId())
-                                .chunkNumberCounter(partCounter++)
-                                .lastChunk(false)
-                                .build()
-                ));
-                currentOutputStream.reset();
-            }
+        if (currentOutputStream.size() == BUFFER_SIZE) {
+            initiateMultiPartIfNeeded();
+            completionService.submit(new UploadChunkResultCallable(
+                    ChunkUploadRequest
+                            .builder()
+                            .amazonS3(amazonS3)
+                            .content(currentOutputStream.toByteArray())
+                            .contentSize(currentOutputStream.size())
+                            .bucketName(bucketName)
+                            .objectName(objectName)
+                            .uploadId(multiPartUploadResult.getUploadId())
+                            .chunkNumberCounter(partCounter++)
+                            .lastChunk(false)
+                            .build()
+            ));
+            currentOutputStream.reset();
         }
     }
 
     @Override
+    @Synchronized
     public void close() throws IOException {
-        synchronized (monitor) {
-            if (currentOutputStream == null) {
-                return;
-            }
+        if (currentOutputStream == null) {
+            return;
+        }
 
-            if (isMultiPartUpload()) {
-                finishMultiPartUpload();
-            } else {
-                finishSimpleUpload();
-            }
+        if (isMultiPartUpload()) {
+            finishMultiPartUpload();
+        } else {
+            finishSimpleUpload();
         }
     }
 
@@ -136,7 +133,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         // Release the memory
         currentOutputStream = null;
 
-        log.info("Finished simple upload");
+        log.debug("Finished simple upload");
     }
 
     private void finishMultiPartUpload() throws IOException {
@@ -167,20 +164,17 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                     )
             );
 
-            log.info("Finished multi part upload");
-        }
-        catch (ExecutionException e) {
+            log.debug("Finished multi part upload");
+        } catch (ExecutionException e) {
             abortMultiPartUpload();
 
             log.error(e.getMessage(), e);
             throw new IOException("Multi part upload failed ", e.getCause());
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             log.error(e.getMessage(), e);
             abortMultiPartUpload();
             Thread.currentThread().interrupt();
-        }
-        finally {
+        } finally {
             currentOutputStream = null;
         }
     }
@@ -199,19 +193,19 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
         if (isMultiPartUpload()) {
             amazonS3.abortMultipartUpload(new AbortMultipartUploadRequest(
-                            multiPartUploadResult.getBucketName(),
-                            multiPartUploadResult.getKey(),
-                            multiPartUploadResult.getUploadId()));
+                    multiPartUploadResult.getBucketName(),
+                    multiPartUploadResult.getKey(),
+                    multiPartUploadResult.getUploadId()));
         }
     }
 
     private List<PartETag> getMultiPartsUploadResults() throws ExecutionException, InterruptedException {
         List<PartETag> result = new ArrayList<>(partCounter);
         for (int i = 0; i < partCounter; i++) {
-            UploadPartResult partResult = (UploadPartResult) completionService.take().get();
+            UploadPartResult partResult = completionService.take().get();
             result.add(partResult.getPartETag());
 
-            log.info("Get upload part #{} from {}", i, partCounter);
+            log.debug("Get upload part #{} from {}", i, partCounter);
         }
         return result;
     }

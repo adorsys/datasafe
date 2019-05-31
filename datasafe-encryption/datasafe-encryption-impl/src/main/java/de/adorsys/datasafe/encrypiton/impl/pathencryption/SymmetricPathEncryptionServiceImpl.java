@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 

@@ -8,13 +8,13 @@ import dagger.Provides;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
-import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.keys.DFSPrivateKeyServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.keys.DFSPublicKeyServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.keys.DefaultKeyStoreCache;
 import de.adorsys.datasafe.directory.impl.profile.keys.KeyStoreCache;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 
 import javax.inject.Singleton;
 import java.security.KeyStore;

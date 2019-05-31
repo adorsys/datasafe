@@ -2,7 +2,10 @@ package de.adorsys.datasafe.business.impl.inbox.actions;
 
 import dagger.Binds;
 import dagger.Module;
-import de.adorsys.datasafe.inbox.api.actions.*;
+import de.adorsys.datasafe.inbox.api.actions.ListInbox;
+import de.adorsys.datasafe.inbox.api.actions.ReadFromInbox;
+import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
+import de.adorsys.datasafe.inbox.api.actions.WriteToInbox;
 import de.adorsys.datasafe.inbox.impl.actions.ListInboxImpl;
 import de.adorsys.datasafe.inbox.impl.actions.ReadFromInboxImpl;
 import de.adorsys.datasafe.inbox.impl.actions.RemoveFromInboxImpl;

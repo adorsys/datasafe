@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
-import de.adorsys.datasafe.types.api.resource.VersionedUri;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoder;
+import de.adorsys.datasafe.types.api.resource.VersionedUri;
 
 import javax.inject.Inject;
 import java.net.URI;

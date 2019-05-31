@@ -1,11 +1,11 @@
 package de.adorsys.datasafe.privatestore.impl.actions;
 
-import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
-import de.adorsys.datasafe.storage.api.actions.StorageListService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
+import de.adorsys.datasafe.storage.api.actions.StorageListService;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;

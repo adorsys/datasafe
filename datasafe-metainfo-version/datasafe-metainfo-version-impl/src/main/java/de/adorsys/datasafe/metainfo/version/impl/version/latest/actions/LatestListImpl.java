@@ -1,13 +1,13 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest.actions;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.actions.ListRequest;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoder;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedList;
-import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
+import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoder;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.EncryptedLatestLinkServiceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
+import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.Getter;
 

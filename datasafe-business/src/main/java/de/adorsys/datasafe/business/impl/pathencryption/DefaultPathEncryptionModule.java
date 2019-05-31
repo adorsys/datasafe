@@ -5,11 +5,7 @@ import dagger.Module;
 import dagger.Provides;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.DefaultPathDigestConfig;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.DefaultPathEncryption;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionConfig;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImpl;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.SymmetricPathEncryptionServiceImpl;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.*;
 
 /**
  * This module is responsible for providing CMS pathencryption of document.

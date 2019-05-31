@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.validateMockitoUsage;
-
 /**
  * Tests that use Mockito should use this class.
  */

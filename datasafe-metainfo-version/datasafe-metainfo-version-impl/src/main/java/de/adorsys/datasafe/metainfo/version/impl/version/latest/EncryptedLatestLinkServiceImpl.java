@@ -2,15 +2,15 @@ package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
-import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
