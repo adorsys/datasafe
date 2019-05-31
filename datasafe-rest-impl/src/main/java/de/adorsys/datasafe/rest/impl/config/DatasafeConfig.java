@@ -59,11 +59,7 @@ public class DatasafeConfig {
                         return new Uri(properties.getSystemRoot());
                     }
                 })
-                .storageList(storageService)
-                .storageRead(storageService)
-                .storageWrite(storageService)
-                .storageRemove(storageService)
-                .storageCheck(storageService)
+                .storage(storageService)
                 .build();
     }
 }

@@ -10,11 +10,12 @@ import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule
 import de.adorsys.datasafe.business.impl.keystore.DefaultKeyStoreModule;
 import de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionModule;
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActionsModule;
+import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
-import de.adorsys.datasafe.storage.api.actions.*;
+import de.adorsys.datasafe.storage.api.StorageService;
 
 import javax.inject.Singleton;
 
@@ -30,7 +31,8 @@ import javax.inject.Singleton;
         DefaultPathEncryptionModule.class,
         DefaultInboxActionsModule.class,
         DefaultPrivateActionsModule.class,
-        DefaultProfileModule.class
+        DefaultProfileModule.class,
+        DefaultStorageModule.class
 })
 public interface DefaultDatasafeServices {
 
@@ -56,40 +58,17 @@ public interface DefaultDatasafeServices {
     interface Builder {
 
         /**
-         * Binds (configures) system root uri and system keystore password.
+         * Binds (configures) system root uri - where user profiles will be located and system
+         * access to open (but not to read key) keystore.
          */
         @BindsInstance
         Builder config(DFSConfig config);
 
         /**
-         * Binds (configures) storage list operation.
+         * Binds (configures) all storage operations - not necessary to call {@code storageList} after.
          */
         @BindsInstance
-        Builder storageList(StorageListService listService);
-
-        /**
-         * Binds (configures) storage read operation.
-         */
-        @BindsInstance
-        Builder storageRead(StorageReadService readService);
-
-        /**
-         * Binds (configures) storage write operation.
-         */
-        @BindsInstance
-        Builder storageWrite(StorageWriteService writeService);
-
-        /**
-         * Binds (configures) storage remove operation.
-         */
-        @BindsInstance
-        Builder storageRemove(StorageRemoveService removeService);
-
-        /**
-         * Binds (configures) storage check operation.
-         */
-        @BindsInstance
-        Builder storageCheck(StorageCheckService checkService);
+        Builder storage(StorageService storageService);
 
         /**
          * @return Standard Datasafe services.

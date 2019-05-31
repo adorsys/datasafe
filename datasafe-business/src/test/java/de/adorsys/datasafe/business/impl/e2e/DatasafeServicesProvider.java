@@ -29,11 +29,7 @@ public class DatasafeServicesProvider {
                         return systemRoot;
                     }
                 })
-                .storageList(storageService)
-                .storageRead(storageService)
-                .storageWrite(storageService)
-                .storageRemove(storageService)
-                .storageCheck(storageService)
+                .storage(storageService)
                 .build();
     }
 
@@ -51,11 +47,7 @@ public class DatasafeServicesProvider {
                         return systemRoot;
                     }
                 })
-                .storageList(storageService)
-                .storageRead(storageService)
-                .storageWrite(storageService)
-                .storageRemove(storageService)
-                .storageCheck(storageService)
+                .storage(storageService)
                 .build();
     }
 }
