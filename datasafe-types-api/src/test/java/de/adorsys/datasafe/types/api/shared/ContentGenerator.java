@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.services;
+package de.adorsys.datasafe.types.api.shared;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +25,7 @@ public class ContentGenerator {
 
         public Input(int size, String pattern) {
             if (size < pattern.length()) {
-                throw new IllegalArgumentException("Not enough size for pattern: " + pattern);
+                throw new IllegalArgumentException("Not enough contentSize for pattern: " + pattern);
             }
 
             this.sizeRemaining = new AtomicInteger(size);

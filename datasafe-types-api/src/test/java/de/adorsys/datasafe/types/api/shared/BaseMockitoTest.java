@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.types.api.shared;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -22,5 +23,10 @@ public abstract class BaseMockitoTest {
     @AfterEach
     public void validate() {
         Mockito.validateMockitoUsage();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        System.setProperty("SECURE_LOGS", "on");
     }
 }

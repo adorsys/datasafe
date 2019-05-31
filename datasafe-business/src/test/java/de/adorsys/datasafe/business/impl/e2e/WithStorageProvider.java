@@ -27,6 +27,8 @@ import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -36,6 +38,7 @@ import java.util.stream.Stream;
 @Slf4j
 public abstract class WithStorageProvider extends BaseE2ETest {
 
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
     private static String minioRegion = "eu-central-1";
@@ -139,7 +142,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                 "MINIO S3",
                 () -> {
                     minioStorage.get();
-                    return new S3StorageService(minio, minioBucketName);
+                    return new S3StorageService(minio, minioBucketName, EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + minioBucketName + "/" + prefix + "/")
         );
@@ -150,7 +153,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                 "CEPH S3",
                 () -> {
                     cephStorage.get();
-                    return new S3StorageService(ceph, cephBucketName);
+                    return new S3StorageService(ceph, cephBucketName, EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + cephBucketName + "/" + prefix + "/")
         );
@@ -165,7 +168,7 @@ public abstract class WithStorageProvider extends BaseE2ETest {
                 "AMAZON S3",
                 () -> {
                     amazonSotrage.get();
-                    return new S3StorageService(amazonS3, amazonBucket);
+                    return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + amazonBucket + "/" + prefix + "/")
         );
