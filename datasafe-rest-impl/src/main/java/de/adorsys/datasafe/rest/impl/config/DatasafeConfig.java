@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.net.URI;
 import java.security.Security;
+import java.util.concurrent.Executors;
 
 @Configuration
 public class DatasafeConfig {
@@ -28,7 +29,8 @@ public class DatasafeConfig {
 
     @Bean
     StorageService storageService() {
-        return new S3StorageService(s3, properties.getBucketName());
+        return new S3StorageService(s3, properties.getBucketName(),
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 
     @Bean

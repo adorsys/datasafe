@@ -1,7 +1,9 @@
 package de.adorsys.datasafe.business.impl.service;
 
+import com.google.common.base.Suppliers;
 import dagger.BindsInstance;
 import dagger.Component;
+import dagger.Provides;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.inbox.impl.actions.InboxServiceImpl;
 import de.adorsys.datasafe.business.impl.cmsencryption.DefaultCMSEncryptionModule;
@@ -21,6 +23,10 @@ import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
 import de.adorsys.datasafe.storage.api.actions.*;
 
 import javax.inject.Singleton;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 /**
  * This is Datasafe services that always work with latest file version.

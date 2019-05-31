@@ -240,6 +240,10 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
             arguments.add(Arguments.of(storageDescriptor, 1024 * 1024 * 5, 4));
             //5Mb - 8 threads pool size
             arguments.add(Arguments.of(storageDescriptor, 1024 * 1024 * 5, 8));
+            //10Mb - 4 threads pool size - multipart upload
+            arguments.add(Arguments.of(storageDescriptor, 1024 * 1024 * 10, 4));
+            //10Mb - 8 threads pool size - multipart upload
+            arguments.add(Arguments.of(storageDescriptor, 1024 * 1024 * 10, 8));
         });
         return arguments.stream();
     }

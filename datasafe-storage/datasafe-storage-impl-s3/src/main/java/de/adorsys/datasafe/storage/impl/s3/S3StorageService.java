@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.*;
 import java.util.List;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -17,12 +20,22 @@ public class S3StorageService implements StorageService {
 
     private final AmazonS3 s3;
     private final String bucketName;
+    private final ExecutorService executorService;
 
     @Inject
+    public S3StorageService(AmazonS3 s3, String bucketName, ExecutorService executorService) {
+        this.s3 = s3;
+        this.bucketName = bucketName;
+        this.executorService = executorService;
+    }
+
+    /*@Inject
     public S3StorageService(AmazonS3 s3, String bucketName) {
         this.s3 = s3;
         this.bucketName = bucketName;
-    }
+        this.completionService = new ExecutorCompletionService<>(
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+    }*/
 
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
@@ -56,7 +69,7 @@ public class S3StorageService implements StorageService {
     public OutputStream write(AbsoluteLocation location) {
         log.debug("Write data by path: {}", Log.secure(location.location()));
         MultipartUploadS3StorageOutputStream storageOutputStream = new MultipartUploadS3StorageOutputStream(
-                bucketName, location.getResource(), s3);
+                bucketName, location.getResource(), s3, executorService);
         return storageOutputStream;
     }
 

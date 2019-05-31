@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
-//TODO: move to another module. Duplicate code from business layer
+//TODO: move to some another module. Duplicate code from business layer
 public class ContentGenerator {
 
     private final int size;

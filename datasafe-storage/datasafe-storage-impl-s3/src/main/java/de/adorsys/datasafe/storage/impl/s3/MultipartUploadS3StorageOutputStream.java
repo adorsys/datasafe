@@ -35,10 +35,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @Slf4j
 public class MultipartUploadS3StorageOutputStream extends OutputStream {
@@ -54,7 +51,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private final Object monitor = new Object();
 
-    private final CompletionService<UploadPartResult> completionService;
+    private final CompletionService completionService;
 
     private ByteArrayOutputStream currentOutputStream = new ByteArrayOutputStream(BUFFER_SIZE);
 
@@ -62,14 +59,17 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private int partCounter = 1;
 
-    public MultipartUploadS3StorageOutputStream(String bucketName, ResourceLocation resource, AmazonS3 amazonS3) {
+    public MultipartUploadS3StorageOutputStream(String bucketName, ResourceLocation resource, AmazonS3 amazonS3,
+                                                ExecutorService executorService) {
         this.bucketName = bucketName;
         this.objectName = resource.location().getPath().replaceFirst("^/", "");;
         this.amazonS3 = amazonS3;
+        /*this.completionService = new ExecutorCompletionService<>(
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+        );*/
+        this.completionService = new ExecutorCompletionService<>(executorService);
 
         log.debug("Write to bucket: {} with name: {}", Log.secure(bucketName), Log.secure(objectName));
-
-        completionService = new ExecutorCompletionService<>(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 
     @Override
@@ -208,7 +208,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     private List<PartETag> getMultiPartsUploadResults() throws ExecutionException, InterruptedException {
         List<PartETag> result = new ArrayList<>(partCounter);
         for (int i = 0; i < partCounter; i++) {
-            result.add(completionService.take().get().getPartETag());
+            UploadPartResult partResult = (UploadPartResult) completionService.take().get();
+            result.add(partResult.getPartETag());
 
             log.info("Get upload part #{} from {}", i, partCounter);
         }

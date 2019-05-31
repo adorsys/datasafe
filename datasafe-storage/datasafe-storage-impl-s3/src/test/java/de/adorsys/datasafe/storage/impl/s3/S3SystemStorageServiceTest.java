@@ -6,6 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import de.adorsys.datasafe.types.api.concurrent.MultiPartCompletionService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -16,11 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +76,9 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
 
     @BeforeEach
     void init() {
-        this.storageService = new S3StorageService(s3, bucketName);
+        this.storageService = new S3StorageService(s3, bucketName, Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors())
+        );
     }
 
     @Test
