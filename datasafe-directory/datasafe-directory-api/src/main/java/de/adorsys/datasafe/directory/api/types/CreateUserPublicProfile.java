@@ -11,7 +11,7 @@ import lombok.Value;
  * Request to create user public profile part.
  */
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CreateUserPublicProfile {
 
     /**

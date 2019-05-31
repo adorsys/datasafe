@@ -119,7 +119,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
 
             executor.execute(() -> {
                 UserIDAuth user = measurePerformance.apply(
-                        () -> registerUser(userName, location),
+                        () -> registerUser(userName),
                         metricCollector::addRegisterRecords
                 );
 
@@ -262,7 +262,7 @@ class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
                 .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
-        initialize(datasafeServices);
+        initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);
 
         this.location = descriptor.getLocation();
         this.storage = descriptor.getStorageService().get();

@@ -21,7 +21,7 @@ class MinioPerformance extends WithRandomActionPerformance {
         DelegatingStorageWithDelay service = storageService(minio(), latency);
         VersionedDatasafeServices services = DatasafeServicesProvider.versionedDatasafeServices(
                 service, service.getRootLocation());
-        initialize(services);
+        initialize(DatasafeServicesProvider.dfsConfig(service.getRootLocation()), services);
         initUsers(size);
 
         OperationExecutor executor = new OperationExecutor(
@@ -41,7 +41,7 @@ class MinioPerformance extends WithRandomActionPerformance {
         DelegatingStorageWithDelay service = storageService(minio(), latency);
         DefaultDatasafeServices services = DatasafeServicesProvider.defaultDatasafeServices(
                 service, service.getRootLocation());
-        initialize(services);
+        initialize(DatasafeServicesProvider.dfsConfig(service.getRootLocation()), services);
         initUsers(size);
 
         OperationExecutor executor = new OperationExecutor(

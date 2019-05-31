@@ -3,7 +3,7 @@ package de.adorsys.datasafe.rest.impl.config;
 import com.amazonaws.services.s3.AmazonS3;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
-import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -53,17 +53,7 @@ public class DatasafeConfig {
 
         return DaggerDefaultDatasafeServices
                 .builder()
-                .config(new DFSConfig() {
-                    @Override
-                    public String keystorePassword() {
-                        return properties.getKeystorePassword();
-                    }
-
-                    @Override
-                    public Uri systemRoot() {
-                        return new Uri(properties.getSystemRoot());
-                    }
-                })
+                .config(new DefaultDFSConfig(new Uri(properties.getSystemRoot()), properties.getKeystorePassword()))
                 .storage(storageService)
                 .build();
     }

@@ -88,7 +88,7 @@ abstract class WithRandomActionPerformance extends WithStorageProvider {
 
     protected void initUsers(int fileSize) {
         fixture.getUserPrivateSpace().forEach((userId, space) -> {
-            UserIDAuth auth = registerUser(testId + "-" + userId, descriptor.getLocation());
+            UserIDAuth auth = registerUser(testId + "-" + userId);
             users.put(userId, new UserSpec(auth, new ContentGenerator(fileSize)));
         });
     }

@@ -5,6 +5,7 @@ import de.adorsys.datasafe.business.impl.service.DaggerVersionedDatasafeServices
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.experimental.UtilityClass;
@@ -18,17 +19,7 @@ public class DatasafeServicesProvider {
     public static DefaultDatasafeServices defaultDatasafeServices(StorageService storageService, Uri systemRoot) {
         return DaggerDefaultDatasafeServices
                 .builder()
-                .config(new DFSConfig() {
-                    @Override
-                    public String keystorePassword() {
-                        return "PAZZWORD";
-                    }
-
-                    @Override
-                    public Uri systemRoot() {
-                        return systemRoot;
-                    }
-                })
+                .config(dfsConfig(systemRoot))
                 .storage(storageService)
                 .build();
     }
@@ -36,18 +27,12 @@ public class DatasafeServicesProvider {
     public static VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, Uri systemRoot) {
         return DaggerVersionedDatasafeServices
                 .builder()
-                .config(new DFSConfig() {
-                    @Override
-                    public String keystorePassword() {
-                        return "PAZZWORD";
-                    }
-
-                    @Override
-                    public Uri systemRoot() {
-                        return systemRoot;
-                    }
-                })
+                .config(dfsConfig(systemRoot))
                 .storage(storageService)
                 .build();
+    }
+
+    public DFSConfig dfsConfig(Uri systemRoot) {
+        return new DefaultDFSConfig(systemRoot, "PAZZWORD");
     }
 }
