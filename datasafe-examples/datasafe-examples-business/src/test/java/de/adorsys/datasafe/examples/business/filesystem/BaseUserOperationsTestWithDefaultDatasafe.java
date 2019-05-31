@@ -66,10 +66,10 @@ class BaseUserOperationsTestWithDefaultDatasafe {
         // creating new user
         UserIDAuth user = registerUser("john");
 
-        // writing string "Hello" to /my/own/file.txt:
+        // writing string "Hello" to my/own/file.txt:
         // note that both resulting file content and its path are encrypted:
         try (OutputStream os = defaultDatasafeServices.privateService()
-                .write(WriteRequest.forDefaultPrivate(user, "/my/own/file.txt"))) {
+                .write(WriteRequest.forDefaultPrivate(user, "my/own/file.txt"))) {
             os.write("Hello".getBytes(StandardCharsets.UTF_8));
         }
 

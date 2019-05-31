@@ -121,6 +121,26 @@ public class VersionedDataTest extends WithStorageProvider {
                 .containsExactly(PRIVATE_FILE_PATH, PRIVATE_FILE_PATH, PRIVATE_FILE_PATH);
     }
 
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void testVersionsOfDirectPath(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerAndDoWritesWithDiffMessageInSameLocation();
+
+        List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> versionedResource =
+                versionedDocusafeServices.versionInfo()
+                        .versionsOf(ListRequest.forDefaultPrivate(jane, PRIVATE_FILE_PATH))
+                        .collect(Collectors.toList());
+
+        assertThat(versionedResource).hasSize(3);
+        assertThat(versionedResource)
+                .extracting(Versioned::stripVersion)
+                .extracting(ResourceLocation::location)
+                .extracting(Uri::toASCIIString)
+                .containsExactly(PRIVATE_FILE_PATH, PRIVATE_FILE_PATH, PRIVATE_FILE_PATH);
+    }
+
     // this test imitates removal of old file versions
     @ParameterizedTest
     @MethodSource("allStorages")

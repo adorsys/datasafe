@@ -10,12 +10,12 @@ import java.util.UUID;
 
 /**
  * Encoder/decoder that creates URI versions using UUID generator and path separator, so that versioned resource
- * http://example.com/some/path--75943a83-ae8a-4eaf-bffb-1a20f235416c
+ * http://example.com/some/path/75943a83-ae8a-4eaf-bffb-1a20f235416c
  * means version 75943a83-ae8a-4eaf-bffb-1a20f235416c of http://example.com/some/path
  */
 public class DefaultVersionEncoderDecoder implements VersionEncoderDecoder {
 
-    private static final String SEPARATOR = "--";
+    private static final String SEPARATOR = "/";
 
     @Inject
     public DefaultVersionEncoderDecoder() {
@@ -35,19 +35,17 @@ public class DefaultVersionEncoderDecoder implements VersionEncoderDecoder {
     @Override
     public Optional<VersionedUri> decodeVersion(Uri uri) {
         String[] parts = uri.getPath().split("/");
-        String name = parts[parts.length - 1];
-        String[] withUuid = name.split(SEPARATOR, 2);
 
-        if (withUuid.length != 2) {
+        if (parts.length < 2) {
             return Optional.empty();
         }
 
         try {
-            UUID uuid = UUID.fromString(withUuid[1]);
+            UUID uuid = UUID.fromString(parts[parts.length - 1]);
             return Optional.of(
                     new VersionedUri(
                             uri,
-                            uri.resolve("./" + withUuid[0]),
+                            uri.resolve(".").asFile(),
                             uuid.toString())
             );
         } catch (RuntimeException ex) {

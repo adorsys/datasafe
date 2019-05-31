@@ -71,11 +71,19 @@ public class Uri {
     }
 
     /**
-     * @return Makes directory from underlying resource
-     * For example, http://example.com/foo becomes http://example.com/foo/ so it can be resolved against.
+     * @return Makes file from underlying resource
+     * For example, http://example.com/foo/ becomes http://example.com/foo.
      */
     public Uri asDir() {
         return isDir() ? this : new Uri(this.wrapped.toASCIIString() + "/");
+    }
+
+    /**
+     * @return Makes directory from underlying resource
+     * For example, http://example.com/foo becomes http://example.com/foo/ so it can be resolved against.
+     */
+    public Uri asFile() {
+        return isDir() ? new Uri(this.wrapped.toASCIIString().replaceAll("/$", "")) : this;
     }
 
     /**
