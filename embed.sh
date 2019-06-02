@@ -11,7 +11,7 @@
 
 EMBEDDING_ANCHOR=$1
 MARKDOWN_TARGET=$2
-ANCHOR_PATTERN='\['"$EMBEDDING_ANCHOR"':([^]]+)]\(([^)]+)\)'
+ANCHOR_PATTERN='\['"$EMBEDDING_ANCHOR"':([^]]+)]\(([^)^#]+)[^)]*\)'
 
 function cleanup_embedded()
 {
@@ -67,12 +67,31 @@ function print_snippet_from_file() # expects 2 args - filename and snippet name
     wrap_snippet "$snippet" "$extension"
 }
 
+function snippet_position() # expects 2 args - filename and snippet name
+{
+    filepath=$1
+    snippet_name=$2
+    begin=`grep -oPn 'BEGIN_SNIPPET:'"$snippet_name"'$' "$filepath" | cut -d: -f1`
+    end=`tail -n +"$begin" $filepath | grep -oPn -m 1 'END_SNIPPET' | cut -d: -f1`
+    echo "L$begin-$(($begin+end))"
+}
+
+function snippet_position_end() # expects 2 args - filename and snippet beginning position
+{
+    filepath=$1
+    snippet_name=$2
+    echo `grep -oPn 'BEGIN_SNIPPET:'"$snippet_name"'$' $filepath | cut -d: -f1`
+}
+
 CLEANED=$(cleanup_embedded)
 
 while read -r line; do
     if [[ $line =~ $ANCHOR_PATTERN ]]; then
-        echo "$line"
-        print_snippet_from_file "${BASH_REMATCH[2]}" "${BASH_REMATCH[1]}"
+        filename="${BASH_REMATCH[2]}"
+        snippet_name="${BASH_REMATCH[1]}"
+        snippet_lines=`snippet_position "$filename" "$snippet_name"`
+        echo "[$EMBEDDING_ANCHOR:$snippet_name]($filename#$snippet_lines)"
+        print_snippet_from_file "$filename" "$snippet_name"
     else
         echo "$line"
     fi
