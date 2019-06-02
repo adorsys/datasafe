@@ -39,11 +39,13 @@ class BaseUserOperationsTestWithDefaultDatasafe {
      */
     @BeforeEach
     void createServices(@TempDir Path root) {
+        // BEGIN_SNIPPET:Create Datasafe services
         // this will create all Datasafe files and user documents under <temp dir path>
         defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
                 .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
                 .storage(new FileSystemStorageService(root))
                 .build();
+        // END_SNIPPET
     }
 
     /**
@@ -51,8 +53,10 @@ class BaseUserOperationsTestWithDefaultDatasafe {
      */
     @Test
     void registerUser() {
-        // Creating new user:
+        // BEGIN_SNIPPET:Create new user
+        // Creating new user with username 'user' and private/secret key password 'passwrd':
         defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
+        // END_SNIPPET
 
         assertThat(defaultDatasafeServices.userProfile().userExists(new UserID("user")));
     }
@@ -63,6 +67,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
     @Test
     @SneakyThrows
     void writeFileToPrivateSpace() {
+        // BEGIN_SNIPPET:Store file in privatespace
         // creating new user
         UserIDAuth user = registerUser("john");
 
@@ -72,6 +77,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
                 .write(WriteRequest.forDefaultPrivate(user, "my/own/file.txt"))) {
             os.write("Hello".getBytes(StandardCharsets.UTF_8));
         }
+        // END_SNIPPET
 
         assertThat(defaultDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(user, ""))).hasSize(1);
     }
@@ -82,6 +88,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
     @Test
     @SneakyThrows
     void readFileFromPrivateSpace() {
+        // BEGIN_SNIPPET:Read file from privatespace
         // creating new user
         UserIDAuth user = registerUser("jane");
 
@@ -94,6 +101,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
                 .read(ReadRequest.forDefaultPrivate(user, "my/secret.txt"))) {
             helloJane = ByteStreams.toByteArray(is);
         }
+        // END_SNIPPET
 
         // we've written "Hello Jane", so expecting that we read same
         assertThat(new String(helloJane)).isEqualTo("Hello Jane");
@@ -105,6 +113,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
     @Test
     @SneakyThrows
     void shareWithJohn() {
+        // BEGIN_SNIPPET:Send file to INBOX
         // create John, so his INBOX does exist
         UserIDAuth john = registerUser("john");
         UserID johnUsername = new UserID("john");
@@ -114,6 +123,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
                 .write(WriteRequest.forDefaultPublic(johnUsername, "hello.txt"))) {
             os.write("Hello John".getBytes(StandardCharsets.UTF_8));
         }
+        // END_SNIPPET
 
         assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(john, "hello.txt")))
                 .hasContent("Hello John");
@@ -124,6 +134,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
      */
     @Test
     void listPrivate() {
+        // BEGIN_SNIPPET:List privatespace
         // creating new user
         UserIDAuth user = registerUser("john");
 
@@ -153,6 +164,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
                 .containsExactly(
                         "home/watch/films.txt"
                 );
+        // END_SNIPPET
     }
 
     /**
@@ -160,6 +172,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
      */
     @Test
     void listInbox() {
+        // BEGIN_SNIPPET:List INBOX
         // creating new user
         UserIDAuth user = registerUser("john");
         UserID johnUsername = new UserID("john");
@@ -188,6 +201,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
                 .containsExactly(
                         "home/watch/films.txt"
                 );
+        // END_SNIPPET
     }
 
     /**
@@ -195,6 +209,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
      */
     @Test
     void readFromPrivate() {
+        // BEGIN_SNIPPET:Read file from privatespace using list
         // creating new user
         UserIDAuth user = registerUser("john");
 
@@ -208,6 +223,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
         assertThat(defaultDatasafeServices.privateService().read(
                 ReadRequest.forPrivate(user, johnsPrivateFilesInMy.get(0).getResource().asPrivate()))
         ).hasContent("secret");
+        // END_SNIPPET
     }
 
     /**
@@ -215,6 +231,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
      */
     @Test
     void readFromInbox() {
+        // BEGIN_SNIPPET:Read file from INBOX
         // creating new user
         UserIDAuth user = registerUser("john");
         UserID johnUsername = new UserID("john");
@@ -222,13 +239,15 @@ class BaseUserOperationsTestWithDefaultDatasafe {
         // let's create 1 file:
         shareMessage(johnUsername, "home/my/shared.txt", "shared message");
 
+        // Lets list our INBOX
         List<AbsoluteLocation<ResolvedResource>> johnsInboxFilesInMy = defaultDatasafeServices.inboxService()
-                .list(ListRequest.forDefaultPrivate(user, "home/my")).collect(Collectors.toList());
+                .list(ListRequest.forDefaultPrivate(user, "")).collect(Collectors.toList());
 
         // we have successfully read that file
         assertThat(defaultDatasafeServices.inboxService().read(
                 ReadRequest.forPrivate(user, johnsInboxFilesInMy.get(0).getResource().asPrivate()))
         ).hasContent("shared message");
+        // END_SNIPPET
     }
 
     @SneakyThrows
