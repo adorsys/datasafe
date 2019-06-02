@@ -44,8 +44,7 @@ that supports versioned and encrypted private file storage (for storage provider
 <!--
 To update snippets you can use embed.sh
 I.e.:
-1. ./embed.sh Example README.md > README1.md
-2. cp README1.md README.md
+./embed.sh Example README.md > README-tmp.md && mv README-tmp.md README.md
 -->
 
 ## Generic Datasafe usage
@@ -165,9 +164,10 @@ versionedServices = DaggerVersionedDatasafeServices.builder()
 ```
 
 Next we will create user, this is same as in non-versioned services:
-[Example:Create new user is same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java)
+[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java)
 ```groovy
-
+// Creating new user:
+versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
 ```
 
 This is how file versioning works when saving file multiple times:
@@ -190,8 +190,8 @@ for (int i = 1; i <= 3; ++i) {
 assertThat(versionedServices.latestPrivate()
         .read(ReadRequest.forDefaultPrivate(user, "my/own/file.txt"))
 ).hasContent("Hello 3");
-// but there are 3 versions of file stored physically:
-assertThat(versionedServices.versionInfo().versionsOf(
+// but there are 3 versions of file stored physically in users' privatespace:
+assertThat(versionedServices.privateService().list(
     ListRequest.forDefaultPrivate(user, "my/own/file.txt"))
 ).hasSize(3);
 // and still only one file visible on latest view

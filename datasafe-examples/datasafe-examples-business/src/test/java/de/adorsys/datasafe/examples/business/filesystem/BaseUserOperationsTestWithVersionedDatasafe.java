@@ -88,8 +88,8 @@ class BaseUserOperationsTestWithVersionedDatasafe {
         assertThat(versionedServices.latestPrivate()
                 .read(ReadRequest.forDefaultPrivate(user, "my/own/file.txt"))
         ).hasContent("Hello 3");
-        // but there are 3 versions of file stored physically:
-        assertThat(versionedServices.versionInfo().versionsOf(
+        // but there are 3 versions of file stored physically in users' privatespace:
+        assertThat(versionedServices.privateService().list(
             ListRequest.forDefaultPrivate(user, "my/own/file.txt"))
         ).hasSize(3);
         // and still only one file visible on latest view
