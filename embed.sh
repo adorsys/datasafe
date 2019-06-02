@@ -73,7 +73,7 @@ function snippet_position() # expects 2 args - filename and snippet name
     snippet_name=$2
     begin=`grep -oPn 'BEGIN_SNIPPET:'"$snippet_name"'$' "$filepath" | cut -d: -f1`
     end=`tail -n +"$begin" $filepath | grep -oPn -m 1 'END_SNIPPET' | cut -d: -f1`
-    echo "L$begin-$(($begin+end))"
+    echo "L$begin-L$(($begin+end))"
 }
 
 function snippet_position_end() # expects 2 args - filename and snippet beginning position
