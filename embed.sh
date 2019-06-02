@@ -50,7 +50,7 @@ function print_snippet_from_file() # expects 2 args - filename and snippet name
     filename=$(basename -- "$filepath")
     extension="${filename##*.}"
 
-    # in snippets it can be that some parts of context is missing, so using Groovy for syntax-higlightinh
+    # in snippets it can be that some parts of context is missing, so using Groovy for syntax-highlighting
     if [[ "$extension" -eq 'java' ]]; then
         extension='groovy'
     fi
@@ -59,7 +59,7 @@ function print_snippet_from_file() # expects 2 args - filename and snippet name
         | tr '\n' '\f' \
         | sed -r 's/BEGIN_SNIPPET:/\a/g' \
         | sed -r 's/END_SNIPPET/\a/g' \
-        | grep -oP '\a'"$snippet_name"'([^\a]+)\a' \
+        | grep -oP '\a'"$snippet_name\f"'([^\a]+)\a' \
         | sed -E 's/\a'"[^\f]+\f"'([^\a]+)\f[^\f]+\a/\1/g' \
         | sed -r 's/\a//g' \
         | tr '\f' '\n')
