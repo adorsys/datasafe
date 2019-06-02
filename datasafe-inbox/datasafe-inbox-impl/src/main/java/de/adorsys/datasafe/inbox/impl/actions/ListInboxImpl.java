@@ -33,7 +33,7 @@ public class ListInboxImpl implements ListInbox {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
         return listService.list(resolveRelative(request))
-                .map(it -> rebuildPath(request, it));
+                .map(it -> fillEncryptedDecryptedSegments(request, it));
     }
 
     private AbsoluteLocation<PrivateResource> resolveRelative(
@@ -44,8 +44,8 @@ public class ListInboxImpl implements ListInbox {
         );
     }
 
-    // needed only to support nested folders in INBOX
-    private AbsoluteLocation<ResolvedResource> rebuildPath(
+    // needed only to support encrypted and decrypted path segments in result, otherwise they are empty
+    private AbsoluteLocation<ResolvedResource> fillEncryptedDecryptedSegments(
             ListRequest<UserIDAuth, PrivateResource> request,
             AbsoluteLocation<ResolvedResource> resource) {
         AbsoluteLocation<PublicResource> inboxPath = profileRetrievalService
