@@ -63,14 +63,18 @@ defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
 ```
 
 Second you want to add new users:
-[Example:Create new user](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L56-L59)
+[Example:Create new user](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L56-L63)
 ```groovy
 // Creating new user with username 'user' and private/secret key password 'passwrd':
+/*
+IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+synchronization due to eventual consistency or you need to supply globally unique username on registration
+*/
 defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
 ```
 
 After you have a user, he wants to store some data or document securely in his privatespace:
-[Example:Store file in privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L70-L80)
+[Example:Store file in privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L74-L84)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -84,7 +88,7 @@ try (OutputStream os = defaultDatasafeServices.privateService()
 ```
 
 Now user wants to read again his secured file:
-[Example:Read file from privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L91-L104)
+[Example:Read file from privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L95-L108)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("jane");
@@ -101,7 +105,7 @@ try (InputStream is = defaultDatasafeServices.privateService()
 ```
 
 But he doesn't remember the name of file he stored, so he will list all files in privatespace and read first:
-[Example:Read file from privatespace using list](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L212-L226)
+[Example:Read file from privatespace using list](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L216-L230)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -119,7 +123,7 @@ assertThat(defaultDatasafeServices.privateService().read(
 ```
 
 Now he wants to share some data with another user:
-[Example:Send file to INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L116-L126)
+[Example:Send file to INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L120-L130)
 ```groovy
 // create John, so his INBOX does exist
 UserIDAuth john = registerUser("john");
@@ -133,7 +137,7 @@ try (OutputStream os = defaultDatasafeServices.inboxService()
 ```
 
 And finally it is time to read data that was shared with you:
-[Example:Read file from INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L234-L250)
+[Example:Read file from INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L238-L254)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -168,14 +172,18 @@ versionedServices = DaggerVersionedDatasafeServices.builder()
 ```
 
 Next we will create user, this is same as in non-versioned services:
-[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L59-L62)
+[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L59-L66)
 ```groovy
 // Creating new user:
+/*
+IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+synchronization due to eventual consistency or you need to supply globally unique username on registration
+*/
 versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
 ```
 
 This is how file versioning works when saving file multiple times:
-[Example:Saving file couple of times - versioned](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L74-L98)
+[Example:Saving file couple of times - versioned](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L78-L102)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -203,7 +211,7 @@ assertThat(versionedServices.latestPrivate().list(ListRequest.forDefaultPrivate(
 ```
 
 And we can work with file versions too, of course, everything is encrypted:
-[Example:Lets check how to read oldest file version](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L100-L116)
+[Example:Lets check how to read oldest file version](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L104-L120)
 ```groovy
 // so lets collect all versions
 List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> withVersions =
@@ -223,7 +231,7 @@ assertThat(versionedServices.privateService()
 ```
 
 Another important case to mention  is how to determine if file has changed on storage compared to some copy we have:
-[Example:Check if we have latest file locally](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L126-L157)
+[Example:Check if we have latest file locally](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L130-L161)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");

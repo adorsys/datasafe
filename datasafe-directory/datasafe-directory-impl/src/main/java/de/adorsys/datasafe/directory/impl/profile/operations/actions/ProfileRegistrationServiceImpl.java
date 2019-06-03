@@ -43,6 +43,8 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
 
     /**
      * Register users' public profile at the location specified by {@link DFSConfig}, overwrites it if exists.
+     * IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+     * synchronization due to eventual consistency or you need to supply globally unique username on registration.
      */
     @Override
     @SneakyThrows
@@ -56,6 +58,8 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     /**
      * Register users' private profile at the location specified by {@link DFSConfig}, creates keystore and publishes
      * public keys, but only if keystore doesn't exist.
+     * IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+     * synchronization due to eventual consistency or you need to supply globally unique username on registration.
      */
     @Override
     @SneakyThrows
@@ -80,6 +84,11 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
         publishPublicKeysIfNeeded(profile.getPublishPubKeysTo(), publicKeys);
     }
 
+    /**
+     * IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+     * synchronization due to eventual consistency or you need to supply globally unique username on registration.
+     * @param user User authorization to register
+     */
     @Override
     public void registerUsingDefaults(UserIDAuth user) {
         registerPublic(dfsConfig.defaultPublicTemplate(user));
