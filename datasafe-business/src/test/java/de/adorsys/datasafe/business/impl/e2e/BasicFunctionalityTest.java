@@ -40,7 +40,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
         init(descriptor);
         UserID userJohn = new UserID("john");
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
-        john = registerUser(userJohn.getValue(), descriptor.getLocation());
+        john = registerUser(userJohn.getValue());
         assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
         profileRemovalService.deregister(john);
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
@@ -52,7 +52,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
             WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
-        registerJohnAndJane(descriptor.getLocation());
+        registerJohnAndJane();
 
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
 
@@ -83,7 +83,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
     void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
-        registerJohnAndJane(descriptor.getLocation());
+        registerJohnAndJane();
 
         writeDataToPrivate(jane, "root.file", MESSAGE_ONE);
         writeDataToPrivate(jane, "level1/file", MESSAGE_ONE);
@@ -105,6 +105,35 @@ class BasicFunctionalityTest extends WithStorageProvider {
         assertPrivateSpaceList(jane, "./level1/level2/", "level1/level2/file");
         assertPrivateSpaceList(jane, "level1/level2", "level1/level2/file");
         assertPrivateSpaceList(jane, "level1/level2/", "level1/level2/file");
+    }
+
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void listingInboxValidation(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerJohnAndJane();
+
+        writeDataToInbox(jane, "root.file", MESSAGE_ONE);
+        writeDataToInbox(jane, "level1/file", MESSAGE_ONE);
+        writeDataToInbox(jane, "level1/level2/file", MESSAGE_ONE);
+
+        assertInboxSpaceList(jane, "", "root.file", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, "./", "root.file", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, ".", "root.file", "level1/file", "level1/level2/file");
+
+        assertInboxSpaceList(jane, "root.file", "root.file");
+        assertInboxSpaceList(jane, "./root.file", "root.file");
+
+        assertInboxSpaceList(jane, "level1", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, "level1/", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, "./level1", "level1/file", "level1/level2/file");
+        assertInboxSpaceList(jane, "./level1/", "level1/file", "level1/level2/file");
+
+        assertInboxSpaceList(jane, "./level1/level2", "level1/level2/file");
+        assertInboxSpaceList(jane, "./level1/level2/", "level1/level2/file");
+        assertInboxSpaceList(jane, "level1/level2", "level1/level2/file");
+        assertInboxSpaceList(jane, "level1/level2/", "level1/level2/file");
     }
 
     @SneakyThrows
@@ -146,7 +175,7 @@ class BasicFunctionalityTest extends WithStorageProvider {
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
                 .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
-        initialize(datasafeServices);
+        initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);
 
         this.location = descriptor.getLocation();
         this.storage = descriptor.getStorageService().get();

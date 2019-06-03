@@ -45,7 +45,7 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
     public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
         // Returns absolute location of versioned resource tagged with date based on link
         return listVersioned(request)
-                .map(it -> it.stripVersion().withResource(it.absolute().getResource()))
+                .map(Versioned::stripVersion)
                 .map(AbsoluteLocation::new);
     }
 

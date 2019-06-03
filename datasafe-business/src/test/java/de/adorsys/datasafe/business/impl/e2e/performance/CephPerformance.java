@@ -20,7 +20,7 @@ class CephPerformance extends WithRandomActionPerformance {
         DelegatingStorageWithDelay service = storageService(ceph(), latency);
         DefaultDatasafeServices services = DatasafeServicesProvider.defaultDatasafeServices(
                 service, service.getRootLocation());
-        initialize(services);
+        initialize(DatasafeServicesProvider.dfsConfig(service.getRootLocation()), services);
         initUsers(size);
 
         OperationExecutor executor = new OperationExecutor(

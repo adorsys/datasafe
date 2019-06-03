@@ -6,13 +6,16 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
-import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.directory.impl.profile.operations.DefaultUserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRegistrationServiceImpl;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRemovalServiceImpl;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.resource.ResourceResolverImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 
@@ -44,13 +47,19 @@ public abstract class DefaultProfileModule {
      * Default profile reading service that simply reads json files with serialized public/private located on DFS.
      */
     @Binds
-    abstract ProfileRetrievalService profileService(DFSBasedProfileStorageImpl impl);
+    abstract ProfileRetrievalService profileService(ProfileRetrievalServiceImpl impl);
 
     /**
      * Default profile creation service that simply creates keystore, public keys, user profile json files on DFS.
      */
     @Binds
-    abstract ProfileRegistrationService creationService(DFSBasedProfileStorageImpl impl);
+    abstract ProfileRegistrationService creationService(ProfileRegistrationServiceImpl impl);
+
+    /**
+     * Default profile removal service.
+     */
+    @Binds
+    abstract ProfileRemovalService removalService(ProfileRemovalServiceImpl impl);
 
     /**
      * Resource resolver that simply prepends relevant path segment from profile based on location type.

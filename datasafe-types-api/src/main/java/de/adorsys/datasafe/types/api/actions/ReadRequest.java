@@ -29,6 +29,10 @@ public class ReadRequest<T, L extends ResourceLocation> {
         return new ReadRequest<>(owner, path);
     }
 
+    public static <T> ReadRequest<T, PrivateResource> forDefaultPrivate(T owner, String path) {
+        return forDefaultPrivate(owner, new Uri(path));
+    }
+
     public static <T> ReadRequest<T, PrivateResource> forDefaultPrivate(T owner, URI path) {
         return forDefaultPrivate(owner, new Uri(path));
     }
