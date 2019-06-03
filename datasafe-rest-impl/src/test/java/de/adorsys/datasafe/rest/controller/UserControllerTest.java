@@ -1,10 +1,12 @@
 package de.adorsys.datasafe.rest.controller;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,7 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,15 +34,20 @@ public class UserControllerTest {
     @MockBean
     DefaultDatasafeServices dataSafeService;
 
-    @BeforeEach
+    @MockBean
+    DFSBasedProfileStorageImpl userProfile;
+
+    @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        when(dataSafeService.userProfile()).thenReturn(userProfile);
+
     }
 
-    /*
     @SneakyThrows
     @Test
     public void createUserTest() {
+
         mvc.perform(put("/user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -48,6 +56,4 @@ public class UserControllerTest {
         )
                 .andExpect(status().isOk());
     }
-
-     */
 }
