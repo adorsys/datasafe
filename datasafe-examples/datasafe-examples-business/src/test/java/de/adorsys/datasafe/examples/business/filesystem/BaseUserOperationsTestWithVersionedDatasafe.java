@@ -59,7 +59,7 @@ class BaseUserOperationsTestWithVersionedDatasafe {
         // BEGIN_SNIPPET:Creating user for versioned services looks same
         // Creating new user:
         /*
-        IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+        IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
         synchronization due to eventual consistency or you need to supply globally unique username on registration
         */
         versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
