@@ -12,14 +12,22 @@
 EMBEDDING_ANCHOR=$1
 MARKDOWN_TARGET=$2
 ANCHOR_PATTERN='\['"$EMBEDDING_ANCHOR"':([^]]+)]\(([^)^#]+)[^)]*\)'
+SED_EXEC="sed"
+GREP_EXEC="grep"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    SED_EXEC="gsed"
+    GREP_EXEC="ggrep"
+fi
 
 function cleanup_embedded()
 {
     cat $MARKDOWN_TARGET \
         | tr '\n' '\f' \
-        | sed -r 's/```/\a/g' \
-        | sed -E 's/('"$ANCHOR_PATTERN"')(\f\a[^\a]+\a)/\1/g'  \
-        | sed -r 's/\a/```/g' \
+        | $SED_EXEC -r 's/```/\a/g' \
+        | $SED_EXEC -E 's/('"$ANCHOR_PATTERN"')(\f\a[^\a]+\a)/\1/g'  \
+        | $SED_EXEC -r 's/\a/```/g' \
         | tr '\f' '\n'
 }
 
@@ -34,8 +42,10 @@ function wrap_snippet() # expects 2 args - snippet code and file exension
     # remove leading spaces:
     while IFS= read -r line; do
         if [[ "$started" = false ]]; then
-            no_trailing=$(sed -e 's/^[ \t]*//' <<< "$line")
-            let spaces=${#line}-`echo "$no_trailing" | wc -c`+1
+            no_trailing=$($SED_EXEC -e 's/^[ \t]*//' <<< "$line")
+            line_len="${#line}"
+            line_without_heading_spaces=`echo "$no_trailing" | wc -c`
+            let spaces=line_len-line_without_heading_spaces+1
             started=true
         fi
         echo "${line:$spaces:${#line}}"
@@ -57,11 +67,11 @@ function print_snippet_from_file() # expects 2 args - filename and snippet name
 
     snippet=$(cat "$filepath" \
         | tr '\n' '\f' \
-        | sed -r 's/BEGIN_SNIPPET:/\a/g' \
-        | sed -r 's/END_SNIPPET/\a/g' \
-        | grep -oP '\a'"$snippet_name\f"'([^\a]+)\a' \
-        | sed -E 's/\a'"[^\f]+\f"'([^\a]+)\f[^\f]+\a/\1/g' \
-        | sed -r 's/\a//g' \
+        | $SED_EXEC -r 's/BEGIN_SNIPPET:/\a/g' \
+        | $SED_EXEC -r 's/END_SNIPPET/\a/g' \
+        | $GREP_EXEC -oP '\a'"$snippet_name\f"'([^\a]+)\a' \
+        | $SED_EXEC -E 's/\a'"[^\f]+\f"'([^\a]+)\f[^\f]+\a/\1/g' \
+        | $SED_EXEC -r 's/\a//g' \
         | tr '\f' '\n')
 
     wrap_snippet "$snippet" "$extension"
@@ -71,8 +81,8 @@ function snippet_position() # expects 2 args - filename and snippet name
 {
     filepath=$1
     snippet_name=$2
-    begin=`grep -oPn 'BEGIN_SNIPPET:'"$snippet_name"'$' "$filepath" | cut -d: -f1`
-    end=`tail -n +"$begin" $filepath | grep -oPn -m 1 'END_SNIPPET' | cut -d: -f1`
+    begin=`$GREP_EXEC -oPn 'BEGIN_SNIPPET:'"$snippet_name"'$' "$filepath" | cut -d: -f1`
+    end=`tail -n +"$begin" $filepath | $GREP_EXEC -oPn -m 1 'END_SNIPPET' | cut -d: -f1`
     echo "L$begin-L$((begin+end-1))"
 }
 
@@ -80,7 +90,7 @@ function snippet_position_end() # expects 2 args - filename and snippet beginnin
 {
     filepath=$1
     snippet_name=$2
-    echo `grep -oPn 'BEGIN_SNIPPET:'"$snippet_name"'$' $filepath | cut -d: -f1`
+    echo `$GREP_EXEC -oPn 'BEGIN_SNIPPET:'"$snippet_name"'$' $filepath | cut -d: -f1`
 }
 
 CLEANED=$(cleanup_embedded)

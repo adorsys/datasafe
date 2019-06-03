@@ -43,7 +43,11 @@ that supports versioned and encrypted private file storage (for storage provider
 # Examples of how to use the library
 <!--
 To update snippets you can use embed.sh
-I.e.:
+MacOS: Install gnused and gnugrep:
+`brew install gnu-sed`
+`brew install grep`
+
+Example script usage:
 ./embed.sh Example README.md > README-tmp.md && mv README-tmp.md README.md
 -->
 
@@ -154,7 +158,7 @@ we can use storage provider that supports versioning. But if we have storage pro
 (i.e. minio) we can turn-on software versioning, here is its usage examples;
 
 First, we will obtain versioned Datasafe services that uses filesystem storage adapter:
-[Example:Create versioned Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L44-L50)
+[Example:Create versioned Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L45-L51)
 ```groovy
 // this will create all Datasafe files and user documents under <temp dir path>
 versionedServices = DaggerVersionedDatasafeServices.builder()
@@ -164,14 +168,14 @@ versionedServices = DaggerVersionedDatasafeServices.builder()
 ```
 
 Next we will create user, this is same as in non-versioned services:
-[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L58-L61)
+[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L59-L62)
 ```groovy
 // Creating new user:
 versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
 ```
 
 This is how file versioning works when saving file multiple times:
-[Example:Saving file couple of times - versioned](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L73-L97)
+[Example:Saving file couple of times - versioned](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L74-L98)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -199,7 +203,7 @@ assertThat(versionedServices.latestPrivate().list(ListRequest.forDefaultPrivate(
 ```
 
 And we can work with file versions too, of course, everything is encrypted:
-[Example:Lets check how to read oldest file version](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L99-L115)
+[Example:Lets check how to read oldest file version](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L100-L116)
 ```groovy
 // so lets collect all versions
 List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> withVersions =
@@ -216,6 +220,41 @@ Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion> oldes
 assertThat(versionedServices.privateService()
     .read(ReadRequest.forPrivate(user, oldest.absolute().getResource().asPrivate()))
 ).hasContent("Hello 1");
+```
+
+Another important case to mention  is how to determine if file has changed on storage compared to some copy we have:
+[Example:Check if we have latest file locally](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafe.java#L126-L157)
+```groovy
+// creating new user
+UserIDAuth user = registerUser("john");
+
+// First lets store some file, for example John stored it from mobile phone
+try (OutputStream os = versionedServices.latestPrivate()
+        .write(WriteRequest.forDefaultPrivate(user, "my/own/file.txt"))) {
+    os.write(("Hello old version").getBytes(StandardCharsets.UTF_8));
+}
+
+// Application on mobile phone caches file content to improve performance, so it should cache timestamp too
+Instant savedOnMobile = versionedServices.latestPrivate()
+        .list(ListRequest.forDefaultPrivate(user, "my/own/file.txt"))
+        .findAny().get().getResource().getModifiedAt();
+
+// Now John uses PC to write data to my/own/file.txt with some updated data
+Thread.sleep(1000L); // it took some time for him to get to PC
+try (OutputStream os = versionedServices.latestPrivate()
+        .write(WriteRequest.forDefaultPrivate(user, "my/own/file.txt"))) {
+    os.write(("Hello new version").getBytes(StandardCharsets.UTF_8));
+}
+
+// John takes his mobile phone and application checks if it needs to sync content
+Instant savedOnPC = versionedServices.latestPrivate()
+        .list(ListRequest.forDefaultPrivate(user, "my/own/file.txt"))
+        .findAny().get().getResource().getModifiedAt();
+
+// This indicates that we need to update our cache on mobile phone
+// Modified date of saved file has changed and it is newer that our cached date
+// So mobile application should download latest file version
+assertThat(savedOnPC).isAfter(savedOnMobile);
 ```
 
 You can visit the **[project homepage](https://adorsys.github.io/datasafe)** for additional information.

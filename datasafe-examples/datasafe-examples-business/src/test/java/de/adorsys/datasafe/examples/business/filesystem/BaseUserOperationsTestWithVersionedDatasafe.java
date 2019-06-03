@@ -22,6 +22,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,6 +113,47 @@ class BaseUserOperationsTestWithVersionedDatasafe {
         assertThat(versionedServices.privateService()
             .read(ReadRequest.forPrivate(user, oldest.absolute().getResource().asPrivate()))
         ).hasContent("Hello 1");
+        // END_SNIPPET
+    }
+
+    /**
+     * Imagine the usecase when you have some cached local files from users' privatespace and your application
+     * wants to check if your local version is outdated and you need to download new version from storage.
+     */
+    @Test
+    @SneakyThrows
+    void checkThatWeNeedToDownloadNewFile() {
+        // BEGIN_SNIPPET:Check if we have latest file locally
+        // creating new user
+        UserIDAuth user = registerUser("john");
+
+        // First lets store some file, for example John stored it from mobile phone
+        try (OutputStream os = versionedServices.latestPrivate()
+                .write(WriteRequest.forDefaultPrivate(user, "my/own/file.txt"))) {
+            os.write(("Hello old version").getBytes(StandardCharsets.UTF_8));
+        }
+
+        // Application on mobile phone caches file content to improve performance, so it should cache timestamp too
+        Instant savedOnMobile = versionedServices.latestPrivate()
+                .list(ListRequest.forDefaultPrivate(user, "my/own/file.txt"))
+                .findAny().get().getResource().getModifiedAt();
+
+        // Now John uses PC to write data to my/own/file.txt with some updated data
+        Thread.sleep(1000L); // it took some time for him to get to PC
+        try (OutputStream os = versionedServices.latestPrivate()
+                .write(WriteRequest.forDefaultPrivate(user, "my/own/file.txt"))) {
+            os.write(("Hello new version").getBytes(StandardCharsets.UTF_8));
+        }
+
+        // John takes his mobile phone and application checks if it needs to sync content
+        Instant savedOnPC = versionedServices.latestPrivate()
+                .list(ListRequest.forDefaultPrivate(user, "my/own/file.txt"))
+                .findAny().get().getResource().getModifiedAt();
+
+        // This indicates that we need to update our cache on mobile phone
+        // Modified date of saved file has changed and it is newer that our cached date
+        // So mobile application should download latest file version
+        assertThat(savedOnPC).isAfter(savedOnMobile);
         // END_SNIPPET
     }
 
