@@ -90,7 +90,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     private KeyStore keystore(UserIDAuth forUser) {
         AbsoluteLocation<PrivateResource> access = bucketAccessService.privateAccessFor(
                 forUser,
-                profile.privateProfile(forUser).getKeystore()
+                profile.privateProfile(forUser).getKeystore().getResource()
         );
 
         byte[] payload;

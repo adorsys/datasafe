@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.impl.profile.resource;
 
+import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
@@ -19,10 +20,12 @@ import java.util.function.Supplier;
 public class ResourceResolverImpl implements ResourceResolver {
 
     private final ProfileRetrievalService profile;
+    private final BucketAccessService bucketAccessService;
 
     @Inject
-    public ResourceResolverImpl(ProfileRetrievalService profile) {
+    public ResourceResolverImpl(ProfileRetrievalService profile, BucketAccessService bucketAccessService) {
         this.profile = profile;
+        this.bucketAccessService = bucketAccessService;
     }
 
     /**
@@ -31,9 +34,10 @@ public class ResourceResolverImpl implements ResourceResolver {
     @Override
     public AbsoluteLocation<PublicResource> resolveRelativeToPublicInbox(
             UserID userID, PublicResource resource) {
-        return resolveRelative(
-                resource,
-                () -> profile.publicProfile(userID).getInbox()
+
+        return bucketAccessService.publicAccessFor(
+                userID,
+                resolveRelative(resource, () -> profile.publicProfile(userID).getInbox())
         );
     }
 
@@ -45,9 +49,10 @@ public class ResourceResolverImpl implements ResourceResolver {
     @Override
     public AbsoluteLocation<PrivateResource> resolveRelativeToPrivateInbox(
             UserIDAuth userID, PrivateResource resource) {
-        return resolveRelative(
-                resource,
-                () -> profile.privateProfile(userID).getInboxWithFullAccess()
+
+        return bucketAccessService.privateAccessFor(
+                userID,
+                resolveRelative(resource, () -> profile.privateProfile(userID).getInboxWithFullAccess())
         );
     }
 
@@ -57,9 +62,10 @@ public class ResourceResolverImpl implements ResourceResolver {
     @Override
     public AbsoluteLocation<PrivateResource> resolveRelativeToPrivate(
             UserIDAuth userID, PrivateResource resource) {
-        return resolveRelative(
-                resource,
-                () -> profile.privateProfile(userID).getPrivateStorage()
+
+        return bucketAccessService.privateAccessFor(
+                userID,
+                resolveRelative(resource, () -> profile.privateProfile(userID).getPrivateStorage())
         );
     }
 
@@ -71,12 +77,12 @@ public class ResourceResolverImpl implements ResourceResolver {
         return resource.location().isAbsolute();
     }
 
-    private  <T extends ResourceLocation<T>> AbsoluteLocation<T> resolveRelative(
+    private  <T extends ResourceLocation<T>> T resolveRelative(
             T resource, Supplier<ResourceLocation<T>> resolveTo) {
         if (isAbsolute(resource)) {
-            return new AbsoluteLocation<>(resource);
+            return resource;
         }
 
-        return new AbsoluteLocation<>(resource.resolveFrom(resolveTo.get()));
+        return resource.resolveFrom(resolveTo.get());
     }
 }
