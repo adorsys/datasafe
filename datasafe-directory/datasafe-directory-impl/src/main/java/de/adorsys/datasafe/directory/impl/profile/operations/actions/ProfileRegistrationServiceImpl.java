@@ -13,6 +13,7 @@ import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,10 +47,10 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @Override
     @SneakyThrows
     public void registerPublic(CreateUserPublicProfile profile) {
+        log.debug("Register public {}", profile);
         try (OutputStream os = writeService.write(dfsConfig.publicProfile(profile.getId()))) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
-        log.debug("Register public {}", profile.getId());
     }
 
     /**
@@ -59,12 +60,14 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @Override
     @SneakyThrows
     public void registerPrivate(CreateUserPrivateProfile profile) {
+        log.debug("Register private {}", profile);
         try (OutputStream os = writeService.write(dfsConfig.privateProfile(profile.getId().getUserID()))) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
-        log.debug("Register private {}", profile.getId());
 
         if (checkService.objectExists(profile.getKeystore())) {
+            log.warn("Keystore already exists for {} at {}, will not create new",
+                    profile.getId().getUserID(), Log.secure(profile.getKeystore()));
             return;
         }
 
@@ -108,6 +111,9 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
             try (OutputStream os = writeService.write(publishTo)) {
                 os.write(serde.toJson(publicKeys).getBytes());
             }
+            log.debug("Public keys for published {}", publishTo);
+        } else {
+            log.warn("Public keys already exist, won't publish {}", publicKeys);
         }
     }
 }
