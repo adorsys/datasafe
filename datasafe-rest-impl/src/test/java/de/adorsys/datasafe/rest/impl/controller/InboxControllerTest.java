@@ -1,19 +1,18 @@
-package de.adorsys.datasafe.rest.controller;
+package de.adorsys.datasafe.rest.impl.controller;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import lombok.SneakyThrows;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
@@ -24,10 +23,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class InboxControllerTest {
+class InboxControllerTest {
 
     private static final String TEST_USER = "test";
     private static final String TEST_PASS = "test";
@@ -43,14 +42,14 @@ public class InboxControllerTest {
     private InboxServiceImpl inboxService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.initMocks(this);
         when(dataSafeService.inboxService()).thenReturn(inboxService);
     }
 
     @SneakyThrows
     @Test
-    public void sendDocumentToInboxTest() {
+    void sendDocumentToInboxTest() {
         when(dataSafeService.inboxService().write(any())).thenReturn(new ByteArrayOutputStream());
 
         mvc.perform(put("/inbox/{path}", TEST_PATH)
@@ -62,7 +61,7 @@ public class InboxControllerTest {
 
     @SneakyThrows
     @Test
-    public void readFromInboxTest() {
+    void readFromInboxTest() {
         when(dataSafeService.inboxService().read(any())).thenReturn(new ByteArrayInputStream("hello".getBytes()));
 
         mvc.perform(get("/inbox/{path}", TEST_PATH)
@@ -74,7 +73,7 @@ public class InboxControllerTest {
 
     @SneakyThrows
     @Test
-    public void deleteFromInboxTest() {
+    void deleteFromInboxTest() {
 
         mvc.perform(delete("/inbox/{path}", TEST_PATH)
                 .header("user", TEST_USER)

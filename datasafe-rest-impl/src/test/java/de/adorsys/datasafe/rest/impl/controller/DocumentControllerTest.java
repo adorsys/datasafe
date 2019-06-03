@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.rest.controller;
+package de.adorsys.datasafe.rest.impl.controller;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
@@ -6,14 +6,14 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
@@ -25,10 +25,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DocumentControllerTest {
+class DocumentControllerTest {
 
     private static final String TEST_USER = "test";
     private static final String TEST_PASS = "test";
@@ -43,7 +43,7 @@ public class DocumentControllerTest {
     private PrivateSpaceServiceImpl privateSpaceService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.initMocks(this);
         when(dataSafeService.privateService()).thenReturn(privateSpaceService);
     }
@@ -51,7 +51,7 @@ public class DocumentControllerTest {
 
     @SneakyThrows
     @Test
-    public void readDocumentTest() {
+    void readDocumentTest() {
         when(dataSafeService.privateService().read(any())).thenReturn(new ByteArrayInputStream("hello".getBytes()));
 
         String path = "path/to/file";
@@ -64,7 +64,7 @@ public class DocumentControllerTest {
 
     @SneakyThrows
     @Test
-    public void writeDocumentTest() {
+    void writeDocumentTest() {
         when(dataSafeService.privateService().write(any())).thenReturn(new ByteArrayOutputStream());
         String path = "path/to/file";
         mvc.perform(put("/document/{path}", path)
@@ -77,7 +77,7 @@ public class DocumentControllerTest {
 
     @SneakyThrows
     @Test
-    public void listDocumentsTest() {
+    void listDocumentsTest() {
         String path = "";
         mvc.perform(get("/documents/{path}", path)
                 .header("user", TEST_USER)
@@ -87,7 +87,7 @@ public class DocumentControllerTest {
 
     @SneakyThrows
     @Test
-    public void deleteDocumentTest() {
+    void deleteDocumentTest() {
         String path = "path/to/file";
         mvc.perform(delete("/document/{path}", path)
                 .header("user", TEST_USER)
