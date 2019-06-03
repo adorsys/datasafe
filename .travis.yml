@@ -11,9 +11,8 @@ before_deploy:
   - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
 
 deploy:
-  -
+  - provider: script
     skip_cleanup: true
-    provider: script
     script: /bin/bash .travis/deploy.sh
     on:
       tags: true
