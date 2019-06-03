@@ -1,0 +1,55 @@
+@startuml
+
+|privatestore|
+start
+-> User wants to store file\nin his privatespace;
+:WriteToPrivate;
+-> Read users' document\nencryption secret key;
+|directory|
+:PrivateKeyService;
+-> Get storage credentials\nto read keystore;
+:BucketAccessService;
+-> Read users' keystore\n if not cached;
+|storage|
+:StorageReadService;
+-> users' document secret key;
+|privatestore|
+:WriteToPrivate;
+-> Encrypt desired document path;
+:EncryptedResourceResolver;
+|encryption|
+:PathEncryption;
+|directory|
+:PrivateKeyService;
+-> Get storage credentials\nto read keystore;
+:BucketAccessService;
+-> Read users' keystore\n if not cached;
+|storage|
+:StorageReadService;
+-> users' document secret key;
+|encryption|
+:PathEncryption;
+-> Encrypt path with\nsecret key;
+:SymmetricPathEncryptionService;
+-> Encrypted path;
+|privatestore|
+:EncryptedResourceResolver;
+|directory|
+-> Get absolute location and access\nfor resulting resource;
+:ResourceResolver;
+-> Enhance with credentials;
+:BucketAccessService;
+|privatestore|
+-> Absolute resource with\nstorage access details;
+:WriteToPrivate;
+|encryption|
+-> Open encryption stream at resolved location;
+:EncryptedDocumentWriteService;
+-> Wrap data stream;
+:CMSEncryption;
+|storage|
+-> Push encrypted data to storage;
+:StorageWriteService;
+stop
+
+@enduml
