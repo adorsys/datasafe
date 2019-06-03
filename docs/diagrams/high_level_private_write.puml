@@ -8,10 +8,17 @@ start
 |directory|
 :PrivateKeyService;
 -> Get storage credentials\nto read keystore;
+if (Keystore cached?) then
+else (no)
+|directory|
 :BucketAccessService;
--> Read users' keystore\n if not cached;
+-> Read users' keystore;
 |storage|
 :StorageReadService;
+-> users' keystore;
+|directory|
+:PrivateKeyService;
+endif
 -> users' document secret key;
 |privatestore|
 :WriteToPrivate;
@@ -22,11 +29,17 @@ start
 |directory|
 :PrivateKeyService;
 -> Get storage credentials\nto read keystore;
+if (Keystore cached?) then
+else (no)
+|directory|
 :BucketAccessService;
--> Read users' keystore\n if not cached;
+-> Read users' keystore;
 |storage|
 :StorageReadService;
--> users' document secret key;
+-> users' keystore;
+|directory|
+:PrivateKeyService;
+endif
 |encryption|
 :PathEncryption;
 -> Encrypt path with\nsecret key;
@@ -48,7 +61,7 @@ start
 -> Wrap data stream;
 :CMSEncryption;
 |storage|
--> Push encrypted data to storage;
+-> Push encrypted\ndata to storage;
 :StorageWriteService;
 stop
 
