@@ -116,7 +116,6 @@
             <version>${spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-types-api</artifactId>
@@ -129,7 +128,6 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
-        -->
 
     </dependencies>
 
