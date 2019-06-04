@@ -1,7 +1,10 @@
 package de.adorsys.datasafe.rest.impl.security;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,21 +21,30 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    // Signing key for HS512 algorithm
-    // You can use the page http://www.allkeysgenerator.com/ to generate all kinds of keys
-    public static String JWT_SECRET;
-    public static String DEFAULT_USER_NAME;
-    public static String DEFAULT_PASSWORD;
+    public static final String[] SWAGGER_RESOURCES = {
+            "/v2/api-docs",
+            "/configuration/ui",
+            "/swagger-resources",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/swagger-resources/configuration/ui",
+            "/swagger-ui.html"
+    };
+
+    @Autowired
+    private SecurityProperties securityProperties;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and()
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers(SWAGGER_RESOURCES).permitAll()
+                .antMatchers(SecurityConstants.AUTH_LOGIN_URL).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager()))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityProperties.getJwtSecret()))
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
@@ -40,8 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser(DEFAULT_USER_NAME)
-                .password(passwordEncoder().encode(DEFAULT_PASSWORD))
+                .withUser(securityProperties.getDefaultUser())
+                .password(passwordEncoder().encode(securityProperties.getDefaultPassword()))
                 .authorities("ROLE_USER");
     }
 
@@ -58,18 +70,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 
-    @Value("${JWT_SECRET")
-    public void setJwtSecret(String jwtSecret) {
-        JWT_SECRET = jwtSecret;
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
-    @Value("${DEFAULT_USER_NAME}")
-    public void setDefaultUserName(String defaultUserName) {
-        DEFAULT_USER_NAME = defaultUserName;
-    }
-
-    @Value("${DEFAULT_PASSWORD}")
-    public void setDefaultPassword(String defaultPassword) {
-        DEFAULT_PASSWORD = defaultPassword;
+    @Bean
+    @SneakyThrows
+    public JwtAuthorizationFilter jwtAuthorizationFilter() {
+        return new JwtAuthorizationFilter(authenticationManager(), securityProperties.getJwtSecret());
     }
 }

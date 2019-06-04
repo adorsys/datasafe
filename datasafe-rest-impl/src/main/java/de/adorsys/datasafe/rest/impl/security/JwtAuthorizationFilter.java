@@ -1,11 +1,10 @@
 package de.adorsys.datasafe.rest.impl.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,12 +19,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
+    @Autowired
+    private SecurityProperties securityProperties;
+    private String jwtSecret;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, String jwtSecret) {
         super(authenticationManager);
+        this.jwtSecret = jwtSecret;
     }
 
     @Override
@@ -46,23 +49,35 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(SecurityConstants.TOKEN_HEADER);
         if (StringUtils.isNotEmpty(token)) {
-            byte[] signingKey = SecurityConfig.JWT_SECRET.getBytes();
+            try {
+                byte[] signingKey = jwtSecret.getBytes();//securityProperties.getJwtSecret().getBytes();
 
-            Jws<Claims> parsedToken = Jwts.parser()
-                    .setSigningKey(signingKey)
-                    .parseClaimsJws(token.replace("Bearer ", ""));
+                Jws<Claims> parsedToken = Jwts.parser()
+                        .setSigningKey(signingKey)
+                        .parseClaimsJws(token.replace("Bearer ", ""));
 
-            String username = parsedToken
-                    .getBody()
-                    .getSubject();
+                String username = parsedToken
+                        .getBody()
+                        .getSubject();
 
-            List<SimpleGrantedAuthority> authorities = ((List<?>) parsedToken.getBody()
-                    .get("role")).stream()
-                    .map(authority -> new SimpleGrantedAuthority((String) authority))
-                    .collect(Collectors.toList());
+                List<SimpleGrantedAuthority> authorities = ((List<?>) parsedToken.getBody()
+                        .get("rol")).stream()
+                        .map(authority -> new SimpleGrantedAuthority((String) authority))
+                        .collect(Collectors.toList());
 
-            if (StringUtils.isBlank(username)) {
-                return new UsernamePasswordAuthenticationToken(username, null, authorities);
+                if (StringUtils.isNotEmpty(username)) {
+                    return new UsernamePasswordAuthenticationToken(username, null, authorities);
+                }
+            } catch (ExpiredJwtException exception) {
+                log.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
+            } catch (UnsupportedJwtException exception) {
+                log.warn("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
+            } catch (MalformedJwtException exception) {
+                log.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
+            } catch (SignatureException exception) {
+                log.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
+            } catch (IllegalArgumentException exception) {
+                log.warn("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
             }
         }
 

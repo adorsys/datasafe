@@ -7,7 +7,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.config.DatasafeProperties;
-import de.adorsys.datasafe.rest.impl.dto.UserCreateRequestDTO;
+import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.types.api.resource.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +51,7 @@ public class UserController {
      */
     @PutMapping
     @ApiOperation("Create user")
-    public void createUser(@RequestBody UserCreateRequestDTO requestDTO) {
+    public void createUser(@RequestBody UserDTO requestDTO) {
 
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(requestDTO.getPassword());
         UserIDAuth auth = new UserIDAuth(new UserID(requestDTO.getUserName()), readKeyPassword);
