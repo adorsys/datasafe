@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.privatestore.impl.actions;
 
+import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class EncryptedResourceResolverTest extends BaseMockitoTest {
+class EncryptedResourceResolverImplTest extends BaseMockitoTest {
 
     private static final String ENCRYPTED = "ENCRYPTED";
     private static final String DECRYPTED = "DECRYPTED";
@@ -35,6 +36,9 @@ class EncryptedResourceResolverTest extends BaseMockitoTest {
     private PrivateResource relativeEncrypted = BasePrivateResource.forPrivate(URI.create("./path/")
             .resolve(ENCRYPTED));
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
+
+    @Mock
+    private BucketAccessService accessService;
 
     @Mock
     private ResourceResolver resourceResolver;
@@ -56,6 +60,8 @@ class EncryptedResourceResolverTest extends BaseMockitoTest {
 
     @Test
     void encryptAndResolvePathAbsolute() {
+        when(accessService.privateAccessFor(auth, absolute)).thenReturn(new AbsoluteLocation<>(absolute));
+
         AbsoluteLocation<PrivateResource> resource = resolver.encryptAndResolvePath(auth, absolute);
 
         assertThat(resource.location()).isEqualTo(absolute.location());
