@@ -1,0 +1,46 @@
+@startuml
+
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 40
+skinparam linetype ortho
+'skinparam linetype polyline
+
+actor User as u
+
+together {
+rectangle logical as l
+rectangle physical as p
+rectangle "physical with access" as pwa
+rectangle "document blob" as db
+rectangle "document blob with key" as dbwk
+rectangle "decrypted document" as dd
+
+}
+
+
+node Read as pr
+node "Encrypted resource resolver" as perr
+
+node "Encrypt path" as eep
+node "Decrypt document" as edd
+
+node "Path encryption secret key" as pesk
+node "Document encryption secret key" as desk
+node "Storage access credentials" as sac
+
+
+node "Document blob" as sdb
+node "Read blob" as srb
+
+u --> l
+l --> pr
+perr --> p
+p --> sac
+sac --> pwa
+pwa --> db
+db --> edd
+edd --> dbwk
+dbwk --> dd
+
+@enduml
