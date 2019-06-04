@@ -36,24 +36,24 @@ wants to share into users' inbox space using the recipients' public key so that 
 capability too.
 
 # Project overview
-In short, Datasafe [core logic](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/DefaultDatasafeServices.java)
+In short, Datasafe [core logic](https://github.com/adorsys/datasafe/blob/master/datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/DefaultDatasafeServices.java)
 provides these key services:
-* [Privatespace service](datasafe-privatestore/datasafe-privatestore-impl/src/main/java/de/adorsys/datasafe/privatestore/impl/PrivateSpaceServiceImpl.java)
+* [Privatespace service](https://github.com/adorsys/datasafe/blob/master/datasafe-privatestore/datasafe-privatestore-impl/src/main/java/de/adorsys/datasafe/privatestore/impl/PrivateSpaceServiceImpl.java)
 that securely stores private files by encrypting them using users' secret key.
-* [Inbox service](datasafe-inbox/datasafe-inbox-impl/src/main/java/de/adorsys/datasafe/inbox/impl/InboxServiceImpl.java)
+* [Inbox service](https://github.com/adorsys/datasafe/blob/master/datasafe-inbox/datasafe-inbox-impl/src/main/java/de/adorsys/datasafe/inbox/impl/InboxServiceImpl.java)
 that allows a user to share files with someone so that the only inbox owner can read files that are
 shared with him using private key.
-* [User profile service](datasafe-directory/datasafe-directory-impl/src/main/java/de/adorsys/datasafe/directory/impl/profile/operations/DFSBasedProfileStorageImpl.java)
+* [User profile service](https://github.com/adorsys/datasafe/blob/master/datasafe-directory/datasafe-directory-impl/src/main/java/de/adorsys/datasafe/directory/impl/profile/operations/DFSBasedProfileStorageImpl.java)
 that provides user metadata, such as where is user privatespace, his keystore, etc.
 
 These services are automatically built from
-[modules](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl)
+[modules](https://github.com/adorsys/datasafe/blob/master/datasafe-business/src/main/java/de/adorsys/datasafe/business/impl)
 and the only thing needed from a user is to provide storage adapter - by using
-[predefined](datasafe-storage) adapters,
+[predefined](https://github.com/adorsys/datasafe/blob/master/datasafe-storage) adapters,
 or by implementing his own using
-[this interface](datasafe-storage/datasafe-storage-api/src/main/java/de/adorsys/datasafe/storage/api/StorageService.java).
+[this interface](https://github.com/adorsys/datasafe/blob/master/datasafe-storage/datasafe-storage-api/src/main/java/de/adorsys/datasafe/storage/api/StorageService.java).
 
-Additionally, for file versioning purposes like reading only last file version, there is [versioned privatespace](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/VersionedDatasafeServices.java)
+Additionally, for file versioning purposes like reading only last file version, there is [versioned privatespace](https://github.com/adorsys/datasafe/blob/master/datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/VersionedDatasafeServices.java)
 that supports versioned and encrypted private file storage (for storage providers that do not support versioning).
 
 
