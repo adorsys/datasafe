@@ -6,3 +6,6 @@ We will use CMS (RFC 5652) and S/MIME (RFC 5751) to envelope message exchanged b
 
 Our default implementation will use DFS backend to store document exchanged between user. 
 We might also use another type of communication backend like SMTP server to provide for the same functionality.
+
+Key class:
+[InboxService](src/main/java/de/adorsys/datasafe/inbox/api/InboxService.java)
