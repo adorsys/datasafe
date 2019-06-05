@@ -14,11 +14,12 @@
         <module>datasafe-inbox</module>
         <module>datasafe-storage</module>
         <module>datasafe-rest-impl</module>
+        <module>datasafe-examples</module>
     </modules>
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>0.0.9-SNAPSHOT</version>
+    <version>0.0.11-SNAPSHOT</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -96,6 +97,7 @@
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
         <drools.version>6.5.0.Final</drools.version>
         <lombok-maven-plugin.version>1.18.6.0</lombok-maven-plugin.version>
+        <awaitility.version>3.0.0</awaitility.version>
     </properties>
 
     <dependencies>
@@ -213,6 +215,12 @@
                 <version>${drools.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
 	    </dependencies>
 	</dependencyManagement>
 
@@ -269,6 +277,7 @@
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.mockito:mockito-core</ignoredUsedUndeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>
@@ -427,6 +436,22 @@
                                 <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
                                 </goals>
                             </execution>
                         </executions>

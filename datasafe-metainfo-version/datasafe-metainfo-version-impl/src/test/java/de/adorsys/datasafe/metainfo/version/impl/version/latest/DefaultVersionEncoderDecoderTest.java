@@ -22,9 +22,12 @@ public class DefaultVersionEncoderDecoderTest {
         uri = new Uri("uri/uri");
         Assertions.assertFalse(defaultVersionEncoder.decodeVersion(uri).isPresent());
 
+        uri = new Uri("uri/uri/BBA");
+        Assertions.assertFalse(defaultVersionEncoder.decodeVersion(uri).isPresent());
+
         String peter = "peter";
         String uuid = UUID.randomUUID().toString();
-        uri = new Uri("uri/" +  peter + "--" + uuid);
+        uri = new Uri("uri/" +  peter + "/" + uuid);
         Assertions.assertEquals(uuid, defaultVersionEncoder.decodeVersion(uri).get().getVersion());
     }
 }

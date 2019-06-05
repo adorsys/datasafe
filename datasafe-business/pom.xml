@@ -5,7 +5,7 @@
     <parent>
         <artifactId>datasafe</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.0.9-SNAPSHOT</version>
+        <version>0.0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -155,6 +155,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-core</artifactId>
             <scope>test</scope>
@@ -162,6 +167,11 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

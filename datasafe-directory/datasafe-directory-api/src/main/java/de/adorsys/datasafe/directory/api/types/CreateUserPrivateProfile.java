@@ -12,7 +12,7 @@ import lombok.Value;
  * Request to create private user profile part.
  */
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CreateUserPrivateProfile {
 
     /**

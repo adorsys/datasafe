@@ -45,7 +45,7 @@ public class VersionedDataTest extends WithStorageProvider {
     void testVersionedWriteTopLevel(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
-        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
+        registerAndDoWritesWithDiffMessageInSameLocation();
 
         String readingResult = readPrivateUsingPrivateKey(jane, BasePrivateResource.forPrivate(PRIVATE_FILE_PATH));
 
@@ -55,25 +55,10 @@ public class VersionedDataTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void testVersionedWriteUsingDirectAccess(WithStorageProvider.StorageDescriptor descriptor) {
-        init(descriptor);
-
-        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
-
-        AbsoluteLocation<ResolvedResource> latest = getFirstFileInPrivate(jane);
-        String directResult = readRawPrivateUsingPrivateKey(jane, latest.getResource().asPrivate());
-
-        assertThat(directResult).isEqualTo(MESSAGE_THREE);
-        assertThat(latest.getResource().asPrivate().decryptedPath()).asString().contains(PRIVATE_FILE_PATH);
-        validateThereAreVersions(jane, 3);
-    }
-
-    @ParameterizedTest
-    @MethodSource("allStorages")
     void testVersionedWriteUsingAbsoluteAccess(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
-        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
+        registerAndDoWritesWithDiffMessageInSameLocation();
 
         Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version> first =
             Position.first(versionedListRoot(jane));
@@ -89,7 +74,7 @@ public class VersionedDataTest extends WithStorageProvider {
     void testVersionedRemove(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
-        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
+        registerAndDoWritesWithDiffMessageInSameLocation();
 
         Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version> first =
                 Position.first(versionedListRoot(jane));
@@ -106,11 +91,31 @@ public class VersionedDataTest extends WithStorageProvider {
     void testVersionsOf(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
-        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
+        registerAndDoWritesWithDiffMessageInSameLocation();
 
         List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> versionedResource =
                 versionedDocusafeServices.versionInfo()
                         .versionsOf(ListRequest.forDefaultPrivate(jane, "./"))
+                        .collect(Collectors.toList());
+
+        assertThat(versionedResource).hasSize(3);
+        assertThat(versionedResource)
+                .extracting(Versioned::stripVersion)
+                .extracting(ResourceLocation::location)
+                .extracting(Uri::toASCIIString)
+                .containsExactly(PRIVATE_FILE_PATH, PRIVATE_FILE_PATH, PRIVATE_FILE_PATH);
+    }
+
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void testVersionsOfDirectPath(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerAndDoWritesWithDiffMessageInSameLocation();
+
+        List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> versionedResource =
+                versionedDocusafeServices.versionInfo()
+                        .versionsOf(ListRequest.forDefaultPrivate(jane, PRIVATE_FILE_PATH))
                         .collect(Collectors.toList());
 
         assertThat(versionedResource).hasSize(3);
@@ -127,7 +132,7 @@ public class VersionedDataTest extends WithStorageProvider {
     void testOldRemoval(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
-        registerAndDoWritesWithDiffMessageInSameLocation(descriptor);
+        registerAndDoWritesWithDiffMessageInSameLocation();
 
         List<Versioned<AbsoluteLocation<ResolvedResource>, ResolvedResource, DFSVersion>> versionedResource =
                 versionedDocusafeServices.versionInfo()
@@ -156,7 +161,7 @@ public class VersionedDataTest extends WithStorageProvider {
     void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
-        registerJohnAndJane(descriptor.getLocation());
+        registerJohnAndJane();
 
         writeDataToPrivate(jane, "root.file", MESSAGE_ONE);
         writeDataToPrivate(jane, "root.file", MESSAGE_ONE);
@@ -238,13 +243,13 @@ public class VersionedDataTest extends WithStorageProvider {
         VersionedDatasafeServices datasafeServices = DatasafeServicesProvider
                 .versionedDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
 
-        initialize(datasafeServices);
+        initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);
         this.versionedDocusafeServices = datasafeServices;
     }
 
 
-    private void registerAndDoWritesWithDiffMessageInSameLocation(StorageDescriptor descriptor) {
-        registerJohnAndJane(descriptor.getLocation());
+    private void registerAndDoWritesWithDiffMessageInSameLocation() {
+        registerJohnAndJane();
 
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_TWO);

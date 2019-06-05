@@ -20,7 +20,7 @@ class AmazonPerformance extends WithRandomActionPerformance {
         DelegatingStorageWithDelay service = storageService(s3(), latency);
         DefaultDatasafeServices services = DatasafeServicesProvider.defaultDatasafeServices(
                 service, service.getRootLocation());
-        initialize(services);
+        initialize(DatasafeServicesProvider.dfsConfig(service.getRootLocation()), services);
         initUsers(size);
 
         OperationExecutor executor = new OperationExecutor(

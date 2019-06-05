@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.directory.impl.profile.keys;
 
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.directory.impl.profile.operations.DFSSystem;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
@@ -29,19 +29,19 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
     private final KeyStoreCache keystoreCache;
     private final KeyStoreService keyStoreService;
-    private final DFSSystem dfsSystem;
+    private final DFSConfig dfsConfig;
     private final BucketAccessService bucketAccessService;
     private final ProfileRetrievalService profile;
     private final StorageReadService readService;
 
     @Inject
     public DFSPrivateKeyServiceImpl(KeyStoreCache keystoreCache,
-                                    KeyStoreService keyStoreService, DFSSystem dfsSystem,
+                                    KeyStoreService keyStoreService, DFSConfig dfsConfig,
                                     BucketAccessService bucketAccessService, ProfileRetrievalService profile,
                                     StorageReadService readService) {
         this.keystoreCache = keystoreCache;
         this.keyStoreService = keyStoreService;
-        this.dfsSystem = dfsSystem;
+        this.dfsConfig = dfsConfig;
         this.bucketAccessService = bucketAccessService;
         this.profile = profile;
         this.readService = readService;
@@ -101,7 +101,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         return keyStoreService.deserialize(
                 payload,
                 forUser.getUserID().getValue(),
-                dfsSystem.privateKeyStoreAuth(forUser).getReadStorePassword()
+                dfsConfig.privateKeyStoreAuth(forUser).getReadStorePassword()
         );
     }
 }
