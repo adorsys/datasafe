@@ -5,11 +5,11 @@
     <parent>
         <artifactId>datasafe</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.0.9-SNAPSHOT</version>
+        <version>0.0.9</version>
     </parent>
 
     <artifactId>datasafe-rest-impl</artifactId>
-    <version>0.0.9-SNAPSHOT</version>
+    <version>0.0.9</version>
     <name>datasafe-rest-impl</name>
     <description>Spring Boot DataSafe Application</description>
 
