@@ -87,20 +87,20 @@ User-list and write-only operations
 
 # Top level application architecture for server based application
 Datasafe2 supports command chain request delegation using routers for each API (within request context), so that we can do `REST->library->REST->library` chains for data retrieval.
-![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/top_level.puml&fmt=png&vvv=9)
+![Top level architecture](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/valb3r/datasafe/develop/docs/diagrams/top_level.puml&fmt=png&vvv=9)
 
 # General view of lookup server operations
-![Lookup server general view](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/generic_view.puml&fmt=png&vvv=9)
+![Lookup server general view](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/valb3r/datasafe/develop/docs/diagrams/generic_view.puml&fmt=png&vvv=9)
 
 # Sequence diagrams for VFS/user creation
 * [VFS and user creation](docusafe_diagrams.md)
 
 # Sequence diagram for CRUD on private files
 ### Detailed view
-![Private files CRUD](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/sequence_private.puml&fmt=png&vvv=3)
+![Private files CRUD](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/valb3r/datasafe/develop/docs/diagrams/sequence_private.puml&fmt=png&vvv=3)
 
 # Sequence diagram for INBOX file sharing
-![INBOX file sharing](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/sequence_put_inbox.puml&fmt=png&vvv=1)
+![INBOX file sharing](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/valb3r/datasafe/develop/docs/diagrams/sequence_put_inbox.puml&fmt=png&vvv=1)
 
 # Sequence diagram for INBOX reading
-![INBOX reading](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/sequence_read_inbox.puml&fmt=png&vvv=1)
+![INBOX reading](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/valb3r/datasafe/develop/docs/diagrams/sequence_read_inbox.puml&fmt=png&vvv=1)

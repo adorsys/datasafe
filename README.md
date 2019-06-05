@@ -42,7 +42,7 @@ that supports versioned and encrypted private file storage (for storage provider
 
 # How it works
 ## Storing private files
-![How it works diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works.puml&fmt=svg&vvv=1&sanitize=true)
+![How it works diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/valb3r/datasafe/develop/docs/diagrams/high-level/how_it_works.puml&fmt=svg&vvv=1&sanitize=true)
 ## Sharing files
 
 # Examples of how to use the library

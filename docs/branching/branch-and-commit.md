@@ -1,5 +1,5 @@
 # Branch naming strategy: 
-1. Get issue id from github (**issue-id**), i.e. for https://github.com/adorsys/datasafe/issues/17 **issue-id** is **17**
+1. Get issue id from github (**issue-id**), i.e. for https://github.com/valb3r/datasafe/issues/17 **issue-id** is **17**
 2. Your branch should have *feature/DAT-2* or *bugfix/DAT-* as a prefix and than the issue id.
 Optionally the issue id can have suffix with a short-term description of the issue itself.
 
