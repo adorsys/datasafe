@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.rest.impl.security;
 
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
@@ -32,8 +31,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-ui.html"
     };
 
-    @Autowired
-    private SecurityProperties securityProperties;
+    private final SecurityProperties securityProperties;
+
+    SecurityConfig(SecurityProperties securityProperties) {
+        this.securityProperties = securityProperties;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -44,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(SecurityConstants.AUTH_LOGIN_URL).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityProperties.getJwtSecret()))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityProperties))
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
@@ -79,6 +81,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @SneakyThrows
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(authenticationManager(), securityProperties.getJwtSecret());
+        return new JwtAuthorizationFilter(authenticationManager(), securityProperties);
     }
 }

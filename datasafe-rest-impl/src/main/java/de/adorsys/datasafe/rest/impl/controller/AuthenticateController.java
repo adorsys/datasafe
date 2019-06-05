@@ -9,7 +9,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,10 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthenticateController {
 
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    @Autowired
+    private final SecurityProperties securityProperties;
     private final AuthenticationManager authenticationManager;
 
     @PostMapping(SecurityConstants.AUTH_LOGIN_URL)
@@ -49,7 +45,7 @@ public class AuthenticateController {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        byte[] signingKey = "n2r5u8x/A%D*G-KaPdSgVkYp3s6v9y$B&E(H+MbQeThWmZq4t7w!z%C*F-J@NcRf".getBytes();//securityProperties.getJwtSecret().getBytes();
+        byte[] signingKey = securityProperties.getJwtSecret().getBytes();
 
         String token = Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
@@ -57,7 +53,7 @@ public class AuthenticateController {
                 .setIssuer(SecurityConstants.TOKEN_ISSUER)
                 .setAudience(SecurityConstants.TOKEN_AUDIENCE)
                 .setSubject(user.getUsername())
-                .setExpiration(new Date(System.currentTimeMillis() + 864000000))
+                .setExpiration(new Date(System.currentTimeMillis() + securityProperties.getTokenExpiration()))
                 .claim("rol", roles)
                 .compact();
 

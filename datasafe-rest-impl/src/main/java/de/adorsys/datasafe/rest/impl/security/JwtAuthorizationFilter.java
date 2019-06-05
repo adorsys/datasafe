@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,13 +21,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    @Autowired
-    private SecurityProperties securityProperties;
-    private String jwtSecret;
+    private final SecurityProperties securityProperties;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, String jwtSecret) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
+                                  SecurityProperties securityProperties) {
         super(authenticationManager);
-        this.jwtSecret = jwtSecret;
+        this.securityProperties = securityProperties;
     }
 
     @Override
@@ -50,11 +48,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String token = request.getHeader(SecurityConstants.TOKEN_HEADER);
         if (StringUtils.isNotEmpty(token)) {
             try {
-                byte[] signingKey = jwtSecret.getBytes();//securityProperties.getJwtSecret().getBytes();
+                byte[] signingKey = securityProperties.getJwtSecret().getBytes();
 
                 Jws<Claims> parsedToken = Jwts.parser()
                         .setSigningKey(signingKey)
-                        .parseClaimsJws(token.replace("Bearer ", ""));
+                        .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""));
 
                 String username = parsedToken
                         .getBody()
@@ -69,15 +67,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     return new UsernamePasswordAuthenticationToken(username, null, authorities);
                 }
             } catch (ExpiredJwtException exception) {
-                log.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
+                log.warn("Request to parse expired JWT : {} failed : {}", token, exception);
             } catch (UnsupportedJwtException exception) {
-                log.warn("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
+                log.warn("Request to parse unsupported JWT : {} failed : {}", token, exception);
             } catch (MalformedJwtException exception) {
-                log.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
+                log.warn("Request to parse invalid JWT : {} failed : {}", token, exception);
             } catch (SignatureException exception) {
-                log.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
+                log.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception);
             } catch (IllegalArgumentException exception) {
-                log.warn("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
+                log.warn("Request to parse empty or null JWT : {} failed : {}", token, exception);
             }
         }
 

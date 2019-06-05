@@ -14,5 +14,5 @@ public class SecurityProperties {
     private String jwtSecret;
     private String defaultUser;
     private String defaultPassword;
-
+    private long tokenExpiration;
 }
