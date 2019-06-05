@@ -1,0 +1,27 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "datasafe-rest-service"
+labels:
+  app: "datasafe-rest-service"
+spec:
+  triggers:
+  - type: "ConfigChange"
+  - type: "ImageChange"
+  source:
+    type: "Git"
+    git:
+      uri: "https://github.com/adorsys/datasafe.git"
+      ref: "DOC-142-peter-deployment"
+      contextDir: "datasafe/datasafe-rest-impl"
+  strategy:
+    type: "Source"
+    sourceStrategy:
+      from:
+        kind: "ImageStreamTag"
+        namespace: "datasafe"
+        name: "datasafe-rest-service:latest"
+  output:
+    to:
+      kind: "ImageStreamTag"
+      name: "datasafe-rest-service:latest"
