@@ -1,7 +1,7 @@
 @startuml
 
-left to right direction
-skinparam nodesep 80
+'left to right direction
+'skinparam nodesep 80
 skinparam ranksep 40
 skinparam linetype ortho
 'skinparam linetype polyline
@@ -9,38 +9,43 @@ skinparam linetype ortho
 actor User as u
 
 together {
-rectangle logical as l
-rectangle physical as p
-rectangle "physical with access" as pwa
-rectangle "document blob" as db
-rectangle "document blob with key" as dbwk
-rectangle "decrypted document" as dd
-
+rectangle "Read at location" as r.rl
+rectangle "Get path encryption secret key" as r.gpe
+rectangle "Encrypt location with secret key" as r.elw
+rectangle "Get credentials to read" as r.gc
+rectangle "Read from storage" as r.rfs
+rectangle "Get document encryption secret key" as r.gde
+rectangle "Decrypt document" as r.dd
 }
 
+together {
+rectangle "Write at location" as w.wl
+rectangle "Get document encryption secret key" as w.gde
+rectangle "Get path encryption secret key" as w.gpe
+rectangle "Encrypt location with secret key" as w.elw
+rectangle "Get credentials to write" as w.gc
+rectangle "Encrypt document" as w.dd
+rectangle "Write to storage" as w.wfs
+}
 
-node Read as pr
-node "Encrypted resource resolver" as perr
+database "<&file> Encrypted\ndocument\nwith encrypted\npath" as ed
 
-node "Encrypt path" as eep
-node "Decrypt document" as edd
+u --> r.rl
+r.rl --> r.gpe
+r.gpe --> r.elw : **<&key>Path key**, location
+r.elw --> r.gc : Encrypted document path
+r.gc --> r.rfs : Encrypted document path,\n <&key>storage credentials
+r.rfs <-- ed : <&file>Document
+r.rfs --> r.gde : Encrypted stream
+r.gde --> r.dd : Decrypted stream
 
-node "Path encryption secret key" as pesk
-node "Document encryption secret key" as desk
-node "Storage access credentials" as sac
-
-
-node "Document blob" as sdb
-node "Read blob" as srb
-
-u --> l
-l --> pr
-perr --> p
-p --> sac
-sac --> pwa
-pwa --> db
-db --> edd
-edd --> dbwk
-dbwk --> dd
+u --> w.wl
+w.wl --> w.gde
+w.gde --> w.gpe
+w.gpe --> w.elw : **<&key>Path key**, location
+w.elw --> w.gc : Encrypted document path
+w.gc --> w.dd : Encrypted document path,\n <&key>storage credentials
+w.dd --> w.wfs : Encrypted stream
+w.wfs --> ed
 
 @enduml
