@@ -37,7 +37,7 @@ endif
 -> Private key (document encryption key);
 :CMSEncryption;
 |storage|
--> Pull encrypted\ndata from storage and\ndecrypt it using\ndusers' private key;
+-> Pull encrypted\ndata from storage and\ndecrypt it using\nusers' private key;
 :StorageReadService;
 stop
 
