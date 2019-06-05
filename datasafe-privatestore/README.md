@@ -1,6 +1,6 @@
 # Datasafe Privatespace
 
-This module is designed to provide access to the user private space. All document stored on this space are encrypted 
+This module is designed to provide access to the user private space. All document stored in this space are encrypted 
 with secret keys held by the user. Additionally path of the document is also encrypted with path encryption key. 
 Privatespace itself resides somewhere on storage according to user private profile.
 
