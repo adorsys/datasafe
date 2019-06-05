@@ -27,6 +27,10 @@ public class FileSystemStorageService implements StorageService {
 
     private final Uri dir;
 
+    public FileSystemStorageService(Path dir) {
+        this.dir = new Uri(dir.toUri());
+    }
+
     /**
      * Lists resources and returns their location without access credentials.
      */

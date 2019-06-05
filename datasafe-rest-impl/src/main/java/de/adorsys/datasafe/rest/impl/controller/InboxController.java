@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;

@@ -3,11 +3,10 @@ package de.adorsys.datasafe.business.impl.e2e;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
+import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
-import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
-import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
@@ -23,7 +22,9 @@ import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
     protected static final String VERSION_COMPONENT = "versions";
 
+    protected DFSConfig dfsConfig;
     protected ListPrivate listPrivate;
     protected ReadFromPrivate readFromPrivate;
     protected WriteToPrivate writeToPrivate;
@@ -63,7 +65,8 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     protected UserIDAuth john;
     protected UserIDAuth jane;
 
-    protected void initialize(DefaultDatasafeServices datasafeServices) {
+    protected void initialize(DFSConfig dfsConfig, DefaultDatasafeServices datasafeServices) {
+        this.dfsConfig = dfsConfig;
         this.listPrivate = datasafeServices.privateService();
         this.readFromPrivate = datasafeServices.privateService();
         this.writeToPrivate = datasafeServices.privateService();
@@ -77,7 +80,8 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         this.profileRetrievalService = datasafeServices.userProfile();
     }
 
-    protected void initialize(VersionedDatasafeServices datasafeServices) {
+    protected void initialize(DFSConfig dfsConfig, VersionedDatasafeServices datasafeServices) {
+        this.dfsConfig = dfsConfig;
         this.listPrivate = datasafeServices.latestPrivate();
         this.readFromPrivate = datasafeServices.latestPrivate();
         this.writeToPrivate = datasafeServices.latestPrivate();
@@ -94,6 +98,15 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
     @SneakyThrows
     protected void writeDataToPrivate(UserIDAuth auth, String path, String data) {
         OutputStream stream = writeToPrivate.write(WriteRequest.forDefaultPrivate(auth, path));
+        stream.write(data.getBytes());
+        stream.close();
+        log.info("File {} of user {} saved to {}", Log.secure(data), Log.secure(auth),
+                Log.secure(path.split("/"), "/"));
+    }
+
+    @SneakyThrows
+    protected void writeDataToInbox(UserIDAuth auth, String path, String data) {
+        OutputStream stream = writeToInbox.write(WriteRequest.forDefaultPublic(auth.getUserID(), path));
         stream.write(data.getBytes());
         stream.close();
         log.info("File {} of user {} saved to {}", Log.secure(data), Log.secure(auth),
@@ -154,9 +167,9 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         return files;
     }
 
-    protected void registerJohnAndJane(Uri rootLocation) {
-        john = registerUser("john", rootLocation);
-        jane = registerUser("jane", rootLocation);
+    protected void registerJohnAndJane() {
+        john = registerUser("john");
+        jane = registerUser("jane");
     }
 
     @SneakyThrows
@@ -171,50 +184,14 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
         removeFromInbox.remove(RemoveRequest.forPrivate(inboxOwner, location));
     }
 
-    protected UserIDAuth registerUser(String userName, Uri rootLocation) {
+    protected UserIDAuth registerUser(String userName) {
         UserIDAuth auth = new UserIDAuth(new UserID(userName), new ReadKeyPassword("secure-password " + userName));
 
-        rootLocation = rootLocation.resolve(userName + "/");
-
-        Uri keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
-        log.info("User's keystore location: {}", Log.secure(keyStoreUri));
-        Uri inboxUri = rootLocation.resolve("./" + INBOX_COMPONENT + "/");
-        log.info("User's inbox location: {}", Log.secure(inboxUri));
-
-        AbsoluteLocation<PublicResource> publicKeys = access(
-                rootLocation.resolve("./" + PUBLIC_COMPONENT + "/keystore")
-        );
-
-        profileRegistrationService.registerPublic(CreateUserPublicProfile.builder()
-                .id(auth.getUserID())
-                .inbox(access(inboxUri))
-                .publicKeys(publicKeys)
-                .build()
-        );
-
-        Uri filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
-        log.info("User's files location: {}", Log.secure(filesUri));
-
-        profileRegistrationService.registerPrivate(CreateUserPrivateProfile.builder()
-                .id(auth)
-                .privateStorage(accessPrivate(filesUri))
-                .keystore(accessPrivate(keyStoreUri))
-                .inboxWithWriteAccess(accessPrivate(inboxUri))
-                .documentVersionStorage(accessPrivate(rootLocation.resolve("./" + VERSION_COMPONENT + "/")))
-                .publishPubKeysTo(publicKeys)
-                .build()
-        );
+        profileRegistrationService.registerPublic(dfsConfig.defaultPublicTemplate(auth));
+        profileRegistrationService.registerPrivate(dfsConfig.defaultPrivateTemplate(auth));
 
         log.info("Created user: {}", Log.secure(userName));
         return auth;
-    }
-
-    private AbsoluteLocation<PublicResource> access(Uri path) {
-        return new AbsoluteLocation<>(new BasePublicResource(path));
-    }
-
-    private AbsoluteLocation<PrivateResource> accessPrivate(Uri path) {
-        return new AbsoluteLocation<>(new BasePrivateResource(path, new Uri(""), new Uri("")));
     }
 
     protected UserIDAuth createJohnTestUser(int i) {
@@ -232,7 +209,17 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                 .collect(Collectors.toList());
 
         for (String toFind : expected) {
-            assertThat(paths.stream().anyMatch(it -> it.contains(toFind))).isTrue();
+            assertThat(paths.stream().anyMatch(it -> it.equals(toFind))).isTrue();
+        }
+    }
+
+    protected void assertInboxSpaceList(UserIDAuth user, String root, String... expected) {
+        List<String> paths = listInbox.list(ListRequest.forDefaultPrivate(user, root))
+                .map(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+                .collect(Collectors.toList());
+
+        for (String toFind : expected) {
+            assertThat(paths.stream().anyMatch(it -> it.equals(toFind))).isTrue();
         }
     }
 }

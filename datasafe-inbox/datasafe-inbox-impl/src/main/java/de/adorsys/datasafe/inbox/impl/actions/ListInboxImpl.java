@@ -1,14 +1,13 @@
 package de.adorsys.datasafe.inbox.impl.actions;
 
 
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.actions.ListInbox;
 import de.adorsys.datasafe.storage.api.actions.StorageListService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.*;
 
 import javax.inject.Inject;
 import java.util.stream.Stream;
@@ -19,18 +18,22 @@ import java.util.stream.Stream;
  */
 public class ListInboxImpl implements ListInbox {
 
+    private final ProfileRetrievalService profileRetrievalService;
     private final ResourceResolver resolver;
     private final StorageListService listService;
 
     @Inject
-    public ListInboxImpl(ResourceResolver resolver, StorageListService listService) {
+    public ListInboxImpl(ProfileRetrievalService profileRetrievalService, ResourceResolver resolver,
+                         StorageListService listService) {
+        this.profileRetrievalService = profileRetrievalService;
         this.resolver = resolver;
         this.listService = listService;
     }
 
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
-        return listService.list(resolveRelative(request));
+        return listService.list(resolveRelative(request))
+                .map(it -> fillEncryptedDecryptedSegments(request, it));
     }
 
     private AbsoluteLocation<PrivateResource> resolveRelative(
@@ -38,6 +41,19 @@ public class ListInboxImpl implements ListInbox {
         return resolver.resolveRelativeToPrivateInbox(
                 request.getOwner(),
                 request.getLocation()
+        );
+    }
+
+    // needed only to support encrypted and decrypted path segments in result, otherwise they are empty
+    private AbsoluteLocation<ResolvedResource> fillEncryptedDecryptedSegments(
+            ListRequest<UserIDAuth, PrivateResource> request,
+            AbsoluteLocation<ResolvedResource> resource) {
+        AbsoluteLocation<PublicResource> inboxPath = profileRetrievalService
+                .publicProfile(request.getOwner().getUserID()).getInbox();
+
+        Uri path = inboxPath.location().relativize(resource.location());
+        return new AbsoluteLocation<>(
+                resource.getResource().withResource(resource.getResource().asPrivate().resolve(path, path))
         );
     }
 }

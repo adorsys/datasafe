@@ -2,6 +2,7 @@ package de.adorsys.datasafe.directory.api.profile.operations;
 
 import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 
 /**
  * Registers user in system.
@@ -21,4 +22,10 @@ public interface ProfileRegistrationService {
      * @param profile Private profile part
      */
     void registerPrivate(CreateUserPrivateProfile profile);
+
+    /**
+     * Register user using all-default values.
+     * @param user User authorization to register
+     */
+    void registerUsingDefaults(UserIDAuth user);
 }

@@ -3,14 +3,14 @@ package de.adorsys.datasafe.directory.api.types;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Value;
 
 /**
  * Users' public profile - typically should be seen only by owner.
  */
-@Value
-@Builder
+@Data
+@Builder(toBuilder = true)
 public class UserPublicProfile {
 
     /**

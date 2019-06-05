@@ -38,7 +38,7 @@ public abstract class DefaultVersionedPrivateActionsModule {
     }
 
     /**
-     * Encode version into URL, by default http://example.com/path is encoded to http://example.com/path--VERSION
+     * Encode version into URL, by default http://example.com/path is encoded to http://example.com/path/VERSION
      */
     @Binds
     abstract VersionEncoderDecoder versionEncoder(DefaultVersionEncoderDecoder impl);
