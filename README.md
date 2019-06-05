@@ -41,9 +41,22 @@ Additionally, for file versioning purposes like reading only last file version, 
 that supports versioned and encrypted private file storage (for storage providers that do not support versioning).
 
 # How it works
+
 ## Storing private files
-![How it works diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works.puml&fmt=svg&vvv=1&sanitize=true)
-## Sharing files
+
+<details>
+![How it works diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private.puml&fmt=svg&vvv=1&sanitize=true)
+</details>
+
+[See for details](datasafe-privatestore)
+
+## Sharing files with another user
+ 
+<details>
+![How it works diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox.puml&fmt=svg&vvv=1&sanitize=true)
+</details>
+
+[See for details](datasafe-inbox)
 
 # Examples of how to use the library
 <!--
