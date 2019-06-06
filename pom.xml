@@ -15,6 +15,7 @@
         <module>datasafe-storage</module>
         <module>datasafe-rest-impl</module>
         <module>datasafe-examples</module>
+        <module>last-module-codecoverage-check</module>
     </modules>
 
     <groupId>de.adorsys</groupId>
@@ -316,21 +317,7 @@
                         <exclude>**/*_Factory*/**</exclude>
                         <exclude>**/*_MembersInjector.class</exclude>
                         <exclude>**/*Dagger*</exclude>
-                        <!-- LOOKS LIKE COVERAGE IS NOT DONE AT ALL WITH THIS
                         <exclude>**/Default*Module.class</exclude>
-                        -->
-                        <exclude>**/DefaultPathEncryptionModule.class</exclude>
-                        <exclude>**/DefaultCMSEncryptionModule.class</exclude>
-                        <exclude>**/DefaultCredentialsModule.class</exclude>
-                        <exclude>**/DefaultProfileModule.class</exclude>
-                        <exclude>**/DefaultDocumentModule.class</exclude>
-                        <exclude>**/DefaultInboxActionsModule.class</exclude>
-                        <exclude>**/DefaultKeyStoreModule.class</exclude>
-                        <exclude>**/DefaultPathEncryptionModule.class</exclude>
-                        <exclude>**/DefaultPrivateActionsModule.class</exclude>
-                        <exclude>**/DefaultVersionedPrivateActionsModule.class</exclude>
-
-
                     </excludes>
                     <propertyName>surefireArgLine</propertyName>
                 </configuration>
