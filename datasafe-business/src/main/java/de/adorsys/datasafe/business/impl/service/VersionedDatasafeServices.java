@@ -13,12 +13,12 @@ import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActi
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultVersionedPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
-import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
-import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
+import de.adorsys.datasafe.inbox.api.InboxService;
+import de.adorsys.datasafe.metainfo.version.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionInfoServiceImpl;
-import de.adorsys.datasafe.metainfo.version.impl.version.latest.LatestPrivateSpaceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
-import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
+import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.storage.api.StorageService;
 
 import javax.inject.Singleton;
@@ -49,22 +49,22 @@ public interface VersionedDatasafeServices {
     /**
      * @return Filtered view of user's private space, that shows only latest files (works only with versioned resources)
      */
-    LatestPrivateSpaceImpl<LatestDFSVersion> latestPrivate();
+    VersionedPrivateSpaceService<LatestDFSVersion> latestPrivate();
 
     /**
      * @return Raw view of private user space (shows everything - all versioned and not versioned)
      */
-    PrivateSpaceServiceImpl privateService();
+    PrivateSpaceService privateService();
 
     /**
      * @return Inbox service that provides capability to share data between users
      */
-    InboxServiceImpl inboxService();
+    InboxService inboxService();
 
     /**
      * @return User-profile service that provides information necessary for locating his data.
      */
-    DFSBasedProfileStorageImpl userProfile();
+    ProfileOperations userProfile();
 
     /**
      * Binds DFS connection (for example filesystem, minio) and system storage and access

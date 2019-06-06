@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.impl.profile.operations;
 
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
@@ -12,10 +13,7 @@ import javax.inject.Inject;
  * Aggregate view of profile operations for DFS-based profiles.
  */
 @Slf4j
-public class DFSBasedProfileStorageImpl implements
-        ProfileRegistrationService,
-        ProfileRetrievalService,
-        ProfileRemovalService {
+public class DFSBasedProfileStorageImpl implements ProfileOperations {
 
     @Delegate
     private final ProfileRegistrationService registrationService;

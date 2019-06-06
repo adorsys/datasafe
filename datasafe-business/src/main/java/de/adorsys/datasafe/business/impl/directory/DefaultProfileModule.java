@@ -5,12 +5,14 @@ import com.google.common.cache.CacheBuilder;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
+import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.directory.impl.profile.operations.DefaultUserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRegistrationServiceImpl;
@@ -47,7 +49,7 @@ public abstract class DefaultProfileModule {
      * Default profile reading service that simply reads json files with serialized public/private located on DFS.
      */
     @Binds
-    abstract ProfileRetrievalService profileService(ProfileRetrievalServiceImpl impl);
+    abstract ProfileRetrievalService profileRetrievalService(ProfileRetrievalServiceImpl impl);
 
     /**
      * Default profile creation service that simply creates keystore, public keys, user profile json files on DFS.
@@ -66,4 +68,10 @@ public abstract class DefaultProfileModule {
      */
     @Binds
     abstract ResourceResolver resourceResolver(ResourceResolverImpl impl);
+
+    /**
+     * Aggregate service for profile operations.
+     */
+    @Binds
+    abstract ProfileOperations profileService(DFSBasedProfileStorageImpl impl);
 }

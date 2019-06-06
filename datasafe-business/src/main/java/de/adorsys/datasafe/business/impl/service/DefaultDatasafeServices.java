@@ -12,9 +12,9 @@ import de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionMod
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
-import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
-import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
-import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
+import de.adorsys.datasafe.inbox.api.InboxService;
+import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.storage.api.StorageService;
 
 import javax.inject.Singleton;
@@ -39,17 +39,17 @@ public interface DefaultDatasafeServices {
     /**
      * Services to access users' privatespace.
      */
-    PrivateSpaceServiceImpl privateService();
+    PrivateSpaceService privateService();
 
     /**
      * Services to access users' inbox.
      */
-    InboxServiceImpl inboxService();
+    InboxService inboxService();
 
     /**
      * Services to access users' profiles.
      */
-    DFSBasedProfileStorageImpl userProfile();
+    ProfileOperations userProfile();
 
     /**
      * Binds DFS connection (for example filesystem, minio) and system storage and access
