@@ -11,6 +11,13 @@ import java.util.Map;
  */
 public interface UserProfileCache {
 
+    /**
+     * Cache for users' public profile part
+     */
     Map<UserID, UserPublicProfile> getPublicProfile();
+
+    /**
+     * Cache for users' private profile part
+     */
     Map<UserID, UserPrivateProfile> getPrivateProfile();
 }

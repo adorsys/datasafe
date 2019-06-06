@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>de.adorsys</groupId>
-		<artifactId>datasafe-metainfo-version</artifactId>
+		<artifactId>datasafe-metainfo</artifactId>
 		<version>0.0.11-SNAPSHOT</version>
 	</parent>
 	<artifactId>datasafe-metainfo-version-impl</artifactId>

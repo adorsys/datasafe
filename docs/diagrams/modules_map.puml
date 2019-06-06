@@ -1,0 +1,99 @@
+@startuml
+
+skinparam ranksep 60
+skinparam nodesep 60
+skinparam linetype ortho
+
+node business [
+datasafe-business
+--
+<b>Provides functional modules:</b>
+Path encryption
+Document encryption
+Profile resolution
+...
+<b>Provides usable Datasafe services bundle</b>
+]
+
+package "Datasafe services" as core {
+node metainfo [
+datasafe-metainfo
+--
+<b>Provides:</b>
+Software-based file versioning
+]
+
+package "Core functionality" {
+node privatestore [
+datasafe-privatestore
+--
+<b>Provides:</b>
+Path encryption and resolution
+Private document encryption
+Document operations in privatespace
+]
+
+node inbox [
+datasafe-inbox
+--
+<b>Provides:</b>
+Path resolution
+Shared document encryption
+Document operations in INBOX
+]
+
+node directory [
+datasafe-directory
+--
+<b>Provides:</b>
+Users' public and private, secret keys
+User profile
+Functionality to register/deregister user
+Document path transformation (relative to absolute)
+Access credentials for data storage
+]
+}
+
+package "Basic blocks" {
+node storage [
+datasafe-storage
+--
+<b>Access adapters for:</b>
+S3
+filesystem
+]
+
+node encryption [
+datasafe-encryption
+--
+<b>Provides:</b>
+CMS encryption for data streams
+Keystore management functionality
+Path encryption
+]
+
+}
+node types [
+datasafe-types
+--
+<b>Provides common dependencies:</b>
+API parameters
+Basic types
+]
+}
+
+types --> encryption
+types --> storage
+types --> directory
+encryption --> directory
+types --> inbox
+encryption --> inbox
+types --> privatestore
+encryption --> privatestore
+types --> metainfo
+encryption --> metainfo
+privatestore --> metainfo
+core -up-> business
+
+
+@enduml

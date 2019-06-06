@@ -1,0 +1,44 @@
+@startuml
+
+skinparam ranksep 10
+skinparam linetype ortho
+
+cloud "INBOX" {
+actor User as u
+
+together {
+rectangle "Read document\nshared with me" as r.rl
+rectangle "Get credentials to\nread from own INBOX" as r.gc
+rectangle "Read from storage" as r.rfs
+rectangle "Get users' private key\nassociated with\n public key used\nto encrypt document" as r.gde
+rectangle "Decrypt document" as r.dd
+}
+
+together {
+rectangle "Share document\nwith other user" as w.wl
+rectangle "Get recipient public key" as w.gde
+rectangle "Get credentials to write\ninto recipients' INBOX" as w.gc
+rectangle "Encrypt document" as w.dd
+rectangle "Write to storage" as w.wfs
+}
+
+database "<&file> Encrypted\ndocument" as ed
+database "<&file> Decrypted\ndocument" as dd
+
+u --> r.rl
+r.rl --> r.gc
+r.gc --> r.rfs : <&key>storage credentials
+r.rfs <-- ed : <&file>Document
+r.rfs --> r.gde : Encrypted stream
+r.gde --> r.dd : Encrypted stream,\n<&key>users' private key
+r.dd --> dd
+
+u --> w.wl
+w.wl --> w.gde
+w.gde --> w.gc : <&key>recipient public key
+w.gc --> w.dd : <&key>storage credentials,\n<&key>recipients' public key
+w.dd --> w.wfs : Encrypted stream
+w.wfs --> ed
+}
+
+@enduml

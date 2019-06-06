@@ -55,6 +55,10 @@ class BaseUserOperationsTestWithDefaultDatasafe {
     void registerUser() {
         // BEGIN_SNIPPET:Create new user
         // Creating new user with username 'user' and private/secret key password 'passwrd':
+        /*
+        IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
+        synchronization due to eventual consistency or you need to supply globally unique username on registration
+        */
         defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
         // END_SNIPPET
 
