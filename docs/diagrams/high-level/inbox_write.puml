@@ -1,0 +1,42 @@
+@startuml
+
+|inbox|
+start
+-> User wants to share file\nwith other user;
+:WriteToInbox;
+-> Read recipients' public key;
+|directory|
+:PublicKeyService;
+-> Retreive recipients' public key;
+if (Public key cached?) then
+else (no)
+|directory|
+-> Locate users' keystore;
+:ProfileRetreivalService;
+-> Get credentials to read\npublic from storage;
+:BucketAccessService;
+-> Read users' public key;
+|storage|
+:StorageReadService;
+-> recipients' public key;
+endif
+|directory|
+:PublicKeyService;
+-> Get absolute location and access\nfor resulting resource;
+:ResourceResolver;
+-> Enhance with credentials;
+:BucketAccessService;
+|inbox|
+-> Absolute resource with\nstorage access details;
+:WriteToInbox;
+|encryption|
+-> Open encryption stream at resolved location\nwith document secret key;
+:EncryptedDocumentWriteService;
+-> Wrap data to encrypted stream\n with public key;
+:CMSEncryptionService;
+|storage|
+-> Push encrypted\ndata to storage;
+:StorageWriteService;
+stop
+
+@enduml

@@ -54,7 +54,7 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
     private List<PublicKeyIDWithPublicKey> publicKeyList(UserID forUser) {
         AbsoluteLocation<PublicResource> accessiblePublicKey = bucketAccessService.publicAccessFor(
                 forUser,
-                profiles.publicProfile(forUser).getPublicKeys()
+                profiles.publicProfile(forUser).getPublicKeys().getResource()
         );
 
         try (JsonReader is = new JsonReader(new InputStreamReader(readService.read(accessiblePublicKey)))) {

@@ -1,0 +1,78 @@
+@startuml
+
+|privatestore|
+start
+-> User wants to read file\nfrom his privatespace;
+:ReadFromPrivate;
+-> encrypt path that will be read from;
+:EncryptedResourceResolver;
+if (document path absolute?) then (yes - do not encrypt,\nit should be already encrypted)
+else (no)
+-> Encrypt\npath;
+|encryption|
+:PathEncryption;
+-> Get path encryption\nsecret key;
+|directory|
+:PrivateKeyService;
+-> Get storage credentials\nto read keystore;
+if (Keystore cached?) then
+else (no)
+|directory|
+-> Locate users' keystore;
+:ProfileRetreivalService;
+-> Get credentials to read\nkeystore from storage;
+:BucketAccessService;
+-> Read users' keystore;
+|storage|
+:StorageReadService;
+-> users' keystore;
+|directory|
+:PrivateKeyService;
+endif
+-> users' document secret key;
+|encryption|
+:PathEncryption;
+-> Encrypt path with\nsecret key;
+:SymmetricPathEncryptionService;
+-> Encrypted path;
+|privatestore|
+:EncryptedResourceResolver;
+-> Find absolute location of resource;
+|directory|
+:ResourceResolver;
+endif
+-> Get credentials to\nread file from storage;
+:BucketAccessService;
+|privatestore|
+-> Resource location with\naccess details;
+:ReadFromPrivate;
+|encryption|
+-> Open decryption stream at\nresolved location;
+:EncryptedDocumentReadService;
+-> Obtain document secret key;
+|directory|
+:PrivateKeyService;
+-> Get storage credentials\nto read keystore;
+if (Keystore cached?) then
+else (no)
+|directory|
+-> Locate users' keystore;
+:ProfileRetreivalService;
+-> Get credentials to read\nkeystore from storage;
+:BucketAccessService;
+-> Read users' keystore;
+|storage|
+:StorageReadService;
+-> users' keystore;
+|directory|
+:PrivateKeyService;
+endif
+|encryption|
+-> Document encryption key;
+:CMSEncryption;
+|storage|
+-> Pull encrypted\ndata from storage and\ndecrypt it using\ndocument secret key;
+:StorageReadService;
+stop
+
+@enduml

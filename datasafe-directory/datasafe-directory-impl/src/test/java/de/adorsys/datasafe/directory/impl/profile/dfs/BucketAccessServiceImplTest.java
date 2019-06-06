@@ -32,7 +32,7 @@ class BucketAccessServiceImplTest extends BaseMockitoTest {
     void publicAccessFor() {
         assertThat(bucketAccessService.publicAccessFor(
                 auth.getUserID(),
-                BasePublicResource.forAbsolutePublic(ABSOLUTE_BUCKET)).location().asURI()
+                BasePublicResource.forAbsolutePublic(ABSOLUTE_BUCKET).getResource()).location().asURI()
         ).asString().isEqualTo(ABSOLUTE_BUCKET);
     }
 }
