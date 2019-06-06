@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import java.net.URI;
 
 /**
- * Default DFS folders layout provider.
+ * Default DFS folders layout provider, suitable both for s3 and filesystem.
  */
 @RequiredArgsConstructor
 public class DefaultDFSConfig implements DFSConfig {
@@ -30,16 +30,31 @@ public class DefaultDFSConfig implements DFSConfig {
     private final Uri systemRoot;
     private final ReadStorePassword systemPassword;
 
+    /**
+     * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
+     * to place everything in datasafe/system directory within storage
+     * @param systemPassword System password to open keystore
+     */
     public DefaultDFSConfig(String systemRoot, String systemPassword) {
         this.systemRoot = new Uri(systemRoot);
         this.systemPassword = new ReadStorePassword(systemPassword);
     }
 
+    /**
+     * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
+     * to place everything in datasafe/system directory within storage
+     * @param systemPassword System password to open keystore
+     */
     public DefaultDFSConfig(URI systemRoot, String systemPassword) {
         this.systemRoot = new Uri(systemRoot);
         this.systemPassword = new ReadStorePassword(systemPassword);
     }
 
+    /**
+     * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
+     * to place everything in datasafe/system directory within storage
+     * @param systemPassword System password to open keystore
+     */
     public DefaultDFSConfig(Uri systemRoot, String systemPassword) {
         this.systemRoot = systemRoot;
         this.systemPassword = new ReadStorePassword(systemPassword);

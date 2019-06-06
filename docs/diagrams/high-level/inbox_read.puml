@@ -1,0 +1,44 @@
+@startuml
+
+|inbox|
+start
+-> User wants to read file\nfrom his inbox;
+:ReadFromInbox;
+-> Resolve physical\nlocation of the file;
+|directory|
+:ResourceResolver;
+-> Get credentials to\nread file from storage;
+:BucketAccessService;
+|inbox|
+-> Resource location with\naccess details;
+:ReadFromInbox;
+|encryption|
+-> Open decryption stream at\nresolved location;
+:EncryptedDocumentReadService;
+-> Obtain users' private key\nassociated with public key\nused to encrypt document;
+|directory|
+:PrivateKeyService;
+-> Get storage credentials\nto read keystore;
+if (Keystore cached?) then
+else (no)
+|directory|
+-> Locate users' keystore;
+:ProfileRetreivalService;
+-> Get credentials to read\nkeystore from storage;
+:BucketAccessService;
+-> Read users' keystore;
+|storage|
+:StorageReadService;
+-> users' keystore;
+|directory|
+:PrivateKeyService;
+endif
+|encryption|
+-> Private key (document encryption key);
+:CMSEncryption;
+|storage|
+-> Pull encrypted\ndata from storage and\ndecrypt it using\nusers' private key;
+:StorageReadService;
+stop
+
+@enduml

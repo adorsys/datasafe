@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.privatestore.impl.actions;
 
+import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -17,11 +18,14 @@ import javax.inject.Inject;
  */
 public class EncryptedResourceResolverImpl implements EncryptedResourceResolver {
 
+    private final BucketAccessService bucketAccessService;
     private final ResourceResolver resolver;
     private final PathEncryption pathEncryption;
 
     @Inject
-    public EncryptedResourceResolverImpl(ResourceResolver resolver, PathEncryption pathEncryption) {
+    public EncryptedResourceResolverImpl(BucketAccessService bucketAccessService, ResourceResolver resolver,
+                                         PathEncryption pathEncryption) {
+        this.bucketAccessService = bucketAccessService;
         this.resolver = resolver;
         this.pathEncryption = pathEncryption;
     }
@@ -29,7 +33,7 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
     @Override
     public AbsoluteLocation<PrivateResource> encryptAndResolvePath(UserIDAuth auth, PrivateResource resource) {
         if (resolver.isAbsolute(resource)) {
-            return new AbsoluteLocation<>(resource);
+            return bucketAccessService.privateAccessFor(auth, resource);
         }
 
         return resolver.resolveRelativeToPrivate(auth, encrypt(auth, resource));

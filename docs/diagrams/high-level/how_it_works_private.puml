@@ -1,0 +1,52 @@
+@startuml
+
+skinparam ranksep 10
+skinparam linetype ortho
+
+cloud "Privatespace" {
+actor User as u
+
+together {
+rectangle "Read document" as r.rl
+rectangle "Get path encryption secret key" as r.gpe
+rectangle "Encrypt location with secret key" as r.elw
+rectangle "Get credentials to read" as r.gc
+rectangle "Read from storage" as r.rfs
+rectangle "Get document encryption secret key" as r.gde
+rectangle "Decrypt document" as r.dd
+}
+
+together {
+rectangle "Write document" as w.wl
+rectangle "Get document encryption secret key" as w.gde
+rectangle "Get path encryption secret key" as w.gpe
+rectangle "Encrypt location with secret key" as w.elw
+rectangle "Get credentials to write" as w.gc
+rectangle "Encrypt document" as w.dd
+rectangle "Write to storage" as w.wfs
+}
+
+database "<&file> Encrypted\ndocument\nwith encrypted\npath" as ed
+database "<&file> Decrypted\ndocument\nwith decrypted\npath" as dd
+
+u --> r.rl
+r.rl --> r.gpe
+r.gpe --> r.elw : **<&key>Path key**, location
+r.elw --> r.gc : Encrypted document path
+r.gc --> r.rfs : Encrypted document path,\n <&key>storage credentials
+r.rfs <-- ed : <&file>Document
+r.rfs --> r.gde : Encrypted stream
+r.gde --> r.dd : Encrypted stream,\n<&key>document secret key
+r.dd --> dd
+
+u --> w.wl
+w.wl --> w.gde
+w.gde --> w.gpe : <&key>document secret key
+w.gpe --> w.elw : **<&key>Path key**, location
+w.elw --> w.gc : Encrypted document path
+w.gc --> w.dd : Encrypted document path,\n <&key>storage credentials,\n<&key>document secret key
+w.dd --> w.wfs : Encrypted stream
+w.wfs --> ed
+}
+
+@enduml
