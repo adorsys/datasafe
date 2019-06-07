@@ -112,11 +112,15 @@
 
     <build>
         <plugins>
+
             <plugin>
+
+
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <phase>verify</phase>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
@@ -147,8 +151,8 @@
                 <version>2.7</version>
                 <executions>
                     <execution>
+                        <phase>verify</phase>
                         <id>copy-resources</id>
-                        <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -171,7 +175,7 @@
                 <version>${xml-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>transform</goal>
                         </goals>

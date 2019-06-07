@@ -16,26 +16,39 @@
 
 
     <xsl:template match="//report">
+        <xsl:comment>
+            XSLT Version = <xsl:copy-of select="system-property('xsl:version')"/>
+            XSLT Vendor = <xsl:copy-of select="system-property('xsl:vendor')"/>
+            XSLT Vendor URL = <xsl:copy-of select="system-property('xsl:vendor-url')"/>
+        </xsl:comment>
+
         <xsl:if test=" $quote &lt; $lowerlimit">
-            <xsl:result-document href="target/XSL-ERROR.txt" method="text">
-                The total code coverate quote is
-                <xsl:value-of select="$quote"/> % and thus below the expected minimum of $lowerlimit %
+            <xsl:result-document href="last-module-codecoverage-check/target/XSL-ERROR.txt" method="text">
+                The total code coverate quote is <xsl:value-of select="$quote"/> % and thus below the expected minimum of <xsl:value-of select="$lowerlimit"/> %
             </xsl:result-document>
             <xsl:message terminate="yes">
-                Error: $quote is not above $lowerlimit
+[ERROR] ======================================================================================
+[ERROR] The total code coverate quote is <xsl:value-of select="$quote"/> % and thus below the expected minimum of <xsl:value-of select="$lowerlimit"/> %
+[ERROR] ======================================================================================
             </xsl:message>
         </xsl:if>
         <xsl:if test=" string($quote) = 'NaN' ">
-            <xsl:result-document href="target/XSL-ERROR.txt" method="text">
+            <xsl:result-document href="last-module-codecoverage-check/target/XSL-ERROR.txt" method="text">
                 Stylesheet did not calculate a quote. Propably jacoco did not run or did not create a jacoco.xml
             </xsl:result-document>
             <xsl:message terminate="yes">
-                Error: $quote is not above $lowerlimit
+                [ERROR] ======================================================================================
+                [ERROR] Stylesheet did not calculate a quote. Propably jacoco did not run or did not create a jacoco.xml
+                [ERROR] ======================================================================================
             </xsl:message>
         </xsl:if>
-        <xsl:result-document href="target/XSL-EVALUATION-RESULT.txt" method="text">
-            The total code coverate quote is
-            <xsl:value-of select="$quote"/> % and thus above the expected minimum of $lowerlimit %
+        <xsl:message terminate="no">
+            The total code coverate quote is <xsl:value-of select="$quote"/> % and thus above the expected minimum of <xsl:value-of select="$lowerlimit"/> %
+        </xsl:message>
+        <xsl:result-document href="last-module-codecoverage-check/target/XSL-EVALUATION-RESULT.txt" method="text">
+            [INFO] ======================================================================================
+            The total code coverate quote is <xsl:value-of select="$quote"/> % and thus above the expected minimum of <xsl:value-of select="$lowerlimit"/> %
+            [INFO] ======================================================================================
         </xsl:result-document>
     </xsl:template>
     <!--
