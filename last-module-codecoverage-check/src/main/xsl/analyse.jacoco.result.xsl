@@ -78,6 +78,11 @@
             <xsl:variable name="missed" select="@missed" />
             <xsl:variable name="covered" select="@covered" />
             <xsl:message terminate="no">  class <xsl:value-of select="$name"/> , <xsl:value-of select="$missed"/>, <xsl:value-of select="$covered"/></xsl:message>
+            <xsl:message terminate="no"> node:
+                <xsl:copy-of select="." />
+                <!-- put in the newline -->
+                <xsl:text>&#xa;</xsl:text>
+            </xsl:message>
         </xsl:template>
 
 </xsl:stylesheet>
