@@ -189,6 +189,16 @@
                                 <include>jacoco.xml</include>
                             </includes>
                             <stylesheet>src/main/xsl/analyse.jacoco.result.xsl</stylesheet>
+                            <parameters>
+                                <parameter>
+                                    <name>lowerlimit</name>
+                                    <value>85</value>
+                                </parameter>
+                                <parameter>
+                                    <name>outputdir</name>
+                                    <value>${project.basedir}/target</value>
+                                </parameter>
+                            </parameters>
                             <outputDir>target</outputDir>
                         </transformationSet>
                     </transformationSets>
