@@ -24,26 +24,17 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-public class InboxControllerTest {
+public class InboxControllerTest extends BaseDatasafeEndpointTest {
 
     private static final String TEST_USER = "test";
     private static final String TEST_PASS = "test";
     private static final String TEST_PATH = "test.txt";
 
     @MockBean
-    private AmazonS3 s3;
-
-    @MockBean
     private DefaultDatasafeServices dataSafeService;
 
     @MockBean
     private InboxServiceImpl inboxService;
-
-    @Autowired
-    MockMvc mvc;
 
     @Before
     public void setup() {
