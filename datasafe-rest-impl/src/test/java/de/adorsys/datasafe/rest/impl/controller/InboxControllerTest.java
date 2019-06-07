@@ -5,15 +5,8 @@ import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,17 +16,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-class InboxControllerTest {
+class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
 
-    private static final String TEST_USER = "test";
-    private static final String TEST_PASS = "test";
     private static final String TEST_PATH = "test.txt";
-
-    @Autowired
-    MockMvc mvc;
 
     @MockBean
     DefaultDatasafeServices dataSafeService;
@@ -42,9 +27,9 @@ class InboxControllerTest {
     private InboxServiceImpl inboxService;
 
     @BeforeEach
-    void setup() {
-        MockitoAnnotations.initMocks(this);
+    public void setup() {
         when(dataSafeService.inboxService()).thenReturn(inboxService);
+        super.setup();
     }
 
     @SneakyThrows
@@ -55,6 +40,7 @@ class InboxControllerTest {
         mvc.perform(put("/inbox/{path}", TEST_PATH)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
                 .header("user", TEST_USER)
+                .header("token", token)
         )
                 .andExpect(status().isOk());
     }
@@ -67,6 +53,7 @@ class InboxControllerTest {
         mvc.perform(get("/inbox/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
+                .header("token", token)
                 .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
                 .andExpect(status().isOk());
     }
@@ -78,6 +65,7 @@ class InboxControllerTest {
         mvc.perform(delete("/inbox/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
+                .header("token", token)
         ).andExpect(status().isOk());
     }
 }
