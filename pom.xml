@@ -291,6 +291,7 @@
                 <version>${jacoco.version}</version>
                 <executions>
                     <execution>
+                        <phase>validate</phase>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
@@ -304,7 +305,7 @@
                     </execution>
                     <execution>
                         <id>report-aggregate</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>report-aggregate</goal>
                         </goals>

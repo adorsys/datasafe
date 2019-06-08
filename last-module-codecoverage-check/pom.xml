@@ -165,7 +165,7 @@
                 <version>2.7</version>
                 <executions>
                     <execution>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <id>copy-resources</id>
                         <goals>
                             <goal>copy-resources</goal>
@@ -189,7 +189,7 @@
                 <version>${xml-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>transform</goal>
                         </goals>
