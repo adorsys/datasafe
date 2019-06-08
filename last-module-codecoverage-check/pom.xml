@@ -112,7 +112,7 @@
 
     <build>
         <plugins>
-
+<!--
             <plugin>
 
 
@@ -143,7 +143,6 @@
                 <configuration>
                     <append>true</append>
                     <excludes>
-                        <!-- Exclude Dagger2 generated code -->
                         <exclude>**/*_Provide*/**</exclude>
                         <exclude>**/*_Factory*/**</exclude>
                         <exclude>**/*_MembersInjector.class</exclude>
@@ -153,7 +152,7 @@
                     <propertyName>surefireArgLine</propertyName>
                 </configuration>
             </plugin>
-
+-->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.7</version>
