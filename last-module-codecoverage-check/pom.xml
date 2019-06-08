@@ -107,52 +107,59 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.4.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
     <build>
         <plugins>
-<!--
-            <plugin>
+            <!--
+                        <plugin>
 
+                            <groupId>org.jacoco</groupId>
+                            <artifactId>jacoco-maven-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <phase>verify</phase>
+                                    <goals>
+                                        <goal>prepare-agent</goal>
+                                    </goals>
+                                </execution>
+                                <execution>
+                                    <id>report</id>
+                                    <phase>test</phase>
+                                    <goals>
+                                        <goal>report</goal>
+                                    </goals>
+                                </execution>
+                                <execution>
+                                    <id>report-aggregate</id>
+                                    <phase>verify</phase>
+                                    <goals>
+                                        <goal>report-aggregate</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <configuration>
+                                <append>true</append>
+                                <excludes>
+                                    <exclude>**/*_Provide*/**</exclude>
+                                    <exclude>**/*_Factory*/**</exclude>
+                                    <exclude>**/*_MembersInjector.class</exclude>
+                                    <exclude>**/*Dagger*</exclude>
+                                    <exclude>**/Default*Module.class</exclude>
+                                </excludes>
+                                <propertyName>surefireArgLine</propertyName>
+                            </configuration>
+                        </plugin>
 
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report-aggregate</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report-aggregate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <append>true</append>
-                    <excludes>
-                        <exclude>**/*_Provide*/**</exclude>
-                        <exclude>**/*_Factory*/**</exclude>
-                        <exclude>**/*_MembersInjector.class</exclude>
-                        <exclude>**/*Dagger*</exclude>
-                        <exclude>**/Default*Module.class</exclude>
-                    </excludes>
-                    <propertyName>surefireArgLine</propertyName>
-                </configuration>
-            </plugin>
--->
+            -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.7</version>
@@ -230,6 +237,27 @@
                         </goals>
                         <configuration>
                             <failOnWarning>false</failOnWarning>
+                            <ignoredUnusedDeclaredDependencies>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-business</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-directory-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-directory-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-encryption-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-encryption-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-examples-business</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-inbox-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-inbox-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-metainfo-version-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-metainfo-version-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-privatestore-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-privatestore-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-rest-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-storage-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-storage-impl-fs</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-storage-impl-s3</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-types-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
+                            </ignoredUnusedDeclaredDependencies>
+
                         </configuration>
                     </execution>
                 </executions>
