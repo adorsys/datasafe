@@ -70,10 +70,8 @@
         <test.src.dir>src/test/java</test.src.dir>
 
         <!-- TODO: should be maven.multiModuleProjectDirectory but not using it because Intellij does not support it -->
-        <!--
         <jacoco.reportPath>${basedir}/../../target/jacoco.exec</jacoco.reportPath>
         <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
-        -->
 
         <java.version>1.8</java.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
