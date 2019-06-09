@@ -206,7 +206,7 @@
                             <parameters>
                                 <parameter>
                                     <name>lowerlimit</name>
-                                    <value>25</value>
+                                    <value>85</value>
                                 </parameter>
                                 <parameter>
                                     <name>outputdir</name>
