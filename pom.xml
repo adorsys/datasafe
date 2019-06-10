@@ -304,6 +304,17 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>default-check</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>report-aggregate</id>
                         <phase>package</phase>
                         <goals>
