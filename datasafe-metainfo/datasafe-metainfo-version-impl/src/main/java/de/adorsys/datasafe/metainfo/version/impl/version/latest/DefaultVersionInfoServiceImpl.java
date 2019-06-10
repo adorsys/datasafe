@@ -7,6 +7,7 @@ import de.adorsys.datasafe.metainfo.version.api.version.VersionInfoService;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.*;
 
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
  * {@link EncryptedLatestLinkService} and reads all associated blobs with versions using {@link ListPrivate}
  * within privatespace. Then it decrypts associated blobs into version and path using {@link VersionEncoderDecoder}
  */
+@RuntimeDelegate
 public class DefaultVersionInfoServiceImpl implements VersionInfoService<DFSVersion> {
 
     private final VersionEncoderDecoder encoder;

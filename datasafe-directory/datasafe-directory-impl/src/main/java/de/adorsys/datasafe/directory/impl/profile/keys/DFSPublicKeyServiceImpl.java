@@ -9,6 +9,7 @@ import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import lombok.SneakyThrows;
@@ -20,6 +21,7 @@ import java.util.List;
 /**
  * Retrieves and opens public keystore associated with user location DFS storage.
  */
+@RuntimeDelegate
 public class DFSPublicKeyServiceImpl implements PublicKeyService {
 
     private final KeyStoreCache keystoreCache;

@@ -6,6 +6,7 @@ import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
@@ -20,6 +21,7 @@ import java.util.List;
 /**
  * Writes CMS-encrypted document to DFS.
  */
+@RuntimeDelegate
 public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
     private final StorageWriteService writeService;

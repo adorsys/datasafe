@@ -6,6 +6,7 @@
 
     <modules>
         <module>datasafe-types-api</module>
+        <module>datasafe-runtime-delegate</module>
         <module>datasafe-business</module>
         <module>datasafe-metainfo</module>
         <module>datasafe-privatestore</module>
@@ -98,6 +99,7 @@
         <drools.version>6.5.0.Final</drools.version>
         <lombok-maven-plugin.version>1.18.6.0</lombok-maven-plugin.version>
         <awaitility.version>3.0.0</awaitility.version>
+        <jsr-305.version>3.0.0</jsr-305.version>
     </properties>
 
     <dependencies>
@@ -154,6 +156,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j-simple.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr-305.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -247,6 +254,11 @@
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
+                        <path>
+                            <groupId>de.adorsys</groupId>
+                            <artifactId>datasafe-runtime-delegate</artifactId>
+                            <version>${project.version}</version>
+                        </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
@@ -277,7 +289,8 @@
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
-                                <ignoredUsedUndeclaredDependency>org.mockito:mockito-core</ignoredUsedUndeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-runtime-delegate</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>

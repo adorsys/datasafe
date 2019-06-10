@@ -8,6 +8,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.inbox.api.actions.WriteToInbox;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import java.io.OutputStream;
  * {@link ResourceResolver} against INBOX and then reads and asymmetrically encrypts data into it
  * using {@link EncryptedDocumentReadService}
  */
+@RuntimeDelegate
 public class WriteToInboxImpl implements WriteToInbox {
 
     private final PublicKeyService publicKeyService;

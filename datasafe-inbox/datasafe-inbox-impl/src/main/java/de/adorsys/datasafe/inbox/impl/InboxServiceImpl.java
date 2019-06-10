@@ -5,6 +5,7 @@ import de.adorsys.datasafe.inbox.api.actions.ListInbox;
 import de.adorsys.datasafe.inbox.api.actions.ReadFromInbox;
 import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
 import de.adorsys.datasafe.inbox.api.actions.WriteToInbox;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.experimental.Delegate;
 
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 /**
  * Default aggregate view of actions doable on users' INBOX.
  */
+@RuntimeDelegate
 public class InboxServiceImpl implements InboxService {
 
     @Delegate

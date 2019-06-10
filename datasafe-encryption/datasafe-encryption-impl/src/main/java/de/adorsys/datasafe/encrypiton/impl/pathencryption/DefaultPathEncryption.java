@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
 
 import javax.crypto.Cipher;
@@ -14,6 +15,7 @@ import java.util.Base64;
  * Default path encryption/decryption that uses encryption specified by {@link DefaultPathDigestConfig} and
  * encodes resulting bytes using Base64-urlsafe encoding.
  */
+@RuntimeDelegate
 public class DefaultPathEncryption implements PathEncryptionConfig {
 
     private final DefaultPathDigestConfig digestConfig;

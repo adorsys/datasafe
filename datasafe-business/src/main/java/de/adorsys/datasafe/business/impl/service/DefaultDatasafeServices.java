@@ -16,7 +16,9 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 /**
@@ -69,6 +71,9 @@ public interface DefaultDatasafeServices {
          */
         @BindsInstance
         Builder storage(StorageService storageService);
+
+        @BindsInstance
+        Builder overridesRegistry(@Nullable OverridesRegistry overridesRegistry);
 
         /**
          * @return Standard Datasafe services.

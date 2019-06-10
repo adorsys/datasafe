@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * cipher(path) will yield same string.
  */
 @Slf4j
+@RuntimeDelegate
 public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncryptionService {
 
     private static final String PATH_SEPARATOR = "/";

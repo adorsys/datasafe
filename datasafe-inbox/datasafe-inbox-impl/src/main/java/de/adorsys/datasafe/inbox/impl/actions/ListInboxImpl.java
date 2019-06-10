@@ -4,6 +4,7 @@ package de.adorsys.datasafe.inbox.impl.actions;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.inbox.api.actions.ListInbox;
 import de.adorsys.datasafe.storage.api.actions.StorageListService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
  * Default listing service that locates user INBOX folder using {@link ResourceResolver}
  * and delegates request to {@link StorageListService} to list all files within it.
  */
+@RuntimeDelegate
 public class ListInboxImpl implements ListInbox {
 
     private final ProfileRetrievalService profileRetrievalService;

@@ -8,14 +8,16 @@ import dagger.Provides;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
-import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
-import de.adorsys.datasafe.directory.impl.profile.keys.DFSPrivateKeyServiceImpl;
-import de.adorsys.datasafe.directory.impl.profile.keys.DFSPublicKeyServiceImpl;
-import de.adorsys.datasafe.directory.impl.profile.keys.DefaultKeyStoreCache;
+import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
+import de.adorsys.datasafe.directory.impl.profile.keys.DFSPrivateKeyServiceImplRuntimeDelegatable;
+import de.adorsys.datasafe.directory.impl.profile.keys.DFSPublicKeyServiceImplRuntimeDelegatable;
+import de.adorsys.datasafe.directory.impl.profile.keys.DefaultKeyStoreCacheRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.keys.KeyStoreCache;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import java.security.KeyStore;
 import java.util.List;
@@ -32,7 +34,7 @@ public abstract class DefaultCredentialsModule {
      */
     @Provides
     @Singleton
-    static KeyStoreCache keyStoreCache() {
+    static KeyStoreCache keyStoreCache(@Nullable OverridesRegistry registry) {
         Supplier<Cache<UserID, KeyStore>> cacheKeystore = () -> CacheBuilder.newBuilder()
                 .initialCapacity(1000)
                 .build();
@@ -41,25 +43,29 @@ public abstract class DefaultCredentialsModule {
                 .initialCapacity(1000)
                 .build();
 
-        return new DefaultKeyStoreCache(cachePubKeys.get().asMap(), cacheKeystore.get().asMap());
+        return new DefaultKeyStoreCacheRuntimeDelegatable(
+                registry,
+                cachePubKeys.get().asMap(),
+                cacheKeystore.get().asMap()
+        );
     }
 
     /**
      * Default no-op service to get credentials to access filesystem.
      */
     @Binds
-    abstract BucketAccessService bucketAccessService(BucketAccessServiceImpl impl);
+    abstract BucketAccessService bucketAccessService(BucketAccessServiceImplRuntimeDelegatable impl);
 
     /**
      * Default public key service that reads user public keys from the location specified by his profile inside DFS.
      */
     @Binds
-    abstract PublicKeyService publicKeyService(DFSPublicKeyServiceImpl impl);
+    abstract PublicKeyService publicKeyService(DFSPublicKeyServiceImplRuntimeDelegatable impl);
 
     /**
      * Default private key service that reads user private/secret keys from the location specified by his
      * profile inside DFS.
      */
     @Binds
-    abstract PrivateKeyService privateKeyService(DFSPrivateKeyServiceImpl impl);
+    abstract PrivateKeyService privateKeyService(DFSPrivateKeyServiceImplRuntimeDelegatable impl);
 }
