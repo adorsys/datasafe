@@ -23,40 +23,30 @@ class RuntimeDelegateGenerator {
     private static final String CAPTOR_NAME = "argumentsCaptor";
     private static final String DELEGATE_NAME = "delegate";
 
+    /**
+     * Generate java file that contains delegate
+     * @param forClass Create delegate for this class (will extend it)
+     * @param contextClass Contains overrides in form of map class-supplier
+     * @param usingConstructor Which constructor should be used to create delegating class and {@code forClass}
+     * @param addAnnotations Add following annotations on delegating class constructor
+     * @param filer Output place for java file
+     */
     void generate(TypeElement forClass,
                   Class contextClass,
                   ExecutableElement usingConstructor,
                   Set<Class> addAnnotations,
                   Filer filer) {
-        TypeSpec.Builder delegator = TypeSpec
-            .classBuilder(forClass.getSimpleName().toString() + "RuntimeDelegatable")
-            .addModifiers(Modifier.PUBLIC);
 
-
-        delegator.addAnnotation(AnnotationSpec
-                .builder(Generated.class)
-                .addMember("value", CodeBlock.of("$S", RuntimeDelegateGenerator.class.getCanonicalName()))
-                .build()
-        );
-
+        TypeSpec.Builder delegator = buildDelegatingClass(forClass);
+        annotateAsGenerated(delegator);
+        // extend from delegate-origin class
         delegator.superclass(TypeName.get(forClass.asType()));
-        FieldSpec delegate = FieldSpec
-                .builder(TypeName.get(forClass.asType()), DELEGATE_NAME, Modifier.PRIVATE, Modifier.FINAL)
-                .build();
-
-        List<TypeVariableName> typeVariableNames = forClass.getTypeParameters().stream()
-                .map(TypeVariableName::get)
-                .collect(Collectors.toList());
-
-        delegator.addTypeVariables(typeVariableNames);
-        TypeSpec argCaptor = addArgsCaptor(usingConstructor, typeVariableNames);
+        TypeSpec argCaptor = addGenericParametersToClassSignature(forClass, usingConstructor, delegator);
         delegator.addType(argCaptor);
-
-        delegator.addField(delegate);
-        addDelegations(delegator, forClass);
-
+        delegator.addField(addDelegateField(forClass));
+        addSuperClassOverrides(delegator, forClass);
         delegator.addMethod(constructor(forClass, contextClass, usingConstructor, addAnnotations));
-        delegator.addMethod(overrider(forClass, contextClass, argCaptor));
+        delegator.addMethod(overrideWith(forClass, contextClass, argCaptor));
 
         JavaFile javaFile = JavaFile
             .builder(ClassName.get(forClass).packageName(), delegator.build())
@@ -70,8 +60,40 @@ class RuntimeDelegateGenerator {
         }
     }
 
-    private void addDelegations(TypeSpec.Builder toClass, TypeElement baseClass) {
+    private TypeSpec addGenericParametersToClassSignature(TypeElement forClass, ExecutableElement usingConstructor,
+                                                          TypeSpec.Builder delegator) {
+        List<TypeVariableName> typeVariableNames = forClass.getTypeParameters().stream()
+                .map(TypeVariableName::get)
+                .collect(Collectors.toList());
+
+        delegator.addTypeVariables(typeVariableNames);
+        return addArgsCaptor(usingConstructor, typeVariableNames);
+    }
+
+    private FieldSpec addDelegateField(TypeElement forClass) {
+        return FieldSpec
+                    .builder(TypeName.get(forClass.asType()), DELEGATE_NAME, Modifier.PRIVATE, Modifier.FINAL)
+                    .build();
+    }
+
+    private void annotateAsGenerated(TypeSpec.Builder delegator) {
+        delegator.addAnnotation(AnnotationSpec
+                .builder(Generated.class)
+                .addMember("value", CodeBlock.of("$S", RuntimeDelegateGenerator.class.getCanonicalName()))
+                .build()
+        );
+    }
+
+    private TypeSpec.Builder buildDelegatingClass(TypeElement forClass) {
+        return TypeSpec
+                .classBuilder(forClass.getSimpleName().toString() + "RuntimeDelegatable")
+                .addModifiers(Modifier.PUBLIC);
+    }
+
+    // perform actual delegation
+    private void addSuperClassOverrides(TypeSpec.Builder toClass, TypeElement baseClass) {
         baseClass.getEnclosedElements().stream()
+            // limiting to overridable-only methods:
             .filter(it -> it instanceof ExecutableElement)
             .filter(it -> it.getKind() == ElementKind.METHOD)
             .filter(it -> !it.getModifiers().contains(Modifier.PRIVATE))
@@ -79,14 +101,14 @@ class RuntimeDelegateGenerator {
                 MethodSpec overriddenBase = MethodSpec.overriding((ExecutableElement) it).build();
                 MethodSpec.Builder overridden = MethodSpec.overriding((ExecutableElement) it);
                 overridden.addCode(
-                    delegatingStatement(overriddenBase)
+                    delegateToIfOverrideIsPresent(overriddenBase)
                 ).build();
 
                 toClass.addMethod(overridden.build());
             });
     }
 
-    private CodeBlock delegatingStatement(MethodSpec target) {
+    private CodeBlock delegateToIfOverrideIsPresent(MethodSpec target) {
         String params = target.parameters.stream().map(it -> it.name).collect(Collectors.joining(", "));
         String returnStatementIfNeeded = TypeName.VOID.equals(target.returnType) ? "" : "return ";
 
@@ -99,6 +121,7 @@ class RuntimeDelegateGenerator {
             .build();
     }
 
+    // Create argument captor that stores original class constructor arguments
     private TypeSpec addArgsCaptor(ExecutableElement usingConstructor, List<TypeVariableName> typeVariables) {
         TypeSpec.Builder builder = TypeSpec.classBuilder(CAPTOR_TYPE_NAME)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -131,6 +154,10 @@ class RuntimeDelegateGenerator {
         return builder.addMethod(ctor.build()).build();
     }
 
+    /**
+     * Create delegator-constructor that gets delegation context and original class parameters, they should
+     * come from DI-injection framework.
+     */
     private MethodSpec constructor(TypeElement forClass, Class contextClass,
                                    ExecutableElement usingConstructor, Set<Class> addAnnotations) {
         MethodSpec.Builder method = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
@@ -156,7 +183,7 @@ class RuntimeDelegateGenerator {
         CodeBlock.Builder block = CodeBlock.builder();
 
         block.addStatement("super(" + computeOriginalCtorArgs(usingConstructor) + ")");
-        addCaptor(block, usingConstructor);
+        createCaptorWithNew(block, usingConstructor);
 
         block.addStatement(
                 DELEGATE_NAME + " = $N != null ? $N.findOverride($T.class, " + CAPTOR_NAME + ") : null",
@@ -169,7 +196,11 @@ class RuntimeDelegateGenerator {
         return method.build();
     }
 
-    private MethodSpec overrider(TypeElement forClass, Class context, TypeSpec argsCaptor) {
+    /**
+     * This allows type-safe adding overrides into
+     * {@link de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry}
+     */
+    private MethodSpec overrideWith(TypeElement forClass, Class context, TypeSpec argsCaptor) {
         MethodSpec.Builder methodSpec = MethodSpec.methodBuilder("overrideWith")
                 .addModifiers(Modifier.PUBLIC)
                 .addModifiers(Modifier.STATIC)
@@ -194,7 +225,7 @@ class RuntimeDelegateGenerator {
         return methodSpec.build();
     }
 
-    private void addCaptor(CodeBlock.Builder block, ExecutableElement usingConstructor) {
+    private void createCaptorWithNew(CodeBlock.Builder block, ExecutableElement usingConstructor) {
         block.addStatement(String.format(
                 "%s %s = new %s(%s)",
                 CAPTOR_TYPE_NAME,
