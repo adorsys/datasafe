@@ -359,6 +359,8 @@
                         <exclude>**/*_Factory*/**</exclude>
                         <exclude>**/*_MembersInjector.class</exclude>
                         <exclude>**/*Dagger*</exclude>
+                        <!-- Exclude RuntimeDelegate -->
+                        <exclude>**/*GenericRuntimeDelegatable*</exclude>
                         <!-- LOOKS LIKE COVERAGE IS NOT DONE AT ALL WITH THIS
                         <exclude>**/Default*Module.class</exclude>
                         -->
