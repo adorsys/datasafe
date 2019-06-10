@@ -4,9 +4,7 @@ import dagger.Binds;
 import dagger.Module;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImplRuntimeDelegatable;
-import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImpl;
 import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImplRuntimeDelegatable;
 
 /**

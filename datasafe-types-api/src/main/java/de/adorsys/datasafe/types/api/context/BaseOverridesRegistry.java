@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Basic implementation for class overriding - using HashMap.
+ */
 public class BaseOverridesRegistry implements OverridesRegistry {
 
     private final Map<Class, Function<Object, ?>> overrides = new HashMap<>();

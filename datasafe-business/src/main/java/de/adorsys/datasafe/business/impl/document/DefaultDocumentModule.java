@@ -4,9 +4,7 @@ import dagger.Binds;
 import dagger.Module;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
-import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadService;
 import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadServiceRuntimeDelegatable;
-import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteServiceRuntimeDelegatable;
 
 /**

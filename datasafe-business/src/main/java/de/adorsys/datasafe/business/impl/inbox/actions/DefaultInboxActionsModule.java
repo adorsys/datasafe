@@ -7,7 +7,6 @@ import de.adorsys.datasafe.inbox.api.actions.ListInbox;
 import de.adorsys.datasafe.inbox.api.actions.ReadFromInbox;
 import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
 import de.adorsys.datasafe.inbox.api.actions.WriteToInbox;
-import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import de.adorsys.datasafe.inbox.impl.InboxServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.inbox.impl.actions.ListInboxImplRuntimeDelegatable;
 import de.adorsys.datasafe.inbox.impl.actions.ReadFromInboxImplRuntimeDelegatable;

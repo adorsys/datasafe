@@ -87,6 +87,11 @@ public interface VersionedDatasafeServices {
         @BindsInstance
         Builder storage(StorageService storageService);
 
+        /**
+         * Provides class overriding functionality, so that you can disable i.e. path encryption
+         * @param overridesRegistry Map with class-overrides (note: you can override classes that are
+         * annotated with {@code RuntimeDelegate})
+         */
         @BindsInstance
         Builder overridesRegistry(@Nullable OverridesRegistry overridesRegistry);
 

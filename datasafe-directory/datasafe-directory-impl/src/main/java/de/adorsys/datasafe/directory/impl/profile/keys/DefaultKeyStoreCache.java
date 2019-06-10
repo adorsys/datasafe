@@ -4,7 +4,6 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
 import java.security.KeyStore;

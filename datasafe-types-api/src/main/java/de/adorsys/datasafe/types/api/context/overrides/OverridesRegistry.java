@@ -4,15 +4,15 @@ import java.util.function.Function;
 
 /**
  * This is runtime functionality override registry (similar to Spring context). Its purpose is
- * to provide capability to override some class without recompilation of Datasafe module at the moment
- * when Datasafe service is built, so purely importing Datasafe as a jar. However, one should understand
+ * to provide capability to override Datasafe-classes without recompilation of Datasafe module,
+ * so purely importing Datasafe as a jar. However, one should understand
  * that dependency graph is static, managed by Dagger library, so while it is possible to override class functionality,
  * it is not possible to add extra dependencies.
  */
 public interface OverridesRegistry {
 
     /**
-     * Overrides some class (implementation, concrete class) with other one
+     * Overrides some class (implementation, concrete class) with other one that extends it.
      * @param classToOverride Target class that will be overridden (so it won't be called)
      * @param overrideWith Overriding class supplier - supplies implementation based on ArgumentCaptor in Delegate.
      * @param <T> Generic parameter
