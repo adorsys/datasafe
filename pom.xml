@@ -100,6 +100,10 @@
         <lombok-maven-plugin.version>1.18.6.0</lombok-maven-plugin.version>
         <awaitility.version>3.0.0</awaitility.version>
         <jsr-305.version>3.0.0</jsr-305.version>
+        <javax-inject.version>1</javax-inject.version>
+        <javapoet.version>1.9.0</javapoet.version>
+        <auto-service.version>1.0-rc4</auto-service.version>
+        <compile-testing.version>0.18</compile-testing.version>
     </properties>
 
     <dependencies>
@@ -161,6 +165,32 @@
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>
                 <version>${jsr-305.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax-inject.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup</groupId>
+                <artifactId>javapoet</artifactId>
+                <version>${javapoet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service</artifactId>
+                <version>${auto-service.version}</version>
+            </dependency>
+
+            <!--
+            You will still need to add `test` scope when using dependency, here it is just for clarity, because
+            it is not inherited
+            -->
+            <dependency>
+                <groupId>com.google.testing.compile</groupId>
+                <artifactId>compile-testing</artifactId>
+                <version>${compile-testing.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>

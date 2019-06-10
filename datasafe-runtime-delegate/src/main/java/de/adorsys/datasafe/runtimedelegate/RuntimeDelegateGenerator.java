@@ -9,7 +9,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-
 import java.io.IOError;
 import java.io.IOException;
 import java.util.List;

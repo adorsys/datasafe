@@ -1,7 +1,5 @@
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 
-import javax.inject.Inject;
-
 @RuntimeDelegate
 public class SimpleClassNoInject {
 
