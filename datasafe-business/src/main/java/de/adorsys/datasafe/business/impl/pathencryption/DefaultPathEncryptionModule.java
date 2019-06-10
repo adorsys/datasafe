@@ -8,7 +8,7 @@ import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPat
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.*;
 
 /**
- * This module is responsible for providing CMS pathencryption of document.
+ * This module is responsible for providing pathencryption of document.
  */
 @Module
 public abstract class DefaultPathEncryptionModule {

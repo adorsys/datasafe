@@ -284,17 +284,18 @@ assertThat(savedOnPC).isAfter(savedOnMobile);
 
 ## Overriding Datasafe functionality
 Whenever you want to have some custom functionality of Datasafe, instead of default ones, there are
-two possible ways to achieve this. One is using OverridesRegistry without project recompilation.
-Other one is using Dagger2 to build customized version of Datasafe.
+two possible ways to achieve this:
+- using OverridesRegistry without project recompilation.
+- using Dagger2 to build a customized version of Datasafe.
 
 ### Overriding functionality without recompilation
-This approach works with classes annotated with
+This approach is for classes annotated with
 [@RuntimeDelegate](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/annotations/RuntimeDelegate.java)
-and it works by putting custom implementation of class to be overridden into
+and it works by putting the custom implementation of a class to be overridden into
 [OverridesRegistry](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/overrides/OverridesRegistry.java).
-During runtime, when accessing desired functionality, library will look into OverridesRegistry for
-custom class implementation and use it if present. This one has advantage of not requiring recompilation of
-Datasafe library, but has limitation of working on static dependency graph - you can't rebuild it.
+During runtime, when accessing desired functionality, the library will look into OverridesRegistry for
+custom class implementation and use it if present. This one has the advantage of not requiring recompilation of
+Datasafe library, but has a limitation of working on static dependency graph - you can't rebuild it.
 [Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L28-L50)
 ```groovy
 // This shows how to override path encryption service, in particular we are going to disable it
@@ -321,9 +322,30 @@ assertThat(Files.walk(root)).asString().contains("file.txt");
 ```
 
 ### Overriding functionality by building custom Datasafe library
-This is actually preferred way to override something or customize Datasafe. It has no limitations, because
-you can compose any Datasafe service you want using Dagger2 for dependency injection. Its major drawback is
-you need add dependency to Dagger2 into your project and compile this custom library version,
+This is actually the preferred way to override something or to customize Datasafe. It has no limitations because
+you can compose any Datasafe service you want using Dagger2 for dependency injection. Its major drawback is that
+you need to add a dependency to Dagger2 into your project and compile this custom library version. Because of
+compile-time dependency injection and modular structure it is a comparatively error-free approach.
+To create custom Datasafe service we need to follow these 3 steps:
+1. Create your own custom module (or modules) - see [CustomPathEncryptionModule](datasafe-examples/datasafe-examples-customize-dagger/src/main/java/de/adorsys/datasafe/examples/business/filesystem/CustomPathEncryptionModule.java)
+1. Create custom Datasafe with custom module list - see [CustomlyBuiltDatasafeServices](datasafe-examples/datasafe-examples-customize-dagger/src/main/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServices.java)
+1. Use custom-built Datasafe as shown here:
+[Example:Create custom-built Datasafe service](datasafe-examples/datasafe-examples-customize-dagger/src/test/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServiceTest.java#L23-L37)
+```groovy
+// Customized service, we create required module using compile time DI provided by Dagger:
+CustomlyBuiltDatasafeServices datasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
+        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+        .storage(new FileSystemStorageService(root))
+        .build();
+
+// registering user
+UserIDAuth user = new UserIDAuth("user", "passwrd");
+datasafeServices.userProfile().registerUsingDefaults(user);
+// writing into user privatespace, note that with default implementation `file.txt` would be encrypted
+datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));
+// but we see raw filename here:
+assertThat(walk(root)).asString().contains("file.txt");
+```
 
 You can visit the **[project homepage](https://adorsys.github.io/datasafe)** for additional information.
 

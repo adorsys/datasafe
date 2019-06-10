@@ -24,7 +24,7 @@ class RuntimeOverrideOperationsTest {
 
     @Test
     @SneakyThrows
-    void testPathEncryptionOverridded(@TempDir Path root) {
+    void testPathEncryptionOverridden(@TempDir Path root) {
         // BEGIN_SNIPPET:Create overridable Datasafe services without recompilation
         // This shows how to override path encryption service, in particular we are going to disable it
         OverridesRegistry registry = new BaseOverridesRegistry();
