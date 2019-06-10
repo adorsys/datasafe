@@ -360,7 +360,7 @@
                         <exclude>**/*_MembersInjector.class</exclude>
                         <exclude>**/*Dagger*</exclude>
                         <!-- Exclude RuntimeDelegate -->
-                        <exclude>**/*GenericRuntimeDelegatable*</exclude>
+                        <exclude>**/*RuntimeDelegatable*</exclude>
                         <!-- LOOKS LIKE COVERAGE IS NOT DONE AT ALL WITH THIS
                         <exclude>**/Default*Module.class</exclude>
                         -->
