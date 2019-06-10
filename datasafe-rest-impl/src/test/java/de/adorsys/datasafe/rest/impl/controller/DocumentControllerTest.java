@@ -1,19 +1,14 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
@@ -24,16 +19,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-public class DocumentControllerTest {
+public class DocumentControllerTest extends BaseDatasafeEndpointTest {
 
     private static final String TEST_USER = "test";
     private static final String TEST_PASS = "test";
 
-    @MockBean
-    private AmazonS3 s3;
 
     @MockBean
     private DefaultDatasafeServices dataSafeService;
