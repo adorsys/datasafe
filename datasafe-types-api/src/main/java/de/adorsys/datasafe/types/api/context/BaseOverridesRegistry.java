@@ -21,6 +21,11 @@ public class BaseOverridesRegistry implements OverridesRegistry {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T findOverride(Class<T> forClass, Object arguments) {
-        return (T) overrides.get(forClass);
+        Function<Object, ?> overrideWith = overrides.get(forClass);
+        if (null == overrideWith) {
+            return null;
+        }
+
+        return (T) overrideWith.apply(arguments);
     }
 }

@@ -84,7 +84,7 @@ Second you want to add new users:
 ```groovy
 // Creating new user with username 'user' and private/secret key password 'passwrd':
 /*
-IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
 synchronization due to eventual consistency or you need to supply globally unique username on registration
 */
 defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
@@ -193,7 +193,7 @@ Next we will create user, this is same as in non-versioned services:
 ```groovy
 // Creating new user:
 /*
-IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
 synchronization due to eventual consistency or you need to supply globally unique username on registration
 */
 versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
@@ -281,6 +281,49 @@ Instant savedOnPC = versionedServices.latestPrivate()
 // So mobile application should download latest file version
 assertThat(savedOnPC).isAfter(savedOnMobile);
 ```
+
+## Overriding Datasafe functionality
+Whenever you want to have some custom functionality of Datasafe, instead of default ones, there are
+two possible ways to achieve this. One is using OverridesRegistry without project recompilation.
+Other one is using Dagger2 to build customized version of Datasafe.
+
+### Overriding functionality without recompilation
+This approach works with classes annotated with
+[@RuntimeDelegate](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/annotations/RuntimeDelegate.java)
+and it works by putting custom implementation of class to be overridden into
+[OverridesRegistry](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/overrides/OverridesRegistry.java).
+During runtime, when accessing desired functionality, library will look into OverridesRegistry for
+custom class implementation and use it if present. This one has advantage of not requiring recompilation of
+Datasafe library, but has limitation of working on static dependency graph - you can't rebuild it.
+[Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L28-L50)
+```groovy
+// This shows how to override path encryption service, in particular we are going to disable it
+OverridesRegistry registry = new BaseOverridesRegistry();
+
+// PathEncryptionImpl now will have completely different functionality
+// instead of calling PathEncryptionImpl methods we will call PathEncryptionImplOverridden methods
+PathEncryptionImplRuntimeDelegatable.overrideWith(registry, PathEncryptionImplOverridden::new);
+
+// Customized service, without creating complete module and building it:
+DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
+        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+        .storage(new FileSystemStorageService(root))
+        .overridesRegistry(registry)
+        .build();
+
+// registering user
+UserIDAuth user = new UserIDAuth("user", "passwrd");
+datasafeServices.userProfile().registerUsingDefaults(user);
+// writing into user privatespace, note that with default implementation `file.txt` would be encrypted
+datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));
+// but we see raw filename here:
+assertThat(Files.walk(root)).asString().contains("file.txt");
+```
+
+### Overriding functionality by building custom Datasafe library
+This is actually preferred way to override something or customize Datasafe. It has no limitations, because
+you can compose any Datasafe service you want using Dagger2 for dependency injection. Its major drawback is
+you need add dependency to Dagger2 into your project and compile this custom library version,
 
 You can visit the **[project homepage](https://adorsys.github.io/datasafe)** for additional information.
 

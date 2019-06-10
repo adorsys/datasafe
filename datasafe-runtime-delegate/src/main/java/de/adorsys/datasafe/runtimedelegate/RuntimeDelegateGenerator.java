@@ -9,9 +9,12 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+
 import java.io.IOError;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class RuntimeDelegateGenerator {
@@ -36,21 +39,24 @@ class RuntimeDelegateGenerator {
                 .build()
         );
 
-        delegator.addType(addArgsCaptor(usingConstructor));
-
         delegator.superclass(TypeName.get(forClass.asType()));
         FieldSpec delegate = FieldSpec
                 .builder(TypeName.get(forClass.asType()), DELEGATE_NAME, Modifier.PRIVATE, Modifier.FINAL)
                 .build();
 
-        if (!forClass.getTypeParameters().isEmpty()) {
-            forClass.getTypeParameters().forEach(it -> delegator.addTypeVariable(TypeVariableName.get(it)));
-        }
+        List<TypeVariableName> typeVariableNames = forClass.getTypeParameters().stream()
+                .map(TypeVariableName::get)
+                .collect(Collectors.toList());
+
+        delegator.addTypeVariables(typeVariableNames);
+        TypeSpec argCaptor = addArgsCaptor(usingConstructor, typeVariableNames);
+        delegator.addType(argCaptor);
 
         delegator.addField(delegate);
         addDelegations(delegator, forClass);
 
         delegator.addMethod(constructor(forClass, contextClass, usingConstructor, addAnnotations));
+        delegator.addMethod(overrider(forClass, contextClass, argCaptor));
 
         JavaFile javaFile = JavaFile
             .builder(ClassName.get(forClass).packageName(), delegator.build())
@@ -93,8 +99,11 @@ class RuntimeDelegateGenerator {
             .build();
     }
 
-    private TypeSpec addArgsCaptor(ExecutableElement usingConstructor) {
-        TypeSpec.Builder builder = TypeSpec.classBuilder(CAPTOR_TYPE_NAME).addModifiers(Modifier.PUBLIC);
+    private TypeSpec addArgsCaptor(ExecutableElement usingConstructor, List<TypeVariableName> typeVariables) {
+        TypeSpec.Builder builder = TypeSpec.classBuilder(CAPTOR_TYPE_NAME)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .addTypeVariables(typeVariables);
+
         MethodSpec.Builder ctor = MethodSpec
             .constructorBuilder()
             .addModifiers(Modifier.PRIVATE);
@@ -153,12 +162,36 @@ class RuntimeDelegateGenerator {
                 DELEGATE_NAME + " = $N != null ? $N.findOverride($T.class, " + CAPTOR_NAME + ") : null",
                 contextParam,
                 contextParam,
-                forClass.getTypeParameters().isEmpty() ? forClass : ClassName.get(forClass)
+                forClass.getTypeParameters().isEmpty() ? forClass : ClassName.get(forClass) // get rid of generic
         );
-
         method.addCode(block.build());
 
         return method.build();
+    }
+
+    private MethodSpec overrider(TypeElement forClass, Class context, TypeSpec argsCaptor) {
+        MethodSpec.Builder methodSpec = MethodSpec.methodBuilder("overrideWith")
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .returns(TypeName.VOID);
+
+        ClassName captor = ClassName.bestGuess(argsCaptor.name);
+        methodSpec.addParameter(ClassName.get(context), "context");
+        methodSpec.addParameter(
+                ParameterizedTypeName.get(
+                        ClassName.get(Function.class),
+                        captor,
+                        ClassName.get(forClass)), // get rid of generic
+                "ctorCaptor"
+        );
+
+        methodSpec.addStatement(
+                "context.override($T.class, args -> ctorCaptor.apply(($T) args))",
+                ClassName.get(forClass), // get rid of generic
+                captor
+        );
+
+        return methodSpec.build();
     }
 
     private void addCaptor(CodeBlock.Builder block, ExecutableElement usingConstructor) {
