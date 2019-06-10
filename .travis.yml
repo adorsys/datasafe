@@ -4,7 +4,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn --settings .travis/settings.xml clean org.jacoco:jacoco-maven-plugin:prepare-agent verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
+  - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
 
 before_deploy:
   - echo $GPG_SECRET_KEY | base64 --decode | $GPG_EXECUTABLE --import
@@ -22,8 +22,3 @@ deploy:
 after_success:
   - bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests
   - bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests
-
-cache:
-  directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.sonar/cache'
