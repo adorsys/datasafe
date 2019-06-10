@@ -1,9 +1,9 @@
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
-
+import java.lang.Override;
+import java.util.function.Function;
 import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.function.Function;
 
 @Generated("de.adorsys.datasafe.runtimedelegate.RuntimeDelegateGenerator")
 public class SimpleClassWithVoidRuntimeDelegatable extends SimpleClassWithVoid {
