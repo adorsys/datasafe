@@ -352,7 +352,7 @@ assertThat(walk(root)).asString().contains("file.txt");
 You can visit the **[project homepage](https://adorsys.github.io/datasafe)** for additional information.
 
 # JavaDoc
-You can read JavaDoc [here](https://adorsys.github.io/datasafe/javadoc/0.0.9/index.html)
+You can read JavaDoc [here](https://adorsys.github.io/datasafe/javadoc/latest/index.html)
 
 # Contributing
 * [CodingRules](docs/codingrules/CodingRules.md)
