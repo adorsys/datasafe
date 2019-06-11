@@ -61,7 +61,7 @@ that supports versioned and encrypted private file storage (for storage provider
 * [Achitecture](general/docusafe_future_client.md)
 
 # JavaDoc
-You can read JavaDoc [here](javadoc/0.0.9/index.html)
+You can read JavaDoc [here](javadoc/latest/index.html)
 
 Command to generate JavaDoc from sources:
 ```mvn clean javadoc:aggregate -P javadoc ```
