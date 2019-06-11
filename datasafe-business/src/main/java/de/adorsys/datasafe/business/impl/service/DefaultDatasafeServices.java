@@ -23,6 +23,8 @@ import javax.inject.Singleton;
 
 /**
  * This is Datasafe services default implementation.
+ * Note, that despite is has {@code @Singleton} annotation, it is not real singleton, the only shared thing
+ * across all services instantiated using build() is bindings with {@code Singleton} in its Module.
  */
 @Singleton
 @Component(modules = {
@@ -81,7 +83,8 @@ public interface DefaultDatasafeServices {
         Builder overridesRegistry(@Nullable OverridesRegistry overridesRegistry);
 
         /**
-         * @return Standard Datasafe services.
+         * @return Provide NEW instance of <b>Standard Datasafe</b> services. All dependencies except
+         * annotated with {@code @Singleton} will have scope analogous to Spring {code @Provided}.
          */
         DefaultDatasafeServices build();
     }
