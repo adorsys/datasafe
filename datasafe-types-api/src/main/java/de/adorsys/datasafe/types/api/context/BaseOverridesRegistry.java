@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Basic implementation for class overriding - using HashMap.
+ * Basic implementation for class overriding context - using HashMap.
  */
 public class BaseOverridesRegistry implements OverridesRegistry {
 

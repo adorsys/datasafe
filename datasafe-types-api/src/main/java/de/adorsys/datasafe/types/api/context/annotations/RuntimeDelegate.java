@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
  * It generates delegating class that wraps original class and overrides its functionality.
  * If override is present in {@link de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry} then
  * method from registry will be called, otherwise original method is called.
+ * Code generation is done by RuntimeDelegateProcessor.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

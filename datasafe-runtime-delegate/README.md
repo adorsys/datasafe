@@ -1,9 +1,9 @@
 # Datasafe runtime-delegate
 
 This module provides annotation processor that converts 
-[@RuntimeDelegate](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/annotations/RuntimeDelegate.java)
+[@RuntimeDelegate](../datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/annotations/RuntimeDelegate.java)
 annotated classes into delegates that check if 
-[OverridesRegistry](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/overrides/OverridesRegistry.java)
+[OverridesRegistry](../datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/overrides/OverridesRegistry.java)
 contain overriding class and if it does - use override, otherwise - default implementation.
 For example, 
 ```java
