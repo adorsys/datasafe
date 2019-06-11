@@ -119,47 +119,21 @@
 
     <build>
         <plugins>
-            <!--
-                        <plugin>
 
-                            <groupId>org.jacoco</groupId>
-                            <artifactId>jacoco-maven-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <phase>verify</phase>
-                                    <goals>
-                                        <goal>prepare-agent</goal>
-                                    </goals>
-                                </execution>
-                                <execution>
-                                    <id>report</id>
-                                    <phase>test</phase>
-                                    <goals>
-                                        <goal>report</goal>
-                                    </goals>
-                                </execution>
-                                <execution>
-                                    <id>report-aggregate</id>
-                                    <phase>verify</phase>
-                                    <goals>
-                                        <goal>report-aggregate</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                            <configuration>
-                                <append>true</append>
-                                <excludes>
-                                    <exclude>**/*_Provide*/**</exclude>
-                                    <exclude>**/*_Factory*/**</exclude>
-                                    <exclude>**/*_MembersInjector.class</exclude>
-                                    <exclude>**/*Dagger*</exclude>
-                                    <exclude>**/Default*Module.class</exclude>
-                                </excludes>
-                                <propertyName>surefireArgLine</propertyName>
-                            </configuration>
-                        </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>${xml-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-            -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.7</version>

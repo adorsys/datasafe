@@ -285,12 +285,14 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
                 <executions>
                     <execution>
+                        <id>prepare-agent</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>prepare-agent</goal>
@@ -302,17 +304,6 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                    </execution>
-                    <execution>
-                        <id>default-check</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                            </rules>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>report-aggregate</id>
