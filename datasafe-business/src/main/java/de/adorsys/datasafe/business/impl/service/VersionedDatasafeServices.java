@@ -99,7 +99,7 @@ public interface VersionedDatasafeServices {
 
         /**
          * @return Provide NEW instance of <b>Software-versioned Datasafe</b> services. All dependencies except
-         * annotated with {@code @Singleton} will have scope analogous to Spring {code @Provided}.
+         * annotated with {@code @Singleton} will have scope analogous to Spring {code @Prototype}.
          */
         VersionedDatasafeServices build();
     }

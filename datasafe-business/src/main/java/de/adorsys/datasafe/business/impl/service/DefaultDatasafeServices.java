@@ -84,7 +84,7 @@ public interface DefaultDatasafeServices {
 
         /**
          * @return Provide NEW instance of <b>Standard Datasafe</b> services. All dependencies except
-         * annotated with {@code @Singleton} will have scope analogous to Spring {code @Provided}.
+         * annotated with {@code @Singleton} will have scope analogous to Spring {code @Prototype}.
          */
         DefaultDatasafeServices build();
     }
