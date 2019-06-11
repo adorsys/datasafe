@@ -10,6 +10,9 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.FileSystems;
@@ -18,24 +21,39 @@ import java.security.Security;
 
 @Slf4j
 public class SimpleDatasafeAdapterTest {
+    SimpleDatasafeService simpleDatasafeService;
+    UserIDAuth userIDAuth;
 
-    @Test
-    public  void a() {
+    @BeforeEach
+    public void before() {
         Security.addProvider(new BouncyCastleProvider());
-
 
         Path defaultPath = FileSystems.getDefault().getPath(".", "target", "datasafe-filesystem");
         log.debug("path is " + defaultPath);
 
-        SimpleDatasafeService simpleDatasafeService = new SimpleDatasafeServiceImpl(FilesystemDFSCredentials.builder().root(defaultPath).build());
-
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
+        simpleDatasafeService = new SimpleDatasafeServiceImpl(FilesystemDFSCredentials.builder().root(defaultPath).build());
+        userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
         simpleDatasafeService.createUser(userIDAuth);
+    }
 
+    @AfterEach
+    public void after() {
+        simpleDatasafeService.destroyUser(userIDAuth);
+    }
 
+   // @Test
+    public void justCreateAndDeleteUser() {
+        // do nothing;
+    }
+
+   // @Test
+    public  void writeAndReadFile() {
         String content = "content of document";
         String path = "a/b/c.txt";
         DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
         simpleDatasafeService.storeDocument(userIDAuth, document);
+
+        DSDocument dsDocument = simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path));
+        Assertions.assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
     }
 }

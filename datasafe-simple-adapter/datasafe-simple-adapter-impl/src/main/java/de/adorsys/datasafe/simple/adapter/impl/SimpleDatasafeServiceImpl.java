@@ -1,17 +1,26 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
+import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
+import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
+import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -32,18 +41,23 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public void createUser(UserIDAuth userIDAuth) {
+        if (userExists(userIDAuth.getUserID())) {
+            throw new SimpleAdapterException("user \"" + userIDAuth.getUserID().getValue() + "\" already exists");
+        }
         defaultDatasafeServices.userProfile().registerUsingDefaults(userIDAuth);
 
     }
 
     @Override
     public void destroyUser(UserIDAuth userIDAuth) {
+        PrivateResource location = BasePrivateResource.forPrivate(new Uri("/"));
+        defaultDatasafeServices.privateService().remove(RemoveRequest.forPrivate(userIDAuth, location));
         defaultDatasafeServices.userProfile().deregister(userIDAuth);
     }
 
     @Override
     public boolean userExists(UserID userID) {
-        return false;
+        return defaultDatasafeServices.userProfile().userExists(userID);
     }
 
     @Override
@@ -56,13 +70,19 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public void storeDocument(UserIDAuth userIDAuth, DSDocument dsDocument) {
         try (OutputStream os = defaultDatasafeServices.privateService()
                 .write(WriteRequest.forDefaultPrivate(userIDAuth, dsDocument.getDocumentFQN().getValue()))) {
-            os.write("Hello".getBytes(StandardCharsets.UTF_8));
+            os.write(dsDocument.getDocumentContent().getValue());
         }
     }
 
+    @SneakyThrows
     @Override
     public DSDocument readDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        return null;
+        DocumentContent documentContent = null;
+        try (InputStream is = defaultDatasafeServices.privateService()
+                .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getValue()))) {
+            documentContent = new DocumentContent(ByteStreams.toByteArray(is));
+        }
+        return new DSDocument(documentFQN, documentContent);
     }
 
     @Override
