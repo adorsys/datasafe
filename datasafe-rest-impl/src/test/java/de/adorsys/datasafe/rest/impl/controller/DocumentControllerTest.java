@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
 
     @MockBean
-    DefaultDatasafeServices dataSafeService;
+    protected DefaultDatasafeServices dataSafeService;
 
     @MockBean
     private PrivateSpaceServiceImpl privateSpaceService;

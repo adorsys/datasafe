@@ -35,7 +35,7 @@ after_success:
   - PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
   - oc login https://openshift.adorsys.de:443 --username=$OPENSHIFT_USER --password=$OPENSHIFT_PASSWORD
   - docker login -u $(oc whoami) -p $(oc whoami -t) https://openshift-registry.adorsys.de
-  - docker build -t datasafe-rest-service --build-arg JAR_FILE=datasafe-rest-impl-$PROJECT_VERSION.jar ./datasafe-rest-impl
-  - export IMAGE_NAME=openshift-registry.adorsys.de/datasafe/datasafe-rest-service:latest
-  - docker tag datasafe-rest-service $IMAGE_NAME
+  - docker build -t datasafe-rest-service:$TRAVIS_COMMIT --build-arg JAR_FILE=datasafe-rest-impl-$PROJECT_VERSION.jar ./datasafe-rest-impl
+  - export IMAGE_NAME=openshift-registry.adorsys.de/datasafe/datasafe-rest-service:$TRAVIS_COMMIT
+  - docker tag datasafe-rest-service:$TRAVIS_COMMIT $IMAGE_NAME
   - docker push $IMAGE_NAME

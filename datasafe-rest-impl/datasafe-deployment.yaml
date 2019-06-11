@@ -25,7 +25,7 @@ spec:
           - "datasafe-rest-service"
         from:
           kind: "ImageStreamTag"
-          name: "datasafe-rest-service:latest"
+          name: "datasafe-rest-service"
   strategy:
     type: "Rolling"
   paused: false

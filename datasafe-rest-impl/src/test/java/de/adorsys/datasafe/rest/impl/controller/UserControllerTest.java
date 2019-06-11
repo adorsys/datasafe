@@ -16,15 +16,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest extends BaseTokenDatasafeEndpointTest {
 
     @MockBean
-    DefaultDatasafeServices dataSafeService;
+    protected DefaultDatasafeServices dataSafeService;
 
     @MockBean
-    DFSBasedProfileStorageImpl userProfile;
+    private DFSBasedProfileStorageImpl userProfile;
 
     @BeforeEach
     public void setup() {
         when(dataSafeService.userProfile()).thenReturn(userProfile);
-        super.setup();
     }
 
     @SneakyThrows

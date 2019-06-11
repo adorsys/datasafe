@@ -2,25 +2,26 @@ package de.adorsys.datasafe.rest.impl.controller;
 
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.rest.impl.security.SecurityConstants;
+import de.adorsys.datasafe.rest.impl.security.SecurityProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 
-@PropertySource("classpath:jwt-config.properties")
-public class BaseTokenDatasafeEndpointTest extends BaseDatasafeEndpointTest {
+public abstract class BaseTokenDatasafeEndpointTest extends BaseDatasafeEndpointTest {
 
-    static final String TEST_USER = "test";
-    static final String TEST_PASS = "test";
-    String token;
+    protected static final String TEST_USER = "test";
+    protected static final String TEST_PASS = "test";
+    protected String token;
+
+    private SecurityProperties securityProperties;
 
     @Autowired
-    Environment env;
+    public final void setSecurityProperties(SecurityProperties securityProperties) {
+        this.securityProperties = securityProperties;
+    }
 
     @BeforeEach
-    public void setup() {
-        UserDTO userDTO = new UserDTO(env.getProperty("default_user"), env.getProperty("default_password"));
-
+    public void init() {
+        UserDTO userDTO = new UserDTO(securityProperties.getDefaultUser(), securityProperties.getDefaultPassword());
         token = sendAuthenticateRequest(userDTO).getResponse().getHeader(SecurityConstants.TOKEN_HEADER);
     }
 }

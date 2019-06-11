@@ -21,7 +21,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
     private static final String TEST_PATH = "test.txt";
 
     @MockBean
-    DefaultDatasafeServices dataSafeService;
+    protected DefaultDatasafeServices dataSafeService;
 
     @MockBean
     private InboxServiceImpl inboxService;
