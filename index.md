@@ -56,7 +56,18 @@ or by implementing his own using
 Additionally, for file versioning purposes like reading only last file version, there is [versioned privatespace](https://github.com/adorsys/datasafe/blob/master/datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/VersionedDatasafeServices.java)
 that supports versioned and encrypted private file storage (for storage providers that do not support versioning).
 
+# Storage adapters
 
+Out-of-the box Datasafe supports these kinds of storage systems:
+ - [Filesystem storage](https://github.com/adorsys/datasafe/tree/develop/datasafe-storage/datasafe-storage-impl-fs). 
+ This storage uses default java.nio interface for filesystem 
+ - [S3 compatible storage](https://github.com/adorsys/datasafe/tree/develop/datasafe-storage/datasafe-storage-impl-s3). 
+ This storage uses Amazon-SDK client to get access to S3 bucket.
+ 
+Additionally, user can implement his own storage adapter to support i.e. storing data inside RDBMS by implementing
+[StorageService](https://github.com/adorsys/datasafe/blob/develop/datasafe-storage/datasafe-storage-api/src/main/java/de/adorsys/datasafe/storage/api/StorageService.java)
+interface.
+ 
 # Project overview
 * [Achitecture](general/docusafe_future_client.md)
 
