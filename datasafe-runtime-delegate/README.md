@@ -33,6 +33,15 @@ public class PathCheckerRuntimeDelegatable extends PathChecker {
         ArgumentsCaptor argumentsCaptor = new ArgumentsCaptor(check);
         delegate = context != null ? context.findOverride(PathChecker.class, argumentsCaptor) : null;
     }
+    
+    @Override
+    public boolean doCheck(Path path) {
+        if (null == delegate) {
+            return super.doCheck(path);
+        } else {
+            return delegate.doCheck(path);
+        }
+    }
 
     public static void overrideWith(OverridesRegistry context,
             Function<ArgumentsCaptor, PathChecker> ctorCaptor) {
