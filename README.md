@@ -66,6 +66,8 @@ MacOS: Install gnused and gnugrep:
 
 Example script usage:
 ./embed.sh Example README.md > README-tmp.md && mv README-tmp.md README.md
+
+TODO: Migrate to AsciiDoc for automatic snippet embedding.
 -->
 
 ## Generic Datasafe usage

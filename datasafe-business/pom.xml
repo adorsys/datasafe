@@ -101,6 +101,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
@@ -207,13 +213,14 @@
                             <goal>analyze-only</goal>
                         </goals>
                         <configuration>
-                            <failOnWarning>false</failOnWarning>
+                            <failOnWarning>true</failOnWarning>
                             <outputXML>true</outputXML>
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.drools:drools-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.drools:drools-compiler</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>org.kie:kie-api</ignoredUsedUndeclaredDependency>
