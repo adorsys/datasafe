@@ -164,10 +164,6 @@
                             <stylesheet>src/main/xsl/analyse.jacoco.result.xsl</stylesheet>
                             <parameters>
                                 <parameter>
-                                    <name>testsEnabled</name>
-                                    <value>${skipTests}</value>
-                                </parameter>
-                                <parameter>
                                     <name>lowerlimit</name>
                                     <value>85</value>
                                 </parameter>
@@ -179,6 +175,7 @@
                             <outputDir>target</outputDir>
                         </transformationSet>
                     </transformationSets>
+                    <skip>${skipTests}</skip>
                 </configuration>
                 <dependencies>
                     <dependency>

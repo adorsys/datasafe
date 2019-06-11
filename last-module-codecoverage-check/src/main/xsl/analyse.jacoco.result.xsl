@@ -6,7 +6,6 @@
 
 
     <xsl:output method="text" version="1.0" encoding="UTF-8"/>
-    <xsl:param name="enabled" select="skipTests"/>
     <xsl:param name="lowerlimit" select="lowerlimit"/>
     <xsl:param name="outputdir" select="outputdir"/>
     <xsl:param name="type">LINE</xsl:param>
@@ -30,48 +29,38 @@
             sum covered: <xsl:value-of select="$sumcovered"/>
             totallines:  <xsl:value-of select="$totallines"/>
             quote:       <xsl:value-of select="$quote"/>
-            enabled:     <xsl:value-of select="$enabled"/>
 
 
         </xsl:message>
 
-        <xsl:if test="$enabled = false()">
-            <xsl:message terminate="no">
-                [INFO] ======================================================================================
-                [INFO] Coverage check is disabled by system property.
-                [INFO] ======================================================================================
-            </xsl:message>
-        </xsl:if>
-        <xsl:if test="$enabled = true()">
-            <xsl:if test="quote &lt; $lowerlimit">
-                <xsl:result-document href="{$outputdir}/XSL-ERROR.txt" method="text">
-                    The total code coverate quote is <xsl:value-of select="$quote"/> % and thus below the expected minimum of <xsl:value-of select="$lowerlimit"/> %
-                </xsl:result-document>
-                <xsl:message terminate="yes">
-                    [ERROR] ======================================================================================
-                    [ERROR] The total code coverate quote is <xsl:value-of select="$quote"/> % and thus below the expected minimum of <xsl:value-of select="$lowerlimit"/> %
-                    [ERROR] ======================================================================================
-                </xsl:message>
-            </xsl:if>
-            <xsl:if test="string($quote) = 'NaN' ">
-                <xsl:result-document href="{$outputdir}/XSL-ERROR.txt" method="text">
-                    Stylesheet did not calculate a quote. Propably jacoco did not run or did not create a jacoco.xml
-                </xsl:result-document>
-                <xsl:message terminate="yes">
-                    [ERROR] ======================================================================================
-                    [ERROR] Stylesheet did not calculate a quote. Propably jacoco did not run or did not create a jacoco.xml
-                    [ERROR] ======================================================================================
-                </xsl:message>
-            </xsl:if>
-            <xsl:result-document href="{$outputdir}/XSL-EVALUATION-RESULT.txt" method="text">
-                The total code coverate quote is <xsl:value-of select="$quote"/> % and thus above the expected minimum of <xsl:value-of select="$lowerlimit"/> %
+        <xsl:if test=" $quote &lt; $lowerlimit">
+            <xsl:result-document href="{$outputdir}/XSL-ERROR.txt" method="text">
+                The total code coverate quote is <xsl:value-of select="$quote"/> % and thus below the expected minimum of <xsl:value-of select="$lowerlimit"/> %
             </xsl:result-document>
-            <xsl:message terminate="no">
-                [INFO] ======================================================================================
-                [INFO]The total code coverage quote is <xsl:value-of select="$quote"/> % and thus above the expected minimum of <xsl:value-of select="$lowerlimit"/> %
-                [INFO] ======================================================================================
+            <xsl:message terminate="yes">
+                [ERROR] ======================================================================================
+                [ERROR] The total code coverate quote is <xsl:value-of select="$quote"/> % and thus below the expected minimum of <xsl:value-of select="$lowerlimit"/> %
+                [ERROR] ======================================================================================
             </xsl:message>
         </xsl:if>
+        <xsl:if test=" string($quote) = 'NaN' ">
+            <xsl:result-document href="{$outputdir}/XSL-ERROR.txt" method="text">
+                Stylesheet did not calculate a quote. Propably jacoco did not run or did not create a jacoco.xml
+            </xsl:result-document>
+            <xsl:message terminate="yes">
+                [ERROR] ======================================================================================
+                [ERROR] Stylesheet did not calculate a quote. Propably jacoco did not run or did not create a jacoco.xml
+                [ERROR] ======================================================================================
+            </xsl:message>
+        </xsl:if>
+        <xsl:result-document href="{$outputdir}/XSL-EVALUATION-RESULT.txt" method="text">
+            The total code coverate quote is <xsl:value-of select="$quote"/> % and thus above the expected minimum of <xsl:value-of select="$lowerlimit"/> %
+        </xsl:result-document>
+        <xsl:message terminate="no">
+            [INFO] ======================================================================================
+            [INFO]The total code coverate quote is <xsl:value-of select="$quote"/> % and thus above the expected minimum of <xsl:value-of select="$lowerlimit"/> %
+            [INFO] ======================================================================================
+        </xsl:message>
     </xsl:template>
 
     <xsl:template match="group">
@@ -83,17 +72,17 @@
         <xsl:apply-templates select="package"/>
     </xsl:template>
 
-<!--
-        <xsl:template match="package/class/counter[@type='LINE']">
-            <xsl:variable name="name" select="../@name" />
-            <xsl:variable name="missed" select="@missed" />
-            <xsl:variable name="covered" select="@covered" />
-            <xsl:message terminate="no">  class <xsl:value-of select="$name"/> , <xsl:value-of select="$missed"/>, <xsl:value-of select="$covered"/></xsl:message>
-            <xsl:message terminate="no"> node:
-                <xsl:copy-of select="." />
-                <xsl:text>&#xa;</xsl:text>
-            </xsl:message>
-        </xsl:template>
-        -->
+    <!--
+            <xsl:template match="package/class/counter[@type='LINE']">
+                <xsl:variable name="name" select="../@name" />
+                <xsl:variable name="missed" select="@missed" />
+                <xsl:variable name="covered" select="@covered" />
+                <xsl:message terminate="no">  class <xsl:value-of select="$name"/> , <xsl:value-of select="$missed"/>, <xsl:value-of select="$covered"/></xsl:message>
+                <xsl:message terminate="no"> node:
+                    <xsl:copy-of select="." />
+                    <xsl:text>&#xa;</xsl:text>
+                </xsl:message>
+            </xsl:template>
+            -->
 
 </xsl:stylesheet>
