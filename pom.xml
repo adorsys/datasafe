@@ -15,6 +15,7 @@
         <module>datasafe-storage</module>
         <module>datasafe-rest-impl</module>
         <module>datasafe-examples</module>
+        <module>datasafe-simple-adapter</module>
         <module>last-module-codecoverage-check</module>
     </modules>
 
