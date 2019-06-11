@@ -6,10 +6,16 @@ import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-@Generated("de.adorsys.datasafe.runtimedelegate.RuntimeDelegateGenerator")
+@Generated(
+        value = "de.adorsys.datasafe.runtimedelegate.RuntimeDelegateGenerator",
+        comments = "This class performs functionality delegation based on contextClass content. If contextClass contains overriding class - it will be used."
+)
 public class SimpleClassWithGenericRuntimeDelegatable<T extends List> extends SimpleClassWithGeneric<T> {
     private final SimpleClassWithGeneric<T> delegate;
 
+    /**
+     * @param context Context class to search for overrides.
+     */
     @Inject
     public SimpleClassWithGenericRuntimeDelegatable(@Nullable OverridesRegistry context, T list,
                                                     SimpleClassWithGeneric.Dependency dependency) {
@@ -36,6 +42,9 @@ public class SimpleClassWithGenericRuntimeDelegatable<T extends List> extends Si
         }
     }
 
+    /**
+     * This is a typesafe function to register overriding class into context.
+     */
     public static void overrideWith(OverridesRegistry context,
                                     Function<ArgumentsCaptor, SimpleClassWithGeneric> ctorCaptor) {
         context.override(SimpleClassWithGeneric.class, args -> ctorCaptor.apply((ArgumentsCaptor) args));
