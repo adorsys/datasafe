@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>datasafe</artifactId>
+        <groupId>de.adorsys</groupId>
+        <version>0.0.11-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>last-module-codecoverage-check</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-business</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-directory-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-directory-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-encryption-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-encryption-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-examples-business</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-inbox-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-inbox-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-metainfo-version-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-metainfo-version-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-privatestore-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-privatestore-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-rest-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-fs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-s3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-types-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.4.1</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <id>copy-resources</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/site/jacoco-aggregate</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/dtd/jacoco</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>${xml-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <transformationSets>
+                        <transformationSet>
+                            <dir>target/site/jacoco-aggregate</dir>
+                            <includes>
+                                <include>jacoco.xml</include>
+                            </includes>
+                            <stylesheet>src/main/xsl/analyse.jacoco.result.xsl</stylesheet>
+                            <parameters>
+                                <parameter>
+                                    <name>lowerlimit</name>
+                                    <value>85</value>
+                                </parameter>
+                                <parameter>
+                                    <name>outputdir</name>
+                                    <value>${project.basedir}/target</value>
+                                </parameter>
+                            </parameters>
+                            <outputDir>target</outputDir>
+                        </transformationSet>
+                    </transformationSets>
+                    <skip>${skipTests}</skip>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.saxon</groupId>
+                        <artifactId>saxon</artifactId>
+                        <version>8.7</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.dependency.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>analyze</id>
+                        <goals>
+                            <goal>analyze-only</goal>
+                        </goals>
+                        <configuration>
+                            <failOnWarning>false</failOnWarning>
+                            <ignoredUnusedDeclaredDependencies>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-business</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-directory-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-directory-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-encryption-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-encryption-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-examples-business</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-inbox-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-inbox-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-metainfo-version-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-metainfo-version-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-privatestore-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-privatestore-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-rest-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-storage-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-storage-impl-fs</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-storage-impl-s3</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-types-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
+                            </ignoredUnusedDeclaredDependencies>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>
