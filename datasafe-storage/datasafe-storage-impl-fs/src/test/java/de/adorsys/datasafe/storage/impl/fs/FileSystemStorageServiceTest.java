@@ -5,7 +5,6 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
-import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -17,15 +16,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 class FileSystemStorageServiceTest extends BaseMockitoTest {
@@ -147,6 +144,18 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
         }
 
         assertThat(storageService.read(fileWithMsg)).hasContent(MESSAGE);
+    }
+
+    @Test
+    @SneakyThrows
+    void removeRemovesOnlyFile() {
+        createFileWithMessage("in/some.txt", true);
+        createFileWithMessage("in/some_other.txt", false);
+
+        storageService.remove(BasePrivateResource.forAbsolutePrivate(storageDir.toUri().resolve("in/some_other.txt")));
+
+        assertThat(Files.walk(storageDir.resolve("in/some.txt"))).hasSize(1);
+        assertThrows(NoSuchFileException.class, () -> Files.walk(storageDir.resolve("in/some_other.txt")));
     }
 
     @Test
