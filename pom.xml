@@ -101,6 +101,7 @@
         <lombok-maven-plugin.version>1.18.6.0</lombok-maven-plugin.version>
         <awaitility.version>3.0.0</awaitility.version>
         <xml-maven-plugin.version>1.0.2</xml-maven-plugin.version>
+        <amazon.aws.version>1.11.538</amazon.aws.version>
     </properties>
 
     <dependencies>

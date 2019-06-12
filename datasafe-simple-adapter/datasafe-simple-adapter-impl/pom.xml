@@ -70,7 +70,7 @@
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-encryption-api</artifactId>
-            <version>0.0.11-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
@@ -92,6 +92,17 @@
             <artifactId>datasafe-directory-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${amazon.aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>${amazon.aws.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger</artifactId>
