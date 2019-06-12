@@ -5,6 +5,7 @@ import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
  * path encryption key.
  */
 @Slf4j
+@RuntimeDelegate
 public class PathEncryptionImpl implements PathEncryption {
 
     private final SymmetricPathEncryptionService bucketPathEncryptionService;

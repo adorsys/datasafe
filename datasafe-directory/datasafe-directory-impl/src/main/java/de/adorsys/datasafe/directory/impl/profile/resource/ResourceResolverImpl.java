@@ -5,6 +5,7 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalServ
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
@@ -17,6 +18,7 @@ import java.util.function.Supplier;
  * Default resource resolver that simply resolves users' internal resource location into absolute
  * resources by prepending proper resource root.
  */
+@RuntimeDelegate
 public class ResourceResolverImpl implements ResourceResolver {
 
     private final ProfileRetrievalService profile;

@@ -11,6 +11,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.utils.Log;
@@ -23,6 +24,7 @@ import java.security.KeyStore;
 import java.util.List;
 
 @Slf4j
+@RuntimeDelegate
 public class ProfileRegistrationServiceImpl implements ProfileRegistrationService {
 
     private final KeyStoreService keyStoreService;

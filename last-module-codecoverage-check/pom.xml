@@ -108,9 +108,14 @@
         </dependency>
 
         <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-runtime-delegate</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.4.1</version>
             <scope>test</scope>
         </dependency>
 

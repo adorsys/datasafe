@@ -4,7 +4,7 @@ import dagger.Binds;
 import dagger.Module;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionConfig;
-import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl;
+import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.DefaultCMSEncryptionConfig;
 
 /**
@@ -23,5 +23,5 @@ public abstract class DefaultCMSEncryptionModule {
      * Default BouncyCastle based CMS encryption for document.
      */
     @Binds
-    abstract CMSEncryptionService cmsEncryptionService(CMSEncryptionServiceImpl impl);
+    abstract CMSEncryptionService cmsEncryptionService(CMSEncryptionServiceImplRuntimeDelegatable impl);
 }

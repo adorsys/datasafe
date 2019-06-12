@@ -52,6 +52,18 @@
 
 		<dependency>
 			<groupId>de.adorsys</groupId>
+			<artifactId>datasafe-runtime-delegate</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>de.adorsys</groupId>
 			<artifactId>datasafe-types-api</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
