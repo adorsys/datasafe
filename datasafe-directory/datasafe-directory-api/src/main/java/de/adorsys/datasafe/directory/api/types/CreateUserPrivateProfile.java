@@ -48,7 +48,8 @@ public class CreateUserPrivateProfile {
 
     /**
      * If all files reside within some specific folder, one can simply remove it when deregistering user,
-     * instead of removing files one-by-one - this is the list of such folders.
+     * instead of removing files one-by-one - this is the list of such folders, or if we need to remove extra
+     * associated resources with user.
      */
     @NonNull
     private final List<AbsoluteLocation<PrivateResource>> associatedResources;
