@@ -1,16 +1,21 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
-import de.adorsys.datasafe.types.api.actions.ListRequest;
+import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
@@ -22,20 +27,48 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private DefaultDatasafeServices defaultDatasafeServices;
+    private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
 
-    SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
+
+    public SimpleDatasafeServiceImpl() {
+        this(DFSCredentialsFactory.getFromEnvironmnet());
+    }
+
+    public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
         boolean withEncryption = true;
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
+            FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
             defaultDatasafeServices = DaggerSimpleAdapterDatasafeSerivce.builder()
-                    .config(new DefaultDFSConfig(dfsCredentials.getRoot().toAbsolutePath().toUri(), "secret"))
-                    .storage(new FileSystemStorageService(dfsCredentials.getRoot()))
+                    .config(new DefaultDFSConfig(filesystemDFSCredentials.getRoot().toAbsolutePath().toUri(), universalReadStorePassword.getValue()))
+                    .storage(new FileSystemStorageService(filesystemDFSCredentials.getRoot()))
                     .build();
+            log.info("build DFS to FILESYSTEM with root " + filesystemDFSCredentials.getRoot());
+        }
+        if (dfsCredentials instanceof AmazonS3DFSCredentials) {
+            AmazonS3DFSCredentials amazonS3DFSCredentials = (AmazonS3DFSCredentials) dfsCredentials;
+            AmazonS3 amazons3 = AmazonS3ClientBuilder.standard()
+                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(amazonS3DFSCredentials.getUrl(), amazonS3DFSCredentials.getRegion()))
+                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(amazonS3DFSCredentials.getAccessKey(), amazonS3DFSCredentials.getSecretKey())))
+                    .enablePathStyleAccess()
+                    .build();
+
+
+            if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getRootBucket())) {
+                amazons3.createBucket(amazonS3DFSCredentials.getRootBucket());
+            }
+            defaultDatasafeServices = DaggerSimpleAdapterDatasafeSerivce.builder()
+                    .config(new DefaultDFSConfig(amazonS3DFSCredentials.getRootBucket(), universalReadStorePassword.getValue()))
+                    .storage(new S3StorageService(amazons3, amazonS3DFSCredentials.getRootBucket(), EXECUTOR_SERVICE))
+                    .build();
+            log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
         }
     }
 

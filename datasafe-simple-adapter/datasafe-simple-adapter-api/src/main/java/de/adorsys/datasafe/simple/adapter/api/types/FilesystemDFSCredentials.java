@@ -5,10 +5,9 @@ import lombok.Getter;
 
 import java.nio.file.Path;
 
+@Builder
 @Getter
 public class FilesystemDFSCredentials extends DFSCredentials {
-    @Builder
-    public FilesystemDFSCredentials(Path root) {
-        super(root);
-    }
+    private final Path root;
+
 }

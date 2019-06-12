@@ -7,7 +7,6 @@ import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
-import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -15,8 +14,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.security.Security;
 
 @Slf4j
@@ -28,25 +25,22 @@ public class SimpleDatasafeAdapterTest {
     public void before() {
         Security.addProvider(new BouncyCastleProvider());
 
-        Path defaultPath = FileSystems.getDefault().getPath(".", "target", "datasafe-filesystem");
-        log.debug("path is " + defaultPath);
-
-        simpleDatasafeService = new SimpleDatasafeServiceImpl(FilesystemDFSCredentials.builder().root(defaultPath).build());
+        simpleDatasafeService = new SimpleDatasafeServiceImpl();
         userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
         simpleDatasafeService.createUser(userIDAuth);
     }
 
     @AfterEach
     public void after() {
-        simpleDatasafeService.destroyUser(userIDAuth);
+     //   simpleDatasafeService.destroyUser(userIDAuth);
     }
 
-   // @Test
+   @Test
     public void justCreateAndDeleteUser() {
         // do nothing;
     }
 
-   // @Test
+    @Test
     public  void writeAndReadFile() {
         String content = "content of document";
         String path = "a/b/c.txt";

@@ -102,6 +102,12 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-s3</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
 
     </dependencies>
