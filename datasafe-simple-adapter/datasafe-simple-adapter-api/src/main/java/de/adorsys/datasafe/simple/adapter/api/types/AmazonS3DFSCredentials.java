@@ -12,5 +12,8 @@ public class AmazonS3DFSCredentials extends DFSCredentials {
     private final String accessKey;
     private final String region;
 
+    public String getContainer() {
+        return rootBucket.split("/")[0];
+    }
 
 }

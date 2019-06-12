@@ -9,8 +9,10 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.net.URI;
+import java.nio.file.FileSystems;
 
 /**
  * Default DFS folders layout provider, suitable both for s3 and filesystem.
@@ -36,6 +38,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(String systemRoot, String systemPassword) {
+        systemRoot = addTrailingSlash(systemRoot);
         this.systemRoot = new Uri(systemRoot);
         this.systemPassword = new ReadStorePassword(systemPassword);
     }
@@ -46,6 +49,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(URI systemRoot, String systemPassword) {
+        systemRoot = addTrailingSlash(systemRoot);
         this.systemRoot = new Uri(systemRoot);
         this.systemPassword = new ReadStorePassword(systemPassword);
     }
@@ -56,6 +60,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(Uri systemRoot, String systemPassword) {
+        systemRoot = addTrailingSlash(systemRoot);
         this.systemRoot = systemRoot;
         this.systemPassword = new ReadStorePassword(systemPassword);
     }
@@ -144,4 +149,22 @@ public class DefaultDFSConfig implements DFSConfig {
     private Uri publicKeys(Uri rootLocation) {
         return rootLocation.resolve("./" + PUBLIC_COMPONENT + "/" + "pubkeys");
     }
+
+    public static Uri addTrailingSlash(Uri systemRoot) {
+        return new Uri(addTrailingSlash(systemRoot.asURI()));
+    }
+
+    @SneakyThrows
+    public static URI addTrailingSlash(URI systemRoot) {
+        return new URI(addTrailingSlash(systemRoot.toASCIIString()));
+    }
+
+    public static String addTrailingSlash(String systemRoot) {
+        int last = systemRoot.length();
+        if (systemRoot.substring(last-1).equals("/")) {
+            return systemRoot;
+        }
+        return systemRoot + "/";
+    }
+
 }

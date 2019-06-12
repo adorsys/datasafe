@@ -32,7 +32,8 @@ public class SimpleDatasafeAdapterTest {
 
     @AfterEach
     public void after() {
-     //   simpleDatasafeService.destroyUser(userIDAuth);
+        // TODO fixme
+        // simpleDatasafeService.destroyUser(userIDAuth);
     }
 
    @Test
