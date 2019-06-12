@@ -5,6 +5,7 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -149,18 +150,29 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
     }
 
     @Test
-    void remove() {
-        createFileWithMessage();
-        // precondition:
-        assertThat(Paths.get(fileWithMsg.location().asURI())).exists();
+    @SneakyThrows
+    void removeRecurses() {
+        createFileWithMessage("in/some.txt", true);
+        createFileWithMessage("in/deeper/some.txt", true);
+        createFileWithMessage("in/deeper/some_other.txt", false);
+        createFileWithMessage("in/deeper/and_deeper/some_other.txt", true);
 
-        storageService.remove(fileWithMsg);
+        storageService.remove(BasePrivateResource.forAbsolutePrivate(storageDir.toUri().resolve("in")));
 
-        assertThat(Paths.get(fileWithMsg.location().asURI())).doesNotExist();
+        assertThat(Files.walk(storageDir)).containsOnly(storageDir);
     }
 
     @SneakyThrows
     private void createFileWithMessage() {
-        Files.write(storageDir.resolve(FILE), MESSAGE.getBytes(), StandardOpenOption.CREATE);
+        createFileWithMessage(FILE, false);
+    }
+
+    @SneakyThrows
+    private void createFileWithMessage(String path, boolean mkDirs) {
+        Path resolved = storageDir.resolve(path);
+        if (mkDirs) {
+            resolved.getParent().toFile().mkdirs();
+        }
+        Files.write(resolved, MESSAGE.getBytes(), StandardOpenOption.CREATE);
     }
 }

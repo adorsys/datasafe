@@ -1,8 +1,11 @@
 package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
+import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.actions.StorageListService;
@@ -20,14 +23,16 @@ import javax.inject.Inject;
 public class ProfileRemovalServiceImpl implements ProfileRemovalService {
 
     private final StorageListService listService;
+    private final BucketAccessService access;
     private final DFSConfig dfsConfig;
     private final StorageRemoveService removeService;
     private final ProfileRetrievalService retrievalService;
 
     @Inject
-    public ProfileRemovalServiceImpl(StorageListService listService, DFSConfig dfsConfig,
+    ProfileRemovalServiceImpl(StorageListService listService, BucketAccessService access, DFSConfig dfsConfig,
                                      StorageRemoveService removeService, ProfileRetrievalService retrievalService) {
         this.listService = listService;
+        this.access = access;
         this.dfsConfig = dfsConfig;
         this.removeService = removeService;
         this.retrievalService = retrievalService;
@@ -43,22 +48,30 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
             throw new UserNotFoundException("User not found: " + userID);
         }
 
-        AbsoluteLocation<PrivateResource> privateStorage = retrievalService.privateProfile(userID).getPrivateStorage();
-        removeStorageByLocation(userID, privateStorage);
+        UserPublicProfile publicProfile = retrievalService.publicProfile(userID.getUserID());
+        UserPrivateProfile privateProfile = retrievalService.privateProfile(userID);
 
-        AbsoluteLocation<PrivateResource> inbox = retrievalService.privateProfile(userID).getInboxWithFullAccess();
-        removeStorageByLocation(userID, inbox);
+        removeAllIn(userID, privateProfile.getPrivateStorage());
+        removeAllIn(userID, privateProfile.getInboxWithFullAccess());
+        removeAllIn(userID, privateProfile.getDocumentVersionStorage());
 
-        removeService.remove(retrievalService.privateProfile(userID).getKeystore());
-        removeService.remove(privateStorage);
-        removeService.remove(inbox);
-        removeService.remove(dfsConfig.privateProfile(userID.getUserID()));
-        removeService.remove(dfsConfig.publicProfile(userID.getUserID()));
+        removeService.remove(access.privateAccessFor(userID, privateProfile.getKeystore().getResource()));
+        removeService.remove(access.privateAccessFor(userID, privateProfile.getPrivateStorage().getResource()));
+        removeService.remove(access.privateAccessFor(userID, privateProfile.getInboxWithFullAccess().getResource()));
+        removeService.remove(access.privateAccessFor(userID, privateProfile.getDocumentVersionStorage().getResource()));
+
+        removeService.remove(access.withSystemAccess(publicProfile.getPublicKeys()));
+
+        // remove profiles itself:
+        removeService.remove(access.withSystemAccess(dfsConfig.privateProfile(userID.getUserID())));
+        removeService.remove(access.withSystemAccess(dfsConfig.publicProfile(userID.getUserID())));
+
         log.debug("Deregistered user {}", userID);
     }
 
-    private void removeStorageByLocation(UserIDAuth userID, AbsoluteLocation<PrivateResource> privateStorage) {
-        listService.list(new ListRequest<>(userID, privateStorage).getLocation())
-                .forEach(removeService::remove);
+    private void removeAllIn(UserIDAuth userID, AbsoluteLocation<PrivateResource> location) {
+        listService.list(
+                new ListRequest<>(userID, access.privateAccessFor(userID, location.getResource())).getLocation()
+        ).forEach(removeService::remove);
     }
 }
