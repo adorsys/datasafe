@@ -35,7 +35,8 @@ import java.util.concurrent.Executors;
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private DefaultDatasafeServices defaultDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
+    private final static ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
+    private final static String S3_PREFIX="s3://";
 
 
     public SimpleDatasafeServiceImpl() {
@@ -47,7 +48,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
             defaultDatasafeServices = DaggerSimpleAdapterDatasafeSerivce.builder()
-                    .config(new DefaultDFSConfig(filesystemDFSCredentials.getRoot().toAbsolutePath().toUri(), universalReadStorePassword.getValue()))
+                    .config(new DefaultDFSConfig(filesystemDFSCredentials.getRoot().toAbsolutePath().toUri() + "/", universalReadStorePassword.getValue()))
                     .storage(new FileSystemStorageService(filesystemDFSCredentials.getRoot()))
                     .build();
             log.info("build DFS to FILESYSTEM with root " + filesystemDFSCredentials.getRoot());
@@ -65,7 +66,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                 amazons3.createBucket(amazonS3DFSCredentials.getRootBucket());
             }
             defaultDatasafeServices = DaggerSimpleAdapterDatasafeSerivce.builder()
-                    .config(new DefaultDFSConfig(amazonS3DFSCredentials.getRootBucket(), universalReadStorePassword.getValue()))
+                    .config(new DefaultDFSConfig(S3_PREFIX + amazonS3DFSCredentials.getRootBucket() + "/deeper/and/deeper/", universalReadStorePassword.getValue()))
                     .storage(new S3StorageService(amazons3, amazonS3DFSCredentials.getRootBucket(), EXECUTOR_SERVICE))
                     .build();
             log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());

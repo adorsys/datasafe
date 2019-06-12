@@ -8,7 +8,7 @@ import java.nio.file.FileSystems;
 @Slf4j
 public class DFSCredentialsFactory {
     private final static String AMAZON_ENV = "SC-AMAZONS3";
-    private final static String FILESYSTEM_ENV = "SC_FILESYSTEM";
+    private final static String FILESYSTEM_ENV = "SC-FILESYSTEM";
     private final static String DEFAULT_ROOT_BUCKET = "./target/default-filesystem-root";
 
     public static DFSCredentials getFromEnvironmnet() {
