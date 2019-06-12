@@ -247,9 +247,6 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
                     .extracting(URI::toString)
                     .containsExactlyInAnyOrder(
                             "",
-                            "john/",
-                            "john/public/",
-                            "john/private/",
                             "profiles/",
                             "profiles/public/",
                             "profiles/private/"

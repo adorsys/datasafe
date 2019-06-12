@@ -17,6 +17,7 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 @Slf4j
 @RuntimeDelegate
@@ -55,10 +56,12 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         removeAllIn(userID, privateProfile.getInboxWithFullAccess());
         removeAllIn(userID, privateProfile.getDocumentVersionStorage());
 
-        removeService.remove(access.privateAccessFor(userID, privateProfile.getKeystore().getResource()));
-        removeService.remove(access.privateAccessFor(userID, privateProfile.getPrivateStorage().getResource()));
-        removeService.remove(access.privateAccessFor(userID, privateProfile.getInboxWithFullAccess().getResource()));
-        removeService.remove(access.privateAccessFor(userID, privateProfile.getDocumentVersionStorage().getResource()));
+        Stream.of(
+                privateProfile.getKeystore().getResource(),
+                privateProfile.getPrivateStorage().getResource(),
+                privateProfile.getInboxWithFullAccess().getResource(),
+                privateProfile.getDocumentVersionStorage().getResource()
+        ).map(it -> access.privateAccessFor(userID, it)).forEach(removeService::remove);
 
         removeService.remove(access.withSystemAccess(publicProfile.getPublicKeys()));
 
@@ -66,6 +69,10 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         removeService.remove(access.withSystemAccess(dfsConfig.privateProfile(userID.getUserID())));
         removeService.remove(access.withSystemAccess(dfsConfig.publicProfile(userID.getUserID())));
 
+        // remove everything else associated with user
+        privateProfile.getAssociatedResources().stream()
+                .map(it -> access.privateAccessFor(userID, it.getResource()))
+                .forEach(removeService::remove);
         log.debug("Deregistered user {}", userID);
     }
 

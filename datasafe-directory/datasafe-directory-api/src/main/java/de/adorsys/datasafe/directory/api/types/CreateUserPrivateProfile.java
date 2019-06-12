@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.util.List;
+
 /**
  * Request to create private user profile part.
  */
@@ -45,6 +47,13 @@ public class CreateUserPrivateProfile {
     private final AbsoluteLocation<PrivateResource> documentVersionStorage;
 
     /**
+     * If all files reside within some specific folder, one can simply remove it when deregistering user,
+     * instead of removing files one-by-one - this is the list of such folders.
+     */
+    @NonNull
+    private final List<AbsoluteLocation<PrivateResource>> associatedResources;
+
+    /**
      * Where to publish users' public keys if it is necessary.
      */
     private final AbsoluteLocation<PublicResource> publishPubKeysTo;
@@ -56,6 +65,7 @@ public class CreateUserPrivateProfile {
             .privateStorage(privateStorage)
             .inboxWithFullAccess(inboxWithWriteAccess)
             .documentVersionStorage(documentVersionStorage)
+            .associatedResources(associatedResources)
             .build();
     }
 }
