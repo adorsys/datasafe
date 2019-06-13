@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
@@ -14,6 +15,7 @@ import java.util.Base64;
 /**
  * Public key serializer/deserializer, writes public key content as Base64 encoded string.
  */
+@RuntimeDelegate
 public class PublicKeySerdeImpl implements PublicKeySerde {
 
     @Inject

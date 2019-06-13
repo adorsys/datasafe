@@ -13,18 +13,22 @@ import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActi
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultVersionedPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
-import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
-import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
+import de.adorsys.datasafe.inbox.api.InboxService;
+import de.adorsys.datasafe.metainfo.version.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionInfoServiceImpl;
-import de.adorsys.datasafe.metainfo.version.impl.version.latest.LatestPrivateSpaceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
-import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
+import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 /**
  * This is Datasafe services that always work with latest file version using `software` versioning.
+ * Note, that despite is has {@code @Singleton} annotation, it is not real singleton, the only shared thing
+ * across all services instantiated using build() is bindings with {@code Singleton} in its Module.
  */
 @Singleton
 @Component(modules = {
@@ -49,22 +53,22 @@ public interface VersionedDatasafeServices {
     /**
      * @return Filtered view of user's private space, that shows only latest files (works only with versioned resources)
      */
-    LatestPrivateSpaceImpl<LatestDFSVersion> latestPrivate();
+    VersionedPrivateSpaceService<LatestDFSVersion> latestPrivate();
 
     /**
      * @return Raw view of private user space (shows everything - all versioned and not versioned)
      */
-    PrivateSpaceServiceImpl privateService();
+    PrivateSpaceService privateService();
 
     /**
      * @return Inbox service that provides capability to share data between users
      */
-    InboxServiceImpl inboxService();
+    InboxService inboxService();
 
     /**
      * @return User-profile service that provides information necessary for locating his data.
      */
-    DFSBasedProfileStorageImpl userProfile();
+    ProfileOperations userProfile();
 
     /**
      * Binds DFS connection (for example filesystem, minio) and system storage and access
@@ -86,7 +90,16 @@ public interface VersionedDatasafeServices {
         Builder storage(StorageService storageService);
 
         /**
-         * @return Software-versioned Datasafe services.
+         * Provides class overriding functionality, so that you can disable i.e. path encryption
+         * @param overridesRegistry Map with class-overrides (note: you can override classes that are
+         * annotated with {@code RuntimeDelegate})
+         */
+        @BindsInstance
+        Builder overridesRegistry(@Nullable OverridesRegistry overridesRegistry);
+
+        /**
+         * @return Provide NEW instance of <b>Software-versioned Datasafe</b> services. All dependencies except
+         * annotated with {@code @Singleton} will have scope analogous to Spring {code @Prototype}.
          */
         VersionedDatasafeServices build();
     }

@@ -3,6 +3,7 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import java.util.function.Function;
  * wiki</a>
  */
 @Slf4j
+@RuntimeDelegate
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
     private CMSEncryptionConfig encryptionConfig;

@@ -11,6 +11,7 @@ import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.Getter;
 
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
  * non-versioned resources in same privatespace.
  * @param <V> version tag
  */
+@RuntimeDelegate
 public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements VersionedPrivateSpaceService<V> {
 
     @Getter

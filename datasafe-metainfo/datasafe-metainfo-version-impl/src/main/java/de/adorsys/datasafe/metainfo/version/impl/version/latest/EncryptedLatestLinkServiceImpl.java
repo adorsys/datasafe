@@ -9,6 +9,7 @@ import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkServi
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -26,6 +27,7 @@ import java.io.InputStream;
  * content is always relative resource location inside privatespace)
  */
 @Slf4j
+@RuntimeDelegate
 public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkService {
 
     private final ProfileRetrievalService profiles;
