@@ -41,8 +41,8 @@ public class SimpleDatasafeAdapterTest {
         // do nothing;
     }
 
-   //@Test
     // TODO fixme (deregister not working yet)
+    @Test
     public  void writeAndReadFile() {
         String content = "content of document";
         String path = "a/b/c.txt";
