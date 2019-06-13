@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,8 +42,9 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
+            URI systemRoot = filesystemDFSCredentials.getRoot().toAbsolutePath().toUri();
             customlyBuiltDatasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
-                    .config(new DefaultDFSConfig(filesystemDFSCredentials.getRoot().toAbsolutePath().toUri(), universalReadStorePassword.getValue()))
+                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()).userProfileLocation(new CustomizedUserProfileLocation(systemRoot)))
                     .storage(new FileSystemStorageService(filesystemDFSCredentials.getRoot()))
                     .build();
 
@@ -60,8 +62,9 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
                 amazons3.createBucket(amazonS3DFSCredentials.getContainer());
             }
+            String systemRoot = S3_PREFIX + amazonS3DFSCredentials.getRootBucket();
             customlyBuiltDatasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
-                    .config(new DefaultDFSConfig(S3_PREFIX + amazonS3DFSCredentials.getRootBucket(), universalReadStorePassword.getValue()))
+                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()).userProfileLocation(new CustomizedUserProfileLocation(systemRoot)))
                     .storage(new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE))
                     .build();
             log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());

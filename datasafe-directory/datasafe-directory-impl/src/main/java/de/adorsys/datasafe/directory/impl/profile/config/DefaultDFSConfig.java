@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.net.URI;
-import java.nio.file.FileSystems;
 
 /**
  * Default DFS folders layout provider, suitable both for s3 and filesystem.
@@ -25,9 +24,7 @@ public class DefaultDFSConfig implements DFSConfig {
     private static final String PUBLIC_COMPONENT = "public";
     private static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
     private static final String VERSION_COMPONENT = "versions";
-
-    private static final Uri PRIVATE_PROFILE = new Uri("./profiles/private/");
-    private static final Uri PUBLIC_PROFILE = new Uri("./profiles/public/");
+    private UserProfileLocation userProfileLocation;
 
     private final Uri systemRoot;
     private final ReadStorePassword systemPassword;
@@ -41,6 +38,7 @@ public class DefaultDFSConfig implements DFSConfig {
         systemRoot = addTrailingSlash(systemRoot);
         this.systemRoot = new Uri(systemRoot);
         this.systemPassword = new ReadStorePassword(systemPassword);
+        userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
     }
 
     /**
@@ -52,8 +50,13 @@ public class DefaultDFSConfig implements DFSConfig {
         systemRoot = addTrailingSlash(systemRoot);
         this.systemRoot = new Uri(systemRoot);
         this.systemPassword = new ReadStorePassword(systemPassword);
+        userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
     }
 
+    public DefaultDFSConfig userProfileLocation(UserProfileLocation userProfileLocation) {
+        this.userProfileLocation = userProfileLocation;
+        return this;
+    }
     /**
      * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
      * to place everything in datasafe/system directory within storage
@@ -119,15 +122,11 @@ public class DefaultDFSConfig implements DFSConfig {
     }
 
     private AbsoluteLocation<PrivateResource> locatePrivateProfile(UserID ofUser) {
-        return new AbsoluteLocation<>(
-                new BasePrivateResource(PRIVATE_PROFILE.resolve(ofUser.getValue())).resolveFrom(dfsRoot())
-        );
+        return userProfileLocation.locatePrivateProfile(ofUser);
     }
 
     private AbsoluteLocation<PublicResource> locatePublicProfile(UserID ofUser) {
-        return new AbsoluteLocation<>(
-                new BasePublicResource(PUBLIC_PROFILE.resolve(ofUser.getValue())).resolveFrom(dfsRoot())
-        );
+        return userProfileLocation.locatePublicProfile(ofUser);
     }
 
     private AbsoluteLocation<PublicResource> access(Uri path) {
