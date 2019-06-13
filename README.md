@@ -37,6 +37,10 @@ and the only thing needed from a user is to provide storage adapter - by using
 or by implementing his own using
 [this interface](datasafe-storage/datasafe-storage-api/src/main/java/de/adorsys/datasafe/storage/api/StorageService.java).
 
+These services have interfaces that resemble actions that you can do with file or folder on your local file system -
+list,write,read,delete file or folder. So, one can think that Datasafe provides mount-points for 
+inbox and private space virtual folders - you get similar actions available from Datasafe service.
+
 Additionally, for file versioning purposes like reading only last file version, there is [versioned privatespace](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/VersionedDatasafeServices.java)
 that supports versioned and encrypted private file storage (for storage providers that do not support versioning).
 
