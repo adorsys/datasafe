@@ -29,16 +29,16 @@ cloud "Write to inbox" {
 
     database "Storage" as PhysicalStorage
 
-    u --> WriteToInbox : Share file\nwith some\nuser
-    WriteToInbox --> directory : Get physical file\nlocation with\naccess credentials
-    inbox --> PublicKeyService : Get recepients' public key
-    PublicKeyService --> ResourceResolver : Resolve\ndesired\nfile\nlocation\nin recipients' inbox
-    ResourceResolver --> BucketAccessService : Obtain credentials\nto write file to inbox
-    BucketAccessService --> EncryptedDocumentWriteService : Encrypt data using\nrecipients' public key
-    EncryptedDocumentWriteService --> CMSEncryptionService
-    CMSEncryptionService --> StorageWriteService
-    encryption --> storage : Write file\nusing absolute\npath
-    storage --> PhysicalStorage : Select proper\nadapter using\nprotocol\nand write file
+    u --> WriteToInbox : 1. Share file\nwith some\nuser
+    WriteToInbox --> directory : 2. Get physical file\nlocation with\naccess credentials
+    directory --> PublicKeyService : 3. Get recepients' public key
+    PublicKeyService --> ResourceResolver : 4. Resolve\ndesired\nfile\nlocation\nin recipients' inbox
+    ResourceResolver --> BucketAccessService : 5. Obtain credentials\nto write file to inbox
+    BucketAccessService --> EncryptedDocumentWriteService : 6. Encrypt data using\nrecipients' public key
+    EncryptedDocumentWriteService --> CMSEncryptionService : 7. Encrypt data
+    CMSEncryptionService --> StorageWriteService : 8. Write encrypted data
+    encryption --> storage : 9. Write file\nusing absolute\npath
+    storage --> PhysicalStorage : 10. Select proper\nadapter using\nprotocol\nand write file
 }
 
 @enduml
