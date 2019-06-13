@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RequiredArgsConstructor
-public abstract class BaseE2ETest extends BaseMockitoTest {
+public abstract class BaseE2ETest extends WithStorageProvider {
 
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";

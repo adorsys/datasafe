@@ -10,6 +10,7 @@ import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -36,7 +37,7 @@ import java.util.stream.Stream;
  * Provides different storage types - filesystem, minio, etc. to be used in tests.
  */
 @Slf4j
-public abstract class WithStorageProvider extends BaseE2ETest {
+public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
     private static String minioAccessKeyID = "admin";

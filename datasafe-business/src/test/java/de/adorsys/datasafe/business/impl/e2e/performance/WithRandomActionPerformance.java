@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import de.adorsys.datasafe.business.impl.e2e.BaseE2ETest;
 import de.adorsys.datasafe.business.impl.e2e.WithStorageProvider;
 import de.adorsys.datasafe.business.impl.e2e.performance.dto.UserSpec;
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Fixture;
@@ -39,7 +40,7 @@ import java.util.stream.Stream;
  * This test executes {@link Fixture} operations and validates them against some real storage.
  */
 @Slf4j
-abstract class WithRandomActionPerformance extends WithStorageProvider {
+abstract class WithRandomActionPerformance extends BaseE2ETest {
 
     private static Fixture fixture;
 
