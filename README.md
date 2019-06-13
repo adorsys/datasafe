@@ -54,7 +54,7 @@ Whenever user wants to store or read file at some location - be it inbox or his 
 1. If data is going to private space - request path is encrypted
 1. Root path is prepended to request path
 1. Encryption/decryption of data happens
-1. Credentials required to access the storage are added ([BucketAccessService](datasafe-directory/datasafe-directory-impl/src/main/java/de/adorsys/datasafe/directory/impl/profile/dfs/BucketAccessService.java))
+1. Credentials required to access the storage are added ([BucketAccessService](datasafe-directory/datasafe-directory-api/src/main/java/de/adorsys/datasafe/directory/api/profile/dfs/BucketAccessService.java))
 1. Data stream with path is sent to storage adapter
 1. Optionally, storage adapter analyzes based on protocol which storage service to use
 1. Storage adapter stores the data
