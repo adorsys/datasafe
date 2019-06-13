@@ -2,16 +2,20 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithX509Cert;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.*;
 import org.bouncycastle.cms.jcajce.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.jcajce.JcaAlgorithmParametersConverter;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.OAEPParameterSpec;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +23,9 @@ import java.io.OutputStream;
 import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -49,6 +56,25 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
                 publicKey);
 
         return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
+    }
+
+    @Override
+    @SneakyThrows
+    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, List<PublicKeyIDWithX509Cert> publicKeyIDWithCertMap) {
+        CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
+        JcaAlgorithmParametersConverter paramsConverter = new JcaAlgorithmParametersConverter();
+
+        for (PublicKeyIDWithX509Cert entry : publicKeyIDWithCertMap) {
+            gen.addRecipientInfoGenerator(
+                    new JceKeyTransRecipientInfoGenerator(
+                            entry.getCertificate(),
+                            paramsConverter.getAlgorithmIdentifier(
+                                    PKCSObjectIdentifiers.id_RSAES_OAEP, OAEPParameterSpec.DEFAULT)).setProvider("BC"));
+        }
+
+        return gen.open(
+                dataContentStream,
+                new JceCMSContentEncryptorBuilder(encryptionConfig.getAlgorithm()).setProvider("BC").build());
     }
 
     /**
@@ -82,6 +108,8 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         RecipientInformation recipientInfo = recipientInfoStore.getRecipients().stream().findFirst().get();
         RecipientId rid = recipientInfo.getRID();
 
+
+
         switch (rid.getType()) {
             case RecipientId.keyTrans:
                 return recipientInfo.getContentStream(new JceKeyTransEnvelopedRecipient(privateKey(keyById, rid)))
@@ -93,6 +121,28 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
                 throw new DecryptionException("Programming error. Handling of more that one recipient not done yet");
         }
     }
+
+    @Override
+    @SneakyThrows
+    public InputStream buildDecryptionInputStream(InputStream inputStream, Key key, PublicKeyIDWithX509Cert x509Cert) {
+        RecipientInformationStore recipientInfoStore = new CMSEnvelopedDataParser(inputStream).getRecipientInfos();
+
+        if (recipientInfoStore.size() == 0) {
+            throw new DecryptionException("CMS Envelope doesn't contain recipients");
+        }
+
+        Collection recipients = recipientInfoStore.getRecipients(new JceKeyTransRecipientId(x509Cert.getCertificate()));
+        Iterator it = recipients.iterator();
+        if (it.hasNext()) {
+            RecipientInformation recipient = (RecipientInformation) it.next();
+
+            return recipient.getContentStream(new JceKeyTransEnvelopedRecipient((PrivateKey) key)
+                    .setProvider("BC")).getContentStream();
+
+        }
+        throw new IllegalArgumentException("Recipient for certificate not found");
+    }
+
 
     private SecretKey secretKey(Function<String, Key> keyById, RecipientId rid) {
         String keyIdentifier = new String(((KEKRecipientId) rid).getKeyIdentifier());

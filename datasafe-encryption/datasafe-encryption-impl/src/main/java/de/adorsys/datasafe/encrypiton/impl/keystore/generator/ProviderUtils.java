@@ -13,6 +13,6 @@ public class ProviderUtils {
 	static {
 		Security.addProvider(new BouncyCastleProvider());	
 		bcProvider = Security.getProvider("BC");
-		if(bcProvider==null) throw new IllegalStateException( new NoSuchPaddingException("BC"));
+		if(bcProvider==null) throw new IllegalStateException(new NoSuchPaddingException("BC"));
 	}
 }

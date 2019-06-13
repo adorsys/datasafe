@@ -85,6 +85,26 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     @Override
     @SneakyThrows
+    public List<PublicKeyIDWithX509Cert> getCertificates(KeyStoreAccess keyStoreAccess) {
+        log.debug("get certificates");
+        List<PublicKeyIDWithX509Cert> result = new ArrayList<>();
+        KeyStore keyStore = keyStoreAccess.getKeyStore();
+        for (Enumeration<String> keyAliases = keyStore.aliases(); keyAliases.hasMoreElements(); ) {
+            final String keyAlias = keyAliases.nextElement();
+            X509Certificate cert = (X509Certificate) keyStore.getCertificate(keyAlias);
+            if (cert == null) continue; // skip
+            boolean[] keyUsage = cert.getKeyUsage();
+            // digitalSignature (0), nonRepudiation (1), keyEncipherment (2), dataEncipherment (3),
+            // keyAgreement (4), keyCertSign (5), cRLSign (6), encipherOnly (7), decipherOnly (8)
+            if (keyUsage[2] || keyUsage[3] || keyUsage[4]) {
+                result.add(new PublicKeyIDWithX509Cert(new KeyID(keyAlias), cert));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    @SneakyThrows
     public PrivateKey getPrivateKey(KeyStoreAccess keyStoreAccess, KeyID keyID) {
         ReadKeyPassword readKeyPassword = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword();
         KeyStore keyStore = keyStoreAccess.getKeyStore();

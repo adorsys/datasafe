@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 
 /**
  * Wrapper for public key and its ID, so that public-private key pair can be found in keystore using this ID.
@@ -12,8 +12,7 @@ import java.security.PublicKey;
 @Getter
 @ToString(of = "keyID")
 @RequiredArgsConstructor
-public class PublicKeyIDWithPublicKey {
+public class PublicKeyIDWithX509Cert {
     private final KeyID keyID;
-    //TODO: replace publicKey to X509Certificate
-    private final PublicKey publicKey;
+    private final X509Certificate certificate;
 }

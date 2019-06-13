@@ -1,12 +1,14 @@
 package de.adorsys.datasafe.encrypiton.api.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithX509Cert;
 
 import javax.crypto.SecretKey;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
 import java.security.PublicKey;
+import java.util.List;
 import java.util.function.Function;
 
 
@@ -24,6 +26,7 @@ public interface CMSEncryptionService {
      * @apiNote Closes underlying stream when result is closed
      */
     OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey, KeyID publicKeyID);
+    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, List<PublicKeyIDWithX509Cert> publicKeyIDWithCert);
 
     /**
      * Builds symmetrically encrypted stream.
@@ -43,4 +46,6 @@ public interface CMSEncryptionService {
      * @apiNote Closes underlying stream when result is closed
      */
     InputStream buildDecryptionInputStream(InputStream inputStream, Function<String, Key> keyById);
+    InputStream buildDecryptionInputStream(InputStream inputStream, Key key, PublicKeyIDWithX509Cert x509Cert);
+
 }

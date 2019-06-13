@@ -24,9 +24,8 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.MessageDigest;
+import java.security.*;
+import java.util.Arrays;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,7 +44,41 @@ public class CmsEncryptionServiceImplTest {
 
     @BeforeAll
     public static void setUp() {
+        Security.addProvider(new BouncyCastleProvider());
         keyStoreAccess = getKeyStoreAccess();
+    }
+
+    @Test
+    @SneakyThrows
+    public void testCmsStreamEnvelopeEncryptAndDecryptTestWithMultipleRecepients() {
+        KeyStoreAccess keyStoreAccess1 = getKeyStoreAccess();
+        KeyStoreAccess keyStoreAccess2 = getKeyStoreAccess();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream, Arrays.asList(
+                getPublicKeyIDWithPublicKey(keyStoreAccess1), getPublicKeyIDWithPublicKey(keyStoreAccess2)
+        ));
+
+        encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
+        encryptionStream.close();
+
+        byte[] byteArray = outputStream.toByteArray();
+
+        for(KeyStoreAccess keyStoreAccessItem : Arrays.asList(keyStoreAccess1, keyStoreAccess2)) {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+            PublicKeyIDWithX509Cert publicKeyIDWithX509Cert = keyStoreService.getCertificates(keyStoreAccessItem).stream().findFirst().get();
+            PrivateKey privateKey = keyStoreService.getPrivateKey(keyStoreAccessItem, publicKeyIDWithX509Cert.getKeyID());
+            InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream, privateKey, publicKeyIDWithX509Cert);
+
+            byte[] actualResult = toByteArray(decryptionStream);
+
+            assertThat(TEST_MESSAGE_CONTENT).isEqualTo(new String(actualResult));
+        }
+    }
+
+    private PublicKeyIDWithX509Cert getPublicKeyIDWithPublicKey(KeyStoreAccess keyStoreAccess) {
+        return keyStoreService.getCertificates(keyStoreAccess).stream().findFirst().get();
     }
 
     @Test
@@ -59,6 +92,7 @@ public class CmsEncryptionServiceImplTest {
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
+
         byte[] byteArray = outputStream.toByteArray();
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
