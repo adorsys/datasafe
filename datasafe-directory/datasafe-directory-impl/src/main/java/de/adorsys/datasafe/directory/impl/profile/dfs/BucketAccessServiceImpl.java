@@ -12,8 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 
 /**
- * Specifies how to access desired user resource (example: private bucket). By default is no-op - simply wraps
- * resource into {@link AbsoluteLocation}
+ * Specifies how to access desired user resource (example: private bucket).
+ * It can be used for:
+ * 1. To add user-specific credentials, if it is 1 user per bucket or similar
+ * 2. To redirect requests
+ *
+ * By default is no-op - simply wraps resource into {@link AbsoluteLocation}
  */
 @Slf4j
 @RuntimeDelegate
@@ -38,6 +42,15 @@ public class BucketAccessServiceImpl implements BucketAccessService {
     @Override
     public AbsoluteLocation<PublicResource> publicAccessFor(UserID user, PublicResource resource) {
         log.debug("get public access for user {} and bucket {}", user, resource.location());
+        return new AbsoluteLocation<>(resource);
+    }
+
+    /**
+     * Do nothing, just wrap, real use case would be to plug user credentials to access bucket.
+     */
+    @Override
+    public AbsoluteLocation withSystemAccess(AbsoluteLocation resource) {
+        log.debug("get syste access for {}", resource.location());
         return new AbsoluteLocation<>(resource);
     }
 }

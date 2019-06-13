@@ -2,6 +2,7 @@ package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
@@ -26,16 +27,18 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
     private final DFSConfig dfsConfig;
     private final StorageReadService readService;
     private final StorageCheckService checkService;
+    private final BucketAccessService access;
     private final GsonSerde serde;
     private final UserProfileCache userProfileCache;
 
     @Inject
-    public ProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageReadService readService,
-                                       StorageCheckService checkService, GsonSerde serde,
+    ProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageReadService readService,
+                                       StorageCheckService checkService, BucketAccessService access, GsonSerde serde,
                                        UserProfileCache userProfileCache) {
         this.dfsConfig = dfsConfig;
         this.readService = readService;
         this.checkService = checkService;
+        this.access = access;
         this.serde = serde;
         this.userProfileCache = userProfileCache;
     }
@@ -71,13 +74,13 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
      */
     @Override
     public boolean userExists(UserID ofUser) {
-        return checkService.objectExists(dfsConfig.privateProfile(ofUser)) &&
-                checkService.objectExists(dfsConfig.publicProfile((ofUser)));
+        return checkService.objectExists(access.withSystemAccess(dfsConfig.privateProfile(ofUser))) &&
+                checkService.objectExists(access.withSystemAccess(dfsConfig.publicProfile((ofUser))));
     }
 
     @SneakyThrows
     private <T> T readProfile(AbsoluteLocation resource, Class<T> clazz) {
-        try (InputStream is = readService.read(resource)) {
+        try (InputStream is = readService.read(access.withSystemAccess(resource))) {
             log.debug("read profile {}", resource.location().getPath());
             return serde.fromJson(new String(ByteStreams.toByteArray(is)), clazz);
         }

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.net.URI;
+import java.util.Collections;
 
 /**
  * Default DFS folders layout provider, suitable both for s3 and filesystem.
@@ -100,6 +101,7 @@ public class DefaultDFSConfig implements DFSConfig {
                 .inboxWithWriteAccess(accessPrivate(inbox(rootLocation)))
                 .documentVersionStorage(accessPrivate(rootLocation.resolve("./" + VERSION_COMPONENT + "/")))
                 .publishPubKeysTo(access(publicKeys(rootLocation)))
+                .associatedResources(Collections.singletonList(accessPrivate(rootLocation)))
                 .build();
     }
 

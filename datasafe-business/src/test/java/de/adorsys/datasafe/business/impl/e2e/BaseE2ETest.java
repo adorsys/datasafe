@@ -18,11 +18,13 @@ import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.RemoveFromPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
+import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
@@ -34,6 +36,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -220,6 +226,31 @@ public abstract class BaseE2ETest extends BaseMockitoTest {
 
         for (String toFind : expected) {
             assertThat(paths.stream().anyMatch(it -> it.equals(toFind))).isTrue();
+        }
+    }
+
+    @SneakyThrows
+    protected void assertRootDirIsEmpty(WithStorageProvider.StorageDescriptor descriptor) {
+        assertThat(descriptor.getStorageService().get()
+                .list(
+                        new AbsoluteLocation<>(BasePrivateResource.forPrivate(descriptor.getLocation()))
+                )
+        ).isEmpty();
+        if (descriptor.getStorageService().get() instanceof FileSystemStorageService) {
+            // additional check that directory contains only folders that were created recursively
+            // we do not have permission to delete these - because we removed files linked to profile
+            // however we can't remove anything above
+            assertThat(Files.walk(Paths.get(descriptor.getLocation().asURI())))
+                    .allMatch(it -> it.toFile().isDirectory())
+                    .extracting(Path::toUri)
+                    .extracting(it -> descriptor.getLocation().asURI().relativize(it))
+                    .extracting(URI::toString)
+                    .containsExactlyInAnyOrder(
+                            "",
+                            "profiles/",
+                            "profiles/public/",
+                            "profiles/private/"
+                    );
         }
     }
 }
