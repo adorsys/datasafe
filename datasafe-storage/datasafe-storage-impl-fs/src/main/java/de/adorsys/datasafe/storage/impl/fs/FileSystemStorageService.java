@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.storage.impl.fs;
 
 import com.google.common.io.MoreFiles;
+import com.google.common.io.RecursiveDeleteOption;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.utils.Log;
@@ -85,7 +86,7 @@ public class FileSystemStorageService implements StorageService {
 
         Path path = resolve(location.location().asURI(), false);
         boolean isFile = !path.toFile().isDirectory();
-        Files.delete(resolve(location.location().asURI(), false));
+        MoreFiles.deleteRecursively(path, RecursiveDeleteOption.ALLOW_INSECURE);
         log.debug("deleted {} at: {}", isFile ? "file" : "directory", Log.secure(location));
     }
 
