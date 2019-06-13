@@ -45,6 +45,12 @@ that supports versioned and encrypted private file storage (for storage provider
 ## Library modules
 ![Modules map](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/modules_map.puml&fmt=svg&vvv=1&sanitize=true)
 
+## Users' files - where are they?
+Because Datasafe uses concept of some virtual folders or spaces - private and inbox, their physical location is 
+also computed using this flow:
+
+![Path resolution](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/profiles/locate_profile.puml&fmt=svg&vvv=1&sanitize=true)
+
 ## Storing private files
 
 ![How privatespace diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private.puml&fmt=svg&vvv=1&sanitize=true)
