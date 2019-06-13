@@ -1,0 +1,46 @@
+@startuml
+
+skinparam ranksep 20
+skinparam nodesep 10
+skinparam linetype ortho
+skinparam Padding 10
+
+cloud "Read from inbox" {
+    actor User as u
+
+    component datasafe-inbox as inbox {
+     rectangle ReadFromInbox
+    }
+
+    component datasafe-directory as directory {
+     rectangle ResourceResolver
+     rectangle BucketAccessService
+     rectangle PrivateKeyService
+    }
+
+    component datasafe-encryption as encryption {
+     rectangle EncryptedDocumentReadService
+     rectangle CMSEncryptionService
+    }
+
+    component datasafe-storage as storage{
+     rectangle StorageReadService
+    }
+
+    database "Storage" as PhysicalStorage
+    rectangle "Decrypted data" as Data
+
+    u --> ReadFromInbox : 1. Read file\nthat was shared\nwith me
+    inbox --> directory : 2. Get physical file\nlocation with\naccess credentials
+    directory --> ResourceResolver : 3. Compute\nabsolute\nlocation
+    ResourceResolver --> BucketAccessService : 4. Get credentials to read from storage
+    BucketAccessService --> EncryptedDocumentReadService : 5. Read encrypted file
+    EncryptedDocumentReadService --> CMSEncryptionService : 6. Read encrypted file
+    encryption --> storage : 7. Read file\nusing absolute\npath
+    storage --> PhysicalStorage : 8. Select proper\nadapter using\nprotocol\nand read file
+    StorageReadService --> CMSEncryptionService : 9. Data stream
+    CMSEncryptionService --> PrivateKeyService : 10. Get private key\nassociated with\npublic key that\nencrypted file
+    CMSEncryptionService --> Data : 11. Decrypted data
+}
+
+@enduml

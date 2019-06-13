@@ -18,6 +18,11 @@ import java.util.stream.Collectors;
 
 class RuntimeDelegateGenerator {
 
+    private static final String CLASS_PURPOSE_COMMENT = "This class performs functionality delegation based on "
+            + "contextClass content. If contextClass contains overriding class - it will be used.";
+    private static final String OVERRIDE_WITH_PURPOSE_COMMENT = "This is a typesafe function to register "
+            + "overriding class into context.\n";
+
     private static final String CAPTOR_TYPE_NAME = "ArgumentsCaptor";
     private static final String CAPTOR_NAME = "argumentsCaptor";
     private static final String DELEGATE_NAME = "delegate";
@@ -79,6 +84,7 @@ class RuntimeDelegateGenerator {
         delegator.addAnnotation(AnnotationSpec
                 .builder(Generated.class)
                 .addMember("value", CodeBlock.of("$S", RuntimeDelegateGenerator.class.getCanonicalName()))
+                .addMember("comments", CodeBlock.of("$S", CLASS_PURPOSE_COMMENT))
                 .build()
         );
     }
@@ -192,6 +198,7 @@ class RuntimeDelegateGenerator {
         );
         method.addCode(block.build());
 
+        method.addJavadoc("@param context Context class to search for overrides.\n");
         return method.build();
     }
 
@@ -220,6 +227,7 @@ class RuntimeDelegateGenerator {
                 ClassName.get(forClass), // get rid of generic
                 captor
         );
+        methodSpec.addJavadoc(OVERRIDE_WITH_PURPOSE_COMMENT);
 
         return methodSpec.build();
     }

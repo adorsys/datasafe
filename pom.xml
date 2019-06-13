@@ -398,6 +398,11 @@
                                     <artifactId>dagger-compiler</artifactId>
                                     <version>${dagger.version}</version>
                                 </path>
+                                <path>
+                                    <groupId>de.adorsys</groupId>
+                                    <artifactId>datasafe-runtime-delegate</artifactId>
+                                    <version>${project.version}</version>
+                                </path>
                             </annotationProcessorPaths>
                         </configuration>
                     </plugin>
