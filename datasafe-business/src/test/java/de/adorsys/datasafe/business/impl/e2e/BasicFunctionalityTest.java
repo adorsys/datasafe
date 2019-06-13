@@ -46,6 +46,24 @@ class BasicFunctionalityTest extends WithStorageProvider {
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
     }
 
+    @SneakyThrows
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void testUserIsRemovedWithFiles(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+        UserID userJohn = new UserID("john");
+        john = registerUser(userJohn.getValue());
+        writeDataToPrivate(john, "root.txt", MESSAGE_ONE);
+        writeDataToPrivate(john, "some/some.txt", MESSAGE_ONE);
+        writeDataToPrivate(john, "some/another_one.txt", MESSAGE_ONE);
+        writeDataToPrivate(john, "some/other/other.txt", MESSAGE_ONE);
+        writeDataToPrivate(john, "different/data.txt", MESSAGE_ONE);
+
+        profileRemovalService.deregister(john);
+
+        assertRootDirIsEmpty(descriptor);
+    }
+
     @ParameterizedTest
     @MethodSource("allStorages")
     void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
