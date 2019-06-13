@@ -36,10 +36,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(String systemRoot, String systemPassword) {
-        systemRoot = addTrailingSlash(systemRoot);
-        this.systemRoot = new Uri(systemRoot);
-        this.systemPassword = new ReadStorePassword(systemPassword);
-        userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
+        this(new Uri(systemRoot), systemPassword);
     }
 
     /**
@@ -48,16 +45,9 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(URI systemRoot, String systemPassword) {
-        systemRoot = addTrailingSlash(systemRoot);
-        this.systemRoot = new Uri(systemRoot);
-        this.systemPassword = new ReadStorePassword(systemPassword);
-        userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
+        this(new Uri(systemRoot), systemPassword);
     }
 
-    public DefaultDFSConfig userProfileLocation(UserProfileLocation userProfileLocation) {
-        this.userProfileLocation = userProfileLocation;
-        return this;
-    }
     /**
      * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
      * to place everything in datasafe/system directory within storage
@@ -67,6 +57,12 @@ public class DefaultDFSConfig implements DFSConfig {
         systemRoot = addTrailingSlash(systemRoot);
         this.systemRoot = systemRoot;
         this.systemPassword = new ReadStorePassword(systemPassword);
+        userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
+    }
+
+    public DefaultDFSConfig userProfileLocation(UserProfileLocation userProfileLocation) {
+        this.userProfileLocation = userProfileLocation;
+        return this;
     }
 
     @Override
