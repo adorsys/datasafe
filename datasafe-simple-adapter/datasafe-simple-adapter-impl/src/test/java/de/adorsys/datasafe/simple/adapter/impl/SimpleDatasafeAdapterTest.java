@@ -7,6 +7,8 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
+import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
+import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
@@ -27,11 +29,28 @@ import java.security.Security;
 public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     SimpleDatasafeService simpleDatasafeService;
     UserIDAuth userIDAuth;
+    DFSCredentials dfsCredentials;
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
         descriptor.getName();
         descriptor.getLocation();
         StorageService storageService = descriptor.getStorageService().get();
+        switch(descriptor.getName()) {
+            case FILESYSTEM : {
+                log.info("uri:" + descriptor.getLocation());
+                break;
+
+            }
+            case MINIO:{
+                log.info("uri       :" + descriptor.getLocation());
+                log.info("accesskey :" + descriptor.getAccessKey());
+                log.info("secretkey :" + descriptor.getSecretKey());
+                log.info("region    :" + descriptor.getRegion());
+                log.info("rootbucket:" + descriptor.getRootBucket());
+                break;
+            }
+            default: throw new SimpleAdapterException("missing switch for " + descriptor.getName());
+        }
     }
 
     @BeforeEach
@@ -59,6 +78,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @ParameterizedTest
     @MethodSource("allStorages")
     public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
         log.info("test create user and create files and delete user with " + descriptor.getName());
         String content = "content of document";
         String path = "a/b/c.txt";

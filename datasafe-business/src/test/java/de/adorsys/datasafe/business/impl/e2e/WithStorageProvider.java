@@ -11,6 +11,7 @@ import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
  * Provides different storage types - filesystem, minio, etc. to be used in tests.
  */
 @Slf4j
+@Getter
 public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
@@ -129,9 +131,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     protected static Stream<WithStorageProvider.StorageDescriptor> allStorages() {
         return Stream.of(
                 new StorageDescriptor(
-                        "FILESYSTEM",
+                        StorageDescriptorName.FILESYSTEM,
                         () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
-                        new Uri(tempDir.toUri())
+                        new Uri(tempDir.toUri()),
+                        null, null, null,
+                        tempDir.toUri().toASCIIString()
                 ),
                 minio(),
                 s3()
@@ -140,23 +144,31 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     protected static StorageDescriptor minio() {
         return new StorageDescriptor(
-                "MINIO S3",
+                StorageDescriptorName.MINIO,
                 () -> {
                     minioStorage.get();
                     return new S3StorageService(minio, minioBucketName, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + minioBucketName + "/" + prefix + "/")
+                new Uri("s3://" + minioBucketName + "/" + prefix + "/"),
+                minioAccessKeyID,
+                minioSecretAccessKey,
+                minioRegion,
+                minioBucketName
         );
     }
 
     protected static StorageDescriptor ceph() {
         return new StorageDescriptor(
-                "CEPH S3",
+                StorageDescriptorName.CEPH,
                 () -> {
                     cephStorage.get();
                     return new S3StorageService(ceph, cephBucketName, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + cephBucketName + "/" + prefix + "/")
+                new Uri("s3://" + cephBucketName + "/" + prefix + "/"),
+                cephAccessKeyID,
+                cephSecretAccessKey,
+                cephRegion,
+                cephBucketName
         );
     }
 
@@ -166,12 +178,16 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         return new StorageDescriptor(
-                "AMAZON S3",
+                StorageDescriptorName.AMAZON,
                 () -> {
                     amazonSotrage.get();
                     return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + amazonBucket + "/" + prefix + "/")
+                new Uri("s3://" + amazonBucket + "/" + prefix + "/"),
+                amazonAccessKeyID,
+                amazonSecretAccessKey,
+                amazonRegion,
+                amazonBucket
         );
     }
 
@@ -202,8 +218,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         log.info("Starting MINIO");
         minioContainer = new GenericContainer("minio/minio")
                 .withExposedPorts(9000)
-                .withEnv("MINIO_ACCESS_KEY", "admin")
-                .withEnv("MINIO_SECRET_KEY", "password")
+                .withEnv("MINIO_ACCESS_KEY", minioAccessKeyID)
+                .withEnv("MINIO_SECRET_KEY", minioSecretAccessKey)
                 .withCommand("server /data")
                 .waitingFor(Wait.defaultWaitStrategy());
 
@@ -259,16 +275,23 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     @Getter
     @ToString(of = "name")
+    @AllArgsConstructor
     public static class StorageDescriptor {
 
-        private final String name;
+        private final StorageDescriptorName name;
         private final Supplier<StorageService> storageService;
         private final Uri location;
+        private final String accessKey;
+        private final String secretKey;
+        private final String region;
+        private final String rootBucket;
 
-        StorageDescriptor(String name, Supplier<StorageService> storageService, Uri location) {
-            this.name = name;
-            this.storageService = storageService;
-            this.location = location;
-        }
+    }
+
+    public enum StorageDescriptorName {
+        FILESYSTEM,
+        MINIO,
+        CEPH,
+        AMAZON
     }
 }
