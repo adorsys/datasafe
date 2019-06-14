@@ -166,20 +166,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public void deleteFolder(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN) {
 
     }
-/*
-    List<AbsoluteLocation<ResolvedResource>> johnsPrivateFilesInRoot = defaultDatasafeServices.privateService()
-            .list(ListRequest.forDefaultPrivate(user, "")).collect(Collectors.toList());
-    // same files we created
-    assertThat(johnsPrivateFilesInRoot)
-                .extracting(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
-            .containsExactlyInAnyOrder(
-                        "home/my/secret.txt",
-                                "home/watch/films.txt",
-                                "home/hello.txt"
-    );
-
-
- */
 
     @Override
     public List<DocumentFQN> list(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN, ListRecursiveFlag recursiveFlag) {
