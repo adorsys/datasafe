@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Sets;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
-import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientInfoGenerator;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
@@ -25,7 +24,10 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.MessageDigest;
+import java.security.Security;
 import java.util.Arrays;
 
 import static com.google.common.io.ByteStreams.toByteArray;
@@ -190,7 +192,7 @@ public class CmsEncryptionServiceImplTest {
 
         KeyStoreAccess newKeyStoreAccess = getKeyStoreAccess(); // new store access would be different from first even was generated similar
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        assertThrows(CMSException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
+        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
                 inputStream, keyId -> getKey(keyId, newKeyStoreAccess)));
     }
 
