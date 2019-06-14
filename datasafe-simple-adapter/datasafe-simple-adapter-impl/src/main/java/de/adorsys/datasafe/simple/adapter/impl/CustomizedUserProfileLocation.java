@@ -9,8 +9,8 @@ import java.net.URI;
 
 public class CustomizedUserProfileLocation implements UserProfileLocation {
     private static final Uri PROFILE_ROOT = new Uri("./profiles/");
-    private static final Uri PRIVATE_PROFILE = new Uri("./private/");
-    private static final Uri PUBLIC_PROFILE = new Uri("./public/");
+    private static final Uri PRIVATE_PROFILE = new Uri("private");
+    private static final Uri PUBLIC_PROFILE = new Uri("public");
     private Uri systemRoot;
 
     public CustomizedUserProfileLocation(URI systemRoot) {

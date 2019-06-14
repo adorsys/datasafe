@@ -28,7 +28,6 @@ import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -42,14 +41,15 @@ import java.util.stream.Stream;
 @Getter
 public abstract class WithStorageProvider extends BaseMockitoTest {
 
+    private static String deeperBucketPath = "deeper/and/deeper";
+    //private static String deeperBucketPath = UUID.randomUUID().toString();
+
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
     private static String minioRegion = "eu-central-1";
     private static String minioBucketName = "home";
     private static String minioUrl = "http://localhost";
-    //private static String minioPrefix = UUID.randomUUID().toString();
-    private static String minioPrefix = "deeper/and/deeper";
     private static String minioMappedUrl;
 
     private static String cephAccessKeyID = "admin";
@@ -109,11 +109,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         if (null != minio) {
-            removeObjectFromS3(minio, minioBucketName, minioPrefix);
+            removeObjectFromS3(minio, minioBucketName, deeperBucketPath);
         }
 
         if (null != amazonS3) {
-            removeObjectFromS3(amazonS3, amazonBucket, minioPrefix);
+            removeObjectFromS3(amazonS3, amazonBucket, deeperBucketPath);
         }
     }
 
@@ -150,7 +150,12 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 minio()
         ).filter(Objects::nonNull);
     }
-
+    @ValueSource
+    protected static Stream<WithStorageProvider.StorageDescriptor> fsStorage() {
+        return Stream.of(
+                fs()
+        ).filter(Objects::nonNull);
+    }
 
     private static WithStorageProvider.StorageDescriptor fs() {
         return new StorageDescriptor(
@@ -158,7 +163,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
                 new Uri(tempDir.toUri()),
                 null, null, null,
-                tempDir.toUri().toASCIIString()
+                tempDir.toString()
         );
     }
 
@@ -169,11 +174,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     minioStorage.get();
                     return new S3StorageService(minio, minioBucketName, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + minioBucketName + "/" + minioPrefix + "/"),
+                new Uri("s3://" + minioBucketName + "/" + deeperBucketPath + "/"),
                 minioAccessKeyID,
                 minioSecretAccessKey,
                 minioRegion,
-                minioBucketName + "/" + minioPrefix
+                minioBucketName + "/" + deeperBucketPath
         );
     }
 
@@ -184,11 +189,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     cephStorage.get();
                     return new S3StorageService(ceph, cephBucketName, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + cephBucketName + "/" + minioPrefix + "/"),
+                new Uri("s3://" + cephBucketName + "/" + deeperBucketPath + "/"),
                 cephAccessKeyID,
                 cephSecretAccessKey,
                 cephRegion,
-                cephBucketName  + "/" + minioPrefix
+                cephBucketName  + "/" + deeperBucketPath
         );
     }
 
@@ -203,11 +208,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     amazonSotrage.get();
                     return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + amazonBucket + "/" + minioPrefix + "/"),
+                new Uri("s3://" + amazonBucket + "/" + deeperBucketPath + "/"),
                 amazonAccessKeyID,
                 amazonSecretAccessKey,
                 amazonRegion,
-                amazonBucket + "/" + minioPrefix
+                amazonBucket + "/" + deeperBucketPath
         );
     }
 
@@ -233,7 +238,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .withRegion(amazonRegion)
                 .build();
 
-        amazonMappedUrl = "s3://" + amazonBucket + "/" + minioPrefix + "/";
+        amazonMappedUrl = "s3://" + amazonBucket + "/" + deeperBucketPath + "/";
         log.info("Amazon napped URL:" + amazonMappedUrl);
     }
 

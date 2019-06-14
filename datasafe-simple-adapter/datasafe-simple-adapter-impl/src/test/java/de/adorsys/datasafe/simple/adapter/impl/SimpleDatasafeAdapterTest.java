@@ -80,11 +80,11 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @AfterEach
     public void myafter() {
         log.info("delete user");
-//        simpleDatasafeService.destroyUser(userIDAuth);
+        simpleDatasafeService.destroyUser(userIDAuth);
     }
 
-//    @ParameterizedTest
-//    @MethodSource("minioStorage")
+    @ParameterizedTest
+    @MethodSource("allStorages")
     @SneakyThrows
     public void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
@@ -92,12 +92,10 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         log.info("test create user and delete user with " + descriptor.getName());
     }
 
-//    @ParameterizedTest
-//    @MethodSource("minioStorage")
-    @Test
-//     public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor) {
-        public void writeAndReadFile() {
-//        myinit(descriptor);
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
         mystart();
         String content = "content of document";
         String path = "a/b/c.txt";
