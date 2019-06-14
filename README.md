@@ -37,6 +37,10 @@ and the only thing needed from a user is to provide storage adapter - by using
 or by implementing his own using
 [this interface](datasafe-storage/datasafe-storage-api/src/main/java/de/adorsys/datasafe/storage/api/StorageService.java).
 
+These services have interfaces that resemble actions that you can do with file or folder on your local file system -
+list,write,read,delete file or folder. So, one can think that Datasafe provides mount-points for 
+inbox and private space virtual folders - you get similar actions available from Datasafe service.
+
 Additionally, for file versioning purposes like reading only last file version, there is [versioned privatespace](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/VersionedDatasafeServices.java)
 that supports versioned and encrypted private file storage (for storage providers that do not support versioning).
 
@@ -45,15 +49,50 @@ that supports versioned and encrypted private file storage (for storage provider
 ## Library modules
 ![Modules map](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/modules_map.puml&fmt=svg&vvv=1&sanitize=true)
 
+## Users' files - where are they?
+
+Whenever user wants to store or read file at some location - be it inbox or his private space, following things do happen:
+1. System resolves his profile location
+1. His profile is read (and typically cached, then direct cache access happens)
+1. Based on his profile content, root folder where data should be read/written is deduced
+1. If data is going to private space - request path is encrypted
+1. Root path is prepended to request path
+1. Encryption/decryption of data happens
+1. Credentials required to access the storage are added ([BucketAccessService](datasafe-directory/datasafe-directory-api/src/main/java/de/adorsys/datasafe/directory/api/profile/dfs/BucketAccessService.java))
+1. Data stream with path is sent to storage adapter
+1. Optionally, storage adapter analyzes based on protocol which storage service to use
+1. Storage adapter stores the data
+
+This diagram shows path resolution flow for private space with more details. It is mostly same both for private and 
+inbox files, with the only difference that private files have relative path (relative to private space location) 
+additionally encrypted.
+
+![Path resolution](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/profiles/locate_profile.puml&fmt=svg&vvv=1&sanitize=true)
+
 ## Storing private files
 
+Private files are always encrypted using users' secret symmetric key. Additionally their path is encrypted too, but
+this encryption is very special in the sense that it has form of a/b/c encrypted as 
+encrypted(a)/encrypted(b)/encrypted(c), so that folder traversal operations are efficient.
+
 ![How privatespace diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private.puml&fmt=svg&vvv=1&sanitize=true)
+
+| Reading files from private space | Writing files to private space  |
+|---|---|
+| ![Read modules](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private_read_modules.puml&fmt=svg&vvv=1&sanitize=true)  |![Write modules](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private_write_modules.puml&fmt=svg&vvv=1&sanitize=true)   |
 
 [Details](datasafe-privatestore)
 
 ## Sharing files with another user
 
+Shared files are protected using asymmetrical cryptography, so that sender encrypts file with recipients' public key
+and only recipient can read it using his private key. Paths are kept unencrypted for inbox. 
+
 ![How inbox diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox.puml&fmt=svg&vvv=1&sanitize=true)
+
+| Reading files from inbox | Writing files to inbox  |
+|---|---|
+| ![Read modules](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox_read_modules.puml&fmt=svg&vvv=1&sanitize=true)  |![Write modules](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox_write_modules.puml&fmt=svg&vvv=1&sanitize=true)   |
 
 [Details](datasafe-inbox)
 
@@ -66,6 +105,8 @@ MacOS: Install gnused and gnugrep:
 
 Example script usage:
 ./embed.sh Example README.md > README-tmp.md && mv README-tmp.md README.md
+
+TODO: Migrate to AsciiDoc for automatic snippet embedding.
 -->
 
 ## Generic Datasafe usage
@@ -84,7 +125,7 @@ Second you want to add new users:
 ```groovy
 // Creating new user with username 'user' and private/secret key password 'passwrd':
 /*
-IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
 synchronization due to eventual consistency or you need to supply globally unique username on registration
 */
 defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
@@ -193,7 +234,7 @@ Next we will create user, this is same as in non-versioned services:
 ```groovy
 // Creating new user:
 /*
-IMPORTANT: For cases when user profile is stored on S3 based systems, this requires some global
+IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
 synchronization due to eventual consistency or you need to supply globally unique username on registration
 */
 versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
@@ -282,10 +323,75 @@ Instant savedOnPC = versionedServices.latestPrivate()
 assertThat(savedOnPC).isAfter(savedOnMobile);
 ```
 
+## Overriding Datasafe functionality
+Whenever you want to have some custom functionality of Datasafe, instead of default ones, there are
+two possible ways to achieve this:
+- using OverridesRegistry without project recompilation.
+- using Dagger2 to build a customized version of Datasafe.
+
+### Overriding functionality without recompilation
+This approach is for classes annotated with
+[@RuntimeDelegate](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/annotations/RuntimeDelegate.java)
+and it works by putting the custom implementation of a class to be overridden into
+[OverridesRegistry](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/overrides/OverridesRegistry.java).
+During runtime, when accessing desired functionality, the library will look into OverridesRegistry for
+custom class implementation and use it if present. This one has the advantage of not requiring recompilation of
+Datasafe library, but has a limitation of working on static dependency graph - you can't rebuild it.
+[Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L28-L50)
+```groovy
+// This shows how to override path encryption service, in particular we are going to disable it
+OverridesRegistry registry = new BaseOverridesRegistry();
+
+// PathEncryptionImpl now will have completely different functionality
+// instead of calling PathEncryptionImpl methods we will call PathEncryptionImplOverridden methods
+PathEncryptionImplRuntimeDelegatable.overrideWith(registry, PathEncryptionImplOverridden::new);
+
+// Customized service, without creating complete module and building it:
+DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
+        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+        .storage(new FileSystemStorageService(root))
+        .overridesRegistry(registry)
+        .build();
+
+// registering user
+UserIDAuth user = new UserIDAuth("user", "passwrd");
+datasafeServices.userProfile().registerUsingDefaults(user);
+// writing into user privatespace, note that with default implementation `file.txt` would be encrypted
+datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));
+// but we see raw filename here:
+assertThat(Files.walk(root)).asString().contains("file.txt");
+```
+
+### Overriding functionality by building custom Datasafe library
+This is actually the preferred way to override something or to customize Datasafe. It has no limitations because
+you can compose any Datasafe service you want using Dagger2 for dependency injection. Its major drawback is that
+you need to add a dependency to Dagger2 into your project and compile this custom library version. Because of
+compile-time dependency injection and modular structure it is a comparatively error-free approach.
+To create custom Datasafe service we need to follow these 3 steps:
+1. Create your own custom module (or modules) - see [CustomPathEncryptionModule](datasafe-examples/datasafe-examples-customize-dagger/src/main/java/de/adorsys/datasafe/examples/business/filesystem/CustomPathEncryptionModule.java)
+1. Create custom Datasafe with custom module list - see [CustomlyBuiltDatasafeServices](datasafe-examples/datasafe-examples-customize-dagger/src/main/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServices.java)
+1. Use custom-built Datasafe as shown here:
+[Example:Create custom-built Datasafe service](datasafe-examples/datasafe-examples-customize-dagger/src/test/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServiceTest.java#L23-L37)
+```groovy
+// Customized service, we create required module using compile time DI provided by Dagger:
+CustomlyBuiltDatasafeServices datasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
+        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+        .storage(new FileSystemStorageService(root))
+        .build();
+
+// registering user
+UserIDAuth user = new UserIDAuth("user", "passwrd");
+datasafeServices.userProfile().registerUsingDefaults(user);
+// writing into user privatespace, note that with default implementation `file.txt` would be encrypted
+datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));
+// but we see raw filename here:
+assertThat(walk(root)).asString().contains("file.txt");
+```
+
 You can visit the **[project homepage](https://adorsys.github.io/datasafe)** for additional information.
 
 # JavaDoc
-You can read JavaDoc [here](https://adorsys.github.io/datasafe/javadoc/0.0.9/index.html)
+You can read JavaDoc [here](https://adorsys.github.io/datasafe/javadoc/latest/index.html)
 
 # Contributing
 * [CodingRules](docs/codingrules/CodingRules.md)

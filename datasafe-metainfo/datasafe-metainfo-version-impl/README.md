@@ -3,7 +3,7 @@
 This module contains software, storage based versioning functionality, suitable to be used with i.e. minio.
 File versioning uses following implementation:
 
-![Versioning components](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/datasafe-metainfo-version/file-versioning.puml&fmt=svg&vvv=1&sanitize=true)
+![Versioning components](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/datasafe-metainfo/file-versioning.puml&fmt=svg&vvv=1&sanitize=true)
 
 In current implementation actual file is a directory that contains list of its versioned blobs in privatestore.
 

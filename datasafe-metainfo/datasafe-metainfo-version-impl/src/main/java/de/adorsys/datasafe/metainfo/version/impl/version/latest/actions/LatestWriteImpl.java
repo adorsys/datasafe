@@ -8,6 +8,7 @@ import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -31,6 +32,7 @@ import java.io.OutputStream;
  * @implNote Writes only to versioned resources - can't be used with ordinary one
  * @param <V> version tag
  */
+@RuntimeDelegate
 public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWrite<V> {
 
     @Getter

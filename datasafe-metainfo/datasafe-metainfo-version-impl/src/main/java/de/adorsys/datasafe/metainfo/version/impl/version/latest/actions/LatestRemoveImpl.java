@@ -6,6 +6,7 @@ import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkServi
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
 import de.adorsys.datasafe.privatestore.api.actions.RemoveFromPrivate;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import lombok.Getter;
@@ -18,6 +19,7 @@ import javax.inject.Inject;
  * @implNote Removes only versioned resource - can't be used with ordinary one
  * @param <V> version tag
  */
+@RuntimeDelegate
 public class LatestRemoveImpl<V extends LatestDFSVersion> implements VersionedRemove<V> {
 
     @Getter

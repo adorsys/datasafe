@@ -5,6 +5,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
@@ -15,6 +16,7 @@ import java.io.InputStream;
  * Default implementation for stream reading that encrypts incoming resource path if it is relative using
  * {@link EncryptedResourceResolver} then reads and decrypts data from it using {@link EncryptedDocumentReadService}
  */
+@RuntimeDelegate
 public class ReadFromPrivateImpl implements ReadFromPrivate {
 
     private final EncryptedResourceResolver resolver;

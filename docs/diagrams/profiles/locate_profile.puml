@@ -1,0 +1,97 @@
+@startuml
+
+skinparam ranksep 10
+skinparam linetype ortho
+
+actor User as u
+
+rectangle Directory {
+
+    frame "DFSConfig\nBootstrap" as DFSConfig {
+        component "<&link-intact>UserPublicProfile location" as UPub_loc
+        component "<&link-intact>UserPrivateProfile location" as UPriv_loc
+    }
+
+    database "<b>Profile DB</b>\nRDBMS\nS3\nfilesystem" as profiles_storage {
+        rectangle UPub [
+        UserPublicProfile
+        --
+        <&link-intact>publicKeys location
+        <&link-intact>inbox location
+        ]
+
+        rectangle UPriv [
+          UserPrivateProfile
+          --
+          <&link-intact>keystore location
+          <&link-intact>privateStorage location
+          <&link-intact>inboxWithFullAccess location
+        ]
+    }
+    rectangle Credentials [
+        <b>BucketAccessService</b>
+        ---
+        Enhance request\nwith credentials\nPerform routing
+    ]
+
+    DFSConfig -[hidden]down- profiles_storage
+    UPub -[hidden]down- Credentials
+    UPriv -[hidden]down- Credentials
+}
+
+database "<b>Private files</b>\non remote storage\nS3\nfilesystem" as private_files_storage {
+}
+
+rectangle "Write file into private space" as Request {
+    rectangle initial [
+        WRITE <&file>\n<b>some/file.txt</b>
+    ]
+    rectangle resolve_profile [
+        Where is users' profile?
+    ]
+    rectangle profile [
+        READ <&file>\n<b>file:///host/folder/profile/my_private_profile</b>
+    ]
+    rectangle retrieve_profile [
+        Read users' profile
+    ]
+    rectangle get_private [
+        Extract private files path from profile
+    ]
+    rectangle PrivateFiles [
+        <&file> <b>s3://user-bucket/somewhere/files/private/</b>
+    ]
+    rectangle ResolveEncrypt [
+        Resolve encrypted path\nwithin private space
+    ]
+    rectangle WriteTo [
+        WRITE <&file>\n<b>s3://bucket/files/private/encrypted(some)/encrypted(file.txt)</b>
+    ]
+
+    initial -[hidden]down- resolve_profile
+    resolve_profile -[hidden]down- retrieve_profile
+    retrieve_profile -[hidden]down- profile
+    profile -[hidden]down- get_private
+    get_private -[hidden]down- PrivateFiles
+    retrieve_profile -[hidden]down- PrivateFiles
+    PrivateFiles -[hidden]down- ResolveEncrypt
+    PrivateFiles -[hidden]down- WriteTo
+}
+
+u --> initial : Write <&file> into my private\nspace with path <b>/some/file.txt</b>
+initial --> resolve_profile : find\nusers\nprofile
+resolve_profile --> UPriv_loc
+UPriv_loc ..> retrieve_profile
+profile ==> Credentials : Read\nprofile\nfrom
+Credentials ==> UPriv : \n\nREAD <&file>\n<b>file:///username:password@host/folder/profile/my_private_profile</b>\n\n
+retrieve_profile --> profile
+profile --> get_private
+UPriv ..> get_private
+get_private --> PrivateFiles
+PrivateFiles --> ResolveEncrypt : private\nfiles\nroot
+initial --> ResolveEncrypt : relative\nfile\nlocation
+ResolveEncrypt --> WriteTo : absolute\nresource\nlocation
+WriteTo ==> Credentials
+Credentials ==> private_files_storage : \n\nWRITE <&file>\n<b>s3://user:password@bucket/files/private/encrypted(some)/encrypted(file.txt)\n\n
+
+@enduml

@@ -13,5 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>datasafe-examples-business</module>
+        <module>datasafe-examples-customize-dagger</module>
     </modules>
 </project>

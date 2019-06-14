@@ -15,6 +15,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 
 import java.security.KeyStore;
+import java.util.Collections;
 import java.util.HashMap;
 
 import static org.mockito.Mockito.when;
@@ -33,6 +34,7 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
             .inboxWithFullAccess(PRIVATE)
             .keystore(PRIVATE)
             .documentVersionStorage(PRIVATE)
+            .associatedResources(Collections.emptyList())
             .build();
 
     private UserPublicProfile publicProfile = UserPublicProfile.builder()
