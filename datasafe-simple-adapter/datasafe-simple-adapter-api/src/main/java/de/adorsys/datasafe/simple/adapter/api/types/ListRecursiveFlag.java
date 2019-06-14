@@ -1,4 +1,6 @@
 package de.adorsys.datasafe.simple.adapter.api.types;
 
-public class ListRecursiveFlag {
+public enum ListRecursiveFlag {
+    TRUE,
+    FALSE;
 }

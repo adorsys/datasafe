@@ -12,7 +12,7 @@ import javax.inject.Inject;
 @Slf4j
 public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
 
-    private static final String NO_BUCKETPATH_ENCRYPTION = "SC-NO-BUCKETPATH-ENCRYPTION";
+    public static final String NO_BUCKETPATH_ENCRYPTION = "SC-NO-BUCKETPATH-ENCRYPTION";
 
     private static boolean withPathEncryption = checkIsPathEncryptionToUse();
 

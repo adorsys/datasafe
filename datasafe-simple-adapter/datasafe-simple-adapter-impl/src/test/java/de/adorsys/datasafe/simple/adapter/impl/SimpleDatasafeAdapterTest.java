@@ -15,10 +15,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import sun.tools.java.Environment;
 
 import java.nio.file.FileSystems;
 import java.security.Security;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class SimpleDatasafeAdapterTest extends WithStorageProvider {
@@ -26,11 +34,13 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     UserIDAuth userIDAuth;
     DFSCredentials dfsCredentials;
 
-    private void myinit(WithStorageProvider.StorageDescriptor descriptor) {
+    private void myinit(WithStorageProvider.StorageDescriptor descriptor, Boolean encryption) {
         if (descriptor == null) {
             dfsCredentials = null;
             return;
         }
+        System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, encryption ? Boolean.FALSE.toString(): Boolean.TRUE.toString());
+
         switch (descriptor.getName()) {
             case FILESYSTEM: {
                 log.info("uri:" + descriptor.getRootBucket());
@@ -62,6 +72,23 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         }
     }
 
+    @ValueSource
+    protected static Stream<Boolean> withOrWithoutEncryption() {
+        return Stream.of(
+                Boolean.TRUE,
+                Boolean.FALSE);
+    }
+
+    private static Stream<Arguments> parameterCombination() {
+        List<Arguments> combination = new ArrayList<>();
+        for (WithStorageProvider.StorageDescriptor d : allStorages().collect(Collectors.toSet())) {
+            for (Boolean b: withOrWithoutEncryption().collect(Collectors.toSet())) {
+                combination.add(Arguments.of(d,b));
+            }
+        }
+        return combination.stream();
+    }
+
     @BeforeEach
     public void mybefore() {
         Security.addProvider(new BouncyCastleProvider());
@@ -84,18 +111,18 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource({"parameterCombination"})
     @SneakyThrows
-    public void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
-        myinit(descriptor);
+    public void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor, Boolean encryption) {
+        myinit(descriptor, encryption);
         mystart();
         log.info("test create user and delete user with " + descriptor.getName());
     }
 
     @ParameterizedTest
-    @MethodSource("allStorages")
-    public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor) {
-        myinit(descriptor);
+    @MethodSource({"parameterCombination"})
+    public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
+        myinit(descriptor, encryption);
         mystart();
         String content = "content of document";
         String path = "a/b/c.txt";
@@ -103,7 +130,33 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         simpleDatasafeService.storeDocument(userIDAuth, document);
 
         DSDocument dsDocument = simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path));
+        Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
+        Assertions.assertFalse(simpleDatasafeService.documentExists(userIDAuth, new DocumentFQN("doesnotexist.txt")));
+
         Assertions.assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
         log.info("the content read is ok");
     }
+
+    @ParameterizedTest
+    @MethodSource({"parameterCombination"})
+    public void writeAndReadFiles(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
+        myinit(descriptor, encryption);
+        mystart();
+        DocumentDirectoryFQN root = new DocumentDirectoryFQN("affe");
+        List<DSDocument> list = TestHelper.createDocuments(root, 2, 2, 3);
+        List<DocumentFQN> created = new ArrayList<>();
+        for (DSDocument dsDocument : list) {
+            log.debug("store " + dsDocument.getDocumentFQN().toString());
+            simpleDatasafeService.storeDocument(userIDAuth, dsDocument);
+            created.add(dsDocument.getDocumentFQN());
+            Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, dsDocument.getDocumentFQN()));
+        }
+        List<DocumentFQN> listFound = simpleDatasafeService.list(userIDAuth, root, ListRecursiveFlag.TRUE);
+        for (DocumentFQN doc : listFound) {
+            log.debug("found:" + doc);
+        }
+        Assertions.assertTrue(created.containsAll(listFound));
+        Assertions.assertTrue(listFound.containsAll(created));
+    }
+
 }

@@ -18,18 +18,24 @@ import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
@@ -153,17 +159,34 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public boolean documentExists(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        return false;
+        return customlyBuiltDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, documentFQN.getValue())).count() == 1;
     }
 
     @Override
     public void deleteFolder(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN) {
 
     }
+/*
+    List<AbsoluteLocation<ResolvedResource>> johnsPrivateFilesInRoot = defaultDatasafeServices.privateService()
+            .list(ListRequest.forDefaultPrivate(user, "")).collect(Collectors.toList());
+    // same files we created
+    assertThat(johnsPrivateFilesInRoot)
+                .extracting(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+            .containsExactlyInAnyOrder(
+                        "home/my/secret.txt",
+                                "home/watch/films.txt",
+                                "home/hello.txt"
+    );
+
+
+ */
 
     @Override
     public List<DocumentFQN> list(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN, ListRecursiveFlag recursiveFlag) {
-        return null;
+        List<AbsoluteLocation<ResolvedResource>> collect = customlyBuiltDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, documentDirectoryFQN.getValue())).collect(Collectors.toList());
+        List<DocumentFQN> l  = new ArrayList<>();
+        collect.forEach(it -> l.add(new DocumentFQN(it.getResource().asPrivate().decryptedPath().toASCIIString())));
+        return l;
     }
 
     @Override
