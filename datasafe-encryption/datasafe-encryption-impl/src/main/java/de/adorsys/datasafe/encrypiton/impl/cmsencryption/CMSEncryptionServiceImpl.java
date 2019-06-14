@@ -114,7 +114,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
         }
 
-        throw new DecryptionException("Decryption error. Can't find appropriate private key");
+        throw new DecryptionException("Decryption error. Can't match private key with recipients in envelope");
     }
 
     private SecretKey secretKey(Function<String, Key> keyById, RecipientId rid) {

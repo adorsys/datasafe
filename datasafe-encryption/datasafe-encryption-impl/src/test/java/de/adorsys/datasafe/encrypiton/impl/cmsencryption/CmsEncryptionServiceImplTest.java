@@ -52,8 +52,9 @@ public class CmsEncryptionServiceImplTest {
     @Test
     @SneakyThrows
     public void testCmsStreamEnvelopeEncryptAndDecryptTestWithMultipleRecipients() {
-        KeyStoreAccess keyStoreAccess1 = getKeyStoreAccess();
-        KeyStoreAccess keyStoreAccess2 = getKeyStoreAccess();
+        KeyStoreAccess keyStoreAccess1 = getKeyStoreAccess("Alice");
+        KeyStoreAccess keyStoreAccess2 = getKeyStoreAccess("Bob");
+        KeyStoreAccess keyStoreAccess3 = getKeyStoreAccess("Suzanne");
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -68,12 +69,17 @@ public class CmsEncryptionServiceImplTest {
 
         for(KeyStoreAccess keyStoreAccessItem : Arrays.asList(keyStoreAccess1, keyStoreAccess2)) {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-            InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream, keyId -> getKey(keyId, keyStoreAccessItem));
+            InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream,
+                    keyId -> getKey(keyId, keyStoreAccessItem));
 
             byte[] actualResult = toByteArray(decryptionStream);
 
             assertThat(TEST_MESSAGE_CONTENT).isEqualTo(new String(actualResult));
         }
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyId -> getKey(keyId, keyStoreAccess3)));
     }
 
     private PublicKeyIDWithPublicKey getPublicKeyIDWithPublicKey(KeyStoreAccess keyStoreAccess) {
@@ -188,15 +194,19 @@ public class CmsEncryptionServiceImplTest {
                 inputStream, keyId -> getKey(keyId, newKeyStoreAccess)));
     }
 
-    private static KeyStoreAccess getKeyStoreAccess() {
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
-        ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
+    private static KeyStoreAccess getKeyStoreAccess(String label) {
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword(label);
+        ReadStorePassword readStorePassword = new ReadStorePassword(label);
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
 
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
 
         return new KeyStoreAccess(keyStore, keyStoreAuth);
+    }
+
+    private static KeyStoreAccess getKeyStoreAccess() {
+        return getKeyStoreAccess("readkeypassword");
     }
 
     @Test
