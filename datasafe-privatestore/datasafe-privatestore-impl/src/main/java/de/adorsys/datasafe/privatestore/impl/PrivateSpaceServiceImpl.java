@@ -5,6 +5,7 @@ import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.RemoveFromPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.experimental.Delegate;
 
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 /**
  * Default aggregate view of actions doable on users' privatespace.
  */
+@RuntimeDelegate
 public class PrivateSpaceServiceImpl implements PrivateSpaceService {
 
     @Delegate

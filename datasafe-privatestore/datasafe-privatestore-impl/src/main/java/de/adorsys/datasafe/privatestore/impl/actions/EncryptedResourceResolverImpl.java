@@ -5,6 +5,7 @@ import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
  * {@link PathEncryption} and resolves relative paths using {@link PathEncryption}, also decrypts
  * absolute paths by relativizing path against users' privatespace directory and decrypting it.
  */
+@RuntimeDelegate
 public class EncryptedResourceResolverImpl implements EncryptedResourceResolver {
 
     private final BucketAccessService bucketAccessService;

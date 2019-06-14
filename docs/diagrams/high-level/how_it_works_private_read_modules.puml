@@ -1,0 +1,49 @@
+@startuml
+
+ skinparam ranksep 20
+ skinparam nodesep 10
+ skinparam Padding 10
+
+ cloud "Read from private space" {
+     actor User as u
+
+     component datasafe-privatestore as private {
+      rectangle ReadFromPrivate
+      rectangle EncryptedResourceResolver
+     }
+
+     component datasafe-directory as directory {
+      rectangle ResourceResolver
+      rectangle BucketAccessService
+      rectangle PrivateKeyService
+     }
+
+     component datasafe-encryption as encryption {
+      rectangle EncryptedDocumentReadService
+      rectangle CMSEncryptionService
+      rectangle PathEncryption
+     }
+
+     component datasafe-storage as storage {
+      rectangle StorageReadService
+     }
+
+     database "Storage" as PhysicalStorage
+     rectangle "Decrypted data" as Data
+
+     u --> ReadFromPrivate : 1. Read file\nfrom my\nprivate space
+     EncryptedResourceResolver --> PathEncryption : 2. Encrypt path using\nusers' path secret key
+     PathEncryption --> PrivateKeyService : 3. Get path\nencryption secret key
+     PrivateKeyService --> EncryptedResourceResolver : 4. Resolve\nencrypted path\nwithin private space
+     EncryptedResourceResolver --> ResourceResolver : 5. Resolve absolute\nresource location
+     ResourceResolver --> BucketAccessService : 6. Enhance resource\nlocation with credentials
+     BucketAccessService --> EncryptedDocumentReadService : 7. Resource location\nwith credentials
+     EncryptedDocumentReadService --> CMSEncryptionService : 8. Decrypt incoming\nstream using\nsecret key
+     CMSEncryptionService --> storage : 9. Read encrypted\nstream
+     StorageReadService --> PhysicalStorage : 10. Read blob\nresolving proper\nstorage based on protocol
+     StorageReadService --> CMSEncryptionService : 11. Data stream
+     CMSEncryptionService --> PrivateKeyService : 12. Get private key\nassociated with\secret key that\nencrypted file
+     CMSEncryptionService --> Data : 13. Decrypted data
+ }
+
+ @enduml

@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
 import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.resource.VersionedUri;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
  * http://example.com/some/path/75943a83-ae8a-4eaf-bffb-1a20f235416c
  * means version 75943a83-ae8a-4eaf-bffb-1a20f235416c of http://example.com/some/path
  */
+@RuntimeDelegate
 public class DefaultVersionEncoderDecoder implements VersionEncoderDecoder {
 
     private static final String SEPARATOR = "/";

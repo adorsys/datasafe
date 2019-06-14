@@ -5,6 +5,7 @@ import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.actions.ReadFromInbox;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
@@ -16,6 +17,7 @@ import java.io.InputStream;
  * {@link ResourceResolver} against INBOX and then reads and asymmetrically decrypts data from it
  * using {@link EncryptedDocumentReadService}
  */
+@RuntimeDelegate
 public class ReadFromInboxImpl implements ReadFromInbox {
 
     private final ResourceResolver resolver;

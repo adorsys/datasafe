@@ -2,6 +2,7 @@ package de.adorsys.datasafe.directory.impl.profile.serde;
 
 import com.google.gson.*;
 import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.experimental.Delegate;
 
@@ -12,6 +13,7 @@ import java.security.PublicKey;
  * User profile to json serializer/deserializer.
  * @implNote By default, is used to store profiles as json files.
  */
+@RuntimeDelegate
 public class GsonSerde {
 
     @Delegate

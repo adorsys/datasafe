@@ -8,6 +8,7 @@ import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
 import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.Getter;
 
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
  * @implNote Shows only versioned resources, won't show unversioned resources
  * @param <V> version tag
  */
+@RuntimeDelegate
 public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList<V> {
 
     @Getter

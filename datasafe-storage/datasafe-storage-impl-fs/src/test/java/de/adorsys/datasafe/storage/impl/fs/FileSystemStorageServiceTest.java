@@ -16,15 +16,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 class FileSystemStorageServiceTest extends BaseMockitoTest {
@@ -149,18 +147,41 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
     }
 
     @Test
-    void remove() {
-        createFileWithMessage();
-        // precondition:
-        assertThat(Paths.get(fileWithMsg.location().asURI())).exists();
+    @SneakyThrows
+    void removeRemovesOnlyFile() {
+        createFileWithMessage("in/some.txt", true);
+        createFileWithMessage("in/some_other.txt", false);
 
-        storageService.remove(fileWithMsg);
+        storageService.remove(BasePrivateResource.forAbsolutePrivate(storageDir.toUri().resolve("in/some_other.txt")));
 
-        assertThat(Paths.get(fileWithMsg.location().asURI())).doesNotExist();
+        assertThat(Files.walk(storageDir.resolve("in/some.txt"))).hasSize(1);
+        assertThrows(NoSuchFileException.class, () -> Files.walk(storageDir.resolve("in/some_other.txt")));
+    }
+
+    @Test
+    @SneakyThrows
+    void removeRecurses() {
+        createFileWithMessage("in/some.txt", true);
+        createFileWithMessage("in/deeper/some.txt", true);
+        createFileWithMessage("in/deeper/some_other.txt", false);
+        createFileWithMessage("in/deeper/and_deeper/some_other.txt", true);
+
+        storageService.remove(BasePrivateResource.forAbsolutePrivate(storageDir.toUri().resolve("in")));
+
+        assertThat(Files.walk(storageDir)).containsOnly(storageDir);
     }
 
     @SneakyThrows
     private void createFileWithMessage() {
-        Files.write(storageDir.resolve(FILE), MESSAGE.getBytes(), StandardOpenOption.CREATE);
+        createFileWithMessage(FILE, false);
+    }
+
+    @SneakyThrows
+    private void createFileWithMessage(String path, boolean mkDirs) {
+        Path resolved = storageDir.resolve(path);
+        if (mkDirs) {
+            resolved.getParent().toFile().mkdirs();
+        }
+        Files.write(resolved, MESSAGE.getBytes(), StandardOpenOption.CREATE);
     }
 }

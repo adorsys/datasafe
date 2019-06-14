@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.util.List;
+
 /**
  * Users' private profile - typically should be seen only by owner.
  */
@@ -35,4 +37,12 @@ public class UserPrivateProfile {
      * Where to store users' links to latest documents if software versioning is enabled.
      */
     private final AbsoluteLocation<PrivateResource> documentVersionStorage;
+
+    /**
+     * If all files reside within some specific folder, one can simply remove it when deregistering user,
+     * instead of removing files one-by-one - this is the list of such folders, or if we need to remove extra
+     * associated resources with user.
+     */
+    @NonNull
+    private final List<AbsoluteLocation<PrivateResource>> associatedResources;
 }

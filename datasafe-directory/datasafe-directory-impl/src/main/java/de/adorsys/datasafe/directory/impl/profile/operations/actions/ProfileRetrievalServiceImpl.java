@@ -2,6 +2,7 @@ package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
@@ -11,6 +12,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
+import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,21 +21,24 @@ import javax.inject.Inject;
 import java.io.InputStream;
 
 @Slf4j
+@RuntimeDelegate
 public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
 
     private final DFSConfig dfsConfig;
     private final StorageReadService readService;
     private final StorageCheckService checkService;
+    private final BucketAccessService access;
     private final GsonSerde serde;
     private final UserProfileCache userProfileCache;
 
     @Inject
-    public ProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageReadService readService,
-                                       StorageCheckService checkService, GsonSerde serde,
+    ProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageReadService readService,
+                                       StorageCheckService checkService, BucketAccessService access, GsonSerde serde,
                                        UserProfileCache userProfileCache) {
         this.dfsConfig = dfsConfig;
         this.readService = readService;
         this.checkService = checkService;
+        this.access = access;
         this.serde = serde;
         this.userProfileCache = userProfileCache;
     }
@@ -69,13 +74,13 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
      */
     @Override
     public boolean userExists(UserID ofUser) {
-        return checkService.objectExists(dfsConfig.privateProfile(ofUser)) &&
-                checkService.objectExists(dfsConfig.publicProfile((ofUser)));
+        return checkService.objectExists(access.withSystemAccess(dfsConfig.privateProfile(ofUser))) &&
+                checkService.objectExists(access.withSystemAccess(dfsConfig.publicProfile((ofUser))));
     }
 
     @SneakyThrows
     private <T> T readProfile(AbsoluteLocation resource, Class<T> clazz) {
-        try (InputStream is = readService.read(resource)) {
+        try (InputStream is = readService.read(access.withSystemAccess(resource))) {
             log.debug("read profile {}", resource.location().getPath());
             return serde.fromJson(new String(ByteStreams.toByteArray(is)), clazz);
         }

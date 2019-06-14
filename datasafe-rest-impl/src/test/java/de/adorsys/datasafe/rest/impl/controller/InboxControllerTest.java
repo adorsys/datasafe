@@ -1,20 +1,12 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import lombok.SneakyThrows;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,55 +16,56 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class InboxControllerTest extends BaseDatasafeEndpointTest {
+class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
 
-    private static final String TEST_USER = "test";
-    private static final String TEST_PASS = "test";
     private static final String TEST_PATH = "test.txt";
 
     @MockBean
-    private DefaultDatasafeServices dataSafeService;
+    protected DefaultDatasafeServices dataSafeService;
 
     @MockBean
     private InboxServiceImpl inboxService;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         when(dataSafeService.inboxService()).thenReturn(inboxService);
+        super.setup();
     }
 
     @SneakyThrows
     @Test
-    public void sendDocumentToInboxTest() {
+    void sendDocumentToInboxTest() {
         when(dataSafeService.inboxService().write(any())).thenReturn(new ByteArrayOutputStream());
 
         mvc.perform(put("/inbox/{path}", TEST_PATH)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
                 .header("user", TEST_USER)
+                .header("token", token)
         )
                 .andExpect(status().isOk());
     }
 
     @SneakyThrows
     @Test
-    public void readFromInboxTest() {
+    void readFromInboxTest() {
         when(dataSafeService.inboxService().read(any())).thenReturn(new ByteArrayInputStream("hello".getBytes()));
 
         mvc.perform(get("/inbox/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
+                .header("token", token)
                 .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
                 .andExpect(status().isOk());
     }
 
     @SneakyThrows
     @Test
-    public void deleteFromInboxTest() {
+    void deleteFromInboxTest() {
 
         mvc.perform(delete("/inbox/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
+                .header("token", token)
         ).andExpect(status().isOk());
     }
 }

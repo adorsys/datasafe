@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -51,6 +52,22 @@ public class VersionedDataTest extends WithStorageProvider {
 
         assertThat(readingResult).isEqualTo(MESSAGE_THREE);
         validateThereAreVersions(jane, 3);
+    }
+
+    @SneakyThrows
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void testUserIsRemovedWithFiles(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+        UserID userJohn = new UserID("john");
+        john = registerUser(userJohn.getValue());
+        writeDataToPrivate(john, "root.txt", MESSAGE_ONE);
+        writeDataToPrivate(john, "some/some.txt", MESSAGE_ONE);
+        writeDataToPrivate(john, "some/other/other.txt", MESSAGE_ONE);
+
+        profileRemovalService.deregister(john);
+
+        assertRootDirIsEmpty(descriptor);
     }
 
     @ParameterizedTest
