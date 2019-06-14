@@ -92,7 +92,7 @@ High-level overview of what happens when user shares his file with another user 
 
 ## Sharing files with another user
 High-level overview of what happens when user shares his file with another user using inbox service:
-![How inbox diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/datasafe/gh-pages/diagrams/how_it_works_inbox.puml&fmt=svg&vvv=1&sanitize=true)
+![How inbox diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/gh-pages/diagrams/how_it_works_inbox.puml&fmt=svg&vvv=1&sanitize=true)
 
 # Project overview
 In short, Datasafe [core logic](https://github.com/adorsys/datasafe/blob/master/datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/DefaultDatasafeServices.java)
