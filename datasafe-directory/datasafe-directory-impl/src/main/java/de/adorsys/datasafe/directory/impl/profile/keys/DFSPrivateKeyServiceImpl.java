@@ -7,7 +7,6 @@ import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -65,7 +64,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     @Override
     public SecretKeyIDWithKey documentEncryptionSecretKey(UserIDAuth forUser) {
         return new SecretKeyIDWithKey(
-                new KeyID(SYMM_KEY_ID.getValue()+"-"+forUser.getUserID().getValue()),
+                SYMM_KEY_ID,
                 (SecretKey) keyById(forUser, SYMM_KEY_ID.getValue())
         );
     }

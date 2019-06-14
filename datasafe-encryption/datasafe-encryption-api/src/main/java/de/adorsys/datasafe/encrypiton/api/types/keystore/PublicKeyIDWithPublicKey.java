@@ -14,6 +14,5 @@ import java.security.PublicKey;
 @RequiredArgsConstructor
 public class PublicKeyIDWithPublicKey {
     private final KeyID keyID;
-    //TODO: replace publicKey to X509Certificate
     private final PublicKey publicKey;
 }
