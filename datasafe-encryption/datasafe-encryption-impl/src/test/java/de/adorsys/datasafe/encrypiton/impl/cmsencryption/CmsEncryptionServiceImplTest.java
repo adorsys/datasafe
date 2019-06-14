@@ -8,6 +8,7 @@ import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionEx
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.util.Sets;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
 import org.bouncycastle.cms.CMSException;
@@ -50,14 +51,14 @@ public class CmsEncryptionServiceImplTest {
 
     @Test
     @SneakyThrows
-    public void testCmsStreamEnvelopeEncryptAndDecryptTestWithMultipleRecepients() {
+    public void testCmsStreamEnvelopeEncryptAndDecryptTestWithMultipleRecipients() {
         KeyStoreAccess keyStoreAccess1 = getKeyStoreAccess();
         KeyStoreAccess keyStoreAccess2 = getKeyStoreAccess();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream, Arrays.asList(
-                getPublicKeyIDWithPublicKey(keyStoreAccess1), getPublicKeyIDWithPublicKey(keyStoreAccess2)
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream, Sets.newHashSet(
+                Arrays.asList(getPublicKeyIDWithPublicKey(keyStoreAccess1), getPublicKeyIDWithPublicKey(keyStoreAccess2))
         ));
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
@@ -67,9 +68,7 @@ public class CmsEncryptionServiceImplTest {
 
         for(KeyStoreAccess keyStoreAccessItem : Arrays.asList(keyStoreAccess1, keyStoreAccess2)) {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-            PublicKeyIDWithX509Cert publicKeyIDWithX509Cert = keyStoreService.getCertificates(keyStoreAccessItem).stream().findFirst().get();
-            PrivateKey privateKey = keyStoreService.getPrivateKey(keyStoreAccessItem, publicKeyIDWithX509Cert.getKeyID());
-            InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream, privateKey, publicKeyIDWithX509Cert);
+            InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream, keyId -> getKey(keyId, keyStoreAccessItem));
 
             byte[] actualResult = toByteArray(decryptionStream);
 
@@ -77,8 +76,8 @@ public class CmsEncryptionServiceImplTest {
         }
     }
 
-    private PublicKeyIDWithX509Cert getPublicKeyIDWithPublicKey(KeyStoreAccess keyStoreAccess) {
-        return keyStoreService.getCertificates(keyStoreAccess).stream().findFirst().get();
+    private PublicKeyIDWithPublicKey getPublicKeyIDWithPublicKey(KeyStoreAccess keyStoreAccess) {
+        return keyStoreService.getPublicKeys(keyStoreAccess).stream().findFirst().get();
     }
 
     @Test
@@ -88,7 +87,11 @@ public class CmsEncryptionServiceImplTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                )
+        );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
@@ -115,7 +118,11 @@ public class CmsEncryptionServiceImplTest {
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                )
+        );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         closeQuietly(encryptionStream);
@@ -142,7 +149,11 @@ public class CmsEncryptionServiceImplTest {
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                )
+        );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         closeQuietly(encryptionStream);
@@ -161,7 +172,12 @@ public class CmsEncryptionServiceImplTest {
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                )
+        );
+
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
         byte[] byteArray = outputStream.toByteArray();
@@ -212,7 +228,12 @@ public class CmsEncryptionServiceImplTest {
         FileOutputStream fosEnFile = new FileOutputStream(encryptedFile);
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(
-                fosEnFile, publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                fosEnFile,
+                new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                )
+        );
 
         Files.copy(Paths.get(testFilePath), encryptionStream);
 

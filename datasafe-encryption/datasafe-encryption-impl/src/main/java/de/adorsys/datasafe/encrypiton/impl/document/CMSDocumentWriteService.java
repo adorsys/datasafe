@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.encrypiton.impl.document;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
@@ -38,8 +39,10 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
         OutputStream dfsSink = writeService.write(location);
         OutputStream encryptionSink = cms.buildEncryptionOutputStream(
                 dfsSink,
-                publicKey.getPublicKey(),
-                publicKey.getKeyID()
+                Sets.newHashSet(new PublicKeyIDWithPublicKey(
+                        publicKey.getKeyID(),
+                        publicKey.getPublicKey()
+                ))
         );
 
         return new CloseCoordinatingStream(encryptionSink, ImmutableList.of(encryptionSink, dfsSink));

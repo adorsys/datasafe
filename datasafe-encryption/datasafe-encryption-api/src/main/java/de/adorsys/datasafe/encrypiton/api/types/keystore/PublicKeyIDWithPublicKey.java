@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import java.security.PublicKey;
 @Getter
 @ToString(of = "keyID")
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public class PublicKeyIDWithPublicKey {
     private final KeyID keyID;
     private final PublicKey publicKey;

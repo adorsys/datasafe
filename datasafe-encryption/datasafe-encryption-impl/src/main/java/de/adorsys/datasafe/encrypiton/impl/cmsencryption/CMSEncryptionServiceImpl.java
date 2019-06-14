@@ -1,31 +1,27 @@
 package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 
+import com.google.common.collect.Sets;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithX509Cert;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.*;
 import org.bouncycastle.cms.jcajce.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.operator.jcajce.JcaAlgorithmParametersConverter;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.OAEPParameterSpec;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
 import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -44,37 +40,32 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         this.encryptionConfig = encryptionConfig;
     }
 
+    @Override
+    @SneakyThrows
+    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKeyIDWithPublicKey publicKeyIDWithPublicKey) {
+        Set<RecipientInfoGenerator> recipients = new HashSet<>();
+        recipients.add(
+                new JceKeyTransRecipientInfoGenerator(publicKeyIDWithPublicKey.getKeyID().getValue().getBytes(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                )
+        );
+        return streamEncrypt(dataContentStream, recipients, encryptionConfig.getAlgorithm());
+    }
+
     /**
      * Asymmetrical encryption-based stream, algorithm is provided by {@link CMSEncryptionConfig#getAlgorithm()}
      * Uses {@link RecipientId#keyTrans} recipient id.
      */
     @Override
     @SneakyThrows
-    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey,
-                                                    KeyID publicKeyID) {
-        RecipientInfoGenerator rec = new JceKeyTransRecipientInfoGenerator(publicKeyID.getValue().getBytes(),
-                publicKey);
+    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyIDWithPublicKey> publicKeyIDWithPublicKeySet) {
+        Set<RecipientInfoGenerator> recipients = new HashSet<>();
+        publicKeyIDWithPublicKeySet.forEach(publicKeyIDWithPublicKey -> recipients.add(
+                new JceKeyTransRecipientInfoGenerator(publicKeyIDWithPublicKey.getKeyID().getValue().getBytes(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+        )));
 
-        return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
-    }
-
-    @Override
-    @SneakyThrows
-    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, List<PublicKeyIDWithX509Cert> publicKeyIDWithCertMap) {
-        CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
-        JcaAlgorithmParametersConverter paramsConverter = new JcaAlgorithmParametersConverter();
-
-        for (PublicKeyIDWithX509Cert entry : publicKeyIDWithCertMap) {
-            gen.addRecipientInfoGenerator(
-                    new JceKeyTransRecipientInfoGenerator(
-                            entry.getCertificate(),
-                            paramsConverter.getAlgorithmIdentifier(
-                                    PKCSObjectIdentifiers.id_RSAES_OAEP, OAEPParameterSpec.DEFAULT)).setProvider("BC"));
-        }
-
-        return gen.open(
-                dataContentStream,
-                new JceCMSContentEncryptorBuilder(encryptionConfig.getAlgorithm()).setProvider("BC").build());
+        return streamEncrypt(dataContentStream, recipients, encryptionConfig.getAlgorithm());
     }
 
     /**
@@ -86,7 +77,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID keyID) {
         RecipientInfoGenerator rec = new JceKEKRecipientInfoGenerator(keyID.getValue().getBytes(), secretKey);
 
-        return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
+        return streamEncrypt(dataContentStream, Sets.newHashSet(rec), encryptionConfig.getAlgorithm());
     }
 
     /**
@@ -102,47 +93,29 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         if (recipientInfoStore.size() == 0) {
             throw new DecryptionException("CMS Envelope doesn't contain recipients");
         }
-        if (recipientInfoStore.size() > 1) {
-            throw new DecryptionException("Programming error. Handling of more that one recipient not done yet");
+
+        for (RecipientInformation recipientInfo : recipientInfoStore.getRecipients()) {
+            RecipientId rid = recipientInfo.getRID();
+
+            switch (rid.getType()) {
+                case RecipientId.keyTrans:
+                    PrivateKey privateKey = privateKey(keyById, rid);
+                    if(privateKey == null) {
+                        continue;
+                    }
+                    return recipientInfo.getContentStream(new JceKeyTransEnvelopedRecipient(privateKey))
+                            .getContentStream();
+                case RecipientId.kek:
+                    return recipientInfo.getContentStream(new JceKEKEnvelopedRecipient(secretKey(keyById, rid)))
+                            .getContentStream();
+                default:
+                    throw new DecryptionException("Programming error. Incorrect RecipientId");
+            }
+
         }
-        RecipientInformation recipientInfo = recipientInfoStore.getRecipients().stream().findFirst().get();
-        RecipientId rid = recipientInfo.getRID();
 
-
-
-        switch (rid.getType()) {
-            case RecipientId.keyTrans:
-                return recipientInfo.getContentStream(new JceKeyTransEnvelopedRecipient(privateKey(keyById, rid)))
-                        .getContentStream();
-            case RecipientId.kek:
-                return recipientInfo.getContentStream(new JceKEKEnvelopedRecipient(secretKey(keyById, rid)))
-                        .getContentStream();
-            default:
-                throw new DecryptionException("Programming error. Handling of more that one recipient not done yet");
-        }
+        throw new DecryptionException("Decryption error. Can't find appropriate private key");
     }
-
-    @Override
-    @SneakyThrows
-    public InputStream buildDecryptionInputStream(InputStream inputStream, Key key, PublicKeyIDWithX509Cert x509Cert) {
-        RecipientInformationStore recipientInfoStore = new CMSEnvelopedDataParser(inputStream).getRecipientInfos();
-
-        if (recipientInfoStore.size() == 0) {
-            throw new DecryptionException("CMS Envelope doesn't contain recipients");
-        }
-
-        Collection recipients = recipientInfoStore.getRecipients(new JceKeyTransRecipientId(x509Cert.getCertificate()));
-        Iterator it = recipients.iterator();
-        if (it.hasNext()) {
-            RecipientInformation recipient = (RecipientInformation) it.next();
-
-            return recipient.getContentStream(new JceKeyTransEnvelopedRecipient((PrivateKey) key)
-                    .setProvider("BC")).getContentStream();
-
-        }
-        throw new IllegalArgumentException("Recipient for certificate not found");
-    }
-
 
     private SecretKey secretKey(Function<String, Key> keyById, RecipientId rid) {
         String keyIdentifier = new String(((KEKRecipientId) rid).getKeyIdentifier());
@@ -156,10 +129,11 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
         return (PrivateKey) keyById.apply(subjectKeyIdentifier);
     }
 
-    private OutputStream streamEncrypt(OutputStream dataContentStream, RecipientInfoGenerator rec,
+    private OutputStream streamEncrypt(OutputStream dataContentStream, Set<RecipientInfoGenerator> rec,
                                        ASN1ObjectIdentifier algorithm) throws CMSException, IOException {
         CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
-        gen.addRecipientInfoGenerator(rec);
+        rec.forEach(gen::addRecipientInfoGenerator);
+
         return gen.open(dataContentStream, new JceCMSContentEncryptorBuilder(algorithm)
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
     }

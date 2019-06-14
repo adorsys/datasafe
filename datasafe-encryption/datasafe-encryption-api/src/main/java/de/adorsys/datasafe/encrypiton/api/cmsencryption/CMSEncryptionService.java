@@ -1,14 +1,13 @@
 package de.adorsys.datasafe.encrypiton.api.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithX509Cert;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 
 import javax.crypto.SecretKey;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
-import java.security.PublicKey;
-import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 
@@ -20,22 +19,22 @@ public interface CMSEncryptionService {
     /**
      * Builds asymmetrically encrypted stream using public-key cryptography.
      * @param dataContentStream Stream to encrypt
-     * @param publicKey User public key
-     * @param publicKeyID User public-key ID gets embedded into a stream, used for finding the private key to decrypt
+     * @param publicKeyIDWithPublicKey Contains user public key and
+     *        public-key ID which gets embedded into a stream, used for finding the private key to decrypt
      * @return Encrypted stream that wraps {@code dataContentStream}
      * @apiNote Closes underlying stream when result is closed
      */
-    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey, KeyID publicKeyID);
+    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKeyIDWithPublicKey publicKeyIDWithPublicKey);
 
     /**
-     * Builds asymmetrically encrypted stream using X509 certificate.
+     * Builds asymmetrically encrypted stream using public-key cryptography.
      * @param dataContentStream Stream to encrypt
-     * @param publicKeyIDWithCert List of user public-key ID and X509 certificates which uses for adding a few recipients
-     *                            to the envelope on the encryption stage
+     * @param publicKeyIDWithPublicKeySet Contains user public key and
+     *        public-key ID which gets embedded into a stream, used for finding the private key to decrypt
      * @return Encrypted stream that wraps {@code dataContentStream}
      * @apiNote Closes underlying stream when result is closed
      */
-    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, List<PublicKeyIDWithX509Cert> publicKeyIDWithCert);
+    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyIDWithPublicKey> publicKeyIDWithPublicKeySet);
 
     /**
      * Builds symmetrically encrypted stream.
@@ -55,15 +54,4 @@ public interface CMSEncryptionService {
      * @apiNote Closes underlying stream when result is closed
      */
     InputStream buildDecryptionInputStream(InputStream inputStream, Function<String, Key> keyById);
-
-    /**
-     * Builds decrypted stream out of encrypted one.
-     * @param inputStream Stream to decrypt
-     * @param key uses for decrypt content
-     * @param x509Cert uses for obtain recipients from envelop
-     * @return Decrypted stream that wraps {@code inputStream}
-     * @apiNote Closes underlying stream when result is closed
-     */
-    InputStream buildDecryptionInputStream(InputStream inputStream, Key key, PublicKeyIDWithX509Cert x509Cert);
-
 }

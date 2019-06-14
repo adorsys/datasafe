@@ -46,8 +46,6 @@ public interface KeyStoreService {
      */
     List<PublicKeyIDWithPublicKey> getPublicKeys(KeyStoreAccess keyStoreAccess);
 
-    List<PublicKeyIDWithX509Cert> getCertificates(KeyStoreAccess keyStoreAccess);
-
     /**
      * Reads private key from the keystore.
      * @param keyStoreAccess Key to open keystore and read key, (both
