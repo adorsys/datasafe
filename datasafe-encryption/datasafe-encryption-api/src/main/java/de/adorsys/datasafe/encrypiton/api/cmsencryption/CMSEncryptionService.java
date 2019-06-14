@@ -26,6 +26,15 @@ public interface CMSEncryptionService {
      * @apiNote Closes underlying stream when result is closed
      */
     OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey, KeyID publicKeyID);
+
+    /**
+     * Builds asymmetrically encrypted stream using X509 certificate.
+     * @param dataContentStream Stream to encrypt
+     * @param publicKeyIDWithCert List of user public-key ID and X509 certificates which uses for adding a few recipients
+     *                            to the envelope on the encryption stage
+     * @return Encrypted stream that wraps {@code dataContentStream}
+     * @apiNote Closes underlying stream when result is closed
+     */
     OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, List<PublicKeyIDWithX509Cert> publicKeyIDWithCert);
 
     /**
@@ -46,6 +55,15 @@ public interface CMSEncryptionService {
      * @apiNote Closes underlying stream when result is closed
      */
     InputStream buildDecryptionInputStream(InputStream inputStream, Function<String, Key> keyById);
+
+    /**
+     * Builds decrypted stream out of encrypted one.
+     * @param inputStream Stream to decrypt
+     * @param key uses for decrypt content
+     * @param x509Cert uses for obtain recipients from envelop
+     * @return Decrypted stream that wraps {@code inputStream}
+     * @apiNote Closes underlying stream when result is closed
+     */
     InputStream buildDecryptionInputStream(InputStream inputStream, Key key, PublicKeyIDWithX509Cert x509Cert);
 
 }
