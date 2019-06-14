@@ -6,10 +6,13 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
@@ -17,6 +20,7 @@ import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +33,7 @@ import java.util.concurrent.Executors;
 
 @Slf4j
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
-    private CustomlyBuiltDatasafeServices customlyBuiltDatasafeServices;
+    private DefaultDatasafeServices customlyBuiltDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private final static ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
     private final static String S3_PREFIX="s3://";
@@ -40,18 +44,34 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
+
+        BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
+        PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry,  args -> new SwitchablePathEncryptionImpl(args.getBucketPathEncryptionService(), args.getPrivateKeyService()));
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
+            LogStringFrame lsf = new LogStringFrame();
+            lsf.add("FILESYSTEM");
+            lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
+            lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+            log.info(lsf.toString());
             URI systemRoot = filesystemDFSCredentials.getRoot().toAbsolutePath().toUri();
-            customlyBuiltDatasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
+            customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()).userProfileLocation(new CustomizedUserProfileLocation(systemRoot)))
                     .storage(new FileSystemStorageService(filesystemDFSCredentials.getRoot()))
+                    .overridesRegistry(baseOverridesRegistry)
                     .build();
 
             log.info("build DFS to FILESYSTEM with root " + filesystemDFSCredentials.getRoot());
         }
         if (dfsCredentials instanceof AmazonS3DFSCredentials) {
             AmazonS3DFSCredentials amazonS3DFSCredentials = (AmazonS3DFSCredentials) dfsCredentials;
+            LogStringFrame lsf = new LogStringFrame();
+            lsf.add("AMAZON S3");
+            lsf.add("root bucket     : " + amazonS3DFSCredentials.getRootBucket());
+            lsf.add("url             : " + amazonS3DFSCredentials.getUrl());
+            lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
+            lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+            log.info(lsf.toString());
             AmazonS3 amazons3 = AmazonS3ClientBuilder.standard()
                     .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(amazonS3DFSCredentials.getUrl(), amazonS3DFSCredentials.getRegion()))
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(amazonS3DFSCredentials.getAccessKey(), amazonS3DFSCredentials.getSecretKey())))
@@ -63,9 +83,10 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                 amazons3.createBucket(amazonS3DFSCredentials.getContainer());
             }
             String systemRoot = S3_PREFIX + amazonS3DFSCredentials.getRootBucket();
-            customlyBuiltDatasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
+            customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()).userProfileLocation(new CustomizedUserProfileLocation(systemRoot)))
                     .storage(new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE))
+                    .overridesRegistry(baseOverridesRegistry)
                     .build();
             log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
         }

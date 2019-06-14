@@ -221,6 +221,8 @@
                                 <ignoredUnusedDeclaredDependency>org.drools:drools-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.drools:drools-compiler</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.jetbrains:annotations</ignoredUnusedDeclaredDependency>
+
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>org.kie:kie-api</ignoredUsedUndeclaredDependency>

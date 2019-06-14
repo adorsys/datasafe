@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+
 /**
  * Provides different storage types - filesystem, minio, etc. to be used in tests.
  */
@@ -47,18 +48,22 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String minioRegion = "eu-central-1";
     private static String minioBucketName = "home";
     private static String minioUrl = "http://localhost";
-    private static String prefix = UUID.randomUUID().toString();
+    //private static String minioPrefix = UUID.randomUUID().toString();
+    private static String minioPrefix = "deeper/and/deeper";
+    private static String minioMappedUrl;
 
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
     private static String cephRegion = "eu-central-1";
     private static String cephBucketName = "home";
     private static String cephUrl = "http://localhost";
+    private static String cephMappedUrl;
 
     private static String amazonAccessKeyID = System.getProperty("AWS_ACCESS_KEY");
     private static String amazonSecretAccessKey = System.getProperty("AWS_SECRET_KEY");
     private static String amazonRegion = System.getProperty("AWS_REGION", "eu-central-1");
     private static String amazonBucket = System.getProperty("AWS_BUCKET", "adorsys-docusafe");
+    private static String amazonMappedUrl;
 
     private static GenericContainer minioContainer;
     private static GenericContainer cephContainer;
@@ -74,6 +79,9 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     @BeforeAll
     static void init(@TempDir Path tempDir) {
+        log.info("Executing init");
+        // TODO fixme
+        log.info(""); // for some strange reason, the newline of the previous statement is gone
         WithStorageProvider.tempDir = tempDir;
 
         minioStorage = Suppliers.memoize(() -> {
@@ -101,11 +109,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         if (null != minio) {
-            removeObjectFromS3(minio, minioBucketName, prefix);
+            removeObjectFromS3(minio, minioBucketName, minioPrefix);
         }
 
         if (null != amazonS3) {
-            removeObjectFromS3(amazonS3, amazonBucket, prefix);
+            removeObjectFromS3(amazonS3, amazonBucket, minioPrefix);
         }
     }
 
@@ -130,16 +138,28 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     @ValueSource
     protected static Stream<WithStorageProvider.StorageDescriptor> allStorages() {
         return Stream.of(
-                new StorageDescriptor(
-                        StorageDescriptorName.FILESYSTEM,
-                        () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
-                        new Uri(tempDir.toUri()),
-                        null, null, null,
-                        tempDir.toUri().toASCIIString()
-                ),
+                fs(),
                 minio(),
                 s3()
         ).filter(Objects::nonNull);
+    }
+
+    @ValueSource
+    protected static Stream<WithStorageProvider.StorageDescriptor> minioStorage() {
+        return Stream.of(
+                minio()
+        ).filter(Objects::nonNull);
+    }
+
+
+    private static WithStorageProvider.StorageDescriptor fs() {
+        return new StorageDescriptor(
+                StorageDescriptorName.FILESYSTEM,
+                () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
+                new Uri(tempDir.toUri()),
+                null, null, null,
+                tempDir.toUri().toASCIIString()
+        );
     }
 
     protected static StorageDescriptor minio() {
@@ -149,11 +169,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     minioStorage.get();
                     return new S3StorageService(minio, minioBucketName, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + minioBucketName + "/" + prefix + "/"),
+                new Uri("s3://" + minioBucketName + "/" + minioPrefix + "/"),
                 minioAccessKeyID,
                 minioSecretAccessKey,
                 minioRegion,
-                minioBucketName
+                minioBucketName + "/" + minioPrefix
         );
     }
 
@@ -164,11 +184,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     cephStorage.get();
                     return new S3StorageService(ceph, cephBucketName, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + cephBucketName + "/" + prefix + "/"),
+                new Uri("s3://" + cephBucketName + "/" + minioPrefix + "/"),
                 cephAccessKeyID,
                 cephSecretAccessKey,
                 cephRegion,
-                cephBucketName
+                cephBucketName  + "/" + minioPrefix
         );
     }
 
@@ -183,11 +203,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     amazonSotrage.get();
                     return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + amazonBucket + "/" + prefix + "/"),
+                new Uri("s3://" + amazonBucket + "/" + minioPrefix + "/"),
                 amazonAccessKeyID,
                 amazonSecretAccessKey,
                 amazonRegion,
-                amazonBucket
+                amazonBucket + "/" + minioPrefix
         );
     }
 
@@ -206,12 +226,15 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             return;
         }
 
-        amazonS3 = AmazonS3ClientBuilder.standard()
+                amazonS3 = AmazonS3ClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(
                         new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
                 )
                 .withRegion(amazonRegion)
                 .build();
+
+        amazonMappedUrl = "s3://" + amazonBucket + "/" + minioPrefix + "/";
+        log.info("Amazon napped URL:" + amazonMappedUrl);
     }
 
     private static void startMinio() {
@@ -225,10 +248,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
         minioContainer.start();
         Integer mappedPort = minioContainer.getMappedPort(9000);
-        log.info("Mapped port: " + mappedPort);
+        minioMappedUrl = minioUrl + ":" + mappedPort;
+        log.info("Minio mapped URL:" + minioMappedUrl);
         minio = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration(minioUrl + ":" + mappedPort, minioRegion)
+                        new AwsClientBuilder.EndpointConfiguration(minioMappedUrl, minioRegion)
                 )
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
@@ -256,10 +280,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
         cephContainer.start();
         Integer mappedPort = cephContainer.getMappedPort(9000);
-        log.info("Mapped port: " + mappedPort);
+        log.info("Ceph mapped URL:" + cephMappedUrl);
+        cephMappedUrl = cephUrl + ":" + mappedPort;
         ceph = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration(cephUrl + ":" + mappedPort, cephRegion)
+                        new AwsClientBuilder.EndpointConfiguration(cephMappedUrl, cephRegion)
                 )
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
@@ -286,6 +311,15 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         private final String region;
         private final String rootBucket;
 
+        public String getMappedUrl() {
+            switch(name) {
+                case MINIO: return minioMappedUrl;
+                case CEPH: return cephMappedUrl;
+                case AMAZON: return amazonMappedUrl;
+                case FILESYSTEM: return null;
+                default: throw new RuntimeException("missing switch for " + name);
+            }
+        }
     }
 
     public enum StorageDescriptorName {

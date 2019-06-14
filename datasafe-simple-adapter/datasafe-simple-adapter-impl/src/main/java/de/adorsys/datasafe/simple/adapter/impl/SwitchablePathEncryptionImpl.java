@@ -4,14 +4,12 @@ import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImpl;
-import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 
 @Slf4j
-@RuntimeDelegate
 public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
 
     private static final String NO_BUCKETPATH_ENCRYPTION = "SC-NO-BUCKETPATH-ENCRYPTION";
@@ -23,7 +21,7 @@ public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
         super(bucketPathEncryptionService, privateKeyService);
     }
 
-    private static boolean checkIsPathEncryptionToUse() {
+    public static boolean checkIsPathEncryptionToUse() {
         if (System.getProperty(NO_BUCKETPATH_ENCRYPTION) != null) {
             String value = System.getProperty(NO_BUCKETPATH_ENCRYPTION);
             if (value.equalsIgnoreCase(Boolean.FALSE.toString())) {
