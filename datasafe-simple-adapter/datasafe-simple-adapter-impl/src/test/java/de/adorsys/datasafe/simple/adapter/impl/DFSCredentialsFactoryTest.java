@@ -18,6 +18,9 @@ public class DFSCredentialsFactoryTest {
     public void before() {
         String amazonBeforeTest = System.getProperty(DFSCredentialsFactory.AMAZON_ENV);
         String fsBeforeTest = System.getProperty(DFSCredentialsFactory.FILESYSTEM_ENV);
+        Properties sysProps = System.getProperties();
+        sysProps.remove(DFSCredentialsFactory.AMAZON_ENV);
+        sysProps.remove(DFSCredentialsFactory.FILESYSTEM_ENV);
     }
 
     @AfterEach
@@ -37,13 +40,8 @@ public class DFSCredentialsFactoryTest {
     }
     @Test
     public void forFileSystem() {
-
-        Properties sysProps = System.getProperties();
-        sysProps.remove(DFSCredentialsFactory.AMAZON_ENV);
-        sysProps.remove(DFSCredentialsFactory.FILESYSTEM_ENV);
         DFSCredentials dfsCredentials = DFSCredentialsFactory.getFromEnvironmnet();
         Assertions.assertTrue(dfsCredentials instanceof FilesystemDFSCredentials);
-
         String defaultPath = "affe/1/2/3";
         System.setProperty(DFSCredentialsFactory.FILESYSTEM_ENV, defaultPath);
         dfsCredentials = DFSCredentialsFactory.getFromEnvironmnet();
@@ -55,17 +53,11 @@ public class DFSCredentialsFactoryTest {
 
     @Test
     public void forAmazon() {
-
-        Properties sysProps = System.getProperties();
-        sysProps.remove(DFSCredentialsFactory.AMAZON_ENV);
-        sysProps.remove(DFSCredentialsFactory.FILESYSTEM_ENV);
-
         String uri = "http://go.here";
         String accessKey = "accesskey";
         String secretKey = "secretKey";
         String region = "region";
         String bucket = "/root/bucket/a";
-
 
         System.setProperty(DFSCredentialsFactory.AMAZON_ENV, uri + "," + accessKey + "," + secretKey + "," + region + "," + bucket);
         DFSCredentials dfsCredentials = DFSCredentialsFactory.getFromEnvironmnet();
