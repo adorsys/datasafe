@@ -20,8 +20,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.file.FileSystems;
 import java.security.Security;
+import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -149,29 +151,79 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
             Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, dsDocument.getDocumentFQN()));
         }
         List<DocumentFQN> listFound = simpleDatasafeService.list(userIDAuth, root, ListRecursiveFlag.TRUE);
-        for (DocumentFQN doc : listFound) {
-            log.debug("found:" + doc);
-        }
+        show("full list recursive ", listFound);
         Assertions.assertTrue(created.containsAll(listFound));
         Assertions.assertTrue(listFound.containsAll(created));
 
         listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("subdir_0"), ListRecursiveFlag.TRUE);
-        for (DocumentFQN doc : listFound) {
-            log.debug("found:" + doc);
-        }
+        show("subdir 0 subdir 0 recursive", listFound);
         Assertions.assertEquals(6, listFound.size());
 
         listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("subdir_0"), ListRecursiveFlag.FALSE);
-        for (DocumentFQN doc : listFound) {
-            log.debug("found:" + doc);
-        }
+        show("subidr 0 subdir 0 non recursive", listFound);
         Assertions.assertEquals(2, listFound.size());
 
         listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("//subdir_0//"), ListRecursiveFlag.FALSE);
+        show("subidr 0 subdir 0 non recursive with more slases", listFound);
+        Assertions.assertEquals(2, listFound.size());
+
+        DocumentFQN oneDoc = new DocumentFQN("affe/subdir_0/subdir_0/file1txt");
+        Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, oneDoc));
+        simpleDatasafeService.deleteDocument(userIDAuth, oneDoc);
+        Assertions.assertFalse(simpleDatasafeService.documentExists(userIDAuth, oneDoc));
+
+        simpleDatasafeService.deleteFolder(userIDAuth, root.addDirectory("subdir_1"));
+        listFound = simpleDatasafeService.list(userIDAuth, root, ListRecursiveFlag.TRUE);
+        show("full list recursive after delete subdir 1", listFound);
+        Assertions.assertEquals(15, listFound.size());
+        DocumentFQN otherDoc = new DocumentFQN("affe/subdir_0/subdir_0/file0txt");
+        simpleDatasafeService.deleteDocument(userIDAuth, otherDoc);
+        listFound = simpleDatasafeService.list(userIDAuth, root, ListRecursiveFlag.TRUE);
+        show("full list recursive after delete one file", listFound);
+        Assertions.assertEquals(14, listFound.size());
+    }
+
+    @ParameterizedTest
+    @MethodSource({"parameterCombination"})
+    public void testTwoUsers(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
+        myinit(descriptor, encryption);
+        mystart();
+        UserIDAuth userIDAuth2 = new UserIDAuth(new UserID("peter2"), new ReadKeyPassword("password2"));
+        simpleDatasafeService.createUser(userIDAuth2);
+
+        String content = "content of document";
+        String path = "a/b/c.txt";
+        DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
+        simpleDatasafeService.storeDocument(userIDAuth, document);
+
+        simpleDatasafeService.storeDocument(userIDAuth2, document);
+
+        // tiny checks, that the password is important
+        UserIDAuth wrongPasswordUser1 = new UserIDAuth(userIDAuth.getUserID(),new ReadKeyPassword(UUID.randomUUID().toString()));
+        Assertions.assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser1, new DocumentFQN(path)));
+
+        UserIDAuth wrongPasswordUser2 = new UserIDAuth(userIDAuth2.getUserID(),new ReadKeyPassword(UUID.randomUUID().toString()));
+        Assertions.assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser2, new DocumentFQN(path)));
+
+        // now read the docs with the correct password
+        DSDocument dsDocument = simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path));
+        Assertions.assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
+
+        DSDocument dsDocument2 = simpleDatasafeService.readDocument(userIDAuth2, new DocumentFQN(path));
+        Assertions.assertArrayEquals(content.getBytes(), dsDocument2.getDocumentContent().getValue());
+
+        simpleDatasafeService.destroyUser(userIDAuth2);
+        Assertions.assertFalse(simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN()));
+        Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
+
+    }
+
+    private void show(String message, List<DocumentFQN> listFound) {
+        log.debug("---------------------------------");
+        log.debug(message);
         for (DocumentFQN doc : listFound) {
             log.debug("found:" + doc);
         }
-        Assertions.assertEquals(2, listFound.size());
     }
 
 }

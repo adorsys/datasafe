@@ -20,9 +20,12 @@ import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +54,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
-
         BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
         PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args -> new SwitchablePathEncryptionImpl(args.getBucketPathEncryptionService(), args.getPrivateKeyService()));
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
@@ -105,7 +107,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             throw new SimpleAdapterException("user \"" + userIDAuth.getUserID().getValue() + "\" already exists");
         }
         customlyBuiltDatasafeServices.userProfile().registerUsingDefaults(userIDAuth);
-
     }
 
     @Override
@@ -120,7 +121,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public void registerDFSCredentials(UserIDAuth userIDAuth, DFSCredentials dfsCredentials) {
-
+        throw new SimpleAdapterException("NYI");
     }
 
     @Override
@@ -145,17 +146,19 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public void storeDocumentStream(UserIDAuth userIDAuth, DSDocumentStream dsDocumentStream) {
-
+        throw new SimpleAdapterException("NYI");
     }
 
     @Override
     public DSDocumentStream readDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        return null;
+        throw new SimpleAdapterException("NYI");
     }
 
     @Override
     public void deleteDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-
+        PrivateResource resource = BasePrivateResource.forPrivate(documentFQN.getValue());
+        RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
+        customlyBuiltDatasafeServices.privateService().remove(request);
     }
 
     @Override
@@ -165,7 +168,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public void deleteFolder(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN) {
-
+        list(userIDAuth, documentDirectoryFQN, ListRecursiveFlag.TRUE).stream().forEach(file -> {
+            PrivateResource resource = BasePrivateResource.forPrivate(file.getValue());
+            RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
+            customlyBuiltDatasafeServices.privateService().remove(request);
+        });
     }
 
     @Override
@@ -183,31 +190,31 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public List<DocumentFQN> listInbox(UserIDAuth userIDAuth) {
-        return null;
+        throw new SimpleAdapterException("NYI");
     }
 
     @Override
     public void writeDocumentToInboxOfUser(UserID receiverUserID, DSDocument document, DocumentFQN destDocumentFQN) {
-
+        throw new SimpleAdapterException("NYI");
     }
 
     @Override
     public DSDocument readDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN source) {
-        return null;
+        throw new SimpleAdapterException("NYI");
     }
 
     @Override
     public void deleteDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-
+        throw new SimpleAdapterException("NYI");
     }
 
     @Override
     public void moveDocumnetToInboxOfUser(UserIDAuth userIDAuth, UserID receiverUserID, DocumentFQN sourceDocumentFQN, DocumentFQN destDocumentFQN, MoveType moveType) {
-
+        throw new SimpleAdapterException("NYI");
     }
 
     @Override
     public DSDocument moveDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN source, DocumentFQN destination) {
-        return null;
+        throw new SimpleAdapterException("NYI");
     }
 }
