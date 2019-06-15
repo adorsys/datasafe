@@ -154,6 +154,24 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         }
         Assertions.assertTrue(created.containsAll(listFound));
         Assertions.assertTrue(listFound.containsAll(created));
+
+        listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("subdir_0"), ListRecursiveFlag.TRUE);
+        for (DocumentFQN doc : listFound) {
+            log.debug("found:" + doc);
+        }
+        Assertions.assertEquals(6, listFound.size());
+
+        listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("subdir_0"), ListRecursiveFlag.FALSE);
+        for (DocumentFQN doc : listFound) {
+            log.debug("found:" + doc);
+        }
+        Assertions.assertEquals(2, listFound.size());
+
+        listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("//subdir_0//"), ListRecursiveFlag.FALSE);
+        for (DocumentFQN doc : listFound) {
+            log.debug("found:" + doc);
+        }
+        Assertions.assertEquals(2, listFound.size());
     }
 
 }

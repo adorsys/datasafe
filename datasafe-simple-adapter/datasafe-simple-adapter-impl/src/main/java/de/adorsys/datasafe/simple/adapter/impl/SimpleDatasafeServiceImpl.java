@@ -26,6 +26,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -172,7 +173,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         List<AbsoluteLocation<ResolvedResource>> collect = customlyBuiltDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, documentDirectoryFQN.getValue())).collect(Collectors.toList());
         List<DocumentFQN> l  = new ArrayList<>();
         collect.forEach(it -> l.add(new DocumentFQN(it.getResource().asPrivate().decryptedPath().toASCIIString())));
-        return l;
+        if (recursiveFlag.equals(ListRecursiveFlag.TRUE)) {
+            return l;
+        }
+        int numberOfSlashesExpected = 1 + StringUtils.countMatches(documentDirectoryFQN.getValue(), "/");
+        return l.stream().filter(el -> StringUtils.countMatches(el.getValue(), "/") == numberOfSlashesExpected).collect(Collectors.toList());
     }
 
     @Override
