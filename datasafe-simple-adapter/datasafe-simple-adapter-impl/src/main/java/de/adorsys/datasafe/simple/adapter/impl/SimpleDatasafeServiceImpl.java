@@ -43,7 +43,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private final static ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
-    private final static String S3_PREFIX="s3://";
+    private final static String S3_PREFIX = "s3://";
 
 
     public SimpleDatasafeServiceImpl() {
@@ -53,7 +53,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
 
         BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
-        PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry,  args -> new SwitchablePathEncryptionImpl(args.getBucketPathEncryptionService(), args.getPrivateKeyService()));
+        PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args -> new SwitchablePathEncryptionImpl(args.getBucketPathEncryptionService(), args.getPrivateKeyService()));
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
             LogStringFrame lsf = new LogStringFrame();
@@ -170,9 +170,10 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public List<DocumentFQN> list(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN, ListRecursiveFlag recursiveFlag) {
-        List<AbsoluteLocation<ResolvedResource>> collect = customlyBuiltDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, documentDirectoryFQN.getValue())).collect(Collectors.toList());
-        List<DocumentFQN> l  = new ArrayList<>();
-        collect.forEach(it -> l.add(new DocumentFQN(it.getResource().asPrivate().decryptedPath().toASCIIString())));
+        List<DocumentFQN> l = customlyBuiltDatasafeServices.privateService().list(
+                ListRequest.forDefaultPrivate(userIDAuth, documentDirectoryFQN.getValue()))
+                .map(it -> new DocumentFQN(it.getResource().asPrivate().decryptedPath().toASCIIString()))
+                .collect(Collectors.toList());
         if (recursiveFlag.equals(ListRecursiveFlag.TRUE)) {
             return l;
         }
