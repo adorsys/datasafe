@@ -35,6 +35,9 @@ public class DocumentController {
 
     private final DefaultDatasafeServices dataSafeService;
 
+    /**
+     * Reads user's private file.
+     */
     @SneakyThrows
     @GetMapping(value = "/document/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
     public void readDocument(@RequestHeader String user,
@@ -52,6 +55,9 @@ public class DocumentController {
         log.debug("User: {}, read private file from: {}", user, resource);
     }
 
+    /**
+     * Writes file to user's private space.
+     */
     @SneakyThrows
     @PutMapping(value = "/document/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
     public void writeDocument(@RequestHeader String user,
@@ -68,6 +74,9 @@ public class DocumentController {
         log.debug("User: {}, write private file to: {}", user, path);
     }
 
+    /**
+     * lists files in user's private space.
+     */
     @GetMapping("/documents/{path:.*}")
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
@@ -81,6 +90,9 @@ public class DocumentController {
         return documentList;
     }
 
+    /**
+     * deletes files from user's private space.
+     */
     @DeleteMapping("/document/{path:.*}")
     public void deleteDocument(@RequestHeader String user,
                                @RequestHeader String password,

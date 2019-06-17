@@ -28,14 +28,17 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
 @Slf4j
 @RestController
-@RequestMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+@RequestMapping
 @RequiredArgsConstructor
 public class VersionController {
 
     private final VersionedDatasafeServices versionedDatasafeServices;
 
-    @GetMapping("/versioned/{path:.*}")
-    public List<String> listDocuments(@RequestHeader String user,
+    /**
+     * lists latest versions of files in user's private space.
+     */
+    @GetMapping(value = "/versioned/{path:.*}", produces = APPLICATION_JSON_VALUE)
+    public List<String> listVersionedDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
@@ -47,9 +50,12 @@ public class VersionController {
         return documentList;
     }
 
+    /**
+     * reads latest version of file from user's private space.
+     */
     @SneakyThrows
     @GetMapping(value = "/versioned/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
-    public void readDocument(@RequestHeader String user,
+    public void readVersionedDocument(@RequestHeader String user,
                              @RequestHeader String password,
                              @PathVariable String path,
                              HttpServletResponse response) {
@@ -64,9 +70,12 @@ public class VersionController {
         log.debug("User: {}, read private file from: {}", user, resource);
     }
 
+    /**
+     * writes latest version of file to user's private space.
+     */
     @SneakyThrows
     @PutMapping(value = "/versioned/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
-    public void writeDocument(@RequestHeader String user,
+    public void writeVersionedDocument(@RequestHeader String user,
                               @RequestHeader String password,
                               @PathVariable String path,
                               InputStream is) {
@@ -80,8 +89,11 @@ public class VersionController {
         log.debug("User: {}, write private file to: {}", user, path);
     }
 
+    /**
+     * deletes latest version of file from user's private space.
+     */
     @DeleteMapping("/versioned/{path:.*}")
-    public void deleteDocument(@RequestHeader String user,
+    public void deleteVersionedDocument(@RequestHeader String user,
                                @RequestHeader String password,
                                @PathVariable String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
@@ -91,7 +103,10 @@ public class VersionController {
         log.debug("User: {}, delete private file: {}", user, resource);
     }
 
-    @GetMapping("/versions/{path:.*}")
+    /**
+     * list of file versions.
+     */
+    @GetMapping(value = "/versions/list/{path:.*}", produces = APPLICATION_JSON_VALUE)
     public List<String> versionsOf(@RequestHeader String user,
                                    @RequestHeader String password,
                                    @PathVariable(required = false) String path) {
