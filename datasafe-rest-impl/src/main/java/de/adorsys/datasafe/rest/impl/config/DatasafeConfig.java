@@ -2,7 +2,9 @@ package de.adorsys.datasafe.rest.impl.config;
 
 import com.amazonaws.services.s3.AmazonS3;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.DaggerVersionedDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -48,6 +50,18 @@ public class DatasafeConfig {
         Security.addProvider(new BouncyCastleProvider());
 
         return DaggerDefaultDatasafeServices
+                .builder()
+                .config(dfsConfig)
+                .storage(storageService)
+                .build();
+    }
+
+    @Bean
+    VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig) {
+
+        Security.addProvider(new BouncyCastleProvider());
+
+        return DaggerVersionedDatasafeServices
                 .builder()
                 .config(dfsConfig)
                 .storage(storageService)

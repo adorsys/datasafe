@@ -4,6 +4,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User INBOX REST api.
@@ -76,5 +79,16 @@ public class InboxController {
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         dataSafeService.inboxService().remove(request);
         log.debug("User {}, delete from INBOX file {}", user, resource);
+    }
+
+    @GetMapping("/list")
+    public List<String> listDocuments(@RequestHeader String user,
+                                      @RequestHeader String password) {
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        List<String> inboxList = dataSafeService.inboxService().list(ListRequest.forDefaultPrivate(userIDAuth, "./"))
+                .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
+                .collect(Collectors.toList());
+        log.debug("User's {} inbox contains {} items", user, inboxList.size());
+        return inboxList;
     }
 }

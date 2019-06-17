@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
@@ -20,7 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final DefaultDatasafeServices dataSafeService;
+    private final VersionedDatasafeServices dataSafeService;
 
     /**
      * Registers user profile using default Datasafe convention - user profile, user private and inbox space
