@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -82,7 +82,7 @@ public class DocumentController {
                                       @RequestHeader String password,
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        path = "./" + Objects.toString(path, "");
+        path = Optional.ofNullable(path).orElse("./");
         List<String> documentList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                 .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
                 .collect(Collectors.toList());

@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -42,7 +43,7 @@ public class VersionController {
                                       @RequestHeader String password,
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        path = "./" + Objects.toString(path, "");
+        path = Optional.ofNullable(path).orElse("./");
         List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(ListRequest.forDefaultPrivate(userIDAuth, path))
                 .map(e -> e.absolute().getResource().decryptedPath().getPath())
                 .collect(Collectors.toList());
@@ -111,7 +112,7 @@ public class VersionController {
                                    @RequestHeader String password,
                                    @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        path = "./" + Objects.toString(path, "");
+        path = Optional.ofNullable(path).orElse("./");
         PrivateResource resource = BasePrivateResource.forPrivate(path);
 
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.<UserIDAuth, PrivateResource>builder()
