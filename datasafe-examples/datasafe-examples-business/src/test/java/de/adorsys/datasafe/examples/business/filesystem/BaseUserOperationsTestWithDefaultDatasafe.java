@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -124,7 +125,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
 
         // We send message "Hello John" to John just by his username
         try (OutputStream os = defaultDatasafeServices.inboxService()
-                .write(WriteRequest.forDefaultPublic(johnUsername, "hello.txt"))) {
+                .write(WriteRequest.forDefaultPublic(Collections.singleton(johnUsername), "hello.txt"))) {
             os.write("Hello John".getBytes(StandardCharsets.UTF_8));
         }
         // END_SNIPPET
@@ -271,7 +272,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
     @SneakyThrows
     private void shareMessage(UserID forUser, String messageName, String message) {
         try (OutputStream os = defaultDatasafeServices.inboxService()
-                .write(WriteRequest.forDefaultPublic(forUser, messageName))) {
+                .write(WriteRequest.forDefaultPublic(Collections.singleton(forUser), messageName))) {
             os.write(message.getBytes(StandardCharsets.UTF_8));
         }
     }

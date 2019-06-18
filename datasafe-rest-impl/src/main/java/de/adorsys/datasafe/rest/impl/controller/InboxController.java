@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * User INBOX REST api.
@@ -32,20 +34,20 @@ public class InboxController {
     private final DefaultDatasafeServices dataSafeService;
 
     /**
-     * Sends file to users' INBOX.
+     * Sends file to multiple users' INBOX.
      */
     @SneakyThrows
     @PutMapping("/{path:.*}")
-    public void sendDocumentToInbox(@RequestHeader String user,
+    public void sendDocumentToInbox(@RequestHeader Set<String> users,
                                     @PathVariable String path,
                                     InputStream is) {
-        UserID toUser = new UserID(user);
-        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUser, path))) {
+        Set<UserID> toUsers = users.stream().map(UserID::new).collect(Collectors.toSet());
+        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path))) {
             StreamUtils.copy(is, os);
         } finally {
             is.close();
         }
-        log.debug("User {}, write to INBOX file: {}", toUser, path);
+        log.debug("Users {}, write to INBOX file: {}", toUsers, path);
     }
 
     /**

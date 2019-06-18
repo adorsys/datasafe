@@ -27,10 +27,11 @@ public interface PrivateKeyService {
     SecretKeyIDWithKey documentEncryptionSecretKey(UserIDAuth forUser);
 
     /**
-     * Raw access to get key by its ID specialized for getting multiple key ids at a time.
+     * Raw access to get key by its ID specialized for getting multiple keys at a time.
      * @param forUser Key owner
      * @param keyIds Key IDs to receive keys for
-     * @return Map (key id - Key) from database/storage associated with {@code keyId}
+     * @return Map (key id - Key) from database/storage associated with {@code keyId}, those key ids from
+     * {@code keyIds} that are missing - they are silently ignored and not returned in result.
      */
     Map<String, Key> keysByIds(UserIDAuth forUser, Set<String> keyIds);
 }
