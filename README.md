@@ -194,7 +194,8 @@ try (OutputStream os = defaultDatasafeServices.inboxService()
 }
 ```
 
-Now he wants to share some data with another user:
+Now he wants to share some data with couple of users, so that it will be encrypted once and they both
+could read the file using each using own private key:
 [Example:Send file to INBOX - multiple users](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L144-L156)
 ```groovy
 // create John, so his INBOX does exist

@@ -140,25 +140,25 @@ class BaseUserOperationsTestWithDefaultDatasafe {
      */
     @Test
     @SneakyThrows
-    void shareWithJohnAndJamie() {
+    void shareWithJaneAndJamie() {
         // BEGIN_SNIPPET:Send file to INBOX - multiple users
-        // create John, so his INBOX does exist
-        UserIDAuth john = registerUser("john");
+        // create Jane, so her INBOX does exist
+        UserIDAuth jane = registerUser("jane");
         // create Jamie, so his INBOX does exist
         UserIDAuth jamie = registerUser("jamie");
 
-        // We send message "Hello John" to John and Jamie just by username
+        // We send message to both users by using their username:
         try (OutputStream os = defaultDatasafeServices.inboxService().write(
-                WriteRequest.forDefaultPublic(ImmutableSet.of(john.getUserID(), jamie.getUserID()), "hello.txt"))
+                WriteRequest.forDefaultPublic(ImmutableSet.of(jane.getUserID(), jamie.getUserID()), "hello.txt"))
         ) {
-            os.write("Hello John and Jamie".getBytes(StandardCharsets.UTF_8));
+            os.write("Hello Jane and Jamie".getBytes(StandardCharsets.UTF_8));
         }
         // END_SNIPPET
 
-        assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(john, "hello.txt")))
-                .hasContent("Hello John and Jamie");
+        assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(jane, "hello.txt")))
+                .hasContent("Hello Jane and Jamie");
         assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(jamie, "hello.txt")))
-                .hasContent("Hello John and Jamie");
+                .hasContent("Hello Jane and Jamie");
     }
 
     /**
