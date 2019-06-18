@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,7 +35,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
 
     @SneakyThrows
     @Test
-    void sendDocumentToInboxTest() {
+    void writeToInboxTest() {
         when(dataSafeService.inboxService().write(any())).thenReturn(new ByteArrayOutputStream());
 
         mvc.perform(put("/inbox/{path}", TEST_PATH)
@@ -43,6 +44,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("token", token)
         )
                 .andExpect(status().isOk());
+        verify(inboxService).write(any());
     }
 
     @SneakyThrows
@@ -56,16 +58,18 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("token", token)
                 .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
                 .andExpect(status().isOk());
+        verify(inboxService).read(any());
     }
 
     @SneakyThrows
     @Test
-    void deleteFromInboxTest() {
+    void removeFromInboxTest() {
 
         mvc.perform(delete("/inbox/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)
         ).andExpect(status().isOk());
+        verify(inboxService).remove(any());
     }
 }

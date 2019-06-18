@@ -60,7 +60,7 @@ public class VersionController {
                              @PathVariable String path,
                              HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate("./" + path);
+        PrivateResource resource = BasePrivateResource.forPrivate(path);
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
         try (InputStream is = versionedDatasafeServices.latestPrivate().read(request);
              OutputStream os = response.getOutputStream()
@@ -112,8 +112,7 @@ public class VersionController {
                                    @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = "./" + Objects.toString(path, "");
-
-        PrivateResource resource = BasePrivateResource.forPrivate("./" + path);
+        PrivateResource resource = BasePrivateResource.forPrivate(path);
 
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.<UserIDAuth, PrivateResource>builder()
                 .location(resource)

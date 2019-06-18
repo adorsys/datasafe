@@ -45,7 +45,7 @@ public class DocumentController {
                              @PathVariable String path,
                              HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate("./" + path);
+        PrivateResource resource = BasePrivateResource.forPrivate(path);
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
         try (InputStream is = dataSafeService.privateService().read(request);
              OutputStream os = response.getOutputStream()
@@ -94,7 +94,7 @@ public class DocumentController {
      * deletes files from user's private space.
      */
     @DeleteMapping("/document/{path:.*}")
-    public void deleteDocument(@RequestHeader String user,
+    public void removeDocument(@RequestHeader String user,
                                @RequestHeader String password,
                                @PathVariable String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));

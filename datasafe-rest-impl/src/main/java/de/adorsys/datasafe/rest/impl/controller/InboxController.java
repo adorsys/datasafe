@@ -65,7 +65,7 @@ public class InboxController {
                               @PathVariable String path,
                               HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate(new Uri("./" + path));
+        PrivateResource resource = BasePrivateResource.forPrivate(path);
         try (InputStream is = dataSafeService.inboxService().read(ReadRequest.forPrivate(userIDAuth, resource));
              OutputStream os = response.getOutputStream()
         ) {
@@ -82,7 +82,7 @@ public class InboxController {
                                 @RequestHeader String password,
                                 @PathVariable String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate(new Uri("./" + path));
+        PrivateResource resource = BasePrivateResource.forPrivate(path);
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         dataSafeService.inboxService().remove(request);
         log.debug("User {}, delete from INBOX file {}", user, resource);

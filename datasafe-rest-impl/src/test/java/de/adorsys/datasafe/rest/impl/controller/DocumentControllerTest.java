@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,6 +45,7 @@ class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("token", token)
                 .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
                 .andExpect(status().isOk());
+        verify(privateSpaceService).read(any());
     }
 
     @SneakyThrows
@@ -58,6 +60,7 @@ class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("token", token)
         )
                 .andExpect(status().isOk());
+        verify(privateSpaceService).write(any());
     }
 
     @SneakyThrows
@@ -69,16 +72,18 @@ class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("password", TEST_PASS)
                 .header("token", token)
         ).andExpect(status().isOk());
+        verify(privateSpaceService).list(any());
     }
 
     @SneakyThrows
     @Test
-    void deleteDocumentTest() {
+    void removeDocumentTest() {
         String path = "path/to/file";
         mvc.perform(delete("/document/{path}", path)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)
         ).andExpect(status().isOk());
+        verify(privateSpaceService).remove(any());
     }
 }
