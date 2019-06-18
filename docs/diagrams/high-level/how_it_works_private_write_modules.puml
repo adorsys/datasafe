@@ -1,0 +1,48 @@
+@startuml
+
+skinparam ranksep 20
+skinparam nodesep 10
+skinparam linetype ortho
+skinparam Padding 10
+
+cloud "Write to private space" {
+    actor User as u
+
+    component datasafe-privatestore as private {
+     rectangle WriteToPrivate
+     rectangle EncryptedResourceResolver
+    }
+
+    component datasafe-directory as directory {
+     rectangle ResourceResolver
+     rectangle BucketAccessService
+     rectangle PrivateKeyService
+    }
+
+    component datasafe-encryption as encryption {
+     rectangle EncryptedDocumentWriteService
+     rectangle CMSEncryptionService
+     rectangle PathEncryption
+    }
+
+    component datasafe-storage as storage {
+     rectangle StorageWriteService
+    }
+
+    database "Storage" as PhysicalStorage
+
+
+    u --> WriteToPrivate : 1. Write file\ninto my\nprivate space
+    WriteToPrivate --> directory : 2. Get users' document\nencryption secret key
+    EncryptedResourceResolver --> PathEncryption : 3. Encrypt path using\nusers' path secret key
+    PathEncryption --> PrivateKeyService : 4. Get path\nencryption secret key
+    PrivateKeyService --> EncryptedResourceResolver : 5. Resolve\nencrypted path\nwithin private space
+    EncryptedResourceResolver --> ResourceResolver : 6. Resolve absolute\nresource location
+    ResourceResolver --> BucketAccessService : 7. Enhance resource\nlocation with credentials
+    BucketAccessService --> EncryptedDocumentWriteService : 8. Resource location\nwith credentials
+    EncryptedDocumentWriteService --> CMSEncryptionService : 9. Encrypt incoming\nstream using\nsecret key
+    CMSEncryptionService --> storage : 10. Write encrypted\nstream
+    StorageWriteService --> PhysicalStorage : 11. Write blob\nresolving proper\nstorage based on protocol
+}
+
+@enduml

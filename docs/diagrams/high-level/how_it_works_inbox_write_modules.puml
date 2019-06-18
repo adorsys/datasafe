@@ -1,0 +1,44 @@
+@startuml
+
+skinparam ranksep 10
+skinparam nodesep 10
+skinparam linetype ortho
+skinparam Padding 10
+
+cloud "Write to inbox" {
+    actor User as u
+
+    component datasafe-inbox as inbox {
+     rectangle WriteToInbox
+    }
+
+    component datasafe-directory as directory {
+     rectangle ResourceResolver
+     rectangle BucketAccessService
+     rectangle PublicKeyService
+    }
+
+    component datasafe-encryption as encryption {
+     rectangle EncryptedDocumentWriteService
+     rectangle CMSEncryptionService
+    }
+
+    component datasafe-storage as storage {
+     rectangle StorageWriteService
+    }
+
+    database "Storage" as PhysicalStorage
+
+    u --> WriteToInbox : 1. Share file\nwith some\nuser
+    WriteToInbox --> directory : 2. Get physical file\nlocation with\naccess credentials
+    directory --> PublicKeyService : 3. Get recepients' public key
+    PublicKeyService --> ResourceResolver : 4. Resolve\ndesired\nfile\nlocation\nin recipients' inbox
+    ResourceResolver --> BucketAccessService : 5. Obtain credentials\nto write file to inbox
+    BucketAccessService --> EncryptedDocumentWriteService : 6. Encrypt data using\nrecipients' public key
+    EncryptedDocumentWriteService --> CMSEncryptionService : 7. Encrypt data
+    CMSEncryptionService --> StorageWriteService : 8. Write encrypted data
+    encryption --> storage : 9. Write file\nusing absolute\npath
+    storage --> PhysicalStorage : 10. Select proper\nadapter using\nprotocol\nand write file
+}
+
+@enduml
