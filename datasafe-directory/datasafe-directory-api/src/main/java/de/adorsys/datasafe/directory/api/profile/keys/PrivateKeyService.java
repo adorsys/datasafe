@@ -4,6 +4,8 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 
 import java.security.Key;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Acts as a private and secret keys database.
@@ -25,10 +27,10 @@ public interface PrivateKeyService {
     SecretKeyIDWithKey documentEncryptionSecretKey(UserIDAuth forUser);
 
     /**
-     * Raw access to get key by its ID.
+     * Raw access to get key by its ID specialized for getting multiple key ids at a time.
      * @param forUser Key owner
-     * @param keyId Key ID
-     * @return Key from database/storage associated with {@code keyId}
+     * @param keyIds Key IDs to receive keys for
+     * @return Map (key id - Key) from database/storage associated with {@code keyId}
      */
-    Key keyById(UserIDAuth forUser, String keyId);
+    Map<String, Key> keysByIds(UserIDAuth forUser, Set<String> keyIds);
 }

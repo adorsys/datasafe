@@ -15,15 +15,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.Key;
 import java.security.KeyStore;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
+import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.getKeys;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-public class SymetricEncryptionTest {
+class SymetricEncryptionTest {
 
     private static final String MESSAGE_CONTENT = "message content";
 
@@ -50,7 +50,7 @@ public class SymetricEncryptionTest {
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(
-                inputStream, keyId -> getKey(keyId, keyStoreAccess));
+                inputStream, keyIds -> getKeys(keyIds, keyStoreAccess));
 
         assertThat(decryptionStream).hasContent(MESSAGE_CONTENT);
         log.debug("en and decrypted successfully");
@@ -74,12 +74,7 @@ public class SymetricEncryptionTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         // Opening envelope with wrong key must throw a cms exception.
         Assertions.assertThrows(CMSException.class, () ->
-            cmsEncryptionService.buildDecryptionInputStream(inputStream, keyId -> getKey(keyId, keyStoreAccess))
+            cmsEncryptionService.buildDecryptionInputStream(inputStream, keyIds -> getKeys(keyIds, keyStoreAccess))
         );
-    }
-
-    @SneakyThrows
-    private static Key getKey(String id, KeyStoreAccess access) {
-        return access.getKeyStore().getKey(id, access.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
     }
 }

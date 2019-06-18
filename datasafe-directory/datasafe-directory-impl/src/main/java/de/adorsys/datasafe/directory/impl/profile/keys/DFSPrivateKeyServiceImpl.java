@@ -7,6 +7,7 @@ import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -19,6 +20,10 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
@@ -76,16 +81,22 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      */
     @Override
     @SneakyThrows
-    public Key keyById(UserIDAuth forUser, String keyId) {
+    public Map<String, Key> keysByIds(UserIDAuth forUser, Set<String> keyIds) {
         KeyStore keyStore = keystoreCache.getKeystore().computeIfAbsent(
                 forUser.getUserID(),
                 userId -> keystore(forUser)
         );
 
-        return keyStore.getKey(
-                keyId,
-                forUser.getReadKeyPassword().getValue().toCharArray()
-        );
+        return keyIds.stream()
+                .filter(keyId -> containsAlias(keyStore, keyId))
+                .collect(Collectors.toMap(
+                        keyId -> keyId,
+                        keyId -> getKey(keyStore, keyId, forUser.getReadKeyPassword()))
+                );
+    }
+
+    private Key keyById(UserIDAuth forUser, String keyId) {
+        return keysByIds(forUser, Collections.singleton(keyId)).get(keyId);
     }
 
     @SneakyThrows
@@ -105,5 +116,15 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 forUser.getUserID().getValue(),
                 dfsConfig.privateKeyStoreAuth(forUser).getReadStorePassword()
         );
+    }
+
+    @SneakyThrows
+    private boolean containsAlias(KeyStore keyStore, String alias) {
+        return keyStore.containsAlias(alias);
+    }
+
+    @SneakyThrows
+    private Key getKey(KeyStore keyStore, String alias, ReadKeyPassword readKeyPassword) {
+        return keyStore.getKey(alias, readKeyPassword.getValue().toCharArray());
     }
 }
