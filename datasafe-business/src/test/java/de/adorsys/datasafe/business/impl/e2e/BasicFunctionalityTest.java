@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests that validates basic functionality - storing data to inbox, privatespace, listing files, etc.
  */
 @Slf4j
-class BasicFunctionalityTest extends WithStorageProvider {
+class BasicFunctionalityTest extends BaseE2ETest {
 
     private static final String MESSAGE_ONE = "Hello here 1";
     private static final String FOLDER = "folder1";
