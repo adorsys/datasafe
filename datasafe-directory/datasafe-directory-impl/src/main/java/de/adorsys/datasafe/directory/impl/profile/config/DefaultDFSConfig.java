@@ -9,6 +9,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.net.URI;
 import java.util.Collections;
@@ -24,9 +25,7 @@ public class DefaultDFSConfig implements DFSConfig {
     private static final String PUBLIC_COMPONENT = "public";
     private static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
     private static final String VERSION_COMPONENT = "versions";
-
-    private static final Uri PRIVATE_PROFILE = new Uri("./profiles/private/");
-    private static final Uri PUBLIC_PROFILE = new Uri("./profiles/public/");
+    private UserProfileLocation userProfileLocation;
 
     private final Uri systemRoot;
     private final ReadStorePassword systemPassword;
@@ -37,8 +36,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(String systemRoot, String systemPassword) {
-        this.systemRoot = new Uri(systemRoot);
-        this.systemPassword = new ReadStorePassword(systemPassword);
+        this(new Uri(systemRoot), systemPassword);
     }
 
     /**
@@ -47,8 +45,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(URI systemRoot, String systemPassword) {
-        this.systemRoot = new Uri(systemRoot);
-        this.systemPassword = new ReadStorePassword(systemPassword);
+        this(new Uri(systemRoot), systemPassword);
     }
 
     /**
@@ -57,8 +54,15 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(Uri systemRoot, String systemPassword) {
+        systemRoot = addTrailingSlashIfNeeded(systemRoot);
         this.systemRoot = systemRoot;
         this.systemPassword = new ReadStorePassword(systemPassword);
+        userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
+    }
+
+    public DefaultDFSConfig userProfileLocation(UserProfileLocation userProfileLocation) {
+        this.userProfileLocation = userProfileLocation;
+        return this;
     }
 
     @Override
@@ -116,15 +120,11 @@ public class DefaultDFSConfig implements DFSConfig {
     }
 
     private AbsoluteLocation<PrivateResource> locatePrivateProfile(UserID ofUser) {
-        return new AbsoluteLocation<>(
-                new BasePrivateResource(PRIVATE_PROFILE.resolve(ofUser.getValue())).resolveFrom(dfsRoot())
-        );
+        return userProfileLocation.locatePrivateProfile(ofUser);
     }
 
     private AbsoluteLocation<PublicResource> locatePublicProfile(UserID ofUser) {
-        return new AbsoluteLocation<>(
-                new BasePublicResource(PUBLIC_PROFILE.resolve(ofUser.getValue())).resolveFrom(dfsRoot())
-        );
+        return userProfileLocation.locatePublicProfile(ofUser);
     }
 
     private AbsoluteLocation<PublicResource> access(Uri path) {
@@ -146,4 +146,25 @@ public class DefaultDFSConfig implements DFSConfig {
     private Uri publicKeys(Uri rootLocation) {
         return rootLocation.resolve("./" + PUBLIC_COMPONENT + "/" + "pubkeys");
     }
+
+    public static Uri addTrailingSlashIfNeeded(Uri systemRoot) {
+        return new Uri(addTrailingSlashIfNeeded(systemRoot.asURI()));
+    }
+
+    @SneakyThrows
+    public static URI addTrailingSlashIfNeeded(URI systemRoot) {
+        return new URI(addTrailingSlashIfNeeded(systemRoot.toASCIIString()));
+    }
+
+    public static String addTrailingSlashIfNeeded(String systemRoot) {
+        if (systemRoot == null) {
+            throw new RuntimeException("systemRoot must not be null");
+        }
+        int last = systemRoot.length();
+        if (systemRoot.substring(last-1).equals("/")) {
+            return systemRoot;
+        }
+        return systemRoot + "/";
+    }
+
 }
