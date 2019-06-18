@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Multithreaded test of basic operations.
  */
 @Slf4j
-class BasicFunctionalityWithConcurrencyTest extends WithStorageProvider {
+class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
     private static final int TIMEOUT_S = 10;
 

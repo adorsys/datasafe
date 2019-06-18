@@ -16,6 +16,7 @@
         <module>datasafe-storage</module>
         <module>datasafe-rest-impl</module>
         <module>datasafe-examples</module>
+        <module>datasafe-simple-adapter</module>
         <module>last-module-codecoverage-check</module>
     </modules>
 
@@ -101,11 +102,13 @@
         <lombok-maven-plugin.version>1.18.6.0</lombok-maven-plugin.version>
         <awaitility.version>3.0.0</awaitility.version>
         <xml-maven-plugin.version>1.0.2</xml-maven-plugin.version>
+        <amazon.aws.version>1.11.538</amazon.aws.version>
         <jsr-305.version>3.0.0</jsr-305.version>
         <javax-inject.version>1</javax-inject.version>
         <javapoet.version>1.9.0</javapoet.version>
         <auto-service.version>1.0-rc4</auto-service.version>
         <compile-testing.version>0.18</compile-testing.version>
+        <maven.jar.plugin>3.1.0</maven.jar.plugin>
     </properties>
 
     <dependencies>

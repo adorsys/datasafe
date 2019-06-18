@@ -14,7 +14,7 @@ public class AbsoluteLocation<T extends ResourceLocation<T>> implements Resource
 
     public AbsoluteLocation(T resource) {
         if (!resource.location().isAbsolute()) {
-            throw new IllegalArgumentException("Resource location must be absolute");
+            throw new IllegalArgumentException("Resource location must be absolute " + resource);
         }
 
         this.resource = resource;

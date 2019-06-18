@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Validates software versioned operations.
  */
 @Slf4j
-public class VersionedDataTest extends WithStorageProvider {
+public class VersionedDataTest extends BaseE2ETest {
 
     private static final String MESSAGE_ONE = "Hello here 1";
     private static final String MESSAGE_TWO = "Hello here 2";

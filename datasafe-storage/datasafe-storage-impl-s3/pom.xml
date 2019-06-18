@@ -12,7 +12,6 @@
     <artifactId>datasafe-storage-impl-s3</artifactId>
 
     <properties>
-        <amazon.aws.version>1.11.538</amazon.aws.version>
     </properties>
 
     <dependencies>
