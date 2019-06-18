@@ -7,13 +7,15 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class UriTest {
     @Test
     public void anUriResolveTest() {
         String uriString = "http://Uri.peter.at.home/";
         Uri uri = new Uri(uriString);
         uri = uri.resolve("a/").resolve("b/");
-        Assertions.assertEquals(uriString + "a/b/", uri.toASCIIString());
+        assertEquals(uriString + "a/b/", uri.toASCIIString());
     }
 
     @SneakyThrows
@@ -22,6 +24,6 @@ public class UriTest {
         String uriString = "http://URI.peter.at.home/";
         URI uri = new URI(uriString);
         uri = uri.resolve("a/").resolve("b/");
-        Assertions.assertEquals(uriString + "a/b/", uri.toASCIIString());
+        assertEquals(uriString + "a/b/", uri.toASCIIString());
     }
 }

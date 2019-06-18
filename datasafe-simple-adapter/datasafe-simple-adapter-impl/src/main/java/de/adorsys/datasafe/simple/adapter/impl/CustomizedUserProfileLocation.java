@@ -14,11 +14,11 @@ public class CustomizedUserProfileLocation implements UserProfileLocation {
     private Uri systemRoot;
 
     public CustomizedUserProfileLocation(URI systemRoot) {
-        this.systemRoot = DefaultDFSConfig.addTrailingSlash(new Uri(systemRoot));
+        this.systemRoot = DefaultDFSConfig.addTrailingSlashIfNeeded(new Uri(systemRoot));
     }
 
     public CustomizedUserProfileLocation(String systemRoot) {
-        this.systemRoot = DefaultDFSConfig.addTrailingSlash(new Uri(systemRoot));
+        this.systemRoot = DefaultDFSConfig.addTrailingSlashIfNeeded(new Uri(systemRoot));
     }
 
     private AbsoluteLocation<PublicResource> dfsRoot() {

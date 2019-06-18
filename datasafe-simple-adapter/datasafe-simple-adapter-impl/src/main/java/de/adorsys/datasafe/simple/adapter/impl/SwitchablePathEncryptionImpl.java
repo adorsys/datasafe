@@ -22,8 +22,8 @@ public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
     }
 
     public static boolean checkIsPathEncryptionToUse() {
-        if (System.getProperty(NO_BUCKETPATH_ENCRYPTION) != null) {
-            String value = System.getProperty(NO_BUCKETPATH_ENCRYPTION);
+        String value = System.getProperty(NO_BUCKETPATH_ENCRYPTION);
+        if (value != null) {
             if (value.equalsIgnoreCase(Boolean.FALSE.toString())) {
                 log.info("path encryption is on");
                 return true;

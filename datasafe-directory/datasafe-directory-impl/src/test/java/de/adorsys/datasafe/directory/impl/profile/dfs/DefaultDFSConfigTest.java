@@ -13,9 +13,9 @@ public class DefaultDFSConfigTest {
 
     @Test
     public void checkStringWithSlash() {
-        String result1 = DefaultDFSConfig.addTrailingSlash(uriString);
+        String result1 = DefaultDFSConfig.addTrailingSlashIfNeeded(uriString);
         Assertions.assertEquals(uriString + "/", result1);
-        String result2 = DefaultDFSConfig.addTrailingSlash(result1);
+        String result2 = DefaultDFSConfig.addTrailingSlashIfNeeded(result1);
         Assertions.assertEquals(uriString + "/", result2);
     }
 
@@ -23,9 +23,9 @@ public class DefaultDFSConfigTest {
     @SneakyThrows
     public void checkURIWithSlash() {
         URI uri = new URI(uriString);
-        URI result1 = DefaultDFSConfig.addTrailingSlash(uri);
+        URI result1 = DefaultDFSConfig.addTrailingSlashIfNeeded(uri);
         Assertions.assertEquals(new URI(uriString + "/"), result1);
-        URI result2 = DefaultDFSConfig.addTrailingSlash(result1);
+        URI result2 = DefaultDFSConfig.addTrailingSlashIfNeeded(result1);
         Assertions.assertEquals(new URI(uriString + "/"), result2);
     }
 
@@ -33,9 +33,9 @@ public class DefaultDFSConfigTest {
     @Test
     public void checkUriWithSlash() {
         Uri uri = new Uri(uriString);
-        Uri result1 = DefaultDFSConfig.addTrailingSlash(uri);
+        Uri result1 = DefaultDFSConfig.addTrailingSlashIfNeeded(uri);
         Assertions.assertEquals(new Uri(uriString + "/"), result1);
-        Uri result2 = DefaultDFSConfig.addTrailingSlash(result1);
+        Uri result2 = DefaultDFSConfig.addTrailingSlashIfNeeded(result1);
         Assertions.assertEquals(new Uri(uriString + "/"), result2);
     }
 

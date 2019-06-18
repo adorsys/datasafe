@@ -1,5 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import de.adorsys.datasafe.business.impl.e2e.WithStorageProvider;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -26,6 +28,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class SimpleDatasafeAdapterTest extends WithStorageProvider {
@@ -79,13 +83,10 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     private static Stream<Arguments> parameterCombination() {
-        List<Arguments> combination = new ArrayList<>();
-        for (WithStorageProvider.StorageDescriptor d : allStorages().collect(Collectors.toSet())) {
-            for (Boolean b: withOrWithoutEncryption().collect(Collectors.toSet())) {
-                combination.add(Arguments.of(d,b));
-            }
-        }
-        return combination.stream();
+            return Sets.cartesianProduct(
+                    allStorages().collect(Collectors.toSet()),
+                    withOrWithoutEncryption().collect(Collectors.toSet())
+            ).stream().map(it -> Arguments.of(it.get(0), it.get(1)));
     }
 
     @BeforeEach
@@ -110,7 +111,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource({"parameterCombination"})
+    @MethodSource("parameterCombination")
     @SneakyThrows
     public void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor, Boolean encryption) {
         myinit(descriptor, encryption);
@@ -119,7 +120,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource({"parameterCombination"})
+    @MethodSource("parameterCombination")
     public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
         myinit(descriptor, encryption);
         mystart();
@@ -129,15 +130,15 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         simpleDatasafeService.storeDocument(userIDAuth, document);
 
         DSDocument dsDocument = simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path));
-        Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
-        Assertions.assertFalse(simpleDatasafeService.documentExists(userIDAuth, new DocumentFQN("doesnotexist.txt")));
+        assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
+        assertFalse(simpleDatasafeService.documentExists(userIDAuth, new DocumentFQN("doesnotexist.txt")));
 
-        Assertions.assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
+        assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
         log.info("the content read is ok");
     }
 
     @ParameterizedTest
-    @MethodSource({"parameterCombination"})
+    @MethodSource("parameterCombination")
     public void writeAndReadFiles(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
         myinit(descriptor, encryption);
         mystart();
@@ -148,43 +149,43 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
             log.debug("store " + dsDocument.getDocumentFQN().toString());
             simpleDatasafeService.storeDocument(userIDAuth, dsDocument);
             created.add(dsDocument.getDocumentFQN());
-            Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, dsDocument.getDocumentFQN()));
+            assertTrue(simpleDatasafeService.documentExists(userIDAuth, dsDocument.getDocumentFQN()));
         }
         List<DocumentFQN> listFound = simpleDatasafeService.list(userIDAuth, root, ListRecursiveFlag.TRUE);
         show("full list recursive ", listFound);
-        Assertions.assertTrue(created.containsAll(listFound));
-        Assertions.assertTrue(listFound.containsAll(created));
+        assertTrue(created.containsAll(listFound));
+        assertTrue(listFound.containsAll(created));
 
         listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("subdir_0"), ListRecursiveFlag.TRUE);
         show("subdir 0 subdir 0 recursive", listFound);
-        Assertions.assertEquals(6, listFound.size());
+        assertEquals(6, listFound.size());
 
         listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("subdir_0"), ListRecursiveFlag.FALSE);
         show("subidr 0 subdir 0 non recursive", listFound);
-        Assertions.assertEquals(2, listFound.size());
+        assertEquals(2, listFound.size());
 
         listFound = simpleDatasafeService.list(userIDAuth, root.addDirectory("subdir_0").addDirectory("//subdir_0//"), ListRecursiveFlag.FALSE);
         show("subidr 0 subdir 0 non recursive with more slases", listFound);
-        Assertions.assertEquals(2, listFound.size());
+        assertEquals(2, listFound.size());
 
         DocumentFQN oneDoc = new DocumentFQN("affe/subdir_0/subdir_0/file1txt");
-        Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, oneDoc));
+        assertTrue(simpleDatasafeService.documentExists(userIDAuth, oneDoc));
         simpleDatasafeService.deleteDocument(userIDAuth, oneDoc);
-        Assertions.assertFalse(simpleDatasafeService.documentExists(userIDAuth, oneDoc));
+        assertFalse(simpleDatasafeService.documentExists(userIDAuth, oneDoc));
 
         simpleDatasafeService.deleteFolder(userIDAuth, root.addDirectory("subdir_1"));
         listFound = simpleDatasafeService.list(userIDAuth, root, ListRecursiveFlag.TRUE);
         show("full list recursive after delete subdir 1", listFound);
-        Assertions.assertEquals(15, listFound.size());
+        assertEquals(15, listFound.size());
         DocumentFQN otherDoc = new DocumentFQN("affe/subdir_0/subdir_0/file0txt");
         simpleDatasafeService.deleteDocument(userIDAuth, otherDoc);
         listFound = simpleDatasafeService.list(userIDAuth, root, ListRecursiveFlag.TRUE);
         show("full list recursive after delete one file", listFound);
-        Assertions.assertEquals(14, listFound.size());
+        assertEquals(14, listFound.size());
     }
 
     @ParameterizedTest
-    @MethodSource({"parameterCombination"})
+    @MethodSource("parameterCombination")
     public void testTwoUsers(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
         myinit(descriptor, encryption);
         mystart();
@@ -200,21 +201,21 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
         // tiny checks, that the password is important
         UserIDAuth wrongPasswordUser1 = new UserIDAuth(userIDAuth.getUserID(),new ReadKeyPassword(UUID.randomUUID().toString()));
-        Assertions.assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser1, new DocumentFQN(path)));
+        assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser1, new DocumentFQN(path)));
 
         UserIDAuth wrongPasswordUser2 = new UserIDAuth(userIDAuth2.getUserID(),new ReadKeyPassword(UUID.randomUUID().toString()));
-        Assertions.assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser2, new DocumentFQN(path)));
+        assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser2, new DocumentFQN(path)));
 
         // now read the docs with the correct password
         DSDocument dsDocument = simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path));
-        Assertions.assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
+        assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
 
         DSDocument dsDocument2 = simpleDatasafeService.readDocument(userIDAuth2, new DocumentFQN(path));
-        Assertions.assertArrayEquals(content.getBytes(), dsDocument2.getDocumentContent().getValue());
+        assertArrayEquals(content.getBytes(), dsDocument2.getDocumentContent().getValue());
 
         simpleDatasafeService.destroyUser(userIDAuth2);
-        Assertions.assertFalse(simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN()));
-        Assertions.assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
+        assertFalse(simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN()));
+        assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
 
     }
 

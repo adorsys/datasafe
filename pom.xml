@@ -108,6 +108,7 @@
         <javapoet.version>1.9.0</javapoet.version>
         <auto-service.version>1.0-rc4</auto-service.version>
         <compile-testing.version>0.18</compile-testing.version>
+        <maven.jar.plugin>3.1.0</maven.jar.plugin>
     </properties>
 
     <dependencies>

@@ -54,7 +54,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(Uri systemRoot, String systemPassword) {
-        systemRoot = addTrailingSlash(systemRoot);
+        systemRoot = addTrailingSlashIfNeeded(systemRoot);
         this.systemRoot = systemRoot;
         this.systemPassword = new ReadStorePassword(systemPassword);
         userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
@@ -147,16 +147,19 @@ public class DefaultDFSConfig implements DFSConfig {
         return rootLocation.resolve("./" + PUBLIC_COMPONENT + "/" + "pubkeys");
     }
 
-    public static Uri addTrailingSlash(Uri systemRoot) {
-        return new Uri(addTrailingSlash(systemRoot.asURI()));
+    public static Uri addTrailingSlashIfNeeded(Uri systemRoot) {
+        return new Uri(addTrailingSlashIfNeeded(systemRoot.asURI()));
     }
 
     @SneakyThrows
-    public static URI addTrailingSlash(URI systemRoot) {
-        return new URI(addTrailingSlash(systemRoot.toASCIIString()));
+    public static URI addTrailingSlashIfNeeded(URI systemRoot) {
+        return new URI(addTrailingSlashIfNeeded(systemRoot.toASCIIString()));
     }
 
-    public static String addTrailingSlash(String systemRoot) {
+    public static String addTrailingSlashIfNeeded(String systemRoot) {
+        if (systemRoot == null) {
+            throw new RuntimeException("systemRoot must not be null");
+        }
         int last = systemRoot.length();
         if (systemRoot.substring(last-1).equals("/")) {
             return systemRoot;

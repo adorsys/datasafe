@@ -42,7 +42,6 @@ import java.util.stream.Stream;
 public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static String deeperBucketPath = "deeper/and/deeper";
-    //private static String deeperBucketPath = UUID.randomUUID().toString();
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
     private static String minioAccessKeyID = "admin";
