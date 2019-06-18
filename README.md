@@ -111,7 +111,7 @@ TODO: Migrate to AsciiDoc for automatic snippet embedding.
 
 ## Generic Datasafe usage
 First, you want to create Datasafe services. This snippet provides you Datasafe that uses filesystem storage adapter:
-[Example:Create Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L43-L49)
+[Example:Create Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L44-L50)
 ```groovy
 // this will create all Datasafe files and user documents under <temp dir path>
 defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
@@ -121,7 +121,7 @@ defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
 ```
 
 Second you want to add new users:
-[Example:Create new user](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L57-L64)
+[Example:Create new user](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L58-L65)
 ```groovy
 // Creating new user with username 'user' and private/secret key password 'passwrd':
 /*
@@ -132,7 +132,7 @@ defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user
 ```
 
 After you have a user, he wants to store some data or document securely in his privatespace:
-[Example:Store file in privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L75-L85)
+[Example:Store file in privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L76-L86)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -146,7 +146,7 @@ try (OutputStream os = defaultDatasafeServices.privateService()
 ```
 
 Now user wants to read again his secured file:
-[Example:Read file from privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L96-L109)
+[Example:Read file from privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L97-L110)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("jane");
@@ -163,7 +163,7 @@ try (InputStream is = defaultDatasafeServices.privateService()
 ```
 
 But he doesn't remember the name of file he stored, so he will list all files in privatespace and read first:
-[Example:Read file from privatespace using list](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L217-L231)
+[Example:Read file from privatespace using list](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L244-L258)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -181,21 +181,37 @@ assertThat(defaultDatasafeServices.privateService().read(
 ```
 
 Now he wants to share some data with another user:
-[Example:Send file to INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L121-L131)
+[Example:Send file to INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L122-L132)
 ```groovy
-// create John, so his INBOX does exist
-UserIDAuth john = registerUser("john");
-UserID johnUsername = new UserID("john");
+// create Jane, so her INBOX does exist
+UserIDAuth jane = registerUser("jane");
+UserID janeUsername = new UserID("jane");
 
 // We send message "Hello John" to John just by his username
 try (OutputStream os = defaultDatasafeServices.inboxService()
-        .write(WriteRequest.forDefaultPublic(Collections.singleton(johnUsername), "hello.txt"))) {
-    os.write("Hello John".getBytes(StandardCharsets.UTF_8));
+        .write(WriteRequest.forDefaultPublic(Collections.singleton(janeUsername), "hello.txt"))) {
+    os.write("Hello Jane".getBytes(StandardCharsets.UTF_8));
+}
+```
+
+Now he wants to share some data with another user:
+[Example:Send file to INBOX - multiple users](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L144-L156)
+```groovy
+// create John, so his INBOX does exist
+UserIDAuth john = registerUser("john");
+// create Jamie, so his INBOX does exist
+UserIDAuth jamie = registerUser("jamie");
+
+// We send message "Hello John" to John and Jamie just by username
+try (OutputStream os = defaultDatasafeServices.inboxService().write(
+        WriteRequest.forDefaultPublic(ImmutableSet.of(john.getUserID(), jamie.getUserID()), "hello.txt"))
+) {
+    os.write("Hello John and Jamie".getBytes(StandardCharsets.UTF_8));
 }
 ```
 
 And finally it is time to read data that was shared with you:
-[Example:Read file from INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L239-L255)
+[Example:Read file from INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L266-L282)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");

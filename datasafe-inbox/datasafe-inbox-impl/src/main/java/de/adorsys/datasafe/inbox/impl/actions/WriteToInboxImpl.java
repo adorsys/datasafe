@@ -35,6 +35,11 @@ public class WriteToInboxImpl implements WriteToInbox {
         this.writer = writer;
     }
 
+    /**
+     * Shares document with multiple recipients so that each of them can read it using his private key.
+     * @param request Where to write stream (location can be relative/absolute)
+     * @return Stream sink for data to be shared and encrypted
+     */
     @Override
     public OutputStream write(WriteRequest<Set<UserID>, PublicResource> request) {
         return writer.write(
