@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -35,6 +35,9 @@ public class DocumentController {
 
     private final DefaultDatasafeServices dataSafeService;
 
+    /**
+     * Reads user's private file.
+     */
     @SneakyThrows
     @GetMapping(value = "/document/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
     public void readDocument(@RequestHeader String user,
@@ -42,7 +45,7 @@ public class DocumentController {
                              @PathVariable String path,
                              HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate("./" + path);
+        PrivateResource resource = BasePrivateResource.forPrivate(path);
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
         try (InputStream is = dataSafeService.privateService().read(request);
              OutputStream os = response.getOutputStream()
@@ -52,6 +55,9 @@ public class DocumentController {
         log.debug("User: {}, read private file from: {}", user, resource);
     }
 
+    /**
+     * Writes file to user's private space.
+     */
     @SneakyThrows
     @PutMapping(value = "/document/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
     public void writeDocument(@RequestHeader String user,
@@ -68,12 +74,15 @@ public class DocumentController {
         log.debug("User: {}, write private file to: {}", user, path);
     }
 
+    /**
+     * lists files in user's private space.
+     */
     @GetMapping("/documents/{path:.*}")
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        path = "./" + Objects.toString(path, "");
+        path = Optional.ofNullable(path).orElse("./");
         List<String> documentList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                 .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
                 .collect(Collectors.toList());
@@ -81,8 +90,11 @@ public class DocumentController {
         return documentList;
     }
 
+    /**
+     * deletes files from user's private space.
+     */
     @DeleteMapping("/document/{path:.*}")
-    public void deleteDocument(@RequestHeader String user,
+    public void removeDocument(@RequestHeader String user,
                                @RequestHeader String password,
                                @PathVariable String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
