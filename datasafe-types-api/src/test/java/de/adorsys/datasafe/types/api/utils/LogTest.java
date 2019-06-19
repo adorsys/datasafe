@@ -63,6 +63,26 @@ class LogTest {
     }
 
     @Test
+    void secureEmptyOrNull() {
+        assertThat(Log.secure((String) null)).isNull();
+        assertThat(Log.secure((Uri) null)).isNull();
+        assertThat(Log.secure((URI) null)).isNull();
+        assertThat(Log.secure((Object) null)).isNull();
+        assertThat(Log.secureSensitive(null)).isNull();
+        assertThat(Log.secure((Object[]) null)).isNull();
+        assertThat(Log.secure((String) null, "/")).isNull();
+        assertThat(Log.secure((Iterable) null, "/")).isNull();
+        assertThat(Log.secure("")).isNotEmpty();
+    }
+
+    @Test
+    void secureSlashes() {
+        assertThat(Log.secure("/", "/")).isEmpty();
+        assertThat(Log.secure("//", "/")).isEmpty();
+        assertThat(Log.secure("///", "/")).isEmpty();
+    }
+
+    @Test
     void secureNullObject() {
         Object uri = null;
         assertThat(Log.secure(uri)).isNull();
