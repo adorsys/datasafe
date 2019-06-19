@@ -33,8 +33,7 @@ public class Log {
 
     static String secureLogs = System.getProperty("SECURE_LOGS");
     static String secureSensitive = System.getProperty("SECURE_SENSITIVE");
-    private static MessageDigest digest = getDigest();
-    private static Base64.Encoder encoder = Base64.getEncoder();
+    private static Base64.Encoder encoder = Base64.getUrlEncoder(); // thread-safe class
 
     /**
      * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
@@ -206,7 +205,7 @@ public class Log {
 
     private static String computeSha(String s) {
         byte[] originalBytes = s.getBytes(StandardCharsets.UTF_8);
-        byte[] hash = digest.digest(originalBytes);
+        byte[] hash = getDigest().digest(originalBytes);
         return encoder.encodeToString(hash);
     }
 
