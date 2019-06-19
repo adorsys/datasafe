@@ -83,7 +83,7 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
         mvc.perform(
                put("/inbox/{path}", TEST_PATH).
                contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE).
-               header("user", TEST_USER).
+               header("users", TEST_USER).
                header(SecurityConstants.TOKEN_HEADER, token))
            .andExpect(status().isOk());
     }

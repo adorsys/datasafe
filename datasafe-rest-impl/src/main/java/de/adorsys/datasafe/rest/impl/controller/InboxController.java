@@ -10,7 +10,6 @@ import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -40,20 +39,20 @@ public class InboxController {
     private final DefaultDatasafeServices dataSafeService;
 
     /**
-     * Sends file to users' INBOX.
+     * Sends file to multiple users' INBOX.
      */
     @SneakyThrows
     @PutMapping(value = "/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
-    public void writeToInbox(@RequestHeader String user,
+    public void writeToInbox(@RequestHeader Set<String> users,
                              @PathVariable String path,
                              InputStream is) {
-        UserID toUser = new UserID(user);
-        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUser, path))) {
+        Set<UserID> toUsers = users.stream().map(UserID::new).collect(Collectors.toSet());
+        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path))) {
             StreamUtils.copy(is, os);
         } finally {
             is.close();
         }
-        log.debug("User {}, write to INBOX file: {}", toUser, path);
+        log.debug("Users {}, write to INBOX file: {}", toUsers, path);
     }
 
     /**
@@ -94,8 +93,8 @@ public class InboxController {
      */
     @GetMapping(value = "/{path:.*}", produces = APPLICATION_JSON_VALUE)
     public List<String> listInbox(@RequestHeader String user,
-                                      @RequestHeader String password,
-                                      @PathVariable(required = false) String path) {
+                                  @RequestHeader String password,
+                                  @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = Optional.ofNullable(path).orElse("./");
         List<String> inboxList = dataSafeService.inboxService().list(ListRequest.forDefaultPrivate(userIDAuth, path))

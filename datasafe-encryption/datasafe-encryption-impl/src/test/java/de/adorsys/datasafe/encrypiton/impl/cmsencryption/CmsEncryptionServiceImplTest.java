@@ -6,11 +6,12 @@ import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.util.Sets;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
-import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientInfoGenerator;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
@@ -24,17 +25,20 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.MessageDigest;
+import java.security.Security;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static com.google.common.io.ByteStreams.toByteArray;
+import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.getKeys;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.internal.util.io.IOUtil.closeQuietly;
 
 @Slf4j
-public class CmsEncryptionServiceImplTest {
+class CmsEncryptionServiceImplTest extends BaseMockitoTest {
 
     private static final String TEST_MESSAGE_CONTENT = "message content";
 
@@ -44,26 +48,69 @@ public class CmsEncryptionServiceImplTest {
     private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
+        Security.addProvider(new BouncyCastleProvider());
         keyStoreAccess = getKeyStoreAccess();
     }
 
     @Test
     @SneakyThrows
-    public void cmsStreamEnvelopeEncryptAndDecryptTest() {
+    void testCmsStreamEnvelopeEncryptAndDecryptTestWithMultipleRecipients() {
+        KeyStoreAccess keyStoreAccess1 = getKeyStoreAccess("Alice");
+        KeyStoreAccess keyStoreAccess2 = getKeyStoreAccess("Bob");
+        KeyStoreAccess keyStoreAccess3 = getKeyStoreAccess("Suzanne");
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream, Sets.newHashSet(
+                Arrays.asList(getPublicKeyIDWithPublicKey(keyStoreAccess1), getPublicKeyIDWithPublicKey(keyStoreAccess2))
+        ));
+
+        encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
+        encryptionStream.close();
+
+        byte[] byteArray = outputStream.toByteArray();
+
+        for(KeyStoreAccess keyStoreAccessItem : Arrays.asList(keyStoreAccess1, keyStoreAccess2)) {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+            InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream,
+                    keyIds -> getKeys(keyIds, keyStoreAccessItem));
+
+            byte[] actualResult = toByteArray(decryptionStream);
+
+            assertThat(TEST_MESSAGE_CONTENT).isEqualTo(new String(actualResult));
+        }
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyIds -> getKeys(keyIds, keyStoreAccess3)));
+    }
+
+    private PublicKeyIDWithPublicKey getPublicKeyIDWithPublicKey(KeyStoreAccess keyStoreAccess) {
+        return keyStoreService.getPublicKeys(keyStoreAccess).stream().findFirst().get();
+    }
+
+    @Test
+    @SneakyThrows
+    void cmsStreamEnvelopeEncryptAndDecryptTest() {
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                Collections.singleton(new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                ))
+        );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
+
         byte[] byteArray = outputStream.toByteArray();
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(
-                inputStream, keyId -> getKey(keyId, keyStoreAccess)
+                inputStream, keyIds -> getKeys(keyIds, keyStoreAccess)
         );
         byte[] actualResult = toByteArray(decryptionStream);
 
@@ -72,7 +119,7 @@ public class CmsEncryptionServiceImplTest {
 
     @Test
     @SneakyThrows
-    public void cmsStreamEnvelopeZeroKeyPairFailTest() {
+    void cmsStreamEnvelopeZeroKeyPairFailTest() {
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -81,7 +128,11 @@ public class CmsEncryptionServiceImplTest {
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                Collections.singleton(new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                ))
+        );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         closeQuietly(encryptionStream);
@@ -89,12 +140,12 @@ public class CmsEncryptionServiceImplTest {
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
-                inputStream, keyId -> getKey(keyId, keyStoreAccess)));
+                inputStream, keyIds -> getKeys(keyIds, keyStoreAccess)));
     }
 
     @Test
     @SneakyThrows
-    public void cmsStreamEnvelopeTwoKeysPairFailTest() {
+    void cmsStreamEnvelopeTwoKeysPairFailTest() {
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -108,7 +159,11 @@ public class CmsEncryptionServiceImplTest {
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                Collections.singleton(new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                ))
+        );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         closeQuietly(encryptionStream);
@@ -116,31 +171,36 @@ public class CmsEncryptionServiceImplTest {
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
-                inputStream, keyId -> getKey(keyId, keyStoreAccess)));
+                inputStream, keyIds -> getKeys(keyIds, keyStoreAccess)));
     }
 
     @Test
     @SneakyThrows
-    public void cmsStreamEnvelopeOneKeyPairFailTest() {
+    void cmsStreamEnvelopeOneKeyPairFailTest() {
         KeyStoreAccess keyStoreAccess = getKeyStoreAccess();
 
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                Collections.singleton(new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                ))
+        );
+
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
         byte[] byteArray = outputStream.toByteArray();
 
         KeyStoreAccess newKeyStoreAccess = getKeyStoreAccess(); // new store access would be different from first even was generated similar
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        assertThrows(CMSException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
-                inputStream, keyId -> getKey(keyId, newKeyStoreAccess)));
+        assertThrows(DecryptionException.class, () -> cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyIds -> getKeys(keyIds, newKeyStoreAccess)));
     }
 
-    private static KeyStoreAccess getKeyStoreAccess() {
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
-        ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
+    private static KeyStoreAccess getKeyStoreAccess(String label) {
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword(label);
+        ReadStorePassword readStorePassword = new ReadStorePassword(label);
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
 
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 1);
@@ -149,9 +209,13 @@ public class CmsEncryptionServiceImplTest {
         return new KeyStoreAccess(keyStore, keyStoreAuth);
     }
 
+    private static KeyStoreAccess getKeyStoreAccess() {
+        return getKeyStoreAccess("readkeypassword");
+    }
+
     @Test
     @SneakyThrows
-    public void cmsEnvelopeEncryptAndDecryptFileStreamTest() {
+    void cmsEnvelopeEncryptAndDecryptFileStreamTest() {
         String folderPath = "target/";
         String testFilePath = folderPath + "test.dat";
         String encryptedFilePath = folderPath + "test_encrypted.dat";
@@ -178,7 +242,12 @@ public class CmsEncryptionServiceImplTest {
         FileOutputStream fosEnFile = new FileOutputStream(encryptedFile);
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(
-                fosEnFile, publicKeyIDWithPublicKey.getPublicKey(), publicKeyIDWithPublicKey.getKeyID());
+                fosEnFile,
+                Collections.singleton(new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                ))
+        );
 
         Files.copy(Paths.get(testFilePath), encryptionStream);
 
@@ -188,7 +257,7 @@ public class CmsEncryptionServiceImplTest {
 
         FileInputStream fisEnFile = new FileInputStream(encryptedFile);
         InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(
-                fisEnFile, keyId -> getKey(keyId, keyStoreAccess));
+                fisEnFile, keyIds -> getKeys(keyIds, keyStoreAccess));
 
         File decryptedFile = new File(decryptedTestFilePath);
         OutputStream osDecrypt = new FileOutputStream(decryptedFile);
@@ -224,7 +293,7 @@ public class CmsEncryptionServiceImplTest {
     }
 
     @SneakyThrows
-    public String checksum(File input) {
+    String checksum(File input) {
         try (InputStream in = new FileInputStream(input)) {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] block = new byte[4096];
@@ -234,10 +303,5 @@ public class CmsEncryptionServiceImplTest {
             }
             return Hex.toHexString(digest.digest());
         }
-    }
-
-    @SneakyThrows
-    private static Key getKey(String id, KeyStoreAccess access) {
-        return access.getKeyStore().getKey(id, access.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
     }
 }
