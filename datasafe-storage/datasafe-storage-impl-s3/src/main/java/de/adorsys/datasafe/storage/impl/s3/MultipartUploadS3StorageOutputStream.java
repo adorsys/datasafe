@@ -131,11 +131,13 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
         objectMetadata.setContentMD5(md5Digest);
 
-        amazonS3.putObject(
+        PutObjectResult upload = amazonS3.putObject(
                 bucketName,
                 objectName,
                 new ByteArrayInputStream(content),
                 objectMetadata);
+
+        notifyCommittedVersionIfPresent(upload.getVersionId());
 
         // Release the memory
         currentOutputStream = null;
@@ -171,12 +173,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                     )
             );
 
-            // notify about assigned version if available
-            if (null != upload.getVersionId()) {
-                callbacks.stream()
-                        .filter(it -> it instanceof WrittenVersionCallback)
-                        .forEach(it -> ((WrittenVersionCallback) it).handleVersionAssigned(upload.getVersionId()));
-            }
+            notifyCommittedVersionIfPresent(upload.getVersionId());
 
             log.debug("Finished multi part upload");
         } catch (ExecutionException e) {
@@ -191,6 +188,16 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         } finally {
             currentOutputStream = null;
         }
+    }
+
+    private void notifyCommittedVersionIfPresent(String version) {
+        if (null == version) {
+            return;
+        }
+
+        callbacks.stream()
+                .filter(it -> it instanceof WrittenVersionCallback)
+                .forEach(it -> ((WrittenVersionCallback) it).handleVersionAssigned(version));
     }
 
     private void initiateMultiPartIfNeeded() {
