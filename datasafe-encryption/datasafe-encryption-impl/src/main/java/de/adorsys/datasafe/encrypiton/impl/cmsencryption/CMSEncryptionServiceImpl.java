@@ -7,7 +7,6 @@ import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.Decryptor;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.DecryptorFactory;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
-import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
