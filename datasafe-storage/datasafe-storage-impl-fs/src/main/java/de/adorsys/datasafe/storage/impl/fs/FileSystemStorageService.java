@@ -3,6 +3,7 @@ package de.adorsys.datasafe.storage.impl.fs;
 import com.google.common.io.MoreFiles;
 import com.google.common.io.RecursiveDeleteOption;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +39,8 @@ public class FileSystemStorageService implements StorageService {
     @SneakyThrows
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation path) {
-        log.debug("List file request: {}", Obfuscate.secure(path));
+        log.debug("List file request: {}", path.location());
         Path filePath = resolve(path.location().asURI(), false);
-        log.debug("List file: {}", Obfuscate.secure(filePath));
 
         // FS should be compatible with s3 behavior:
         if (!filePath.toFile().exists()) {
@@ -61,17 +61,16 @@ public class FileSystemStorageService implements StorageService {
     @SneakyThrows
     @Override
     public InputStream read(AbsoluteLocation path) {
-        log.debug("Read file request: {}", Obfuscate.secure(path));
+        log.debug("Read file request: {}",path.location());
         Path filePath = resolve(path.location().asURI(), false);
-        log.debug("Read file: {}", Obfuscate.secure(filePath));
         return MoreFiles.asByteSource(filePath, StandardOpenOption.READ).openStream();
     }
 
     @SneakyThrows
     @Override
-    public OutputStream write(AbsoluteLocation path) {
-        log.debug("Write file request: {}", Obfuscate.secure(path.location()));
-        Path filePath = resolve(path.location().asURI(), true);
+    public OutputStream write(WithCallback<AbsoluteLocation, ? extends ResourceWriteCallback> locationWithCallback) {
+        log.debug("Write file request: {}", locationWithCallback.getWrapped().location());
+        Path filePath = resolve(locationWithCallback.getWrapped().location().asURI(), true);
         log.debug("Write file: {}", Obfuscate.secure(filePath));
         return MoreFiles.asByteSink(filePath, StandardOpenOption.CREATE).openStream();
     }
@@ -87,20 +86,20 @@ public class FileSystemStorageService implements StorageService {
         Path path = resolve(location.location().asURI(), false);
         boolean isFile = !path.toFile().isDirectory();
         MoreFiles.deleteRecursively(path, RecursiveDeleteOption.ALLOW_INSECURE);
-        log.debug("deleted {} at: {}", isFile ? "file" : "directory", Obfuscate.secure(location));
+        log.debug("deleted {} at: {}", isFile ? "file" : "directory", location.location());
     }
 
     @Override
     public boolean objectExists(AbsoluteLocation location) {
         boolean exists = Files.exists(resolve(location.location().asURI(), false));
-        log.debug("exists {} directory at: {}", exists, Obfuscate.secure(location));
+        log.debug("Exists {}: {}", location.location(), exists);
         return exists;
     }
 
     protected Path resolve(URI uri, boolean mkDirs) {
         Path path = Paths.get(dir.resolve(uri).asURI());
         if (!path.getParent().toFile().exists() && mkDirs) {
-            log.debug("Creating directories for: {}", Obfuscate.secure(path));
+            log.debug("Creating directories for: {}", Obfuscate.secure(uri));
             path.getParent().toFile().mkdirs();
         }
 
