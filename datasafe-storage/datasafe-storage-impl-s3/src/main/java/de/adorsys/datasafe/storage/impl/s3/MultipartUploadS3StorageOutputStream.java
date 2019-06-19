@@ -25,7 +25,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.BinaryUtils;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
-import de.adorsys.datasafe.types.api.callback.WrittenVersionCallback;
+import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
@@ -196,8 +196,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         }
 
         callbacks.stream()
-                .filter(it -> it instanceof WrittenVersionCallback)
-                .forEach(it -> ((WrittenVersionCallback) it).handleVersionAssigned(version));
+                .filter(it -> it instanceof PhysicalVersionCallback)
+                .forEach(it -> ((PhysicalVersionCallback) it).handleVersionAssigned(version));
     }
 
     private void initiateMultiPartIfNeeded() {
