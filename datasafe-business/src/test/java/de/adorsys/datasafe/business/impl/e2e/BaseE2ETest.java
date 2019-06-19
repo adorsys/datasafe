@@ -27,8 +27,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
-import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -106,8 +105,8 @@ public abstract class BaseE2ETest extends WithStorageProvider {
         OutputStream stream = writeToPrivate.write(WriteRequest.forDefaultPrivate(auth, path));
         stream.write(data.getBytes());
         stream.close();
-        log.info("File {} of user {} saved to {}", Log.secure(data), Log.secure(auth),
-                Log.secure(path.split("/"), "/"));
+        log.info("File {} of user {} saved to {}", Obfuscate.secure(data), Obfuscate.secure(auth),
+                Obfuscate.secure(path.split("/"), "/"));
     }
 
     @SneakyThrows
@@ -115,8 +114,8 @@ public abstract class BaseE2ETest extends WithStorageProvider {
         OutputStream stream = writeToInbox.write(WriteRequest.forDefaultPublic(auth.getUserID(), path));
         stream.write(data.getBytes());
         stream.close();
-        log.info("File {} of user {} saved to {}", Log.secure(data), Log.secure(auth),
-                Log.secure(path.split("/"), "/"));
+        log.info("File {} of user {} saved to {}", Obfuscate.secure(data), Obfuscate.secure(auth),
+                Obfuscate.secure(path.split("/"), "/"));
     }
 
     protected AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth owner) {
@@ -128,7 +127,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                 ListRequest.forDefaultPrivate(owner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in PRIVATE", owner.getUserID(), Log.secure(files));
+        log.info("{} has {} in PRIVATE", owner.getUserID(), Obfuscate.secure(files));
         return files;
     }
 
@@ -139,7 +138,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
-        log.info("{} has {} in PRIVATE", user, Log.secure(data));
+        log.info("{} has {} in PRIVATE", user, Obfuscate.secure(data));
 
         return data;
     }
@@ -155,7 +154,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
         ByteStreams.copy(dataStream, outputStream);
         String data = new String(outputStream.toByteArray());
-        log.info("{} has {} in INBOX", user, Log.secure(data));
+        log.info("{} has {} in INBOX", user, Obfuscate.secure(data));
 
         return data;
     }
@@ -169,7 +168,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                 ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in INBOX", inboxOwner, Log.secure(files));
+        log.info("{} has {} in INBOX", inboxOwner, Obfuscate.secure(files));
         return files;
     }
 
@@ -183,7 +182,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
         OutputStream stream = writeToInbox.write(WriteRequest.forDefaultPublic(to, "./" + filename));
         stream.write(data.getBytes());
         stream.close();
-        log.info("File {} sent to INBOX of user {}", Log.secure(filename), to);
+        log.info("File {} sent to INBOX of user {}", Obfuscate.secure(filename), to);
     }
 
     protected void removeFromInbox(UserIDAuth inboxOwner, PrivateResource location) {
@@ -196,7 +195,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
         profileRegistrationService.registerPublic(dfsConfig.defaultPublicTemplate(auth));
         profileRegistrationService.registerPrivate(dfsConfig.defaultPrivateTemplate(auth));
 
-        log.info("Created user: {}", Log.secure(userName));
+        log.info("Created user: {}", Obfuscate.secure(userName));
         return auth;
     }
 

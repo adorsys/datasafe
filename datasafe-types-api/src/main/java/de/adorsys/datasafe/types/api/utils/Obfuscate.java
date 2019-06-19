@@ -29,7 +29,7 @@ import java.util.Base64;
  * <ul>
  */
 @UtilityClass
-public class Log {
+public class Obfuscate {
 
     static String secureLogs = System.getProperty("SECURE_LOGS");
     static String secureSensitive = System.getProperty("SECURE_SENSITIVE");

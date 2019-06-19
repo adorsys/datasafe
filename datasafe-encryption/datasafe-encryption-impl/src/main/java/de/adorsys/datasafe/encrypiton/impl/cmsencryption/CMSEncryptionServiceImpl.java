@@ -4,7 +4,7 @@ import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -98,13 +98,13 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
     private SecretKey secretKey(Function<String, Key> keyById, RecipientId rid) {
         String keyIdentifier = new String(((KEKRecipientId) rid).getKeyIdentifier());
-        log.debug("Secret key ID from envelope: {}", Log.secure(keyIdentifier));
+        log.debug("Secret key ID from envelope: {}", Obfuscate.secure(keyIdentifier));
         return (SecretKey) keyById.apply(keyIdentifier);
     }
 
     private PrivateKey privateKey(Function<String, Key> keyById, RecipientId rid) {
         String subjectKeyIdentifier = new String(((KeyTransRecipientId) rid).getSubjectKeyIdentifier());
-        log.debug("Private key ID from envelope: {}", Log.secure(subjectKeyIdentifier));
+        log.debug("Private key ID from envelope: {}", Obfuscate.secure(subjectKeyIdentifier));
         return (PrivateKey) keyById.apply(subjectKeyIdentifier);
     }
 

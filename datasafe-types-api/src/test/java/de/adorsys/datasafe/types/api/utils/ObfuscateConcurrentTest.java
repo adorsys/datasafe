@@ -12,14 +12,14 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class LogConcurrentTest {
+class ObfuscateConcurrentTest {
 
     private static final String TEST_STRING = "/path/to/file";
 
     @Test
     @SneakyThrows
     void hidingWithHashConcurrencyOk() {
-        Log.secureLogs = ""; // hash
+        Obfuscate.secureLogs = ""; // hash
 
         testLogging();
     }
@@ -27,7 +27,7 @@ class LogConcurrentTest {
     @Test
     @SneakyThrows
     void hidingWithStartsConcurrencyOk() {
-        Log.secureLogs = "STARS";
+        Obfuscate.secureLogs = "STARS";
 
         testLogging();
     }
@@ -36,7 +36,7 @@ class LogConcurrentTest {
     private void testLogging() {
         List<String> results = new CopyOnWriteArrayList<>();
         ExecutorService executorService = Executors.newFixedThreadPool(10);
-        IntStream.range(0, 100).forEach(it -> executorService.submit(() -> results.add(Log.secure(TEST_STRING))));
+        IntStream.range(0, 100).forEach(it -> executorService.submit(() -> results.add(Obfuscate.secure(TEST_STRING))));
         executorService.awaitTermination(1000, TimeUnit.MILLISECONDS);
 
         // if exception happens size won't be equal to 100

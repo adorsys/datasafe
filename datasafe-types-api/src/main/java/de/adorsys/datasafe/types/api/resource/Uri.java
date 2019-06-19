@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.types.api.resource;
 
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.*;
 
 import java.net.URI;
@@ -22,7 +22,7 @@ public class Uri {
         try {
             this.wrapped = new URI(path);
         } catch (URISyntaxException ex) {
-            throw new URISyntaxException(Log.secure(ex.getInput(), "/"), ex.getReason());
+            throw new URISyntaxException(Obfuscate.secure(ex.getInput(), "/"), ex.getReason());
         }
     }
 
@@ -129,7 +129,7 @@ public class Uri {
     @Override
     public String toString() {
         return "Uri{" +
-                "uri=" + Log.secure(wrapped) +
+                "uri=" + Obfuscate.secure(wrapped) +
                 '}';
     }
 }
