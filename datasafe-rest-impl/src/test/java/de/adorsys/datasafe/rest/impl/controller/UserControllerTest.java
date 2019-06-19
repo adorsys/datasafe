@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -16,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest extends BaseTokenDatasafeEndpointTest {
 
     @MockBean
-    protected DefaultDatasafeServices dataSafeService;
+    protected VersionedDatasafeServices dataSafeService;
 
     @MockBean
     private DFSBasedProfileStorageImpl userProfile;
@@ -38,6 +40,7 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("token", token)
         )
                 .andExpect(status().isOk());
+        verify(userProfile).registerUsingDefaults(any());
     }
 
 
@@ -53,5 +56,6 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("token", token)
         )
                 .andExpect(status().isOk());
+        verify(userProfile).deregister(any());
     }
 }
