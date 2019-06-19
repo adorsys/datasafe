@@ -40,7 +40,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
 
         mvc.perform(put("/inbox/{path}", TEST_PATH)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header("user", TEST_USER)
+                .header("users", TEST_USER)
                 .header("token", token)
         )
                 .andExpect(status().isOk());

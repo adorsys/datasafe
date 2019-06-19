@@ -40,6 +40,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,7 +113,10 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     @SneakyThrows
     protected void writeDataToInbox(UserIDAuth auth, String path, String data) {
-        OutputStream stream = writeToInbox.write(WriteRequest.forDefaultPublic(auth.getUserID(), path));
+        OutputStream stream = writeToInbox.write(
+                WriteRequest.forDefaultPublic(Collections.singleton(auth.getUserID()), path)
+        );
+
         stream.write(data.getBytes());
         stream.close();
         log.info("File {} of user {} saved to {}", Log.secure(data), Log.secure(auth),
@@ -180,7 +184,9 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     @SneakyThrows
     protected void sendToInbox(UserID to, String filename, String data) {
-        OutputStream stream = writeToInbox.write(WriteRequest.forDefaultPublic(to, "./" + filename));
+        OutputStream stream = writeToInbox.write(
+                WriteRequest.forDefaultPublic(Collections.singleton(to), "./" + filename)
+        );
         stream.write(data.getBytes());
         stream.close();
         log.info("File {} sent to INBOX of user {}", Log.secure(filename), to);
