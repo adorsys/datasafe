@@ -1,13 +1,13 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.config.DatasafeProperties;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
-import de.adorsys.datasafe.rest.impl.exceptions.RestImplException;
+import de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExists;
+import de.adorsys.datasafe.rest.impl.exceptions.UserExistsException;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -42,11 +42,10 @@ public class UserController {
     public void createUser(@RequestBody UserDTO requestDTO) {
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(requestDTO.getPassword());
         UserIDAuth auth = new UserIDAuth(new UserID(requestDTO.getUserName()), readKeyPassword);
-
         if (dataSafeService.userProfile().userExists(auth.getUserID())) {
-            throw new RestImplException("user \"" + auth.getUserID().getValue() + "\" already exists");
-        }else
-            dataSafeService.userProfile().registerUsingDefaults(auth);
+            throw new UserExistsException("user \"" + auth.getUserID().getValue() + "\" already exists");
+        }
+        dataSafeService.userProfile().registerUsingDefaults(auth);
     }
 
     /**
@@ -59,11 +58,9 @@ public class UserController {
     public void deleteUser(@RequestHeader String user,
                            @RequestHeader String password) {
         UserIDAuth auth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-
-        if (dataSafeService.userProfile().userExists(auth.getUserID()))
-            dataSafeService.userProfile().deregister(auth);
-        else
-            throw new RestImplException("user \"" + auth.getUserID().getValue() + "\" is not exists");
-
+        if (!dataSafeService.userProfile().userExists(auth.getUserID())) {
+            throw new UserDoesNotExists("user \"" + auth.getUserID().getValue() + "\" does not exists");
+        }
+        dataSafeService.userProfile().deregister(auth);
     }
 }
