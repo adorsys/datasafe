@@ -304,6 +304,9 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .build();
 
         ceph.createBucket(cephBucketName);
+        // curiously enough CEPH docs are incorrect, looks like they do support version id:
+        // https://github.com/ceph/ceph/blame/bc065cae7857c352ca36d5f06cdb5107cf72ed41/src/rgw/rgw_rest_s3.cc
+        // so for versioned local tests we can use CEPH
         ceph.setBucketVersioningConfiguration(
                 new SetBucketVersioningConfigurationRequest(
                         cephBucketName,
