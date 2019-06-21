@@ -14,7 +14,7 @@ public interface StorageWriteService {
 
     /**
      * @param locationWithCallback absolute bucket path with credentials (if necessary) plus callbacks to be executed
-     * when file is written
+     * when file is written, i.e. notify callee that we assigned some file version
      * @return data stream of resource to write to
      * @apiNote Resulting stream should be closed properly
      */

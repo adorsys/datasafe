@@ -143,7 +143,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     @ValueSource
-    protected static Stream<WithStorageProvider.StorageDescriptor> allStorages() {
+    protected static Stream<StorageDescriptor> allStorages() {
         return Stream.of(
                 fs(),
                 minio(),
@@ -152,8 +152,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         ).filter(Objects::nonNull);
     }
 
-    @ValueSource
-    protected static WithStorageProvider.StorageDescriptor fs() {
+    protected static StorageDescriptor fs() {
         return new StorageDescriptor(
                 StorageDescriptorName.FILESYSTEM,
                 () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
@@ -163,7 +162,6 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         );
     }
 
-    @ValueSource
     protected static StorageDescriptor minio() {
         return new StorageDescriptor(
                 StorageDescriptorName.MINIO,
@@ -179,8 +177,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         );
     }
 
-    @ValueSource
-    protected static StorageDescriptor ceph() {
+    protected static StorageDescriptor cephVersioned() {
         return new StorageDescriptor(
                 StorageDescriptorName.CEPH,
                 () -> {
@@ -195,7 +192,6 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         );
     }
 
-    @ValueSource
     protected static StorageDescriptor s3() {
         if (null == amazonAccessKeyID) {
             return null;
