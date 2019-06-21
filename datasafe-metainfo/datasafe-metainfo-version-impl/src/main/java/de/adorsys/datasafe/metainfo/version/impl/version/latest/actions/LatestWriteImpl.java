@@ -11,7 +11,6 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.callback.SoftwareVersionCallback;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.*;
-import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -113,7 +112,11 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
             super.close();
             streamToWrite.close();
 
-            log.debug("Committing file {} with blob {}", Obfuscate.secure(request.getLocation()), Obfuscate.secure(writtenResource));
+            log.debug("Committing file {} with blob {}",
+                    request.getLocation().encryptedPath(),
+                    writtenResource.encryptedPath()
+            );
+
             try (OutputStream os = writeToPrivate.write(request)) {
                 os.write(writtenResource.location().toASCIIString().getBytes());
             }

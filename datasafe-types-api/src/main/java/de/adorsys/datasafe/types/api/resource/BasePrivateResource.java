@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.types.api.resource;
 
-import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
@@ -109,9 +108,9 @@ public class BasePrivateResource implements PrivateResource {
     @Override
     public String toString() {
         return "BasePrivateResource{" +
-                "container=" + Obfuscate.secure(container) +
-                ", encryptedPath=" + Obfuscate.secure(encryptedPath) +
-                ", decryptedPath=" + Obfuscate.secure(decryptedPath) +
+                "container=" + container +
+                ", encryptedPath=" + encryptedPath +
+                ", decryptedPath=" + decryptedPath +
                 '}';
     }
 

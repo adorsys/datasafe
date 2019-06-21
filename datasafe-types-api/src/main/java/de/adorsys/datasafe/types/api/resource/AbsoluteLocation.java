@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.types.api.resource;
 
-import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.Getter;
 
 /**
@@ -33,7 +32,7 @@ public class AbsoluteLocation<T extends ResourceLocation<T>> implements Resource
     @Override
     public String toString() {
         return "AbsoluteLocation{" +
-                "resource=" + Obfuscate.secure(location()) +
+                "resource=" + location() +
                 '}';
     }
 }

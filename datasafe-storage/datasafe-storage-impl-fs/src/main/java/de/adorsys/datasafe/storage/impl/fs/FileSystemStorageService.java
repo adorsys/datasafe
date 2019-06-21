@@ -5,7 +5,6 @@ import com.google.common.io.RecursiveDeleteOption;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.*;
-import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +70,7 @@ public class FileSystemStorageService implements StorageService {
     public OutputStream write(WithCallback<AbsoluteLocation, ? extends ResourceWriteCallback> locationWithCallback) {
         log.debug("Write file request: {}", locationWithCallback.getWrapped().location());
         Path filePath = resolve(locationWithCallback.getWrapped().location().asURI(), true);
-        log.debug("Write file: {}", Obfuscate.secure(filePath));
+        log.debug("Write file: {}", locationWithCallback.getWrapped().location());
         return MoreFiles.asByteSink(filePath, StandardOpenOption.CREATE).openStream();
     }
 
@@ -79,7 +78,7 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public void remove(AbsoluteLocation location) {
         if (!objectExists(location)) {
-            log.debug("nothing to delete {}", Obfuscate.secure(location));
+            log.debug("nothing to delete {}", location.location());
             return;
         }
 
@@ -99,7 +98,7 @@ public class FileSystemStorageService implements StorageService {
     protected Path resolve(URI uri, boolean mkDirs) {
         Path path = Paths.get(dir.resolve(uri).asURI());
         if (!path.getParent().toFile().exists() && mkDirs) {
-            log.debug("Creating directories for: {}", Obfuscate.secure(uri));
+            log.debug("Creating directories for: {}", new Uri(uri));
             path.getParent().toFile().mkdirs();
         }
 
