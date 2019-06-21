@@ -5,6 +5,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
+import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
@@ -51,11 +53,12 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String minioUrl = "http://localhost";
     private static String minioMappedUrl;
 
+    // Note that CEPH is used to test bucket-level versioning, so you will get versioned bucket:
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
     private static String cephRegion = "eu-central-1";
     private static String cephBucketName = "home";
-    private static String cephUrl = "http://localhost";
+    private static String cephUrl = "http://0.0.0.0"; // not localhost!
     private static String cephMappedUrl;
 
     private static String amazonAccessKeyID = System.getProperty("AWS_ACCESS_KEY");
@@ -272,20 +275,25 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static void startCeph() {
         log.info("Starting CEPH");
-        cephContainer = new GenericContainer("localrepo/ceph-nano")
-                .withExposedPorts(5000)
-                .withEnv("MON_IP", "0.0.0.0")
+        cephContainer = new GenericContainer("ceph/daemon")
+                .withExposedPorts(8000, 5000)
+                .withEnv("RGW_FRONTEND_PORT", "8000")
+                .withEnv("SREE_PORT", "5000")
+                .withEnv("DEBUG", "verbose")
+                .withEnv("CEPH_DEMO_UID", "nano")
+                .withEnv("MON_IP", "127.0.0.1")
                 .withEnv("CEPH_PUBLIC_NETWORK", "0.0.0.0/0")
-                .withEnv("CEPH_DEMO_UID", "ceph")
+                .withEnv("CEPH_DAEMON", "demo")
+                .withEnv("DEMO_DAEMONS", "mon,mgr,osd,rgw")
                 .withEnv("CEPH_DEMO_ACCESS_KEY", cephAccessKeyID)
                 .withEnv("CEPH_DEMO_SECRET_KEY", cephSecretAccessKey)
-                .withEnv("CEPH_DEMO_BUCKET", cephBucketName)
+                .withCommand("mkdir -p /etc/ceph && mkdir -p /var/lib/ceph && /entrypoint.sh")
                 .waitingFor(Wait.defaultWaitStrategy());
 
         cephContainer.start();
-        Integer mappedPort = cephContainer.getMappedPort(9000);
-        log.info("Ceph mapped URL:" + cephMappedUrl);
+        Integer mappedPort = cephContainer.getMappedPort(8000);
         cephMappedUrl = cephUrl + ":" + mappedPort;
+        log.info("Ceph mapped URL:" + cephMappedUrl);
         ceph = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(
                         new AwsClientBuilder.EndpointConfiguration(cephMappedUrl, cephRegion)
@@ -298,8 +306,13 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .enablePathStyleAccess()
                 .build();
 
-
         ceph.createBucket(cephBucketName);
+        ceph.setBucketVersioningConfiguration(
+                new SetBucketVersioningConfigurationRequest(
+                        cephBucketName,
+                        new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
+                )
+        );
     }
 
     @Getter
