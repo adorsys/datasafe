@@ -21,6 +21,8 @@ import org.mockito.Mock;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.security.PublicKey;
+import java.util.Collections;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -58,11 +60,12 @@ class WriteToInboxImplTest extends BaseMockitoTest {
     @SneakyThrows
     void write() {
         AbsoluteLocation<PublicResource> resource = BasePublicResource.forAbsolutePublic(ABSOLUTE_PATH);
-        WriteRequest<UserID, PublicResource> request = WriteRequest.forDefaultPublic(auth, ABSOLUTE_PATH);
+        WriteRequest<Set<UserID>, PublicResource> request = WriteRequest
+                .forDefaultPublic(Collections.singleton(auth), ABSOLUTE_PATH);
         when(publicKeyService.publicKey(auth)).thenReturn(publicKeyWithId);
-        when(resolver.resolveRelativeToPublicInbox(request.getOwner(), request.getLocation())).thenReturn(resource);
+        when(resolver.resolveRelativeToPublicInbox(auth, request.getLocation())).thenReturn(resource);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(writeService.write(resource, publicKeyWithId)).thenReturn(outputStream);
+        when(writeService.write(Collections.singletonMap(publicKeyWithId, resource))).thenReturn(outputStream);
 
         inbox.write(request).write(BYTES.getBytes());
 

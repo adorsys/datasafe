@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.types.api.resource;
 
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
@@ -42,7 +42,7 @@ public class BasePublicResource implements PublicResource {
     @Override
     public String toString() {
         return "BasePublicResource{" +
-                "uri=" + Log.secure(uri) +
+                "uri=" + Obfuscate.secure(uri) +
                 '}';
     }
 }

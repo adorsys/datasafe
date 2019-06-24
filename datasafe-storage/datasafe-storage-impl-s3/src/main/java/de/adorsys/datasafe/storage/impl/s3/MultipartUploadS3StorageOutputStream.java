@@ -25,7 +25,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.BinaryUtils;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +69,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         this.amazonS3 = amazonS3;
         this.completionService = new ExecutorCompletionService<>(executorService);
 
-        log.debug("Write to bucket: {} with name: {}", Log.secure(bucketName), Log.secure(objectName));
+        log.debug("Write to bucket: {} with name: {}", Obfuscate.secure(bucketName), Obfuscate.secure(objectName));
     }
 
     @Override

@@ -2,7 +2,10 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
@@ -11,7 +14,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -62,6 +67,29 @@ class BasicFunctionalityTest extends BaseE2ETest {
         profileRemovalService.deregister(john);
 
         assertRootDirIsEmpty(descriptor);
+    }
+
+    @SneakyThrows
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void testMultipleRecipientsSharing(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        UserIDAuth john = registerUser("john");
+        UserIDAuth jane = registerUser("jane");
+        UserIDAuth jamie = registerUser("jamie");
+
+        String multiShareFile = "multishare.txt";
+        try (OutputStream os = writeToInbox.write(WriteRequest.forDefaultPublic(
+                ImmutableSet.of(john.getUserID(), jane.getUserID(), jamie.getUserID()),
+                multiShareFile))
+        ) {
+            os.write(MESSAGE_ONE.getBytes());
+        }
+
+        assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(john, multiShareFile))).hasContent(MESSAGE_ONE);
+        assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(jane, multiShareFile))).hasContent(MESSAGE_ONE);
+        assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(jamie, multiShareFile))).hasContent(MESSAGE_ONE);
     }
 
     @ParameterizedTest

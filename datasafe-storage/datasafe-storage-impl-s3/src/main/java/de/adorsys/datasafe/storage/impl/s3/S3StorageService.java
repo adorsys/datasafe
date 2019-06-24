@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -44,7 +44,7 @@ public class S3StorageService implements StorageService {
      */
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
-        log.debug("List at {}", Log.secure(location));
+        log.debug("List at {}", Obfuscate.secure(location));
         String prefix = location.location().getPath().replaceFirst("^/", "");
 
         S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, prefix);
@@ -61,7 +61,7 @@ public class S3StorageService implements StorageService {
     @Override
     public InputStream read(AbsoluteLocation location) {
         String key = location.location().getPath().replaceFirst("^/", "");
-        log.debug("Read from {}", Log.secure(key));
+        log.debug("Read from {}", Obfuscate.secure(key));
         GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
         S3Object fullObject = s3.getObject(getObjectRequest);
         return fullObject.getObjectContent();
@@ -69,7 +69,7 @@ public class S3StorageService implements StorageService {
 
     @Override
     public OutputStream write(AbsoluteLocation location) {
-        log.debug("Write data by path: {}", Log.secure(location.location()));
+        log.debug("Write data by path: {}", Obfuscate.secure(location.location()));
         return new MultipartUploadS3StorageOutputStream(bucketName, location.getResource(), s3, executorService);
     }
 
@@ -77,7 +77,7 @@ public class S3StorageService implements StorageService {
     public void remove(AbsoluteLocation location) {
         String path = location.location().getPath();
         String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
-        log.debug("Remove path {}", Log.secure(key));
+        log.debug("Remove path {}", Obfuscate.secure(key));
         s3.deleteObject(bucketName, key);
     }
 
@@ -86,7 +86,7 @@ public class S3StorageService implements StorageService {
         String path = location.location().getPath();
         String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
         boolean pathExists = s3.doesObjectExist(bucketName, key);
-        log.debug("Path {} exists {}", Log.secure(key), pathExists);
+        log.debug("Path {} exists {}", Obfuscate.secure(key), pathExists);
         return pathExists;
     }
 

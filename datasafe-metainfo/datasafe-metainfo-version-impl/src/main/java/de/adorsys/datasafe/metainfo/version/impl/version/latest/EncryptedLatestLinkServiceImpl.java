@@ -13,7 +13,7 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,7 +48,7 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
 
         if (null == privateProfile.getDocumentVersionStorage()) {
-            log.error("Missing version storage for {}", Log.secure(owner.getUserID().getValue()));
+            log.error("Missing version storage for {}", Obfuscate.secure(owner.getUserID().getValue()));
             throw new IllegalStateException("User private profile is missing document version storage");
         }
 
