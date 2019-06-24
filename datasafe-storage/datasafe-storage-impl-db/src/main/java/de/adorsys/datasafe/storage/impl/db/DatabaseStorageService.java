@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
-import de.adorsys.datasafe.types.api.utils.Log;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -13,13 +12,13 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -68,9 +67,11 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         checkDataSource(location);
         String tableName = extractTable(location);
         String key = location.location().getPath();
-        final String sql = "SELECT value FROM " + tableName + " where key = ?";
-        String value = getJdbcTemplate().queryForObject(sql, String.class, key);
-        return new ByteArrayInputStream(value.getBytes());
+        final String sql = "SELECT value FROM ? where key = ?";
+        ResultSetInputStream resultSetInputStream = new ResultSetInputStream(
+                new ResultSetTpByteArrayIml(), getDataSource().getConnection(), sql, tableName, key);
+
+        return resultSetInputStream;
     }
 
     @SneakyThrows
@@ -90,8 +91,8 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         String tableName = extractTable(location);
         String key = location.location().getPath();
         final String sql = "INSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
-//        getJdbcTemplate().update(sql, )
-        return new ByteArrayOutputStream();
+      //  getJdbcTemplate().update(sql, )
+        return new JdbcOutputStream(getJdbcTemplate(), sql, key);
     }
 
 //    @Slf4j
