@@ -40,7 +40,7 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
-                .content("{ \"userName\" : \"" + TEST_USER + "\" , \"password\" : \"" + TEST_PASS + "\" }")
+                .content(getLoginData())
                 .header("token", token)
         )
                 .andExpect(status().isOk());
@@ -53,12 +53,13 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
 
         when(dataSafeService.userProfile().userExists(new UserID(TEST_USER))).thenReturn(true);
 
+        //Validate the response as de.adorsys.datasafe.rest.impl.exceptions.UserExistsException
         Assertions.assertThrows(NestedServletException.class, () -> {
             mvc.perform(put("/user")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .characterEncoding("UTF-8")
-                    .content("{ \"userName\" : \"" + TEST_USER + "\" , \"password\" : \"" + TEST_PASS + "\" }")
+                    .content(getLoginData())
                     .header("token", token)
             );
         });
@@ -85,6 +86,7 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     void deleteNonExistenceUserTest() {
         when(dataSafeService.userProfile().userExists(new UserID(TEST_USER))).thenReturn(false);
 
+        //Validate the response as de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExistsException
         Assertions.assertThrows(NestedServletException.class, () -> {
             mvc.perform(delete("/user")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -94,5 +96,9 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
                     .header("token", token)
             );
         });
+    }
+
+    public String getLoginData(){
+        return "{ \"userName\" : \"" + TEST_USER + "\" , \"password\" : \"" + TEST_PASS + "\" }";
     }
 }

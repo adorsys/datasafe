@@ -6,7 +6,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.config.DatasafeProperties;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
-import de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExists;
+import de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExistsException;
 import de.adorsys.datasafe.rest.impl.exceptions.UserExistsException;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +59,7 @@ public class UserController {
                            @RequestHeader String password) {
         UserIDAuth auth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         if (!dataSafeService.userProfile().userExists(auth.getUserID())) {
-            throw new UserDoesNotExists("user \"" + auth.getUserID().getValue() + "\" does not exists");
+            throw new UserDoesNotExistsException("user \"" + auth.getUserID().getValue() + "\" does not exists");
         }
         dataSafeService.userProfile().deregister(auth);
     }
