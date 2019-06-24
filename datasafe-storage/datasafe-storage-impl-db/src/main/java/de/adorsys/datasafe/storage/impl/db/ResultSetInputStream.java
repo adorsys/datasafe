@@ -23,12 +23,16 @@ public class ResultSetInputStream extends InputStream {
         this.converter = converter;
         statement = createStatement(connection, sql, parameters);
         resultSet = statement.executeQuery();
+        buffer = new byte[4096];
     }
 
     @SneakyThrows
     private static PreparedStatement createStatement(final Connection connection, final String sql, final Object[] parameters) {
         // PreparedStatement should be created here from passed connection, sql and parameters
-        return connection.prepareStatement(sql, new String[]{"key", "value"});
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1,(String)parameters[0]);
+
+        return statement;
     }
 
     @Override

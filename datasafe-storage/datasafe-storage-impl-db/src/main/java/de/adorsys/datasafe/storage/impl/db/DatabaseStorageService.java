@@ -67,9 +67,9 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         checkDataSource(location);
         String tableName = extractTable(location);
         String key = location.location().getPath();
-        final String sql = "SELECT value FROM ? where key = ?";
+        final String sql = "SELECT value FROM " + tableName + " where key = ?";
         ResultSetInputStream resultSetInputStream = new ResultSetInputStream(
-                new ResultSetTpByteArrayIml(), getDataSource().getConnection(), sql, tableName, key);
+                new ResultSetTpByteArrayIml(), getDataSource().getConnection(), sql, key);
 
         return resultSetInputStream;
     }
