@@ -4,11 +4,15 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 
 @Slf4j
@@ -46,14 +50,25 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     @Test
     void read() {
+        //storageService.read(BasePrivateResource.forAbsolutePrivate())
     }
 
     @Test
     void remove() {
     }
 
+    @SneakyThrows
     @Test
     void write() {
+        URI path = new URI("jdbc://sa:sa@localhost/h2/private_profiles/deep/path/");
+        OutputStream write = storageService.write(BasePrivateResource.forAbsolutePrivate(path));
+        write.write("HELLO".getBytes());
+        write.close();
+
+        InputStream read = storageService.read(BasePrivateResource.forAbsolutePrivate(path));
+        String theString = IOUtils.toString(read);
+        Assert.assertEquals(theString, "HELLO");
+
     }
 
     private static DriverManagerDataSource getDataSource() {

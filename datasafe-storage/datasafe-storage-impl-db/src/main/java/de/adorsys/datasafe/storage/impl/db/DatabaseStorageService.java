@@ -17,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -68,8 +69,10 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         String tableName = extractTable(location);
         String key = location.location().getPath();
         final String sql = "SELECT value FROM " + tableName + " where key = ?";
-        String value = getJdbcTemplate().queryForObject(sql, String.class, key);
-        return new ByteArrayInputStream(value.getBytes());
+        ResultSetInputStream resultSetInputStream = new ResultSetInputStream(
+                new ResultSetTpByteArrayIml(), getDataSource().getConnection(), sql, key);
+
+        return resultSetInputStream;
     }
 
     @SneakyThrows
@@ -89,8 +92,7 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         String tableName = extractTable(location);
         String key = location.location().getPath();
         final String sql = "UPSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
-//        getJdbcTemplate().update(sql, )
-        return new ByteArrayOutputStream();
+        return new JdbcOutputStream(getJdbcTemplate(), sql, key);
     }
 
 //    @Slf4j
