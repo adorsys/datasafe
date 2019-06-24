@@ -27,4 +27,9 @@ public class DocumentDirectoryFQNTest {
         Assertions.assertEquals("/", d.getDocusafePath());
         Assertions.assertEquals("", d.getDatasafePath());
     }
+    @Test void slashDocumentDirectoryFQN() {
+        DocumentDirectoryFQN d = new DocumentDirectoryFQN("/");
+        Assertions.assertEquals("/", d.getDocusafePath());
+        Assertions.assertEquals("", d.getDatasafePath());
+    }
 }

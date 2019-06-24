@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.simple.adapter.api;
 
+import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,5 +25,8 @@ public class DocumentFQNTest {
         DocumentFQN d = new DocumentFQN("");
         Assertions.assertEquals("/", d.getDocusafePath());
         Assertions.assertEquals("", d.getDatasafePath());
+    }
+    @Test void slashDocumentFQN() {
+        Assertions.assertThrows(SimpleAdapterException.class , () ->new DocumentFQN("/"));
     }
 }
