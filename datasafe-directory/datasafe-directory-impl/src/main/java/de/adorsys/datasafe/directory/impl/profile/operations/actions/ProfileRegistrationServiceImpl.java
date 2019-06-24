@@ -15,7 +15,7 @@ import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,7 +79,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
 
         if (checkService.objectExists(access.withSystemAccess(profile.getKeystore()))) {
             log.warn("Keystore already exists for {} at {}, will not create new",
-                    profile.getId().getUserID(), Log.secure(profile.getKeystore()));
+                    profile.getId().getUserID(), Obfuscate.secure(profile.getKeystore()));
             return;
         }
 

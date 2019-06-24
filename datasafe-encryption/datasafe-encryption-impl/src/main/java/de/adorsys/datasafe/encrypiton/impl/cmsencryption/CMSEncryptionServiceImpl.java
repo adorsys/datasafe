@@ -2,14 +2,18 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.Decryptor;
+import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.DecryptorFactory;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
-import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.cms.*;
-import org.bouncycastle.cms.jcajce.*;
+import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
+import org.bouncycastle.cms.jcajce.JceKEKRecipientInfoGenerator;
+import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.SecretKey;
@@ -18,9 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Cryptographic message syntax document encoder/decoder - see
@@ -31,6 +38,9 @@ import java.util.function.Function;
 @Slf4j
 @RuntimeDelegate
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
+
+    private final Map<Integer, Decryptor> decryptors = new HashMap<>();
+
 
     private CMSEncryptionConfig encryptionConfig;
 
@@ -45,12 +55,17 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
      */
     @Override
     @SneakyThrows
-    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, PublicKey publicKey,
-                                                    KeyID publicKeyID) {
-        RecipientInfoGenerator rec = new JceKeyTransRecipientInfoGenerator(publicKeyID.getValue().getBytes(),
-                publicKey);
-
-        return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
+    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream,
+                                                    Set<PublicKeyIDWithPublicKey> publicKeys) {
+        return streamEncrypt(
+                dataContentStream,
+                publicKeys.stream().map(
+                        it -> new JceKeyTransRecipientInfoGenerator(
+                                it.getKeyID().getValue().getBytes(), it.getPublicKey()
+                        )
+                ).collect(Collectors.toSet()),
+                encryptionConfig.getAlgorithm()
+        );
     }
 
     /**
@@ -60,9 +75,11 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     @Override
     @SneakyThrows
     public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, SecretKey secretKey, KeyID keyID) {
-        RecipientInfoGenerator rec = new JceKEKRecipientInfoGenerator(keyID.getValue().getBytes(), secretKey);
-
-        return streamEncrypt(dataContentStream, rec, encryptionConfig.getAlgorithm());
+        return streamEncrypt(
+                dataContentStream,
+                Collections.singleton(new JceKEKRecipientInfoGenerator(keyID.getValue().getBytes(), secretKey)),
+                encryptionConfig.getAlgorithm()
+        );
     }
 
     /**
@@ -72,47 +89,41 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
      */
     @Override
     @SneakyThrows
-    public InputStream buildDecryptionInputStream(InputStream inputStream, Function<String, Key> keyById) {
+    public InputStream buildDecryptionInputStream(InputStream inputStream,
+                                                  Function<Set<String>, Map<String, Key>> keysByIds) {
         RecipientInformationStore recipientInfoStore = new CMSEnvelopedDataParser(inputStream).getRecipientInfos();
 
         if (recipientInfoStore.size() == 0) {
             throw new DecryptionException("CMS Envelope doesn't contain recipients");
         }
-        if (recipientInfoStore.size() > 1) {
-            throw new DecryptionException("Programming error. Handling of more that one recipient not done yet");
+
+        Map<String, Decryptor> availableDecryptors = recipientInfoStore.getRecipients()
+                .stream()
+                .map(DecryptorFactory::decryptor)
+                .collect(Collectors.toMap(Decryptor::getKeyId, it -> it));
+
+        Map<String, Key> keys = keysByIds.apply(availableDecryptors.keySet());
+
+        if (keys.isEmpty()) {
+            throw new DecryptionException("No keys found to decrypt");
         }
-        RecipientInformation recipientInfo = recipientInfoStore.getRecipients().stream().findFirst().get();
-        RecipientId rid = recipientInfo.getRID();
 
-        switch (rid.getType()) {
-            case RecipientId.keyTrans:
-                return recipientInfo.getContentStream(new JceKeyTransEnvelopedRecipient(privateKey(keyById, rid)))
-                        .getContentStream();
-            case RecipientId.kek:
-                return recipientInfo.getContentStream(new JceKEKEnvelopedRecipient(secretKey(keyById, rid)))
-                        .getContentStream();
-            default:
-                throw new DecryptionException("Programming error. Handling of more that one recipient not done yet");
+        if (keys.size() != 1) {
+            throw new DecryptionException("More than one key available for decryption");
         }
+
+        Map.Entry<String, Key> keyWithIdToDecrypt = keys.entrySet().iterator().next();
+        return availableDecryptors.get(keyWithIdToDecrypt.getKey()).decryptionStream(keyWithIdToDecrypt.getValue());
     }
 
-    private SecretKey secretKey(Function<String, Key> keyById, RecipientId rid) {
-        String keyIdentifier = new String(((KEKRecipientId) rid).getKeyIdentifier());
-        log.debug("Secret key ID from envelope: {}", Log.secure(keyIdentifier));
-        return (SecretKey) keyById.apply(keyIdentifier);
-    }
-
-    private PrivateKey privateKey(Function<String, Key> keyById, RecipientId rid) {
-        String subjectKeyIdentifier = new String(((KeyTransRecipientId) rid).getSubjectKeyIdentifier());
-        log.debug("Private key ID from envelope: {}", Log.secure(subjectKeyIdentifier));
-        return (PrivateKey) keyById.apply(subjectKeyIdentifier);
-    }
-
-    private OutputStream streamEncrypt(OutputStream dataContentStream, RecipientInfoGenerator rec,
+    private OutputStream streamEncrypt(OutputStream dataContentStream, Set<RecipientInfoGenerator> recipients,
                                        ASN1ObjectIdentifier algorithm) throws CMSException, IOException {
-        CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
-        gen.addRecipientInfoGenerator(rec);
-        return gen.open(dataContentStream, new JceCMSContentEncryptorBuilder(algorithm)
-                .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
+        CMSEnvelopedDataStreamGenerator generator = new CMSEnvelopedDataStreamGenerator();
+        recipients.forEach(generator::addRecipientInfoGenerator);
+
+        return generator.open(
+                dataContentStream,
+                new JceCMSContentEncryptorBuilder(algorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME).build()
+        );
     }
 }

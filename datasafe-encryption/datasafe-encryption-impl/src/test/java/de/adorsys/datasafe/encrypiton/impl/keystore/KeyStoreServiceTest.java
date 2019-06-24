@@ -70,6 +70,7 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(keyStoreAccess);
+
         Assertions.assertEquals(5, publicKeys.size());
     }
 

@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreAuthException;
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 
 /**
  * Authorization entity to read keystore or both keystore and key in it.
@@ -32,8 +32,8 @@ public class KeyStoreAuth {
     @Override
     public String toString() {
         return "KeyStoreAuth{" +
-                Log.secureSensitive(readStorePassword) +
-                ", " + Log.secureSensitive(readKeyPassword) +
+                Obfuscate.secureSensitive(readStorePassword) +
+                ", " + Obfuscate.secureSensitive(readKeyPassword) +
                 '}';
     }
 }

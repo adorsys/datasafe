@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.encrypiton.api.types;
 
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
 
@@ -19,6 +19,6 @@ public class UserID {
 
     @Override
     public String toString() {
-        return Log.secure(value.getValue());
+        return Obfuscate.secure(value.getValue());
     }
 }
