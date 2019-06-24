@@ -79,7 +79,7 @@ class BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage {
         Integer mappedPort = cephContainer.getMappedPort(8000);
         // URL for S3 API/bucket root:
         cephMappedUrl = "http://0.0.0.0" + ":" + mappedPort;
-        log.info("Ceph mapped URL:" + cephMappedUrl);
+        log.info("Ceph mapped URL: {}", cephMappedUrl);
         cephS3 = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(
                         new AwsClientBuilder.EndpointConfiguration(cephMappedUrl, "us-east-1")
