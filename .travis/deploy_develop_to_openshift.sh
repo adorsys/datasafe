@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 if [ "$TRAVIS_BRANCH" == “develop" ]; then
-bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests
-bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests
-
 PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 oc login https://openshift.adorsys.de:443 --username=$OPENSHIFT_USER --password=$OPENSHIFT_PASSWORD
 docker login -u $(oc whoami) -p $(oc whoami -t) https://openshift-registry.adorsys.de
