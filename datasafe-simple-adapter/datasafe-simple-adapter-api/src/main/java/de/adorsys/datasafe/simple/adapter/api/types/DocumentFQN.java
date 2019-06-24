@@ -1,10 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.api.types;
 
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 
 @EqualsAndHashCode
 public class DocumentFQN {
@@ -15,7 +12,13 @@ public class DocumentFQN {
             throw new SimpleAdapterException("DocumentFQN must not be null");
         }
 
+        if (s.length() == 0) {
+            location = "/";
+            return;
+        }
+
         String value = null;
+
 
         // remove trailing slash
         s = s.replaceAll("//+", "/");

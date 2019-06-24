@@ -183,7 +183,7 @@
                             <parameters>
                                 <parameter>
                                     <name>lowerlimit</name>
-                                    <value>85</value>
+                                    <value>93</value>
                                 </parameter>
                                 <parameter>
                                     <name>outputdir</name>

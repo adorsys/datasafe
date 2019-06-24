@@ -1,8 +1,6 @@
 package de.adorsys.datasafe.simple.adapter.api.types;
 
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.ToString;
 
 @ToString
@@ -11,6 +9,10 @@ public class DocumentDirectoryFQN {
     public DocumentDirectoryFQN(String s) {
         if (s == null) {
             throw new SimpleAdapterException("DocumentDirectoryFQN must not be null");
+        }
+        if (s.length() == 0) {
+            location = "/";
+            return;
         }
 
         String value = null;
