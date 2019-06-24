@@ -137,6 +137,25 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("parameterCombination")
+    public void writeAndReadFileWithSlash(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
+        myinit(descriptor, encryption);
+        mystart();
+        String content = "content of document";
+        String path = "/a/b/c.txt";
+        DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
+        simpleDatasafeService.storeDocument(userIDAuth, document);
+
+        DSDocument dsDocument = simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path));
+        assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
+        assertFalse(simpleDatasafeService.documentExists(userIDAuth, new DocumentFQN("doesnotexist.txt")));
+
+        assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
+        log.info("the content read is ok");
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("parameterCombination")
     public void writeAndReadFiles(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
         myinit(descriptor, encryption);
         mystart();
