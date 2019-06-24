@@ -36,4 +36,5 @@ before_install:
 
 after_success:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - If [ “$BRANCH” == “$TRAVIS_PULL_REQUEST_BRANCH” ]; then bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests; bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests; elif [ “$BRANCH” == “$TRAVIS_BRANCH” ]; then bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests; bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests; fi
+  - echo $BRANCH
+  - if [ “$BRANCH” == “$TRAVIS_PULL_REQUEST_BRANCH” ]; then bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests; bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests; elif [ “$BRANCH” == “$TRAVIS_BRANCH” ]; then bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests; bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests; fi
