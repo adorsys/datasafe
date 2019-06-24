@@ -6,6 +6,7 @@ import lombok.ToString;
 @ToString
 public class DocumentDirectoryFQN {
     private final String location;
+
     public DocumentDirectoryFQN(String s) {
         if (s == null) {
             throw new SimpleAdapterException("DocumentDirectoryFQN must not be null");
@@ -18,20 +19,25 @@ public class DocumentDirectoryFQN {
         String value = null;
 
         // remove trailing slash
-        s = s.replaceAll("//+","/");
+        s = s.replaceAll("//+", "/");
         if (s.substring(s.length() - 1).equals("/")) {
-            value = s.substring(0,s.length()-1);
+            value = s.substring(0, s.length() - 1);
         } else {
             value = s;
         }
 
         // add leading slash
-        if (!value.substring(0,1).equals("/")) {
-            value = "/" + value;
+        if (value.length() > 0) {
+            if (!value.substring(0, 1).equals("/")) {
+                value = "/" + value;
+            }
+        } else {
+            value = "/";
         }
         location = value;
 
-        }
+    }
+
     public DocumentDirectoryFQN addDirectory(String s) {
         return new DocumentDirectoryFQN(location + "/" + s);
     }
