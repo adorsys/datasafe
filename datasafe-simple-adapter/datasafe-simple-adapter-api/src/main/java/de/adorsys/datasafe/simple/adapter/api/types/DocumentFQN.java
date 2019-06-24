@@ -8,12 +8,14 @@ import lombok.ToString;
 
 @EqualsAndHashCode
 public class DocumentFQN {
-    private String value;
+    private final String location;
 
     public DocumentFQN(String s) {
         if (s == null) {
             throw new SimpleAdapterException("DocumentFQN must not be null");
         }
+
+        String value = null;
 
         // remove trailing slash
         s = s.replaceAll("//+", "/");
@@ -27,15 +29,17 @@ public class DocumentFQN {
         if (!value.substring(0,1).equals("/")) {
             value = "/" + value;
         }
+
+        location = value;
     }
 
     // docusafe path always with a slash in the beginning
     public String getDocusafePath() {
-        return value;
+        return location;
     }
 
     // datasave path never with a slash in the beginning
     public String getDatasafePath() {
-        return value.substring(1);
+        return location.substring(1);
     }
 }

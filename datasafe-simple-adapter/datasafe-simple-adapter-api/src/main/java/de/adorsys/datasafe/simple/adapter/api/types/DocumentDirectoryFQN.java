@@ -7,11 +7,13 @@ import lombok.ToString;
 
 @ToString
 public class DocumentDirectoryFQN {
-    private String value;
+    private final String location;
     public DocumentDirectoryFQN(String s) {
         if (s == null) {
             throw new SimpleAdapterException("DocumentDirectoryFQN must not be null");
         }
+
+        String value = null;
 
         // remove trailing slash
         s = s.replaceAll("//+","/");
@@ -25,24 +27,25 @@ public class DocumentDirectoryFQN {
         if (!value.substring(0,1).equals("/")) {
             value = "/" + value;
         }
+        location = value;
 
-    }
+        }
     public DocumentDirectoryFQN addDirectory(String s) {
-        return new DocumentDirectoryFQN(value + "/" + s);
+        return new DocumentDirectoryFQN(location + "/" + s);
     }
 
     public DocumentFQN addName(String s) {
-        return new DocumentFQN(value + "/" + s);
+        return new DocumentFQN(location + "/" + s);
     }
 
     // docusafe path always with a slash in the beginning
     public String getDocusafePath() {
-        return value;
+        return location;
     }
 
     // datasave path never with a slash in the beginning
     public String getDatasafePath() {
-        return value.substring(1);
+        return location.substring(1);
     }
 
 }
