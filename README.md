@@ -53,7 +53,7 @@ that supports versioned and encrypted private file storage (for storage provider
 
 Whenever user wants to store or read file at some location - be it inbox or his private space, following things do happen:
 1. System resolves his profile location
-1. His profile is read (and typically cached, then direct cache access happens)
+1. His profile is read from some storage (and typically cached, then direct cache access happens)
 1. Based on his profile content, root folder where data should be read/written is deduced
 1. If data is going to private space - request path is encrypted
 1. Root path is prepended to request path

@@ -2,8 +2,8 @@ package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.iterable.S3Objects;
+import com.amazonaws.services.s3.iterable.S3Versions;
 import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
@@ -13,7 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -41,6 +46,7 @@ public class S3StorageService implements StorageService {
 
     /**
      * Lists all resources within bucket and returns absolute resource location for each entry without credentials.
+     * Does not include object versions, only latest are shown.
      */
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
@@ -58,15 +64,26 @@ public class S3StorageService implements StorageService {
                 );
     }
 
+    /**
+     * Reads resource by its location and uses its version if available in {@code location}
+     */
     @Override
     public InputStream read(AbsoluteLocation location) {
-        String key = location.location().getPath().replaceFirst("^/", "");
-        log.debug("Read from {}", location.location());
-        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
-        S3Object fullObject = s3.getObject(getObjectRequest);
-        return fullObject.getObjectContent();
+        log.debug("Read from {}", location);
+
+        return executeAndReturn(
+                location,
+                key -> s3.getObject(bucketName, key).getObjectContent(),
+                (key, version) ->
+                        s3.getObject(
+                                new GetObjectRequest(bucketName, key, version.getVersionId())
+                        ).getObjectContent()
+        );
     }
 
+    /**
+     * Writes data stream into resource and sends resource version into callback if S3 returns version id.
+     */
     @Override
     public OutputStream write(WithCallback<AbsoluteLocation, ? extends ResourceWriteCallback> locationWithCallback) {
         log.debug("Write data by path: {}", locationWithCallback.getWrapped().location());
@@ -80,20 +97,37 @@ public class S3StorageService implements StorageService {
         );
     }
 
+    /**
+     * Removes resource by its location (latest one if versioning enabled) or removes just one version of the
+     * resource if version if available in {@code location}
+     */
     @Override
     public void remove(AbsoluteLocation location) {
-        String path = location.location().getPath();
-        String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
-        log.debug("Remove from {}", location.location());
-        s3.deleteObject(bucketName, key);
+        log.debug("Remove from {}", location);
+
+        execute(
+                location,
+                key -> s3.deleteObject(bucketName, key),
+                (key, version) -> s3.deleteVersion(bucketName, key, version.getVersionId())
+        );
     }
 
+    /**
+     * Checks if resource exists by its location (latest one if versioning enabled)
+     * or checks if resource with given version exists if version is available in {@code location}
+     */
     @Override
     public boolean objectExists(AbsoluteLocation location) {
-        String path = location.location().getPath();
-        String key = path.replaceFirst("^/", "").replaceFirst("/$", "");
-        boolean pathExists = s3.doesObjectExist(bucketName, key);
-        log.debug("Path {} exists {}", location.location(), pathExists);
+        boolean pathExists = executeAndReturn(
+                location,
+                path -> s3.doesObjectExist(bucketName, path),
+                (path, version) ->
+                        StreamSupport.stream(
+                                S3Versions.withPrefix(s3, bucketName, path).spliterator(), false)
+                                .anyMatch(it -> it.getVersionId().equals(version.getVersionId()))
+        );
+
+        log.debug("Path {} exists {}", location, pathExists);
         return pathExists;
     }
 
@@ -104,5 +138,52 @@ public class S3StorageService implements StorageService {
         }
 
         return BasePrivateResource.forPrivate(relUrl).resolveFrom(root);
+    }
+
+    private void execute(AbsoluteLocation location,
+                          Consumer<String> ifNoVersion,
+                          BiConsumer<String, S3Version> ifVersion) {
+
+        executeAndReturn(
+                location,
+                path -> {
+                    ifNoVersion.accept(path);
+                    return null;
+                },
+                (path, version) -> {
+                    ifVersion.accept(path, version);
+                    return null;
+                });
+    }
+
+    private <T> T executeAndReturn(AbsoluteLocation location,
+                         Function<String, T> ifNoVersion,
+                         BiFunction<String, S3Version, T> ifVersion) {
+
+        String key = location.getResource().location()
+                .getPath()
+                .replaceFirst("^/", "")
+                .replaceFirst("/$", "");
+        Optional<S3Version> version = extractVersion(location);
+
+        if (!version.isPresent()) {
+            return ifNoVersion.apply(key);
+        }
+
+        return ifVersion.apply(key, version.get());
+    }
+
+    private Optional<S3Version> extractVersion(AbsoluteLocation location) {
+        if (!(location.getResource() instanceof VersionedResourceLocation)) {
+            return Optional.empty();
+        }
+
+        VersionedResourceLocation withVersion = (VersionedResourceLocation) location.getResource();
+
+        if (!(withVersion.getVersion() instanceof S3Version)) {
+            return Optional.empty();
+        }
+
+        return Optional.of((S3Version) withVersion.getVersion());
     }
 }
