@@ -8,10 +8,6 @@ sudo: required
 services:
   - docker
 
-branches:
-  only:
-    - develop
-
 script:
   - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
 
