@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
-import de.adorsys.datasafe.types.api.utils.Log;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -13,7 +12,6 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
@@ -50,9 +48,10 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
     @SneakyThrows
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
-        checkDataSource(location);
+        acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
         String key = location.location().getPath();
+        // TODO query builder
         final String sql = "SELECT value FROM " + tableName + " WHERE key LIKE '" + key + "%'";
         List<String> keys = getJdbcTemplate().queryForList(sql, String.class);
         return keys.stream().map(it -> new AbsoluteLocation<>(
@@ -65,7 +64,7 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
     @SneakyThrows
     @Override
     public InputStream read(AbsoluteLocation location) {
-        checkDataSource(location);
+        acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
         String key = location.location().getPath();
         final String sql = "SELECT value FROM " + tableName + " where key = ?";
@@ -76,7 +75,7 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
     @SneakyThrows
     @Override
     public void remove(AbsoluteLocation location) {
-        checkDataSource(location);
+        acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
         final String sql = "DELETE FROM " + tableName + " WHERE key = ?";
         log.debug("deleting: " + location.getResource().location());
@@ -86,10 +85,10 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
     @SneakyThrows
     @Override
     public OutputStream write(AbsoluteLocation location) {
-        checkDataSource(location);
+        acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
         String key = location.location().getPath();
-        final String sql = "INSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
+        final String sql = "UPSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
 //        getJdbcTemplate().update(sql, )
         return new ByteArrayOutputStream();
     }
@@ -118,9 +117,12 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
 //        }
 //    }
 
-    private DbNames extractDb(AbsoluteLocation location) {
-        String[] splitted = location.getResource().location().getPath().split("/");
-        return DbNames.valueOf(splitted[1].toUpperCase());
+    private String extractDb(AbsoluteLocation location) {
+//        "jdbc:h2"
+//        "jdbc:postgresql:"
+//        "jdbc:mysql
+        String host = location.location().getWrapped().getHost();
+        return DatabaseFactory.getInstance().findDefaultDriver(host);
     }
 
     private String extractTable(AbsoluteLocation location) {
@@ -144,16 +146,17 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         liquibase.update(new Contexts(), new LabelExpression());
     }
 
-    private void checkDataSource(AbsoluteLocation location) throws SQLException, LiquibaseException {
+    private void acquireConnectionToDbIfNeeded(AbsoluteLocation location) throws SQLException, LiquibaseException {
         if (getDataSource() == null) {
             URI uri = location.location().asURI();
-            String[] userPass = uri.getUserInfo().split(":");
-            String host = uri.getHost();
-            DbNames dbName = extractDb(location);
-            String url = "jdbc:h2:~/test";
+            String[] credsAndHost = uri.getAuthority().split("@");
+            String creds = credsAndHost[0];
+            String host = credsAndHost[1];
+            String defaultDriver = extractDb(location);
+            String[] userPass = creds.split(":");
             String user = userPass[0];
             String password = userPass[1];
-            HikariDataSource dataSource = getHikariDataSource(dbName.getClassName(), url, user, password);
+            HikariDataSource dataSource = getHikariDataSource(defaultDriver, host, user, password);
             setDataSource(dataSource);
             updateDbSchema(dataSource);
         }

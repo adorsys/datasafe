@@ -1,0 +1,37 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+<changeSet id="users-create" author="maxim.grischenko">
+    <comment>Users table creation</comment>
+    <createTable tableName="users">
+        <column name="id" type="bigint" autoIncrement="true"/>
+        <column name="name" type="varchar(250)" />
+    </createTable>
+</changeSet>
+
+<changeSet id="private_profiles-create" author="maxim.grischenko">
+    <comment>Private_profiles table creation</comment>
+    <createTable tableName="private_profiles" remarks="">
+        <column name="id" type="bigint" autoIncrement="true"/>
+        <column name="user_id" type="bigint"/>
+        <column name="key" type="varchar(512)" />
+        <column name="value" type="varchar(512)" />
+        <column name="last_modified" type="timestamp" defaultValue="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<changeSet id="public_profiles-create" author="maxim.grischenko">
+    <comment>Public_profiles table creation</comment>
+    <createTable tableName="public_profiles">
+        <column name="id" type="bigint" autoIncrement="true"/>
+        <column name="user_id" type="bigint"/>
+        <column name="key" type="varchar(512)" />
+        <column name="value" type="varchar(512)" />
+        <column name="last_modified" type="timestamp" defaultValue="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+</databaseChangeLog>

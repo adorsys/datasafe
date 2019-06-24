@@ -32,14 +32,14 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     @Test
     void objectExists() {
-        URI path = new URI("jdbc://sa:sa@host/datasafedb/private_profiles/key");
+        URI path = new URI("jdbc://sa:sa@jdbc:postgresql:schema/private_profiles/key");
         boolean exists = storageService.objectExists(BasePrivateResource.forAbsolutePrivate(path));
     }
 
     @SneakyThrows
     @Test
     void list() {
-        URI path = new URI("jdbc://sa:sa@localhost/h2/private_profiles/deep/path/");
+        URI path = new URI("jdbc://sa:sa@jdbc:h2:~/test/private_profiles/deep/path/");
         storageService.list(BasePrivateResource.forAbsolutePrivate(path));
     }
 
