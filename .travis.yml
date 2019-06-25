@@ -10,7 +10,6 @@ services:
 
 script:
   - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
-  - echo $TRAVIS_PULL_REQUEST_BRANCH
 
 before_deploy:
   - echo $GPG_SECRET_KEY | base64 --decode | $GPG_EXECUTABLE --import
@@ -36,5 +35,4 @@ before_install:
   - sudo mv ./openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit/oc /usr/local/bin
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests
-  - bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests
+  - /bin/bash .travis/codecov_bash.sh
