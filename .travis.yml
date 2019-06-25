@@ -35,6 +35,4 @@ before_install:
   - sudo mv ./openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit/oc /usr/local/bin
 
 after_success:
-  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - echo $BRANCH
-  - if [ “$BRANCH” == “$TRAVIgit S_PULL_REQUEST_BRANCH” ]; then bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests; bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests; fi
+  - .travis/codecov_bash.sh

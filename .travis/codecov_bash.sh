@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-echo $BRANCH
+if [ “$TRAVIS_PULL_REQUEST_BRANCH” == “$TRAVIS_BRANCH” ]; then bash <(curl -s https://codecov.io/bash) -f '!*datasafe-business*' -F unittests; bash <(curl -s https://codecov.io/bash) -f '*datasafe-business*' -F e2e_tests; fi
