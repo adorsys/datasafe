@@ -53,7 +53,7 @@ that supports versioned and encrypted private file storage (for storage provider
 
 Whenever user wants to store or read file at some location - be it inbox or his private space, following things do happen:
 1. System resolves his profile location
-1. His profile is read (and typically cached, then direct cache access happens)
+1. His profile is read from some storage (and typically cached, then direct cache access happens)
 1. Based on his profile content, root folder where data should be read/written is deduced
 1. If data is going to private space - request path is encrypted
 1. Root path is prepended to request path
@@ -198,16 +198,16 @@ Now he wants to share some data with couple of users, so that it will be encrypt
 could read the file using each using own private key:
 [Example:Send file to INBOX - multiple users](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafe.java#L144-L156)
 ```groovy
-// create John, so his INBOX does exist
-UserIDAuth john = registerUser("john");
+// create Jane, so her INBOX does exist
+UserIDAuth jane = registerUser("jane");
 // create Jamie, so his INBOX does exist
 UserIDAuth jamie = registerUser("jamie");
 
-// We send message "Hello John" to John and Jamie just by username
+// We send message to both users by using their username:
 try (OutputStream os = defaultDatasafeServices.inboxService().write(
-        WriteRequest.forDefaultPublic(ImmutableSet.of(john.getUserID(), jamie.getUserID()), "hello.txt"))
+        WriteRequest.forDefaultPublic(ImmutableSet.of(jane.getUserID(), jamie.getUserID()), "hello.txt"))
 ) {
-    os.write("Hello John and Jamie".getBytes(StandardCharsets.UTF_8));
+    os.write("Hello Jane and Jamie".getBytes(StandardCharsets.UTF_8));
 }
 ```
 
@@ -338,6 +338,46 @@ Instant savedOnPC = versionedServices.latestPrivate()
 // Modified date of saved file has changed and it is newer that our cached date
 // So mobile application should download latest file version
 assertThat(savedOnPC).isAfter(savedOnMobile);
+```
+
+## Datasafe on versioned storage
+If you have storage for user files on **versioned S3 bucket** and want to get object version when you write
+object or to read some older version encrypted object, you can follow this example of how to do that:
+[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage.java#L132-L166)
+```groovy
+// creating new user
+UserIDAuth user = registerUser("john");
+
+// writing data to my/own/file.txt 3 times with different content:
+// 1st time, writing into my/own/file.txt:
+// Expanded snippet of how to capture file version when writing object:
+AtomicReference<String> version = new AtomicReference<>();
+try (OutputStream os = defaultDatasafeServices.privateService()
+        .write(WriteRequest.forDefaultPrivate(user, MY_OWN_FILE_TXT)
+                .toBuilder()
+                .callback((PhysicalVersionCallback) version::set)
+                .build())
+) {
+    // Initial version will contain "Hello 1":
+    os.write("Hello 1".getBytes(StandardCharsets.UTF_8));
+}
+// this variable has our initial file version:
+String initialVersionId = version.get();
+
+// Write 2 more times different data to same file - my/own/file.txt:
+writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
+// Last version will contain "Hello 3":
+writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 3");
+
+// now, when we read file without specifying version - we see latest file content:
+assertThat(defaultDatasafeServices.privateService().read(
+        ReadRequest.forDefaultPrivate(user, MY_OWN_FILE_TXT))
+).hasContent("Hello 3");
+
+// but if we specify file version - we get content for it:
+assertThat(defaultDatasafeServices.privateService().read(
+        ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new S3Version(initialVersionId)))
+).hasContent("Hello 1");
 ```
 
 ## Overriding Datasafe functionality

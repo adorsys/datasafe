@@ -1,13 +1,8 @@
 package de.adorsys.datasafe.types.api.utils;
 
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import org.junit.jupiter.api.Test;
 
-import java.net.URI;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +11,8 @@ class ObfuscateTest {
 
     private static final String TEST_STRING = "/path/to/file";
     private static final Uri TEST_URI = new Uri("http://www.example.com/uniform/resource/identifier");
+    private static final Uri TEST_URI_WITH_CREDS =
+            new Uri("http://username:password@www.example.com/uniform/resource/identifier");
     private static final Uri TEST_URI_ENDS_SLASH = new Uri("http://www.example.com/uniform/resource/identifier/");
 
     @Test
@@ -39,75 +36,56 @@ class ObfuscateTest {
     }
 
     @Test
+    void secureUriWithHash() {
+        Obfuscate.secureLogs = ""; // hash
+        assertThat(TEST_URI.toString())
+                .isEqualTo("Uri{uri=HDHdoHyx4J6JvWYKjRFJNrRPcotzo7xSxppAnuHUTmc=//" +
+                        "gPwPuSZtt7g_hYUPoOZUi21w7mjItbQS8d7qbr3vBAQ=/7zeTY90Mt75mY4z3-HJocsj59vK0GtIYGSx2PAYtMQo=/" +
+                        "XelTGfF0Z-1txY5OCxbBGToTs11g3Ei88Gv2t77rvmw=/KFQ324xeFUGqSXCLSr1RZCoGW2bkusCQHnW0TOLQzr4=}");
+    }
+
+    @Test
+    void secureUriWithHashAndAuthorityIgnoresAuthority() {
+        Obfuscate.secureLogs = ""; // hash
+        assertThat(TEST_URI_WITH_CREDS.toString())
+                .isEqualTo("Uri{uri=HDHdoHyx4J6JvWYKjRFJNrRPcotzo7xSxppAnuHUTmc=//" +
+                        "gPwPuSZtt7g_hYUPoOZUi21w7mjItbQS8d7qbr3vBAQ=/7zeTY90Mt75mY4z3-HJocsj59vK0GtIYGSx2PAYtMQo=/" +
+                        "XelTGfF0Z-1txY5OCxbBGToTs11g3Ei88Gv2t77rvmw=/KFQ324xeFUGqSXCLSr1RZCoGW2bkusCQHnW0TOLQzr4=}");
+    }
+
+    @Test
     void securePath() {
         Obfuscate.secureLogs = "STARS";
-        assertThat(Obfuscate.secure(Paths.get(TEST_STRING))).isEqualTo("fi****e:///****/****/****");
+        assertThat(new Uri(Paths.get(TEST_STRING).toUri()).toString())
+                .isEqualTo("Uri{uri=fi****e:///****/****/****}");
     }
 
     @Test
     void secureURI() {
         Obfuscate.secureLogs = "STARS";
-        assertThat(Obfuscate.secure(TEST_URI)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er");
-    }
-
-    @Test
-    void secureNullPath() {
-        Path path = null;
-        assertThat(Obfuscate.secure(path)).isNull();
-    }
-
-    @Test
-    void secureNullUri() {
-        URI uri = null;
-        assertThat(Obfuscate.secure(uri)).isNull();
+        assertThat(TEST_URI.toString()).isEqualTo("Uri{uri=ht****p://ww****om/un****rm/re****ce/id****er}");
     }
 
     @Test
     void secureEmptyOrNull() {
         assertThat(Obfuscate.secure((String) null)).isNull();
-        assertThat(Obfuscate.secure((Uri) null)).isNull();
-        assertThat(Obfuscate.secure((URI) null)).isNull();
-        assertThat(Obfuscate.secure((Object) null)).isNull();
         assertThat(Obfuscate.secureSensitive(null)).isNull();
-        assertThat(Obfuscate.secure((Object[]) null)).isNull();
         assertThat(Obfuscate.secure((String) null, "/")).isNull();
-        assertThat(Obfuscate.secure((Iterable) null, "/")).isNull();
         assertThat(Obfuscate.secure("")).isNotEmpty();
     }
 
     @Test
     void secureSlashes() {
-        assertThat(Obfuscate.secure("/", "/")).isEmpty();
-        assertThat(Obfuscate.secure("//", "/")).isEmpty();
-        assertThat(Obfuscate.secure("///", "/")).isEmpty();
-    }
-
-    @Test
-    void secureNullObject() {
-        Object uri = null;
-        assertThat(Obfuscate.secure(uri)).isNull();
-    }
-
-    @Test
-    void secureResourceLocation() {
-        Obfuscate.secureLogs = "STARS";
-        AbsoluteLocation<PrivateResource> resource =
-                new AbsoluteLocation<>(BasePrivateResource.forPrivate(TEST_URI));
-        assertThat(Obfuscate.secure(resource)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er");
+        assertThat(Obfuscate.secure("/", "/")).isEqualTo("/");
+        assertThat(Obfuscate.secure("//", "/")).isEqualTo("//");
+        assertThat(Obfuscate.secure("///", "/")).isEqualTo("///");
     }
 
     @Test
     void secureURISlash() {
         Obfuscate.secureLogs = "STARS";
-        assertThat(Obfuscate.secure(TEST_URI_ENDS_SLASH)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er/");
-    }
-
-    @Test
-    void secureResourceLocationSlash() {
-        Obfuscate.secureLogs = "STARS";
-        AbsoluteLocation<PrivateResource> resource =
-                new AbsoluteLocation<>(BasePrivateResource.forPrivate(TEST_URI_ENDS_SLASH));
-        assertThat(Obfuscate.secure(resource)).isEqualTo("ht****p://ww****om/un****rm/re****ce/id****er/");
+        assertThat(TEST_URI_ENDS_SLASH.toString())
+                .isEqualTo("Uri{uri=ht****p://ww****om/un****rm/re****ce/id****er/}");
     }
 
     @Test
