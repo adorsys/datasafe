@@ -58,6 +58,7 @@ class ObfuscateConcurrentTest {
         );
 
         executorService.awaitTermination(1000, TimeUnit.MILLISECONDS);
+        executorService.shutdownNow();
 
         // parallel encryption yields same as sequential
         assertThat(results).allMatch(it -> it[1].equals(Obfuscate.secure(it[0])));
