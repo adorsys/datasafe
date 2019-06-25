@@ -252,6 +252,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                     .extracting(URI::toString)
                     .containsExactlyInAnyOrder(
                             "",
+                            "users/",
                             "profiles/",
                             "profiles/public/",
                             "profiles/private/"

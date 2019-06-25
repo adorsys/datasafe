@@ -10,6 +10,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
 import java.util.Collections;
@@ -17,9 +18,11 @@ import java.util.Collections;
 /**
  * Default DFS folders layout provider, suitable both for s3 and filesystem.
  */
+@Slf4j
 @RequiredArgsConstructor
 public class DefaultDFSConfig implements DFSConfig {
 
+    private static final String USERS_ROOT = "users/";
     private static final String PRIVATE_COMPONENT = "private";
     private static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     private static final String PUBLIC_COMPONENT = "public";
@@ -58,6 +61,7 @@ public class DefaultDFSConfig implements DFSConfig {
         this.systemRoot = systemRoot;
         this.systemPassword = new ReadStorePassword(systemPassword);
         userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
+        log.info("root is " + dfsRoot().toString());
     }
 
     public DefaultDFSConfig userProfileLocation(UserProfileLocation userProfileLocation) {
@@ -86,9 +90,8 @@ public class DefaultDFSConfig implements DFSConfig {
     @Override
     public CreateUserPrivateProfile defaultPrivateTemplate(UserIDAuth id) {
         Uri rootLocation = userRoot(id.getUserID());
-
-        Uri keyStoreUri = rootLocation.resolve("./" + PRIVATE_COMPONENT + "/keystore");
-        Uri filesUri = rootLocation.resolve("./" + PRIVATE_FILES_COMPONENT + "/");
+        Uri keyStoreUri = rootLocation.resolve(PRIVATE_COMPONENT + "/keystore");
+        Uri filesUri = rootLocation.resolve(PRIVATE_FILES_COMPONENT + "/");
 
         return CreateUserPrivateProfile.builder()
                 .id(id)
@@ -135,8 +138,8 @@ public class DefaultDFSConfig implements DFSConfig {
         return new AbsoluteLocation<>(new BasePrivateResource(path, new Uri(""), new Uri("")));
     }
 
-    private Uri userRoot(UserID auth) {
-        return dfsRoot().location().resolve(auth.getValue() + "/");
+    private Uri userRoot(UserID userID) {
+        return dfsRoot().location().resolve(USERS_ROOT).resolve(userID.getValue() + "/");
     }
 
     private Uri inbox(Uri rootLocation) {
