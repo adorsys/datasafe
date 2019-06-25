@@ -3,11 +3,10 @@ package de.adorsys.datasafe.types.api.utils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +20,8 @@ class ObfuscateConcurrentTest {
     void hidingWithHashConcurrencyOk() {
         Obfuscate.secureLogs = ""; // hash
 
-        testLogging();
+        testLoggingStaticString();
+        testLoggingDynamicString();
     }
 
     @Test
@@ -29,17 +29,39 @@ class ObfuscateConcurrentTest {
     void hidingWithStartsConcurrencyOk() {
         Obfuscate.secureLogs = "STARS";
 
-        testLogging();
+        testLoggingStaticString();
+        testLoggingDynamicString();
     }
 
     @SneakyThrows
-    private void testLogging() {
-        List<String> results = new CopyOnWriteArrayList<>();
+    private void testLoggingStaticString() {
+        testLogging(() -> TEST_STRING);
+    }
+
+    @SneakyThrows
+    private void testLoggingDynamicString() {
+        int size = ThreadLocalRandom.current().nextInt(10, 100);
+        byte[] bytes = new byte[size];
+        ThreadLocalRandom.current().nextBytes(bytes);
+        testLogging(() -> new String(bytes, StandardCharsets.UTF_8));
+    }
+
+    @SneakyThrows
+    private void testLogging(Supplier<String> stringToEncryptSupplier) {
+        List<String[]> results = new CopyOnWriteArrayList<>();
         ExecutorService executorService = Executors.newFixedThreadPool(10);
-        IntStream.range(0, 100).forEach(it -> executorService.submit(() -> results.add(Obfuscate.secure(TEST_STRING))));
+        IntStream.range(0, 1000).forEach(
+                it -> executorService.submit(() -> {
+                    String data = stringToEncryptSupplier.get();
+                    results.add(new String[] {data, Obfuscate.secure(data)});
+                })
+        );
+
         executorService.awaitTermination(1000, TimeUnit.MILLISECONDS);
 
-        // if exception happens size won't be equal to 100
-        assertThat(results).hasSize(100);
+        // parallel encryption yields same as sequential
+        assertThat(results).allMatch(it -> it[1].equals(Obfuscate.secure(it[0])));
+        // if exception happens size won't be equal to 1000
+        assertThat(results).hasSize(1000);
     }
 }
