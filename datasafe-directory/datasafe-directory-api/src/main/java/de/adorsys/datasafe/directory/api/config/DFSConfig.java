@@ -18,12 +18,12 @@ public interface DFSConfig {
     KeyStoreAuth privateKeyStoreAuth(UserIDAuth auth);
 
     /**
-     * Location of users public profiles.
+     * Location of users public profile (where is the file with his public profile).
      */
     AbsoluteLocation publicProfile(UserID forUser);
 
     /**
-     * Location of users private profiles.
+     * Location of users private profiles (where is the file with his private profile).
      */
     AbsoluteLocation privateProfile(UserID forUser);
 

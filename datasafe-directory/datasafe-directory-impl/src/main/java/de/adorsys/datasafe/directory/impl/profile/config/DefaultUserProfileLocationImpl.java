@@ -4,9 +4,11 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.types.api.resource.*;
 
 public class DefaultUserProfileLocationImpl implements UserProfileLocation {
+
     private static final Uri PRIVATE_PROFILE = new Uri("./profiles/private/");
     private static final Uri PUBLIC_PROFILE = new Uri("./profiles/public/");
-    private Uri systemRoot;
+
+    private final Uri systemRoot;
 
     public DefaultUserProfileLocationImpl(Uri systemRoot) {
         this.systemRoot = DefaultDFSConfig.addTrailingSlashIfNeeded(systemRoot);

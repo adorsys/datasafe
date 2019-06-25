@@ -28,10 +28,10 @@ public class DefaultDFSConfig implements DFSConfig {
     private static final String PUBLIC_COMPONENT = "public";
     private static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
     private static final String VERSION_COMPONENT = "versions";
-    private UserProfileLocation userProfileLocation;
 
     private final Uri systemRoot;
     private final ReadStorePassword systemPassword;
+    private final UserProfileLocation userProfileLocation;
 
     /**
      * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
@@ -57,16 +57,21 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      */
     public DefaultDFSConfig(Uri systemRoot, String systemPassword) {
+        this(systemRoot, systemPassword, new DefaultUserProfileLocationImpl(systemRoot));
+    }
+
+    /**
+     * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
+     * to place everything in datasafe/system directory within storage
+     * @param systemPassword System password to open keystore
+     * @param userProfileLocation Bootstrap for user profile files placement
+     */
+    public DefaultDFSConfig(Uri systemRoot, String systemPassword, UserProfileLocation userProfileLocation) {
         systemRoot = addTrailingSlashIfNeeded(systemRoot);
         this.systemRoot = systemRoot;
         this.systemPassword = new ReadStorePassword(systemPassword);
-        userProfileLocation = new DefaultUserProfileLocationImpl(this.systemRoot);
-        log.info("root is " + dfsRoot().toString());
-    }
-
-    public DefaultDFSConfig userProfileLocation(UserProfileLocation userProfileLocation) {
         this.userProfileLocation = userProfileLocation;
-        return this;
+        log.debug("Root is {}", dfsRoot());
     }
 
     @Override
