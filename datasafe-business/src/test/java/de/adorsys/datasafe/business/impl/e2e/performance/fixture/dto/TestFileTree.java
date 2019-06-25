@@ -46,6 +46,25 @@ public class TestFileTree {
     }
 
     /**
+     * Perform share operation with some content.
+     */
+    @Synchronized
+    public void share(String path, ContentId id, Set<UserFileSystem> usersToShareWith) {
+        if (null == id) {
+            throw new IllegalArgumentException("No content");
+        }
+
+        if (usersToShareWith.isEmpty()) {
+            throw new IllegalArgumentException("No recipients");
+        }
+
+        log.info(">SHARE [{}]:{} to {} for {}", storageTag(), id, path, usersToShareWith);
+        usersToShareWith.forEach(it -> it.getInboxFiles().getFiles().put(path, id));
+        publishTo.accept(new Opaeration(
+                testUser.getUsername(), OperationType.SHARE, storageType, id, URI.create(path), null));
+    }
+
+    /**
      * Perform read operation with some content on virtual tree.
      */
     @Synchronized
@@ -57,7 +76,7 @@ public class TestFileTree {
 
         log.info(">GET [{}]:{}:{}", storageTag(), path, value);
         publishTo.accept(new Operation(
-                testUser.getUsername(), OperationType.READ, storageType, null, URI.create(path), value));
+                testUser.getUsername(), OperationType.READ, storageType, value, URI.create(path), null));
         return value;
     }
 

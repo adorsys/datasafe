@@ -3,6 +3,7 @@ package de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto;
 import lombok.Data;
 
 import java.net.URI;
+import java.util.Set;
 
 /**
  * Represents operation done on DFS.
@@ -31,12 +32,17 @@ public class Operation {
     private final ContentId contentId;
 
     /**
-     *
+     * Where to write content
      */
     private final URI location;
 
     /**
-     *
+     * Recipients for sharing operation.
      */
-    private final ContentId expected;
+    private final Set<String> recipients;
+
+    /**
+     * Expected operation result
+     */
+    private final OperationResult result;
 }
