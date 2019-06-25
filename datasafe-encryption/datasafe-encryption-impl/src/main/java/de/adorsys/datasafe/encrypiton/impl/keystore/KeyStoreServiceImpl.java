@@ -15,6 +15,9 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
+
 @Slf4j
 @RuntimeDelegate
 public class KeyStoreServiceImpl implements KeyStoreService {
@@ -33,8 +36,8 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                 keyStoreType,
                 config,
                 ImmutableMap.of(
-                        KeyStoreCreationConfig.PATH_KEY_ID, Optional.empty(),
-                        KeyStoreCreationConfig.SYMM_KEY_ID, Optional.empty()
+                        new KeyID(PATH_KEY_ID_PREFIX + UUID.randomUUID().toString()), Optional.empty(),
+                        new KeyID(DOCUMENT_KEY_ID_PREFIX + UUID.randomUUID().toString()), Optional.empty()
                 )
         );
     }
