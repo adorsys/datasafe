@@ -235,7 +235,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     }
 
     @SneakyThrows
-    protected void assertRootDirIsEmpty(WithStorageProvider.StorageDescriptor descriptor) {
+    protected void assertRootDirIsEmpty(WithStorageProvider.StorageDescriptor descriptor, UserID userID) {
         assertThat(descriptor.getStorageService().get()
                 .list(
                         new AbsoluteLocation<>(BasePrivateResource.forPrivate(descriptor.getLocation()))
@@ -254,8 +254,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                             "",
                             "users/",
                             "profiles/",
-                            "profiles/public/",
-                            "profiles/private/"
+                            "profiles/" + userID.getValue() + "/"
                     );
         }
     }
