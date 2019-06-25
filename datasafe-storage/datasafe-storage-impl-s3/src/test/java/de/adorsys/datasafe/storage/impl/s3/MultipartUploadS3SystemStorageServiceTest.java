@@ -3,6 +3,7 @@ package de.adorsys.datasafe.storage.impl.s3;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 import de.adorsys.datasafe.types.api.shared.ContentGenerator;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +70,7 @@ public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageSe
 
     private void writeTestFileToS3(String testFilePath, AbsoluteLocation<PrivateResource> privateLocation) {
         log.info("Copy stream of test file to s3");
-        try (OutputStream os = storageService.write(privateLocation)) {
+        try (OutputStream os = storageService.write(WithCallback.noCallback(privateLocation))) {
             try(FileInputStream is = new FileInputStream(testFilePath)) {
                 ByteStreams.copy(is, os);
             }

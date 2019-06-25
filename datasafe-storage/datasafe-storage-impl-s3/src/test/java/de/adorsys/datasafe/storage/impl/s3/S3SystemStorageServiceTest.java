@@ -134,7 +134,7 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void write() {
-        try (OutputStream os = storageService.write(fileWithMsg)) {
+        try (OutputStream os = storageService.write(WithCallback.noCallback(fileWithMsg))) {
             os.write(MESSAGE.getBytes());
         }
 

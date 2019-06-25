@@ -1,7 +1,9 @@
 package de.adorsys.datasafe.storage.api;
 
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,8 +51,8 @@ public class SchemeDelegatingStorage implements StorageService {
     }
 
     @Override
-    public OutputStream write(AbsoluteLocation location) {
-        return service(location).write(location);
+    public OutputStream write(WithCallback<AbsoluteLocation, ? extends ResourceWriteCallback> locationWithCallback) {
+        return service(locationWithCallback.getWrapped()).write(locationWithCallback);
     }
 
     private StorageService service(AbsoluteLocation location) {

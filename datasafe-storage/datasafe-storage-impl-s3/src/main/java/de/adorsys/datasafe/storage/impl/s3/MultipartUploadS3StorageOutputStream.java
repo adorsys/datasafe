@@ -24,6 +24,8 @@ package de.adorsys.datasafe.storage.impl.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.BinaryUtils;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
+import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
@@ -62,12 +64,16 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private int partCounter = 1;
 
+    private final List<? extends ResourceWriteCallback> callbacks;
+
     MultipartUploadS3StorageOutputStream(String bucketName, ResourceLocation resource, AmazonS3 amazonS3,
-                                                ExecutorService executorService) {
+                                         ExecutorService executorService,
+                                         List<? extends ResourceWriteCallback> callbacks) {
         this.bucketName = bucketName;
         this.objectName = resource.location().getPath().replaceFirst("^/", "");
         this.amazonS3 = amazonS3;
         this.completionService = new ExecutorCompletionService<>(executorService);
+        this.callbacks = callbacks;
 
         log.debug("Write to bucket: {} with name: {}", Obfuscate.secure(bucketName), Obfuscate.secure(objectName));
     }
@@ -125,11 +131,13 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
         objectMetadata.setContentMD5(md5Digest);
 
-        amazonS3.putObject(
+        PutObjectResult upload = amazonS3.putObject(
                 bucketName,
                 objectName,
                 new ByteArrayInputStream(content),
                 objectMetadata);
+
+        notifyCommittedVersionIfPresent(upload.getVersionId());
 
         // Release the memory
         currentOutputStream = null;
@@ -156,7 +164,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
             List<PartETag> partETags = getMultiPartsUploadResults();
 
             log.debug("Send multipart request to S3");
-            amazonS3.completeMultipartUpload(
+            CompleteMultipartUploadResult upload = amazonS3.completeMultipartUpload(
                     new CompleteMultipartUploadRequest(
                             multiPartUploadResult.getBucketName(),
                             multiPartUploadResult.getKey(),
@@ -164,6 +172,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                             partETags
                     )
             );
+
+            notifyCommittedVersionIfPresent(upload.getVersionId());
 
             log.debug("Finished multi part upload");
         } catch (ExecutionException e) {
@@ -178,6 +188,16 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         } finally {
             currentOutputStream = null;
         }
+    }
+
+    private void notifyCommittedVersionIfPresent(String version) {
+        if (null == version) {
+            return;
+        }
+
+        callbacks.stream()
+                .filter(it -> it instanceof PhysicalVersionCallback)
+                .forEach(it -> ((PhysicalVersionCallback) it).handleVersionAssigned(version));
     }
 
     private void initiateMultiPartIfNeeded() {
