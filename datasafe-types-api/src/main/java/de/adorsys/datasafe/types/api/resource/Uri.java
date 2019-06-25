@@ -129,7 +129,29 @@ public class Uri {
     @Override
     public String toString() {
         return "Uri{" +
-                "uri=" + Obfuscate.secure(wrapped) +
+                "uri=" + Obfuscate.secure(withoutAuthority(wrapped), "/") +
                 '}';
+    }
+
+    private String withoutAuthority(URI uri) {
+        if (uri == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (null != uri.getScheme()) {
+            sb.append(uri.getScheme()).append("://");
+        }
+
+        if (null != uri.getHost()) {
+            sb.append(uri.getHost());
+        }
+
+        if (null != uri.getPath()) {
+            sb.append(uri.getPath());
+        }
+
+        return sb.toString();
     }
 }

@@ -1,16 +1,13 @@
 package de.adorsys.datasafe.types.api.utils;
 
-import de.adorsys.datasafe.types.api.resource.ResourceLocation;
-import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.util.Arrays;
 import java.util.Base64;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class hides sensitive information that may appear in logs. While hiding information it preserves the capability
@@ -36,123 +33,19 @@ public class Obfuscate {
     private static Base64.Encoder encoder = Base64.getUrlEncoder(); // thread-safe class
 
     /**
-     * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
-     * @param values Each element to be secured
-     * @param delim Delimiter to separate elements in string
-     * @param <T> Generic
-     * @return Secured string value that is safe to log
-     */
-    @SneakyThrows
-    public static <T> String secure(Iterable<T> values, String delim) {
-        if (values == null) {
-            return null;
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        boolean isStarted = false;
-        for (T value : values) {
-            if (isStarted) {
-                sb.append(delim);
-            }
-
-            if (null == value || "".equals(value.toString())) {
-                continue;
-            } else {
-                sb.append(secure(value));
-            }
-
-            isStarted = true;
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
-     * @param path Path to secure, slashes will be preserved.
-     * @return Secured string value that is safe to log.
-     */
-    public static String secure(Path path) {
-        if (path == null) {
-            return null;
-        }
-
-        return secure(path.toUri());
-    }
-
-    /**
-     * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
-     * @param uri URI to secure, slashes will be preserved.
-     * @return Secured string value that is safe to log.
-     */
-    public static String secure(Uri uri) {
-        if (uri == null) {
-            return null;
-        }
-
-        return secure(uri.getWrapped());
-    }
-
-    /**
-     * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
-     * @param uri URI to secure, slashes will be preserved.
-     * @return Secured string value that is safe to log.
-     */
-    public static String secure(URI uri) {
-        if (uri == null) {
-            return null;
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        if (null != uri.getScheme()) {
-            sb.append(uri.getScheme()).append("://");
-        }
-
-        if (null != uri.getHost()) {
-            sb.append(uri.getHost());
-        }
-
-        if (null != uri.getPath()) {
-            sb.append(uri.getPath());
-        }
-
-        return secure(sb.toString().split("/", -1), "/");
-    }
-
-    /**
-     * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
-     * @param resource Resource location to secure, slashes will separate path segments.
-     * @param <T> Generic
-     * @return Secured string value that is safe to log.
-     */
-    public static <T extends ResourceLocation> String secure(T resource) {
-        return secure(resource.location());
-    }
-
-    /**
-     * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
-     * @param values Array, where each element will be secured
-     * @param delim Delimiter to separate elements in string
-     * @return Secured string value that is safe to log.
-     */
-    public static String secure(Object[] values, String delim) {
-        return secure(Arrays.asList(values), delim);
-    }
-
-    /**
-     * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
-     * @param value Splits string using {@code delim}, encrypts parts and joins back.
-     * @param delim Delimiter that separates parts of string.
-     * @return Secured string value that is safe to log.
+     * By default, protects moderately sensitive data, but preserves delimiters in it.
+     * @param value String with delimiters to obfuscate
+     * @param delim Delimiters to split on and preserve
+     * I.e. a/b/c with {@code delim} equal to "/" will create sha(a)/sha(b)/sha(c)
      */
     public static String secure(String value, String delim) {
         if (null == value) {
             return null;
         }
 
-        return secure(value.split(delim), delim);
+        return Stream.of(value.split("/", -1))
+                .map(it -> it.isEmpty() ? it : secure(it))
+                .collect(Collectors.joining(delim));
     }
 
     /**
@@ -160,25 +53,24 @@ public class Obfuscate {
      * @param value Its toString() result will get encrypted.
      * @return Secured string value that is safe to log.
      */
-    public static String secure(Object value) {
+    public static String secure(String value) {
         if (value == null) {
             return null;
         }
 
-        String s = value.toString();
         if (isDisabled(secureLogs)) {
-            return s;
+            return value;
         }
 
         if ("stars".equalsIgnoreCase(secureLogs)) {
-            if (s.length() <= 4) {
+            if (value.length() <= 4) {
                 return "****";
             }
-            return s.substring(0, 2) + "****" + s.substring(s.length() - 2);
+            return value.substring(0, 2) + "****" + value.substring(value.length() - 2);
         }
 
         // by default return hash
-        return computeSha(s);
+        return computeSha(value);
     }
 
     /**
@@ -186,18 +78,17 @@ public class Obfuscate {
      * @param value Its toString() result will get encrypted.
      * @return Secured string value that is safe to log.
      */
-    public static String secureSensitive(Object value) {
+    public static String secureSensitive(String value) {
         if (value == null) {
             return null;
         }
 
-        String str = value.toString();
         if (isDisabled(secureLogs) && isDisabled(secureSensitive)) {
-            return str;
+            return value;
         }
 
         if ("hash".equalsIgnoreCase(secureSensitive)) {
-            return "hash:" + computeSha(str).substring(0, 4);
+            return "hash:" + computeSha(value).substring(0, 4);
         }
 
         return "****";

@@ -14,5 +14,6 @@
     <modules>
         <module>datasafe-examples-business</module>
         <module>datasafe-examples-customize-dagger</module>
+        <module>datasafe-examples-versioned-s3</module>
     </modules>
 </project>
