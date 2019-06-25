@@ -142,7 +142,7 @@ public class S3StorageService implements StorageService {
 
     private void execute(AbsoluteLocation location,
                           Consumer<String> ifNoVersion,
-                          BiConsumer<String, S3Version> ifVersion) {
+                          BiConsumer<String, StorageVersion> ifVersion) {
 
         executeAndReturn(
                 location,
@@ -158,13 +158,13 @@ public class S3StorageService implements StorageService {
 
     private <T> T executeAndReturn(AbsoluteLocation location,
                          Function<String, T> ifNoVersion,
-                         BiFunction<String, S3Version, T> ifVersion) {
+                         BiFunction<String, StorageVersion, T> ifVersion) {
 
         String key = location.getResource().location()
                 .getPath()
                 .replaceFirst("^/", "")
                 .replaceFirst("/$", "");
-        Optional<S3Version> version = extractVersion(location);
+        Optional<StorageVersion> version = extractVersion(location);
 
         if (!version.isPresent()) {
             return ifNoVersion.apply(key);
@@ -173,17 +173,17 @@ public class S3StorageService implements StorageService {
         return ifVersion.apply(key, version.get());
     }
 
-    private Optional<S3Version> extractVersion(AbsoluteLocation location) {
+    private Optional<StorageVersion> extractVersion(AbsoluteLocation location) {
         if (!(location.getResource() instanceof VersionedResourceLocation)) {
             return Optional.empty();
         }
 
         VersionedResourceLocation withVersion = (VersionedResourceLocation) location.getResource();
 
-        if (!(withVersion.getVersion() instanceof S3Version)) {
+        if (!(withVersion.getVersion() instanceof StorageVersion)) {
             return Optional.empty();
         }
 
-        return Optional.of((S3Version) withVersion.getVersion());
+        return Optional.of((StorageVersion) withVersion.getVersion());
     }
 }

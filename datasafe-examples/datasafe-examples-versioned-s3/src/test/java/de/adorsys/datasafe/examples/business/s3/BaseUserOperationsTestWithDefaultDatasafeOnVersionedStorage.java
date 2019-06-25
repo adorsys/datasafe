@@ -12,7 +12,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
-import de.adorsys.datasafe.storage.impl.s3.S3Version;
+import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
@@ -161,7 +161,7 @@ class BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage {
 
         // but if we specify file version - we get content for it:
         assertThat(defaultDatasafeServices.privateService().read(
-                ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new S3Version(initialVersionId)))
+                ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(initialVersionId)))
         ).hasContent("Hello 1");
         // END_SNIPPET
 
