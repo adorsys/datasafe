@@ -2,7 +2,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.storage.impl.s3.S3Version;
+import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
@@ -54,7 +54,7 @@ class StorageBasedVersioningTest extends BaseE2ETest {
         writeAndGetVersion(jane, FILE, "Hello 2");
         writeAndGetVersion(jane, FILE, "Hello 3");
 
-        assertThat(readByVersion(jane, FILE, new S3Version(oldVersion))).isEqualTo("Hello 1");
+        assertThat(readByVersion(jane, FILE, new StorageVersion(oldVersion))).isEqualTo("Hello 1");
     }
 
     @SneakyThrows
@@ -72,7 +72,7 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     }
 
     @SneakyThrows
-    private String readByVersion(UserIDAuth user, String path, S3Version version) {
+    private String readByVersion(UserIDAuth user, String path, StorageVersion version) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (InputStream is = readFromPrivate.read(ReadRequest.forDefaultPrivateWithVersion(user, path, version))
         ) {

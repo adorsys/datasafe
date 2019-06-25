@@ -2,6 +2,7 @@ package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
@@ -14,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URISyntaxException;
 import java.security.KeyStore;
 
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -40,7 +42,10 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
         Uri testURI = new Uri(testPath);
 
-        SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, KeyStoreCreationConfig.PATH_KEY_ID);
+        SecretKeySpec secretKey = keyStoreService.getSecretKey(
+                keyStoreAccess,
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
+        );
         Uri encrypted = bucketPathEncryptionService.encrypt(secretKey, testURI);
         Uri decrypted = bucketPathEncryptionService.decrypt(secretKey, encrypted);
 
@@ -65,7 +70,10 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     @Test
     void testFailEncryptPathWithBrokenEncryptedPath() {
-        SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, KeyStoreCreationConfig.PATH_KEY_ID);
+        SecretKeySpec secretKey = keyStoreService.getSecretKey(
+                keyStoreAccess,
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
+        );
 
         assertThrows(BadPaddingException.class,
                 () -> bucketPathEncryptionService.decrypt(secretKey,
@@ -74,7 +82,11 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     @Test
     void testFailEncryptPathWithTextPath() {
-        SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, KeyStoreCreationConfig.PATH_KEY_ID);
+        SecretKeySpec secretKey = keyStoreService.getSecretKey(
+                keyStoreAccess,
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
+        );
+
         assertThrows(IllegalBlockSizeException.class,
                 () -> bucketPathEncryptionService.decrypt(secretKey,
                         new Uri("/simple/text/path/")));
