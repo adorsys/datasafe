@@ -3,12 +3,11 @@ package de.adorsys.datasafe.storage.impl.db;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
 
 import java.io.InputStream;
@@ -16,8 +15,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class DatabaseStorageServiceTest extends BaseMockitoTest {
@@ -37,13 +36,14 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
         storageService = new DatabaseStorageService(allowedTables);
 
         location = BasePrivateResource.forAbsolutePrivate(uri);
-        OutputStream write = storageService.write(location);
+        OutputStream write = storageService.write(WithCallback.noCallback(location));
         write.write("HELLO".getBytes());
         write.close();
     }
 
     @AfterEach
     void afterEach() {
+
         String sql = "DROP ALL OBJECTS DELETE FILES";
         storageService.getJdbcTemplate().execute(sql);
     }
@@ -53,7 +53,7 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     void objectExists() {
         location = BasePrivateResource.forAbsolutePrivate(uri);
         boolean exists = storageService.objectExists(location);
-        Assert.assertTrue(exists);
+        assertThat(exists).isTrue();
     }
 
 //    @SneakyThrows
@@ -68,7 +68,7 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     void read() {
         InputStream read = storageService.read(location);
         String theString = IOUtils.toString(read);
-        Assert.assertEquals(theString, "HELLO");
+        assertThat(theString).isEqualTo("HELLO");
     }
 
     @SneakyThrows
@@ -83,6 +83,6 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     void write() {
         InputStream read = storageService.read(location);
         String theString = IOUtils.toString(read);
-        Assert.assertEquals(theString, "HELLO");
+        assertThat(theString).isEqualTo("HELLO");
     }
 }

@@ -3,6 +3,7 @@ package de.adorsys.datasafe.storage.impl.db;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.*;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
@@ -112,10 +113,10 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
 
     @SneakyThrows
     @Override
-    public OutputStream write(AbsoluteLocation location) {
-        acquireConnectionToDbIfNeeded(location);
-        String tableName = extractTable(location);
-        String path = location.location().getPath();
+    public OutputStream write(WithCallback<AbsoluteLocation, ? extends ResourceWriteCallback> locationWithCallback) {
+        acquireConnectionToDbIfNeeded(locationWithCallback.getWrapped());
+        String tableName = extractTable(locationWithCallback.getWrapped());
+        String path = locationWithCallback.getWrapped().location().getPath();
         String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
         return new PutBlobOnClose(getJdbcTemplate(), pathWithUser, tableName);
     }
