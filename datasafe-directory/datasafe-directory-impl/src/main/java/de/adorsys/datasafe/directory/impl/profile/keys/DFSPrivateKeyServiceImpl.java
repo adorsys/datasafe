@@ -7,6 +7,7 @@ import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
@@ -20,13 +21,11 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
 /**
  * Retrieves and opens private keystore associated with user location DFS storage.
@@ -59,10 +58,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      */
     @Override
     public SecretKeyIDWithKey pathEncryptionSecretKey(UserIDAuth forUser) {
-        return new SecretKeyIDWithKey(
-                PATH_KEY_ID,
-                (SecretKey) keyById(forUser, PATH_KEY_ID.getValue())
-        );
+        return keyByPrefix(forUser, PATH_KEY_ID_PREFIX);
     }
 
     /**
@@ -70,10 +66,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      */
     @Override
     public SecretKeyIDWithKey documentEncryptionSecretKey(UserIDAuth forUser) {
-        return new SecretKeyIDWithKey(
-                SYMM_KEY_ID,
-                (SecretKey) keyById(forUser, SYMM_KEY_ID.getValue())
-        );
+        return keyByPrefix(forUser, DOCUMENT_KEY_ID_PREFIX);
     }
 
     /**
@@ -82,25 +75,40 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     @Override
     @SneakyThrows
     public Map<String, Key> keysByIds(UserIDAuth forUser, Set<String> keyIds) {
-        KeyStore keyStore = keystoreCache.getKeystore().computeIfAbsent(
-                forUser.getUserID(),
-                userId -> keystore(forUser)
-        );
+        KeyStore keyStore = keyStore(forUser);
 
+        Set<String> aliases = readAliases(keyStore);
         return keyIds.stream()
-                .filter(keyId -> containsAlias(keyStore, keyId))
+                .filter(aliases::contains)
                 .collect(Collectors.toMap(
                         keyId -> keyId,
                         keyId -> getKey(keyStore, keyId, forUser.getReadKeyPassword()))
                 );
     }
 
-    private Key keyById(UserIDAuth forUser, String keyId) {
-        return keysByIds(forUser, Collections.singleton(keyId)).get(keyId);
+    private SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {
+        KeyStore keyStore = keyStore(forUser);
+        KeyID key = readAliases(keyStore).stream()
+                .filter(it -> it.startsWith(prefix))
+                .map(KeyID::new)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No key with prefix: " + prefix));
+
+        return new SecretKeyIDWithKey(
+              key,
+                (SecretKey) getKey(keyStore, key.getValue(), forUser.getReadKeyPassword())
+        );
+    }
+
+    private KeyStore keyStore(UserIDAuth forUser) {
+        return keystoreCache.getKeystore().computeIfAbsent(
+                forUser.getUserID(),
+                userId -> readKeyStore(forUser)
+        );
     }
 
     @SneakyThrows
-    private KeyStore keystore(UserIDAuth forUser) {
+    private KeyStore readKeyStore(UserIDAuth forUser) {
         AbsoluteLocation<PrivateResource> access = bucketAccessService.privateAccessFor(
                 forUser,
                 profile.privateProfile(forUser).getKeystore().getResource()
@@ -119,12 +127,18 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     }
 
     @SneakyThrows
-    private boolean containsAlias(KeyStore keyStore, String alias) {
-        return keyStore.containsAlias(alias);
+    private Key getKey(KeyStore keyStore, String alias, ReadKeyPassword readKeyPassword) {
+        return keyStore.getKey(alias, readKeyPassword.getValue().toCharArray());
     }
 
     @SneakyThrows
-    private Key getKey(KeyStore keyStore, String alias, ReadKeyPassword readKeyPassword) {
-        return keyStore.getKey(alias, readKeyPassword.getValue().toCharArray());
+    private Set<String> readAliases(KeyStore keyStore) {
+        Set<String> result = new HashSet<>();
+        Enumeration<String> aliases = keyStore.aliases();
+        while (aliases.hasMoreElements()) {
+            result.add(aliases.nextElement());
+        }
+
+        return result;
     }
 }
