@@ -30,7 +30,14 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class DatabaseStorageService implements StorageService {
 
+    /**
+     * Filters tables that can be used in connection URI
+     */
     private final Set<String> allowedTables;
+
+    /**
+     * Database connection cache
+     */
     private final DatabaseConnectionRegistry conn;
 
     @SneakyThrows

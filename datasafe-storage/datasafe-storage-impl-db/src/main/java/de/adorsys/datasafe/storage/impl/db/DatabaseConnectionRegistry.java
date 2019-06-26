@@ -20,6 +20,9 @@ import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This class acts as higher-level DataSource cache.
+ */
 public class DatabaseConnectionRegistry {
 
     private final Map<String, JdbcDaoSupport> dataSourceCache;
@@ -28,12 +31,21 @@ public class DatabaseConnectionRegistry {
         this.dataSourceCache = new ConcurrentHashMap<>();
     }
 
+    /**
+     * Acquire JDBC template for some resource location
+     * @param location Resource location that has credentials to access database.
+     * @return Jdbc template to use with this connection
+     */
     public JdbcTemplate jdbcTemplate(AbsoluteLocation location) {
         return dataSourceCache
                 .computeIfAbsent(connectionKey(location), key -> acquireDaoSupport(location))
                 .getJdbcTemplate();
     }
 
+    /**
+     * Migrates specified data source using liquibase script at changelog/changelog.xml
+     * @param dataSource DataSource to migrate
+     */
     @SneakyThrows
     protected void updateDbSchema(DataSource dataSource) {
         try (Connection dbConn = dataSource.getConnection()) {
@@ -49,6 +61,11 @@ public class DatabaseConnectionRegistry {
         }
     }
 
+    /**
+     * Open `database connection`
+     * @param location Location with credentials to open connection for
+     * @return JdbcDaoSupport object that has database migrated using liquibase.
+     */
     protected JdbcDaoSupport acquireDaoSupport(AbsoluteLocation location) {
         URI uri = location.location().asURI();
 
