@@ -76,8 +76,8 @@ class SchemeDelegationTest extends WithStorageProvider {
         assertThat(minio.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(minioPath.resolve("")))))
                 .extracting(it -> minioPath.relativize(it.location()))
                 .extracting(it -> it.asURI().toString())
-                .contains("john/private/keystore", "john/public/pubkeys")
-                .anyMatch(it -> it.startsWith("john/private/files/"))
+                .contains("users/john/private/keystore", "users/john/public/pubkeys")
+                .anyMatch(it -> it.startsWith("users/john/private/files/"))
                 .hasSize(3);
     }
 

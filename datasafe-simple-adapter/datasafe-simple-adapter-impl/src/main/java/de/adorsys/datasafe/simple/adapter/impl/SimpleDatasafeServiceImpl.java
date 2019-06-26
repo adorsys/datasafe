@@ -65,7 +65,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             log.info(lsf.toString());
             URI systemRoot = filesystemDFSCredentials.getRoot().toAbsolutePath().toUri();
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
-                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()).userProfileLocation(new CustomizedUserProfileLocation(systemRoot)))
+                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .storage(new FileSystemStorageService(filesystemDFSCredentials.getRoot()))
                     .overridesRegistry(baseOverridesRegistry)
                     .build();
@@ -93,7 +93,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             }
             String systemRoot = S3_PREFIX + amazonS3DFSCredentials.getRootBucket();
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
-                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()).userProfileLocation(new CustomizedUserProfileLocation(systemRoot)))
+                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .storage(new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE))
                     .overridesRegistry(baseOverridesRegistry)
                     .build();
