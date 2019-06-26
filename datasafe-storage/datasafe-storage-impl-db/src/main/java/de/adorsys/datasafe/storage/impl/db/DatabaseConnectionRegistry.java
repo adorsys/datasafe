@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import javax.sql.DataSource;
 import java.net.URI;
 import java.sql.Connection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,9 +27,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DatabaseConnectionRegistry {
 
     private final Map<String, JdbcDaoSupport> dataSourceCache;
+    private final Map<String, DatabaseCredentials> providedCredentials;
 
     public DatabaseConnectionRegistry() {
         this.dataSourceCache = new ConcurrentHashMap<>();
+        this.providedCredentials = Collections.emptyMap();
+    }
+
+    /**
+     * Pre-populates registry with credentials associated with URI prefixes, so that one
+     * can use this registry to obtain connections using URI's without user information.
+     * @param providedCredentials Prefix-based matcher for db URI - connection credentials
+     */
+    public DatabaseConnectionRegistry(Map<String, DatabaseCredentials> providedCredentials) {
+        this.dataSourceCache = new ConcurrentHashMap<>();
+        this.providedCredentials = Collections.emptyMap();
     }
 
     /**
@@ -38,7 +51,7 @@ public class DatabaseConnectionRegistry {
      */
     public JdbcTemplate jdbcTemplate(AbsoluteLocation location) {
         return dataSourceCache
-                .computeIfAbsent(connectionKey(location), key -> acquireDaoSupport(location))
+                .computeIfAbsent(connectionKey(location), key -> acquireDaoSupport(location, getCredentials(location)))
                 .getJdbcTemplate();
     }
 
@@ -66,26 +79,46 @@ public class DatabaseConnectionRegistry {
      * @param location Location with credentials to open connection for
      * @return JdbcDaoSupport object that has database migrated using liquibase.
      */
-    protected JdbcDaoSupport acquireDaoSupport(AbsoluteLocation location) {
+    protected JdbcDaoSupport acquireDaoSupport(AbsoluteLocation location, DatabaseCredentials credentials) {
         URI uri = location.location().asURI();
 
-        if (uri.getUserInfo() == null || uri.getPath() == null) {
+        if (uri.getPath() == null) {
             throw new IllegalArgumentException("Wrong url format");
         }
 
-        String[] userInfo = uri.getUserInfo().split(":");
-        String user = userInfo[0];
-        String password = userInfo[1];
+
         String[] uriParts = uri.getPath().split("/");
         String url = uri.getScheme() + ":" + uriParts[1] + ":" + uriParts[2] + ":" + uriParts[3];
 
         JdbcDaoSupport daoSupport = new JdbcDaoSupport() {};
-        DataSource dataSource = getHikariDataSource(url, user, password);
+        DataSource dataSource = getHikariDataSource(url, credentials.getUsername(), credentials.getPassword());
         daoSupport.setDataSource(dataSource);
         updateDbSchema(dataSource);
         return daoSupport;
     }
 
+    /**
+     * Extracts credentials from path URI or uses {@code providedCredentials} to get them
+     * @param location URI to get credentials for.
+     * @return Credentials to access that URI.
+     */
+    protected DatabaseCredentials getCredentials(AbsoluteLocation location) {
+        URI uri = location.location().asURI();
+        String userInfo = uri.getUserInfo();
+
+        if (null !=  userInfo && !"".equals(userInfo)) {
+            return new DatabaseCredentials(location);
+        }
+
+        return providedCredentials.entrySet().stream()
+                .filter(it -> uri.toASCIIString().startsWith(it.getKey()))
+                .findFirst()
+                .orElseThrow(
+                        () -> new IllegalArgumentException("There is no associated database for this credentials")
+                ).getValue();
+    }
+
+    // includes credentials if they are present in URI
     private String connectionKey(AbsoluteLocation location) {
         URI target = location.location().asURI();
         return target.getScheme() + target.getHost();

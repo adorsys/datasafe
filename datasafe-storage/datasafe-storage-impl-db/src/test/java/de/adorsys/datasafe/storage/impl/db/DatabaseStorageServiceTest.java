@@ -44,7 +44,7 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
 
     @SneakyThrows
     @BeforeEach
-    void beforeEach() {
+    void init() {
         connectionRegistry = new DatabaseConnectionRegistry();
         storageService = new DatabaseStorageService(ALLOWED_TABLES, connectionRegistry);
 
