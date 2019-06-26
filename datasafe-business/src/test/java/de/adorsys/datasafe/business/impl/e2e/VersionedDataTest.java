@@ -67,7 +67,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
         profileRemovalService.deregister(john);
 
-        assertRootDirIsEmpty(descriptor, userJohn);
+        assertRootDirIsEmpty(descriptor);
     }
 
     @ParameterizedTest

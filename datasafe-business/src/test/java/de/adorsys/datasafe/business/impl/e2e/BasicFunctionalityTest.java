@@ -66,7 +66,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
         profileRemovalService.deregister(john);
 
-        assertRootDirIsEmpty(descriptor, userJohn);
+        assertRootDirIsEmpty(descriptor);
     }
 
     @SneakyThrows
