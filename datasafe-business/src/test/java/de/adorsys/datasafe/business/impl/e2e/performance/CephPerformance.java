@@ -17,7 +17,7 @@ class CephPerformance extends WithRandomActionPerformance {
     @MethodSource("sizesAndLatency")
     @EnabledIfEnvironmentVariable(named = "CEPH_PERFORMANCE_TEST", matches = "true")
     void testCephBucketPerformance(int size, int latency) {
-        DelegatingStorageWithDelay service = storageService(ceph(), latency);
+        DelegatingStorageWithDelay service = storageService(cephVersioned(), latency);
         DefaultDatasafeServices services = DatasafeServicesProvider.defaultDatasafeServices(
                 service, service.getRootLocation());
         initialize(DatasafeServicesProvider.dfsConfig(service.getRootLocation()), services);

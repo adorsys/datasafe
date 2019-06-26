@@ -9,13 +9,17 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -24,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 class WriteToPrivateImplTest extends BaseMockitoTest {
@@ -50,6 +55,9 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
     @InjectMocks
     private WriteToPrivateImpl inbox;
 
+    @Captor
+    private ArgumentCaptor<WithCallback<AbsoluteLocation<PrivateResource>, ResourceWriteCallback>> captor;
+
     @BeforeEach
     void init() {
         this.secretKeyIDWithKey = new SecretKeyIDWithKey(new KeyID(""), secretKey);
@@ -63,10 +71,12 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
         when(privateKeyService.documentEncryptionSecretKey(auth)).thenReturn(secretKeyIDWithKey);
         when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(writeService.write(resource, secretKeyIDWithKey)).thenReturn(outputStream);
+        when(writeService.write(captor.capture(), eq(secretKeyIDWithKey))).thenReturn(outputStream);
 
         inbox.write(request).write(BYTES.getBytes());
 
+        assertThat(captor.getValue().getCallbacks()).isEmpty();
+        assertThat(captor.getValue().getWrapped()).isEqualTo(resource);
         assertThat(outputStream.toByteArray()).contains(BYTES.getBytes());
     }
 }
