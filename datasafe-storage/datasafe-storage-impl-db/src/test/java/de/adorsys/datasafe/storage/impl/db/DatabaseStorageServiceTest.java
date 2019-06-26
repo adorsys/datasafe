@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,19 +20,19 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
 
     private static final AbsoluteLocation<PrivateResource> ROOT = new AbsoluteLocation<>(
             BasePrivateResource.forPrivate(
-                    new Uri("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/")
+                    new Uri("jdbc://sa:sa@localhost:9999/h2:mem:test/private_profiles/")
             )
     );
 
     private static final AbsoluteLocation<PrivateResource> FILE = new AbsoluteLocation<>(
             BasePrivateResource.forPrivate(
-                    new Uri("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path/hello.txt")
+                    new Uri("jdbc://sa:sa@localhost:9999/h2:mem:test/private_profiles/path/hello.txt")
             )
     );
 
     private static final AbsoluteLocation<PrivateResource> OTHER_FILE = new AbsoluteLocation<>(
             BasePrivateResource.forPrivate(
-                    new Uri("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path/hello1.txt")
+                    new Uri("jdbc://sa:sa@localhost:9999/h2:mem:test/private_profiles/path/hello1.txt")
             )
     );
 
@@ -42,10 +43,13 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     private DatabaseStorageService storageService;
     private DatabaseConnectionRegistry connectionRegistry;
 
-    @SneakyThrows
     @BeforeEach
+    @SneakyThrows
     void init() {
-        connectionRegistry = new DatabaseConnectionRegistry();
+        connectionRegistry = new DatabaseConnectionRegistry(
+                uri -> uri.location().getWrapped().getScheme() + ":" + uri.location().getPath().split("/")[1],
+                Collections.emptyMap()
+        );
         storageService = new DatabaseStorageService(ALLOWED_TABLES, connectionRegistry);
 
         writeData(FILE, MESSAGE);
@@ -69,13 +73,13 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
 
         assertThat(storageService.list(FILE))
                 .extracting(it -> it.getResource().location().asURI().toString())
-                .containsOnly("jdbc://localhost:9999/h2/mem/test/private_profiles/path/hello.txt");
+                .containsOnly("jdbc://localhost:9999/h2:mem:test/private_profiles/path/hello.txt");
 
         assertThat(storageService.list(ROOT))
                 .extracting(it -> it.getResource().location().asURI().toString())
                 .containsOnly(
-                        "jdbc://localhost:9999/h2/mem/test/private_profiles/path/hello.txt",
-                        "jdbc://localhost:9999/h2/mem/test/private_profiles/path/hello1.txt"
+                        "jdbc://localhost:9999/h2:mem:test/private_profiles/path/hello.txt",
+                        "jdbc://localhost:9999/h2:mem:test/private_profiles/path/hello1.txt"
                 );
     }
 

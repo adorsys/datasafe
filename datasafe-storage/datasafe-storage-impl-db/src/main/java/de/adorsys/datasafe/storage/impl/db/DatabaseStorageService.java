@@ -168,11 +168,11 @@ public class DatabaseStorageService implements StorageService {
 
             String[] uriParts = uri.getPath().split("/");
 
-            if (!allowedTables.contains(uriParts[4])) {
+            if (!allowedTables.contains(uriParts[2])) {
                 throw new IllegalArgumentException("Wrong db table name");
             }
 
-            return uriParts[4];
+            return uriParts[2];
         }
     }
 }

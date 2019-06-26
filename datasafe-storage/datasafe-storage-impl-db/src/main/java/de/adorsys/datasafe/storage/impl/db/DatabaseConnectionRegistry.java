@@ -26,10 +26,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DatabaseConnectionRegistry {
 
+    private final DbUriExtractor uriExtractor;
     private final Map<String, JdbcDaoSupport> dataSourceCache;
     private final Map<String, DatabaseCredentials> providedCredentials;
 
     public DatabaseConnectionRegistry() {
+        this.uriExtractor = new DefaultDbUriExtractor();
         this.dataSourceCache = new ConcurrentHashMap<>();
         this.providedCredentials = Collections.emptyMap();
     }
@@ -39,9 +41,11 @@ public class DatabaseConnectionRegistry {
      * can use this registry to obtain connections using URI's without user information.
      * @param providedCredentials Prefix-based matcher for db URI - connection credentials
      */
-    public DatabaseConnectionRegistry(Map<String, DatabaseCredentials> providedCredentials) {
+    public DatabaseConnectionRegistry(DbUriExtractor uriExtractor,
+                                      Map<String, DatabaseCredentials> providedCredentials) {
         this.dataSourceCache = new ConcurrentHashMap<>();
-        this.providedCredentials = Collections.emptyMap();
+        this.providedCredentials = providedCredentials;
+        this.uriExtractor = uriExtractor;
     }
 
     /**
@@ -80,18 +84,14 @@ public class DatabaseConnectionRegistry {
      * @return JdbcDaoSupport object that has database migrated using liquibase.
      */
     protected JdbcDaoSupport acquireDaoSupport(AbsoluteLocation location, DatabaseCredentials credentials) {
-        URI uri = location.location().asURI();
-
-        if (uri.getPath() == null) {
-            throw new IllegalArgumentException("Wrong url format");
-        }
-
-
-        String[] uriParts = uri.getPath().split("/");
-        String url = uri.getScheme() + ":" + uriParts[1] + ":" + uriParts[2] + ":" + uriParts[3];
-
         JdbcDaoSupport daoSupport = new JdbcDaoSupport() {};
-        DataSource dataSource = getHikariDataSource(url, credentials.getUsername(), credentials.getPassword());
+
+        DataSource dataSource = getHikariDataSource(
+                uriExtractor.extract(location),
+                credentials.getUsername(),
+                credentials.getPassword()
+        );
+
         daoSupport.setDataSource(dataSource);
         updateDbSchema(dataSource);
         return daoSupport;
