@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.storage.impl.db;
 
+import com.google.common.collect.ImmutableSet;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
@@ -7,10 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 
 import java.io.OutputStream;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -58,12 +60,17 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
         assertThat(storageService.objectExists(FILE)).isTrue();
     }
 
-//    @SneakyThrows
-//    @Test
-//    void list() {
-//        Stream<AbsoluteLocation<ResolvedResource>> list = storageService.list(location);
-//        Assert.assertEquals(1, list.collect(Collectors.toList()).size());
-//    }
+    @SneakyThrows
+    @Test
+    void list() {
+        AbsoluteLocation<PrivateResource> dir = new AbsoluteLocation<>(
+                BasePrivateResource.forPrivate(
+                        new Uri("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path/")
+                )
+        );
+        Stream<AbsoluteLocation<ResolvedResource>> list = storageService.list(dir);
+        assertThat(list.collect(Collectors.toList())).hasSize(1);
+    }
 
     @SneakyThrows
     @Test

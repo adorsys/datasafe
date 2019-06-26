@@ -55,7 +55,7 @@ public class DatabaseStorageService implements StorageService {
         List<Map<String, Object>> keys = conn.jdbcTemplate(location).queryForList(sql);
         return keys.stream().map(it -> new AbsoluteLocation<>(
                 new BaseResolvedResource(
-                        new BasePrivateResource(new Uri((String) it.get("key"))),
+                        new BasePrivateResource(new Uri((String) it.get("key")).resolve(location.location())),
                         ((Date) it.get("last_modified")).toInstant()
                 )
         ));
