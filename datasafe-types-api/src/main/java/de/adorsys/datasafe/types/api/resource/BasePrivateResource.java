@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.types.api.resource;
 
-import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
@@ -109,9 +108,9 @@ public class BasePrivateResource implements PrivateResource {
     @Override
     public String toString() {
         return "BasePrivateResource{" +
-                "container=" + Log.secure(container) +
-                ", encryptedPath=" + Log.secure(encryptedPath) +
-                ", decryptedPath=" + Log.secure(decryptedPath) +
+                "container=" + container +
+                ", encryptedPath=" + encryptedPath +
+                ", decryptedPath=" + decryptedPath +
                 '}';
     }
 

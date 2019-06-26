@@ -5,7 +5,6 @@ import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.inbox.api.actions.WriteToInbox;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -13,10 +12,12 @@ import de.adorsys.datasafe.types.api.resource.PublicResource;
 
 import javax.inject.Inject;
 import java.io.OutputStream;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation for stream writing that resolves incoming resource path using
- * {@link ResourceResolver} against INBOX and then reads and asymmetrically encrypts data into it
+ * {@link ResourceResolver} against each recipients' INBOX and then writes and asymmetrically encrypts data into it
  * using {@link EncryptedDocumentReadService}
  */
 @RuntimeDelegate
@@ -34,12 +35,18 @@ public class WriteToInboxImpl implements WriteToInbox {
         this.writer = writer;
     }
 
+    /**
+     * Shares document with multiple recipients so that each of them can read it using his private key.
+     * @param request Where to write stream (location can be relative/absolute)
+     * @return Stream sink for data to be shared and encrypted
+     */
     @Override
-    public OutputStream write(WriteRequest<UserID, PublicResource> request) {
-        PublicKeyIDWithPublicKey withPublicKey = publicKeyService.publicKey(request.getOwner());
+    public OutputStream write(WriteRequest<Set<UserID>, PublicResource> request) {
         return writer.write(
-                resolver.resolveRelativeToPublicInbox(request.getOwner(), request.getLocation()),
-                withPublicKey
+                request.getOwner().stream().collect(Collectors.toMap(
+                        publicKeyService::publicKey,
+                        it -> resolver.resolveRelativeToPublicInbox(it, request.getLocation())
+                ))
         );
     }
 }

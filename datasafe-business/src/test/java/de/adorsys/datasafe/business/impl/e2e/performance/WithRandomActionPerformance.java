@@ -12,9 +12,11 @@ import de.adorsys.datasafe.business.impl.e2e.performance.services.OperationExecu
 import de.adorsys.datasafe.business.impl.e2e.performance.services.StatisticService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 import de.adorsys.datasafe.types.api.shared.ContentGenerator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +49,6 @@ abstract class WithRandomActionPerformance extends BaseE2ETest {
     protected static final Map<String, StatisticService> STATS = new HashMap<>();
     protected Map<String, UserSpec> users;
 
-    private WithStorageProvider.StorageDescriptor descriptor;
     private String testId;
 
     /**
@@ -67,7 +68,6 @@ abstract class WithRandomActionPerformance extends BaseE2ETest {
     @BeforeEach
     void generateDataAndRegisterUsers() {
         this.users = new HashMap<>();
-        this.descriptor = minio();
         this.testId = UUID.randomUUID().toString();
     }
 
@@ -153,9 +153,11 @@ abstract class WithRandomActionPerformance extends BaseE2ETest {
 
         @Override
         @SneakyThrows
-        public OutputStream write(AbsoluteLocation location) {
+        public OutputStream write(
+                WithCallback<AbsoluteLocation, ? extends ResourceWriteCallback> locationWithCallback
+        ) {
             Thread.sleep(delayProvider.get());
-            return delegate.write(location);
+            return delegate.write(locationWithCallback);
         }
     }
 }

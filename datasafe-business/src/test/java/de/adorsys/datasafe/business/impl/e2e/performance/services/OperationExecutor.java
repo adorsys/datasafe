@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -120,7 +121,10 @@ public class OperationExecutor {
 
     private OutputStream openWriteStream(UserSpec user, Operation oper) {
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return inboxService.write(WriteRequest.forDefaultPublic(user.getAuth().getUserID(), oper.getLocation()));
+            return inboxService.write(WriteRequest.forDefaultPublic(
+                    Collections.singleton(user.getAuth().getUserID()),
+                    oper.getLocation())
+            );
         }
 
         return privateSpace.write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));

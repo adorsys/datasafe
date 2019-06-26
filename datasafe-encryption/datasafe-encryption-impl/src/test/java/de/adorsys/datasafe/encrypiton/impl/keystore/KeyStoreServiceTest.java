@@ -3,6 +3,7 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
+import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
@@ -19,6 +20,8 @@ import java.security.Security;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
 class KeyStoreServiceTest extends BaseMockitoTest {
 
@@ -70,6 +73,7 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(keyStoreAccess);
+
         Assertions.assertEquals(5, publicKeys.size());
     }
 
@@ -106,16 +110,13 @@ class KeyStoreServiceTest extends BaseMockitoTest {
     }
 
     @Test
-    void getSecretKey() throws Exception {
+    void getSecretKey() {
         KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
-        String keyID = KeyStoreCreationConfig.SYMM_KEY_ID.getValue();
-        SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID(keyID));
+        KeyID keyID = KeystoreUtil.keyIdByPrefix(keyStore, DOCUMENT_KEY_ID_PREFIX);
+        SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, keyID);
         Assertions.assertNotNull(secretKey);
     }
-
-
-
 }
