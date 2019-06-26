@@ -128,7 +128,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     @SneakyThrows
     public void storeDocument(UserIDAuth userIDAuth, DSDocument dsDocument) {
         try (OutputStream os = customlyBuiltDatasafeServices.privateService()
-                .write(WriteRequest.forDefaultPrivate(userIDAuth, dsDocument.getDocumentFQN().getValue()))) {
+                .write(WriteRequest.forDefaultPrivate(userIDAuth, dsDocument.getDocumentFQN().getDatasafePath()))) {
             os.write(dsDocument.getDocumentContent().getValue());
         }
     }
@@ -138,7 +138,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public DSDocument readDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
         DocumentContent documentContent = null;
         try (InputStream is = customlyBuiltDatasafeServices.privateService()
-                .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getValue()))) {
+                .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()))) {
             documentContent = new DocumentContent(ByteStreams.toByteArray(is));
         }
         return new DSDocument(documentFQN, documentContent);
@@ -156,20 +156,20 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public void deleteDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        PrivateResource resource = BasePrivateResource.forPrivate(documentFQN.getValue());
+        PrivateResource resource = BasePrivateResource.forPrivate(documentFQN.getDatasafePath());
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         customlyBuiltDatasafeServices.privateService().remove(request);
     }
 
     @Override
     public boolean documentExists(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        return customlyBuiltDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, documentFQN.getValue())).count() == 1;
+        return customlyBuiltDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath())).count() == 1;
     }
 
     @Override
     public void deleteFolder(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN) {
         list(userIDAuth, documentDirectoryFQN, ListRecursiveFlag.TRUE).stream().forEach(file -> {
-            PrivateResource resource = BasePrivateResource.forPrivate(file.getValue());
+            PrivateResource resource = BasePrivateResource.forPrivate(file.getDatasafePath());
             RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
             customlyBuiltDatasafeServices.privateService().remove(request);
         });
@@ -178,14 +178,14 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     @Override
     public List<DocumentFQN> list(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN, ListRecursiveFlag recursiveFlag) {
         List<DocumentFQN> l = customlyBuiltDatasafeServices.privateService().list(
-                ListRequest.forDefaultPrivate(userIDAuth, documentDirectoryFQN.getValue()))
+                ListRequest.forDefaultPrivate(userIDAuth, documentDirectoryFQN.getDatasafePath()))
                 .map(it -> new DocumentFQN(it.getResource().asPrivate().decryptedPath().toASCIIString()))
                 .collect(Collectors.toList());
         if (recursiveFlag.equals(ListRecursiveFlag.TRUE)) {
             return l;
         }
-        int numberOfSlashesExpected = 1 + StringUtils.countMatches(documentDirectoryFQN.getValue(), "/");
-        return l.stream().filter(el -> StringUtils.countMatches(el.getValue(), "/") == numberOfSlashesExpected).collect(Collectors.toList());
+        int numberOfSlashesExpected = 1 + StringUtils.countMatches(documentDirectoryFQN.getDatasafePath(), "/");
+        return l.stream().filter(el -> StringUtils.countMatches(el.getDatasafePath(), "/") == numberOfSlashesExpected).collect(Collectors.toList());
     }
 
     @Override

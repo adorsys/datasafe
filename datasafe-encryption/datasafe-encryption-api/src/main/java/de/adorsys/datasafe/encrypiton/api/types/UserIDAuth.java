@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.encrypiton.api.types;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,8 @@ public class UserIDAuth {
     @Override
     public String toString() {
         return "UserIDAuth{" +
-                "userID=" + Log.secure(userID) +
-                ", readKeyPassword=" + Log.secure(readKeyPassword) +
+                "userID=" + userID +
+                ", readKeyPassword=" + readKeyPassword +
                 '}';
     }
 }

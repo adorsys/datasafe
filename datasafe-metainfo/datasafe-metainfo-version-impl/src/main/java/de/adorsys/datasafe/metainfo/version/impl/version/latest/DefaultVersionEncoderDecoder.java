@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
+import de.adorsys.datasafe.metainfo.version.impl.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.resource.VersionedUri;

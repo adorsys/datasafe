@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.metainfo.version.api.version;
+package de.adorsys.datasafe.metainfo.version.impl.version;
 
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.resource.VersionedUri;

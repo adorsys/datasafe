@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import de.adorsys.datasafe.business.impl.e2e.WithStorageProvider;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
@@ -13,7 +12,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -84,7 +82,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     private static Stream<Arguments> parameterCombination() {
             return Sets.cartesianProduct(
-                    allStorages().collect(Collectors.toSet()),
+                    allDefaultStorages().collect(Collectors.toSet()),
                     withOrWithoutEncryption().collect(Collectors.toSet())
             ).stream().map(it -> Arguments.of(it.get(0), it.get(1)));
     }
@@ -136,6 +134,25 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
         log.info("the content read is ok");
     }
+
+    @ParameterizedTest
+    @MethodSource("parameterCombination")
+    public void writeAndReadFileWithSlash(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
+        myinit(descriptor, encryption);
+        mystart();
+        String content = "content of document";
+        String path = "/a/b/c.txt";
+        DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
+        simpleDatasafeService.storeDocument(userIDAuth, document);
+
+        DSDocument dsDocument = simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path));
+        assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
+        assertFalse(simpleDatasafeService.documentExists(userIDAuth, new DocumentFQN("doesnotexist.txt")));
+
+        assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
+        log.info("the content read is ok");
+    }
+
 
     @ParameterizedTest
     @MethodSource("parameterCombination")

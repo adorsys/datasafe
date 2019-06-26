@@ -5,7 +5,8 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
 /**
- * Manages `latest` file version link location and provides capability to read its path.
+ * Manages `latest` file version link location and provides capability to read its path. For example it can be
+ * managed using RDBMS.
  */
 public interface EncryptedLatestLinkService {
 

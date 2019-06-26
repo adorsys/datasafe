@@ -1,9 +1,6 @@
 package de.adorsys.datasafe.storage.impl.fs;
 
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +62,7 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
         Path newFile = nonExistingFolder.resolve(UUID.randomUUID().toString());
         AbsoluteLocation<PrivateResource> newFileLocation = new AbsoluteLocation<>(BasePrivateResource.forPrivate(newFile.toUri()));
 
-        try (OutputStream os = storageService.write(newFileLocation)) {
+        try (OutputStream os = storageService.write(WithCallback.noCallback(newFileLocation))) {
             os.write(MESSAGE.getBytes());
         }
         assertThat(storageService.objectExists(newFileLocation)).isTrue();
@@ -79,7 +76,7 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
         AbsoluteLocation<PrivateResource> newFileLocation = new AbsoluteLocation<>(BasePrivateResource.forPrivate(beforeRoot.toUri()));
 
         assertThatThrownBy(() -> {
-            try (OutputStream os = storageService.write(newFileLocation)) {
+            try (OutputStream os = storageService.write(WithCallback.noCallback(newFileLocation))) {
                 os.write(MESSAGE.getBytes());
             }
         });
@@ -108,7 +105,7 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
         AbsoluteLocation<PrivateResource> newFileLocation = new AbsoluteLocation<>(BasePrivateResource.forPrivate(dotFile.toUri()));
 
         assertThat(storageService.list(root).collect(Collectors.toList())).isEmpty();
-        try (OutputStream os = storageService.write(newFileLocation)) {
+        try (OutputStream os = storageService.write(WithCallback.noCallback(newFileLocation))) {
             os.write(MESSAGE.getBytes());
         }
         assertThat(storageService.list(root).collect(Collectors.toList())).isNotEmpty();
@@ -139,7 +136,7 @@ class FileSystemStorageServiceTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void write() {
-        try (OutputStream os = storageService.write(fileWithMsg)) {
+        try (OutputStream os = storageService.write(WithCallback.noCallback(fileWithMsg))) {
             os.write(MESSAGE.getBytes());
         }
 

@@ -2,7 +2,7 @@ package de.adorsys.datasafe.metainfo.version.impl.version.latest;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
+import de.adorsys.datasafe.metainfo.version.impl.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionInfoService;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;

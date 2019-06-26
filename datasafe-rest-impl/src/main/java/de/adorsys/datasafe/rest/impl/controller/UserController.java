@@ -6,6 +6,8 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.config.DatasafeProperties;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
+import de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExistsException;
+import de.adorsys.datasafe.rest.impl.exceptions.UserExistsException;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +18,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * User profile REST api.
  */
 @RestController
-@RequestMapping(value = "/user", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/user", produces = APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class UserController {
 
@@ -40,7 +42,9 @@ public class UserController {
     public void createUser(@RequestBody UserDTO requestDTO) {
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(requestDTO.getPassword());
         UserIDAuth auth = new UserIDAuth(new UserID(requestDTO.getUserName()), readKeyPassword);
-
+        if (dataSafeService.userProfile().userExists(auth.getUserID())) {
+            throw new UserExistsException("user \"" + auth.getUserID().getValue() + "\" already exists");
+        }
         dataSafeService.userProfile().registerUsingDefaults(auth);
     }
 
@@ -53,7 +57,10 @@ public class UserController {
     @ApiOperation("Delete user")
     public void deleteUser(@RequestHeader String user,
                            @RequestHeader String password) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        dataSafeService.userProfile().deregister(userIDAuth);
+        UserIDAuth auth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        if (!dataSafeService.userProfile().userExists(auth.getUserID())) {
+            throw new UserDoesNotExistsException("user \"" + auth.getUserID().getValue() + "\" does not exists");
+        }
+        dataSafeService.userProfile().deregister(auth);
     }
 }

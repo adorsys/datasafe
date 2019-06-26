@@ -7,8 +7,11 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 
 import javax.inject.Inject;
 import java.io.OutputStream;
@@ -38,7 +41,10 @@ public class WriteToPrivateImpl implements WriteToPrivate {
         SecretKeyIDWithKey keySpec = privateKeyService.documentEncryptionSecretKey(request.getOwner());
 
         return writer.write(
-                resolver.encryptAndResolvePath(request.getOwner(), request.getLocation()),
+                WithCallback.<AbsoluteLocation<PrivateResource>, ResourceWriteCallback>builder()
+                        .wrapped(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation()))
+                        .callbacks(request.getCallbacks())
+                        .build(),
                 keySpec
         );
     }

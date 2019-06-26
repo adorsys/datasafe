@@ -15,15 +15,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.Key;
 import java.security.KeyStore;
+import java.util.Enumeration;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.SYMM_KEY_ID;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.getKeys;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-public class SymetricEncryptionTest {
+class SymetricEncryptionTest {
 
     private static final String MESSAGE_CONTENT = "message content";
 
@@ -39,10 +40,11 @@ public class SymetricEncryptionTest {
     @Test
     @SneakyThrows
     void symetricStreamEncryptAndDecryptTest() {
-        SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, SYMM_KEY_ID);
+        KeyID keyID = keyIdByPrefix(DOCUMENT_KEY_ID_PREFIX);
+        SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, keyID);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                secretKey, SYMM_KEY_ID);
+                secretKey, keyID);
 
         encryptionStream.write(MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
@@ -50,7 +52,7 @@ public class SymetricEncryptionTest {
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(
-                inputStream, keyId -> getKey(keyId, keyStoreAccess));
+                inputStream, keyIds -> getKeys(keyIds, keyStoreAccess));
 
         assertThat(decryptionStream).hasContent(MESSAGE_CONTENT);
         log.debug("en and decrypted successfully");
@@ -61,11 +63,11 @@ public class SymetricEncryptionTest {
     void symetricNegativeStreamEncryptAndDecryptTest() {
         // This is the keystore we use to encrypt, it has SYMM_KEY_ID and PATH_KEY_ID symm. keys.
         keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
-        SecretKey realSecretKey = keyStoreService.getSecretKey(keyStoreAccess, SYMM_KEY_ID);
+        SecretKey realSecretKey = keyStoreService.getSecretKey(keyStoreAccess, keyIdByPrefix(DOCUMENT_KEY_ID_PREFIX));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         // Test consist in encrypting with real secret key, but use fake secretKeyId - PATH_KEY_ID
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                realSecretKey, PATH_KEY_ID);
+                realSecretKey, keyIdByPrefix(PATH_KEY_ID_PREFIX));
 
         encryptionStream.write(MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
@@ -74,12 +76,20 @@ public class SymetricEncryptionTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         // Opening envelope with wrong key must throw a cms exception.
         Assertions.assertThrows(CMSException.class, () ->
-            cmsEncryptionService.buildDecryptionInputStream(inputStream, keyId -> getKey(keyId, keyStoreAccess))
+            cmsEncryptionService.buildDecryptionInputStream(inputStream, keyIds -> getKeys(keyIds, keyStoreAccess))
         );
     }
 
     @SneakyThrows
-    private static Key getKey(String id, KeyStoreAccess access) {
-        return access.getKeyStore().getKey(id, access.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
+    private KeyID keyIdByPrefix(String prefix) {
+        Enumeration<String> aliases = keyStore.aliases();
+        while (aliases.hasMoreElements()) {
+            String element = aliases.nextElement();
+            if (element.startsWith(prefix)) {
+                return new KeyID(element);
+            }
+        }
+
+        throw new IllegalArgumentException("Keystore does not contain key with prefix: " + prefix);
     }
 }

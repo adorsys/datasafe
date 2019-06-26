@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.types.api.resource;
 
-import de.adorsys.datasafe.types.api.utils.Log;
 import lombok.Getter;
 
 /**
@@ -33,7 +32,7 @@ public class AbsoluteLocation<T extends ResourceLocation<T>> implements Resource
     @Override
     public String toString() {
         return "AbsoluteLocation{" +
-                "resource=" + Log.secure(location()) +
+                "resource=" + location() +
                 '}';
     }
 }

@@ -6,7 +6,7 @@ import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreCreationCo
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeystoreBuilder;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
-import de.adorsys.datasafe.types.api.utils.Log;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class KeyStoreGenerator {
         this.serverKeyPairAliasPrefix = "KEYSTORE-ID-0";
         this.readKeyPassword = readKeyPassword;
         this.secretKeys = secretKeys;
-        log.debug("Keystore ID ignored {}", Log.secure(serverKeyPairAliasPrefix));
+        log.debug("Keystore ID ignored {}", Obfuscate.secure(serverKeyPairAliasPrefix));
     }
 
     public KeyStore generate() {

@@ -161,7 +161,7 @@ public class DefaultDFSConfig implements DFSConfig {
             throw new RuntimeException("systemRoot must not be null");
         }
         int last = systemRoot.length();
-        if (systemRoot.substring(last-1).equals("/")) {
+        if (systemRoot.substring(last - 1).equals("/")) {
             return systemRoot;
         }
         return systemRoot + "/";

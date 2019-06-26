@@ -16,6 +16,8 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class DatasafeServicesProvider {
 
+    public static final String STORE_PAZZWORD = "PAZZWORD";
+
     public static DefaultDatasafeServices defaultDatasafeServices(StorageService storageService, Uri systemRoot) {
         return DaggerDefaultDatasafeServices
                 .builder()
@@ -33,6 +35,6 @@ public class DatasafeServicesProvider {
     }
 
     public DFSConfig dfsConfig(Uri systemRoot) {
-        return new DefaultDFSConfig(systemRoot, "PAZZWORD");
+        return new DefaultDFSConfig(systemRoot, STORE_PAZZWORD);
     }
 }
