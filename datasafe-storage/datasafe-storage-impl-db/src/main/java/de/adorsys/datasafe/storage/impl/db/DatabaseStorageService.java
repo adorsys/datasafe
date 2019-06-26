@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.utils.Log;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -12,24 +13,31 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.util.IOUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import javax.sql.DataSource;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.Instant;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.lang.System.currentTimeMillis;
 
 /*
-//      input location format  jdbc://user:pass@host:port/database/table/key
+//      input location format  jdbc://user:pass@host:port/database/table/user/path
  */
 @Slf4j
 public class DatabaseStorageService extends JdbcDaoSupport implements StorageService {
@@ -57,9 +65,10 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
-        String key = location.location().getPath();
-        final String sql = "SELECT value FROM " + tableName + " WHERE key LIKE '?%'";
-        List<String> keys = getJdbcTemplate().queryForList(sql, String.class, key);
+        String path = location.location().getPath();
+        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
+        final String sql = "SELECT value FROM " + tableName + " WHERE key LIKE '" + pathWithUser + "%'";
+        List<String> keys = getJdbcTemplate().queryForList(sql, String.class);
         return keys.stream().map(it -> new AbsoluteLocation<>(
                 new BaseResolvedResource(
                         new BasePrivateResource(new Uri(it)),
@@ -72,12 +81,20 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
     public InputStream read(AbsoluteLocation location) {
         acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
-        String key = location.location().getPath();
+        String path = location.location().getPath();
+        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
         final String sql = "SELECT value FROM " + tableName + " where key = ?";
-        ResultSetInputStream resultSetInputStream = new ResultSetInputStream(
-                new ResultSetTpByteArrayIml(), getDataSource().getConnection(), sql, key);
+        RowMapper<String> rowMapper = (rs, i) -> {
+            InputStream contentStream = rs.getClob("value").getAsciiStream();
+            return new Scanner(contentStream, "UTF-8").useDelimiter("\\A").next();
+//            return rs.getBinaryStream("value");
+        };
+        List<String> values = getJdbcTemplate().query(sql, new Object[]{pathWithUser}, rowMapper);
 
-        return resultSetInputStream;
+        if (values.size() == 1) {
+            return new ByteArrayInputStream(values.get(0).getBytes());
+        }
+        throw new RuntimeException("No item found for id: " + pathWithUser);
     }
 
     @SneakyThrows
@@ -95,10 +112,36 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
     public OutputStream write(AbsoluteLocation location) {
         acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
-        String key = location.location().getPath();
-        // check table
-        final String sql = "INSERT INTO " + tableName + " (id, user_id, key, value) VALUES(nextval('sq_private_profiles_id'), 1, ?, ?)";
-        return new JdbcOutputStream(getJdbcTemplate(), sql, key);
+        String path = location.location().getPath();
+        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
+        return new PutBlobOnClose(getJdbcTemplate(), pathWithUser, tableName);
+    }
+
+    @Slf4j
+    @RequiredArgsConstructor
+    private static final class PutBlobOnClose extends ByteArrayOutputStream {
+
+        private final JdbcTemplate jdbcTemplate;
+        private final String pathWithUser;
+        private final String tableName;
+
+        @Override
+        public void close() throws IOException {
+
+            final String sql = "INSERT INTO " + tableName + " (id, key, value) VALUES(nextval('sq_private_profiles_id'), ?, ?)";
+            KeyHolder holder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, pathWithUser);
+                byte[] data = super.toByteArray();
+                Reader reader = new InputStreamReader(new ByteArrayInputStream(data));
+                ps.setClob(2, reader);
+                return ps;
+            }, holder);
+            Number key = holder.getKey();
+            log.debug("Write to db record with key {}", Log.secure(key));
+            super.close();
+        }
     }
 
     private String extractTable(AbsoluteLocation location) {

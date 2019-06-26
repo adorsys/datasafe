@@ -20,10 +20,6 @@ import java.util.HashSet;
 @Slf4j
 class DatabaseStorageServiceTest extends BaseMockitoTest {
 
-    private static final String H2_DB_URL = "jdbc:hsqldb:mem:testcase;shutdown=true";
-    private static final String H2_DB_USER = "sa";
-    private static final String H2_DB_PASSWORD = null;
-
     private static DatabaseStorageService storageService;
 
     @BeforeAll
@@ -45,7 +41,7 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     @Test
     void list() {
-        URI path = new URI("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles");
+        URI path = new URI("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path");
         storageService.list(BasePrivateResource.forAbsolutePrivate(path));
     }
 
@@ -62,7 +58,7 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     @Test
     void write() {
-        URI path = new URI("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles");
+        URI path = new URI("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path/hello.txt");
         OutputStream write = storageService.write(BasePrivateResource.forAbsolutePrivate(path));
         write.write("HELLO".getBytes());
         write.close();
@@ -71,14 +67,5 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
         String theString = IOUtils.toString(read);
         Assert.assertEquals(theString, "HELLO");
 
-    }
-
-    private static DriverManagerDataSource getDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl(H2_DB_URL);
-        dataSource.setUsername(H2_DB_USER);
-        dataSource.setPassword(H2_DB_PASSWORD);
-        return dataSource;
     }
 }
