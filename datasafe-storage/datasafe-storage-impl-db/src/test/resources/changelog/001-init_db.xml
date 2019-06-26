@@ -34,4 +34,22 @@
     </createTable>
 </changeSet>
 
+<changeSet id="private_profiles-sequence" author="maxim.grischenko">
+    <createSequence
+            cycle="false"
+            cacheSize="100"
+            incrementBy="1"
+            sequenceName="sq_private_profiles_id"
+            startValue="1"/>
+</changeSet>
+
+<changeSet id="public_profiles-sequence" author="maxim.grischenko">
+    <createSequence
+            cycle="false"
+            cacheSize="100"
+            incrementBy="1"
+            sequenceName="sq_public_profiles_id"
+            startValue="1"/>
+</changeSet>
+
 </databaseChangeLog>

@@ -23,21 +23,27 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.lang.System.currentTimeMillis;
+
 /*
 //      input location format  jdbc://user:pass@host:port/database/table/key
  */
 @Slf4j
 public class DatabaseStorageService extends JdbcDaoSupport implements StorageService {
 
-    public DatabaseStorageService() {
+    private Set<String> allowedTables;
+
+    public DatabaseStorageService(Set<String> allowedTables) {
+        this.allowedTables = allowedTables;
     }
 
     @SneakyThrows
-    public DatabaseStorageService(DataSource dataSource) {
+    public DatabaseStorageService(DataSource dataSource, Set<String> allowedTables) {
         setDataSource(dataSource);
+        this.allowedTables = allowedTables;
         updateDbSchema(dataSource);
     }
 
@@ -52,9 +58,8 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
         String key = location.location().getPath();
-        // TODO query builder
-        final String sql = "SELECT value FROM " + tableName + " WHERE key LIKE '" + key + "%'";
-        List<String> keys = getJdbcTemplate().queryForList(sql, String.class);
+        final String sql = "SELECT value FROM " + tableName + " WHERE key LIKE '?%'";
+        List<String> keys = getJdbcTemplate().queryForList(sql, String.class, key);
         return keys.stream().map(it -> new AbsoluteLocation<>(
                 new BaseResolvedResource(
                         new BasePrivateResource(new Uri(it)),
@@ -91,76 +96,53 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
         String key = location.location().getPath();
-        final String sql = "UPSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
+        // check table
+        final String sql = "INSERT INTO " + tableName + " (id, user_id, key, value) VALUES(nextval('sq_private_profiles_id'), 1, ?, ?)";
         return new JdbcOutputStream(getJdbcTemplate(), sql, key);
     }
 
-//    @Slf4j
-//    @RequiredArgsConstructor
-//    private static final class PutBlobOnClose extends ByteArrayOutputStream {
-//
-//        private final String bucketName;
-//        private final ResourceLocation resource;
-//
-//        @Override
-//        public void close() throws IOException {
-//
-//            ObjectMetadata metadata = new ObjectMetadata();
-//            byte[] data = super.toByteArray();
-//            metadata.setContentLength(data.length);
-//
-//            InputStream is = new ByteArrayInputStream(data);
-//
-//            String key = resource.location().getPath().replaceFirst("^/", "");
-//            log.debug("Write to {}", Log.secure(key));
-//            s3.putObject(bucketName, key, is, metadata);
-//
-//            super.close();
-//        }
-//    }
-
-    private String extractDb(AbsoluteLocation location) {
-//        "jdbc:h2"
-//        "jdbc:postgresql:"
-//        "jdbc:mysql
-        String host = location.location().getWrapped().getHost();
-        return DatabaseFactory.getInstance().findDefaultDriver(host);
-    }
-
     private String extractTable(AbsoluteLocation location) {
-        String[] splitted = location.getResource().location().getPath().split("/");
-        return splitted[2];
-    }
-
-    private static HikariDataSource getHikariDataSource(String className, String url, String user, String password) {
-        HikariConfig config = new HikariConfig();
-        config.setDataSourceClassName(className);
-        config.setConnectionTestQuery("VALUES 1");
-        config.addDataSourceProperty("URL", url);
-        config.addDataSourceProperty("user", user);
-        config.addDataSourceProperty("password", password);
-        return new HikariDataSource(config);
+        URI uri = location.location().asURI();
+        if (uri.getPath() == null) {
+            throw new RuntimeException("Wrong url format");
+        }
+        String[] uriParts = uri.getPath().split("/");
+        if (!allowedTables.contains(uriParts[4])) {
+            throw new RuntimeException("Wrong db table name");
+        }
+        return uriParts[4];
     }
 
     private void updateDbSchema(DataSource dataSource) throws SQLException, LiquibaseException {
-        Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(dataSource.getConnection()));
-        Liquibase liquibase = new Liquibase("changelog.xml", new ClassLoaderResourceAccessor(), database);
+        JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
+        Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+        Liquibase liquibase = new Liquibase("changelog/changelog.xml", new ClassLoaderResourceAccessor(), database);
         liquibase.update(new Contexts(), new LabelExpression());
     }
 
     private void acquireConnectionToDbIfNeeded(AbsoluteLocation location) throws SQLException, LiquibaseException {
         if (getDataSource() == null) {
             URI uri = location.location().asURI();
-            String[] credsAndHost = uri.getAuthority().split("@");
-            String creds = credsAndHost[0];
-            String host = credsAndHost[1];
-            String defaultDriver = extractDb(location);
-            String[] userPass = creds.split(":");
-            String user = userPass[0];
-            String password = userPass[1];
-            HikariDataSource dataSource = getHikariDataSource(defaultDriver, host, user, password);
+            if (uri.getUserInfo() == null || uri.getPath() == null) {
+                throw new RuntimeException("Wrong url format");
+            }
+            String[] userInfo = uri.getUserInfo().split(":");
+            String user = userInfo[0];
+            String password = userInfo[1];
+            String[] uriParts = uri.getPath().split("/");
+            String url = uri.getScheme() + ":" + uriParts[1] + ":" + uriParts[2] + ":" + uriParts[3];
+            HikariDataSource dataSource = getHikariDataSource(url, user, password);
             setDataSource(dataSource);
             updateDbSchema(dataSource);
         }
+    }
+
+    private static HikariDataSource getHikariDataSource(String url, String user, String password) {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setConnectionTestQuery("VALUES 1");
+        config.addDataSourceProperty("user", user);
+        config.addDataSourceProperty("password", password);
+        return new HikariDataSource(config);
     }
 }

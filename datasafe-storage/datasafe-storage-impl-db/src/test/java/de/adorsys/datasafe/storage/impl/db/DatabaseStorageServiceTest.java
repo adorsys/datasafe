@@ -14,6 +14,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashSet;
 
 @Slf4j
 class DatabaseStorageServiceTest extends BaseMockitoTest {
@@ -30,20 +32,20 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
 
     @BeforeEach
     public void BeforeEach() {
-        storageService = new DatabaseStorageService();
+        storageService = new DatabaseStorageService(new HashSet<>(Arrays.asList("users", "private_profiles", "public_profiles")));
     }
 
     @SneakyThrows
     @Test
     void objectExists() {
-        URI path = new URI("jdbc://sa:sa@jdbc:postgresql:schema/private_profiles/key");
+        URI path = new URI("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles");
         boolean exists = storageService.objectExists(BasePrivateResource.forAbsolutePrivate(path));
     }
 
     @SneakyThrows
     @Test
     void list() {
-        URI path = new URI("jdbc://sa:sa@jdbc:h2:~/test/private_profiles/deep/path/");
+        URI path = new URI("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles");
         storageService.list(BasePrivateResource.forAbsolutePrivate(path));
     }
 
@@ -60,7 +62,7 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     @Test
     void write() {
-        URI path = new URI("jdbc://sa:sa@localhost/h2/private_profiles/deep/path/");
+        URI path = new URI("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles");
         OutputStream write = storageService.write(BasePrivateResource.forAbsolutePrivate(path));
         write.write("HELLO".getBytes());
         write.close();
