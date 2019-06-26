@@ -1,59 +1,61 @@
 package de.adorsys.datasafe.storage.impl.db;
 
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Set;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @Slf4j
 class DatabaseStorageServiceTest extends BaseMockitoTest {
 
-    private static DatabaseStorageService storageService;
-    private static final URI uri = URI.create("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path/hello.txt");
-    private AbsoluteLocation<PrivateResource> location;
+    private static final AbsoluteLocation<PrivateResource> FILE = new AbsoluteLocation<>(
+            BasePrivateResource.forPrivate(
+                    new Uri("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path/hello.txt")
+            )
+    );
 
-    @BeforeAll
-    static void beforeAll() {
-    }
+    private static final AbsoluteLocation<PrivateResource> OTHER_FILE = new AbsoluteLocation<>(
+            BasePrivateResource.forPrivate(
+                    new Uri("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path/hello1.txt")
+            )
+    );
+
+    private static final String MESSAGE = "Hello!";
+
+    private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
+
+    private DatabaseStorageService storageService;
+    private DatabaseConnectionRegistry connectionRegistry;
 
     @SneakyThrows
     @BeforeEach
-    public void beforeEach() {
-        HashSet<String> allowedTables = new HashSet<>(Arrays.asList("users", "private_profiles", "public_profiles"));
-        storageService = new DatabaseStorageService(allowedTables);
+    void beforeEach() {
+        connectionRegistry = new DatabaseConnectionRegistry();
+        storageService = new DatabaseStorageService(ALLOWED_TABLES, connectionRegistry);
 
-        location = BasePrivateResource.forAbsolutePrivate(uri);
-        OutputStream write = storageService.write(location);
-        write.write("HELLO".getBytes());
-        write.close();
+        writeData(FILE, MESSAGE);
     }
 
     @AfterEach
     void afterEach() {
-        String sql = "DROP ALL OBJECTS DELETE FILES";
-        storageService.getJdbcTemplate().execute(sql);
+        connectionRegistry
+                .jdbcTemplate(FILE)
+                .execute("DROP ALL OBJECTS DELETE FILES");
     }
 
     @SneakyThrows
     @Test
     void objectExists() {
-        location = BasePrivateResource.forAbsolutePrivate(uri);
-        boolean exists = storageService.objectExists(location);
-        Assert.assertTrue(exists);
+        assertThat(storageService.objectExists(FILE)).isTrue();
     }
 
 //    @SneakyThrows
@@ -66,23 +68,27 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
     @SneakyThrows
     @Test
     void read() {
-        InputStream read = storageService.read(location);
-        String theString = IOUtils.toString(read);
-        Assert.assertEquals(theString, "HELLO");
+        assertThat(storageService.read(FILE)).hasContent(MESSAGE);
     }
 
     @SneakyThrows
     @Test
     void remove() {
-        storageService.remove(location);
-        Assertions.assertThrows(RuntimeException.class, () -> storageService.read(location));
+        storageService.remove(FILE);
+        assertThat(storageService.objectExists(FILE)).isFalse();
     }
 
     @SneakyThrows
     @Test
     void write() {
-        InputStream read = storageService.read(location);
-        String theString = IOUtils.toString(read);
-        Assert.assertEquals(theString, "HELLO");
+        writeData(OTHER_FILE, MESSAGE);
+        assertThat(storageService.read(OTHER_FILE)).hasContent(MESSAGE);
+    }
+
+    @SneakyThrows
+    private void writeData(AbsoluteLocation path, String message) {
+        try (OutputStream os = storageService.write(WithCallback.noCallback(path))) {
+            os.write(message.getBytes());
+        }
     }
 }
