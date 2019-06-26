@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,7 +27,8 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
 
     @BeforeEach
     public void BeforeEach() {
-        storageService = new DatabaseStorageService(new HashSet<>(Arrays.asList("users", "private_profiles", "public_profiles")));
+        HashSet<String> allowedTables = new HashSet<>(Arrays.asList("users", "private_profiles", "public_profiles"));
+        storageService = new DatabaseStorageService(allowedTables);
     }
 
     @SneakyThrows

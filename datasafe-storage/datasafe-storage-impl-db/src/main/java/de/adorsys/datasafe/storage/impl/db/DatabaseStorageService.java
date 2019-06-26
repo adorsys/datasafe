@@ -55,9 +55,16 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         updateDbSchema(dataSource);
     }
 
+    @SneakyThrows
     @Override
     public boolean objectExists(AbsoluteLocation location) {
-        return false;
+        acquireConnectionToDbIfNeeded(location);
+        String tableName = extractTable(location);
+        String path = location.location().getPath();
+        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
+        final String sql = "SELECT count(*) FROM " + tableName + " where key = ?";
+        int count = getJdbcTemplate().queryForObject(sql, Integer.class, pathWithUser);
+        return count != 0;
     }
 
     @SneakyThrows
@@ -67,7 +74,7 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         String tableName = extractTable(location);
         String path = location.location().getPath();
         String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
-        final String sql = "SELECT value FROM " + tableName + " WHERE key LIKE '" + pathWithUser + "%'";
+        final String sql = "SELECT key FROM " + tableName + " WHERE key LIKE '" + pathWithUser + "%'";
         List<String> keys = getJdbcTemplate().queryForList(sql, String.class);
         return keys.stream().map(it -> new AbsoluteLocation<>(
                 new BaseResolvedResource(
@@ -84,15 +91,11 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         String path = location.location().getPath();
         String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
         final String sql = "SELECT value FROM " + tableName + " where key = ?";
-        RowMapper<String> rowMapper = (rs, i) -> {
-            InputStream contentStream = rs.getClob("value").getAsciiStream();
-            return new Scanner(contentStream, "UTF-8").useDelimiter("\\A").next();
-//            return rs.getBinaryStream("value");
-        };
-        List<String> values = getJdbcTemplate().query(sql, new Object[]{pathWithUser}, rowMapper);
+        RowMapper<InputStream> rowMapper = (rs, i) -> rs.getClob("value").getAsciiStream();
+        List<InputStream> values = getJdbcTemplate().query(sql, new Object[]{pathWithUser}, rowMapper);
 
         if (values.size() == 1) {
-            return new ByteArrayInputStream(values.get(0).getBytes());
+            return values.get(0);
         }
         throw new RuntimeException("No item found for id: " + pathWithUser);
     }
@@ -102,9 +105,11 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
     public void remove(AbsoluteLocation location) {
         acquireConnectionToDbIfNeeded(location);
         String tableName = extractTable(location);
+        String path = location.location().getPath();
+        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
         final String sql = "DELETE FROM " + tableName + " WHERE key = ?";
-        log.debug("deleting: " + location.getResource().location());
-        getJdbcTemplate().update(sql, location.location());
+        log.debug("deleting: " + pathWithUser);
+        getJdbcTemplate().update(sql, pathWithUser);
     }
 
     @SneakyThrows
@@ -128,7 +133,7 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
         @Override
         public void close() throws IOException {
 
-            final String sql = "INSERT INTO " + tableName + " (id, key, value) VALUES(nextval('sq_private_profiles_id'), ?, ?)";
+            final String sql = "INSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
             KeyHolder holder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -138,8 +143,6 @@ public class DatabaseStorageService extends JdbcDaoSupport implements StorageSer
                 ps.setClob(2, reader);
                 return ps;
             }, holder);
-            Number key = holder.getKey();
-            log.debug("Write to db record with key {}", Log.secure(key));
             super.close();
         }
     }

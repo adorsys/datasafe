@@ -7,8 +7,9 @@
 <changeSet id="private_profiles-create" author="maxim.grischenko">
     <comment>Private_profiles table creation</comment>
     <createTable tableName="private_profiles" remarks="">
-        <column name="id" type="bigint" autoIncrement="true"/>
-        <column name="key" type="varchar(512)" />
+        <column name="key" type="varchar(512)">
+            <constraints nullable="false" primaryKey="true"/>
+        </column>
         <column name="value" type="clob" />
         <column name="last_modified" type="timestamp" defaultValue="CURRENT_TIMESTAMP"/>
     </createTable>
@@ -17,29 +18,12 @@
 <changeSet id="public_profiles-create" author="maxim.grischenko">
     <comment>Public_profiles table creation</comment>
     <createTable tableName="public_profiles">
-        <column name="id" type="bigint" autoIncrement="true"/>
-        <column name="key" type="varchar(512)" />
+        <column name="key" type="varchar(512)">
+            <constraints nullable="false" primaryKey="true"/>
+        </column>
         <column name="value" type="clob" />
         <column name="last_modified" type="timestamp" defaultValue="CURRENT_TIMESTAMP"/>
     </createTable>
-</changeSet>
-
-<changeSet id="private_profiles-sequence" author="maxim.grischenko">
-    <createSequence
-            cycle="false"
-            cacheSize="100"
-            incrementBy="1"
-            sequenceName="sq_private_profiles_id"
-            startValue="1"/>
-</changeSet>
-
-<changeSet id="public_profiles-sequence" author="maxim.grischenko">
-    <createSequence
-            cycle="false"
-            cacheSize="100"
-            incrementBy="1"
-            sequenceName="sq_public_profiles_id"
-            startValue="1"/>
 </changeSet>
 
 </databaseChangeLog>
