@@ -11,13 +11,17 @@ import org.junit.jupiter.api.Test;
 
 import java.io.OutputStream;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class DatabaseStorageServiceTest extends BaseMockitoTest {
+
+    private static final AbsoluteLocation<PrivateResource> ROOT = new AbsoluteLocation<>(
+            BasePrivateResource.forPrivate(
+                    new Uri("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/")
+            )
+    );
 
     private static final AbsoluteLocation<PrivateResource> FILE = new AbsoluteLocation<>(
             BasePrivateResource.forPrivate(
@@ -54,38 +58,38 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
                 .execute("DROP ALL OBJECTS DELETE FILES");
     }
 
-    @SneakyThrows
     @Test
     void objectExists() {
         assertThat(storageService.objectExists(FILE)).isTrue();
     }
 
-    @SneakyThrows
     @Test
     void list() {
-        AbsoluteLocation<PrivateResource> dir = new AbsoluteLocation<>(
-                BasePrivateResource.forPrivate(
-                        new Uri("jdbc://sa:sa@localhost:9999/h2/mem/test/private_profiles/path/")
-                )
-        );
-        Stream<AbsoluteLocation<ResolvedResource>> list = storageService.list(dir);
-        assertThat(list.collect(Collectors.toList())).hasSize(1);
+        writeData(OTHER_FILE, MESSAGE);
+
+        assertThat(storageService.list(FILE))
+                .extracting(it -> it.getResource().location().asURI().toString())
+                .containsOnly("jdbc://localhost:9999/h2/mem/test/private_profiles/path/hello.txt");
+
+        assertThat(storageService.list(ROOT))
+                .extracting(it -> it.getResource().location().asURI().toString())
+                .containsOnly(
+                        "jdbc://localhost:9999/h2/mem/test/private_profiles/path/hello.txt",
+                        "jdbc://localhost:9999/h2/mem/test/private_profiles/path/hello1.txt"
+                );
     }
 
-    @SneakyThrows
     @Test
     void read() {
         assertThat(storageService.read(FILE)).hasContent(MESSAGE);
     }
 
-    @SneakyThrows
     @Test
     void remove() {
         storageService.remove(FILE);
         assertThat(storageService.objectExists(FILE)).isFalse();
     }
 
-    @SneakyThrows
     @Test
     void write() {
         writeData(OTHER_FILE, MESSAGE);

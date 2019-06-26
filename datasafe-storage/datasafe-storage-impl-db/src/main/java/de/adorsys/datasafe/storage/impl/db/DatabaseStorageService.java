@@ -3,6 +3,7 @@ package de.adorsys.datasafe.storage.impl.db;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,6 @@ import java.util.stream.Stream;
  * This storage adapter allows user to use relational database as storage.
  * input location format  jdbc://user:pass@host:port/database/table/user/path
  */
-@Slf4j
 @RequiredArgsConstructor
 public class DatabaseStorageService implements StorageService {
 
@@ -36,26 +36,22 @@ public class DatabaseStorageService implements StorageService {
     @SneakyThrows
     @Override
     public boolean objectExists(AbsoluteLocation location) {
-        String tableName = extractTable(location);
-        String path = location.location().getPath();
-        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
-        String sql = "SELECT COUNT(*) FROM " + tableName + " WHERE key = ?";
-        return 0 != conn.jdbcTemplate(location).queryForObject(sql, Integer.class, pathWithUser);
+        ParsedLocation parsed = new ParsedLocation(location, allowedTables);
+        String sql = "SELECT COUNT(*) FROM " + parsed.getTableName() + " WHERE key = ?";
+        return 0 != conn.jdbcTemplate(location).queryForObject(sql, Integer.class, parsed.getPathWithUser());
     }
 
     @SneakyThrows
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
-        String tableName = extractTable(location);
-        String path = location.location().getPath();
-        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
-
-        String sql = "SELECT key,last_modified FROM " + tableName + " WHERE key LIKE '" + pathWithUser + "%'";
+        ParsedLocation parsed = new ParsedLocation(location, allowedTables);
+        String sql = "SELECT key,last_modified FROM " + parsed.getTableName() + " WHERE key LIKE '"
+                + parsed.getPathWithUser() + "%'";
 
         List<Map<String, Object>> keys = conn.jdbcTemplate(location).queryForList(sql);
         return keys.stream().map(it -> new AbsoluteLocation<>(
                 new BaseResolvedResource(
-                        new BasePrivateResource(new Uri((String) it.get("key")).resolve(location.location())),
+                        createPath(location, (String) it.get("key")),
                         ((Date) it.get("last_modified")).toInstant()
                 )
         ));
@@ -64,40 +60,54 @@ public class DatabaseStorageService implements StorageService {
     @SneakyThrows
     @Override
     public InputStream read(AbsoluteLocation location) {
-        String tableName = extractTable(location);
-        String path = location.location().getPath();
-        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
-        final String sql = "SELECT value FROM " + tableName + " WHERE key = ?";
+        ParsedLocation parsed = new ParsedLocation(location, allowedTables);
+        final String sql = "SELECT value FROM " + parsed.getTableName() + " WHERE key = ?";
         RowMapper<InputStream> rowMapper = (rs, i) -> rs.getClob("value").getAsciiStream();
-        List<InputStream> values = conn.jdbcTemplate(location).query(sql, new Object[]{pathWithUser}, rowMapper);
+        List<InputStream> values = conn.jdbcTemplate(location).query(
+                sql,
+                new Object[] {parsed.getPathWithUser()},
+                rowMapper
+        );
 
         if (values.size() == 1) {
             return values.get(0);
         }
-        throw new RuntimeException("No item found for id: " + pathWithUser);
+        throw new IllegalArgumentException("No item found");
     }
 
     @SneakyThrows
     @Override
     public void remove(AbsoluteLocation location) {
-        String tableName = extractTable(location);
-        String path = location.location().getPath();
-        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
-        final String sql = "DELETE FROM " + tableName + " WHERE key = ?";
-        log.debug("deleting: " + pathWithUser);
-        conn.jdbcTemplate(location).update(sql, pathWithUser);
+        ParsedLocation parsed = new ParsedLocation(location, allowedTables);
+        String sql = "DELETE FROM " + parsed.getTableName() + " WHERE key = ?";
+        conn.jdbcTemplate(location).update(sql, parsed.getPathWithUser());
     }
 
     @SneakyThrows
     @Override
     public OutputStream write(WithCallback<AbsoluteLocation, ? extends ResourceWriteCallback> locationWithCallback) {
-        AbsoluteLocation location = locationWithCallback.getWrapped();
-        String tableName = extractTable(location);
-        String path = location.location().getPath();
-        String pathWithUser = path.substring(path.indexOf(tableName) + tableName.length());
-        return new PutBlobOnClose(conn.jdbcTemplate(location), pathWithUser, tableName);
+        ParsedLocation parsed = new ParsedLocation(locationWithCallback.getWrapped(), allowedTables);
+
+        return new PutBlobOnClose(
+                conn.jdbcTemplate(locationWithCallback.getWrapped()), parsed.getPathWithUser(), parsed.getTableName()
+        );
     }
 
+    private PrivateResource createPath(AbsoluteLocation root, String key) {
+        String fullUri = root.location().withoutAuthority().toASCIIString();
+        int keyIndex = fullUri.indexOf(key);
+
+        AbsoluteLocation resourceRoot =
+                BasePrivateResource.forAbsolutePrivate(new Uri(root.location().withoutAuthority()));
+
+        if (keyIndex >= 0) {
+            resourceRoot = BasePrivateResource.forAbsolutePrivate(new Uri(fullUri.substring(0, keyIndex)));
+        }
+
+        return BasePrivateResource
+                .forPrivate(key)
+                .resolveFrom(resourceRoot);
+    }
 
     @Slf4j
     @RequiredArgsConstructor
@@ -109,7 +119,7 @@ public class DatabaseStorageService implements StorageService {
 
         @Override
         public void close() throws IOException {
-            final String sql = "INSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
+            String sql = "INSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
             KeyHolder holder = new GeneratedKeyHolder();
             jdbcTemplate.update(writeData(sql), holder);
             super.close();
@@ -127,19 +137,35 @@ public class DatabaseStorageService implements StorageService {
         }
     }
 
-    private String extractTable(AbsoluteLocation location) {
-        URI uri = location.location().asURI();
+    @Getter
+    private static final class ParsedLocation {
 
-        if (uri.getPath() == null) {
-            throw new IllegalArgumentException("Wrong url format");
+        private final Set<String> allowedTables;
+        private final String tableName;
+        private final String path;
+        private final String pathWithUser;
+
+        ParsedLocation(AbsoluteLocation location, Set<String> allowedTables) {
+            this.allowedTables = allowedTables;
+            this.tableName = extractTable(location);
+            this.path = location.location().getPath();
+            this.pathWithUser = path.substring(path.indexOf(tableName) + tableName.length() + 1);
         }
 
-        String[] uriParts = uri.getPath().split("/");
+        private String extractTable(AbsoluteLocation location) {
+            URI uri = location.location().asURI();
 
-        if (!allowedTables.contains(uriParts[4])) {
-            throw new IllegalArgumentException("Wrong db table name");
+            if (uri.getPath() == null) {
+                throw new IllegalArgumentException("Wrong url format");
+            }
+
+            String[] uriParts = uri.getPath().split("/");
+
+            if (!allowedTables.contains(uriParts[4])) {
+                throw new IllegalArgumentException("Wrong db table name");
+            }
+
+            return uriParts[4];
         }
-
-        return uriParts[4];
     }
 }
