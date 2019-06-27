@@ -1,8 +1,11 @@
 package de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator;
 
+import com.google.common.collect.Iterables;
+import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.TestFileTreeOper;
 import lombok.RequiredArgsConstructor;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,39 +24,59 @@ public class RandomPathGenerator {
             "file.txt", "document.pdf", "presentation.ppt", "balance.xlsx"
     );
 
+    private final int probabilityOfRandomPath;
+    private final int probabilityOfDir;
     private final Random random;
     private final int maxDepth;
     private final List<String> pathComponents;
     private final List<String> filenames;
-    private final List<String> extendedFilenames;
-
-    public RandomPathGenerator(Random random, int maxDepth, List<String> pathComponents, List<String> filenames) {
-        this.random = random;
-        this.maxDepth = maxDepth;
-        this.pathComponents = pathComponents;
-        this.filenames = filenames;
-        this.extendedFilenames = new ArrayList<>(filenames);
-        extendedFilenames.add("");
-    }
 
     public String generate() {
-        List<String> components = Stream.of(generatePath(), generateFilename(filenames))
-                .filter(it -> !it.isEmpty())
-                .collect(Collectors.toList());
-
-        return "./" + String.join("/", components);
+        return randomPath();
     }
 
-    public String generateForList() {
-        List<String> components = Stream.of(generatePath(), generateFilename(new ArrayList<>(extendedFilenames)))
-                .filter(it -> !it.isEmpty())
-                .collect(Collectors.toList());
+    public String generateList(TestFileTreeOper fileSystem) {
+        if (random.nextInt(100) < probabilityOfRandomPath) {
+            return randomPath();
+        }
 
-        return "./" + String.join("/", components);
+        return pathFromFs(fileSystem);
     }
 
     public String generateInbox() {
-        return "./" + generateFilename(filenames);
+        return "./" + generateFilename();
+    }
+
+    private String pathFromFs(TestFileTreeOper fileSystem) {
+        if (fileSystem.getFiles().keySet().isEmpty()) {
+            return "";
+        }
+
+        String path = Iterables.get(
+                fileSystem.getFiles().keySet(),
+                random.nextInt(fileSystem.getFiles().keySet().size())
+        );
+
+        if (random.nextInt(100) > probabilityOfDir) {
+            return path;
+        }
+
+        return URI.create(path)
+                .resolve("./" + IntStream.range(
+                        0,
+                        random.nextInt(
+                                Math.min(path.split("/").length,
+                                maxDepth)
+                        )).boxed().map(it -> "..").collect(Collectors.joining("/"))
+                ).toASCIIString();
+    }
+
+    private String randomPath() {
+        List<String> components = Stream.of(generatePath(), generateFilename())
+                .filter(it -> !it.isEmpty())
+                .collect(Collectors.toList());
+
+        return "./" + String.join("/", components);
     }
 
     private String generatePath() {
@@ -65,7 +88,7 @@ public class RandomPathGenerator {
         return String.join("/", components);
     }
 
-    private String generateFilename(List<String> allowedFilenames) {
-        return allowedFilenames.get(random.nextInt(allowedFilenames.size()));
+    private String generateFilename() {
+        return filenames.get(random.nextInt(filenames.size()));
     }
 }

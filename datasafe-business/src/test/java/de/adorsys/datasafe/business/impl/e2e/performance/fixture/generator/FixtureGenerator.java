@@ -112,6 +112,8 @@ class FixtureGenerator extends BaseMockitoTest {
         // classes that are available to the rules:
         session.setGlobal("randomPass", new RandomPassGate(random()));
         session.setGlobal("randomPath", new RandomPathGenerator(
+                30,
+                70,
                 random(),
                 3,
                 RandomPathGenerator.DEFAULT_COMPONENTS,

@@ -29,7 +29,7 @@ rule "Random list privatespace"
     when
        $f: UserFileSystem(historyList.canContinue(), randomPass.canPass(25, "LIST PRIVATE"))
     then
-       $f.getPrivateOper().list(randomPath.generateForList());
+       $f.getPrivateOper().list(randomPath.generateList($f.getPrivateOper()));
 end
 
 rule "Random list inbox"
@@ -37,7 +37,7 @@ rule "Random list inbox"
     when
        $f: UserFileSystem(historyList.canContinue(), randomPass.canPass(25, "LIST INBOX"))
     then
-       $f.getInboxOper().list(randomPath.generateForList());
+       $f.getInboxOper().list(randomPath.generateList($f.getInboxOper()));
 end
 
 rule "Random read privatespace"
