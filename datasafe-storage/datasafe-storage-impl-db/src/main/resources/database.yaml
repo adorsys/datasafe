@@ -1,0 +1,6 @@
+datasource:
+  platform: h2
+  driverClassName: jdbc:h2
+  url: jdbc:h2:~/test
+  username: sa
+  password: sa

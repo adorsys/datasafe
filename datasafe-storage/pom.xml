@@ -15,5 +15,6 @@
         <module>datasafe-storage-api</module>
         <module>datasafe-storage-impl-fs</module>
         <module>datasafe-storage-impl-s3</module>
+        <module>datasafe-storage-impl-db</module>
     </modules>
 </project>

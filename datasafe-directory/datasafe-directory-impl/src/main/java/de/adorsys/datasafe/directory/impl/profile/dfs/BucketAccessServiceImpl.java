@@ -50,7 +50,7 @@ public class BucketAccessServiceImpl implements BucketAccessService {
      */
     @Override
     public AbsoluteLocation withSystemAccess(AbsoluteLocation resource) {
-        log.debug("get syste access for {}", resource.location());
+        log.debug("get system access for {}", resource.location());
         return new AbsoluteLocation<>(resource);
     }
 }
