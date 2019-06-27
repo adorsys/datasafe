@@ -11,7 +11,6 @@ import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.db.DatabaseConnectionRegistry;
 import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
-import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
@@ -19,15 +18,11 @@ import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,15 +31,16 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
 
-    private Path fsPath;
-    private StorageService filesystem;
+    private Uri minioPath;
+    private StorageService minio;
     private StorageService db;
     private DefaultDatasafeServices datasafeServices;
 
     @BeforeEach
-    void initialize(@TempDir Path tempDir) {
-        this.fsPath = tempDir;
-        this.filesystem = new FileSystemStorageService(tempDir);
+    void initialize() {
+        StorageDescriptor minioDescriptor = minio();
+        this.minio = minioDescriptor.getStorageService().get();
+        this.minioPath = minioDescriptor.getLocation();
         this.db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
                 uri -> uri.location().getWrapped().getScheme() + ":" + uri.location().getPath().split("/")[1],
                 ImmutableMap.of("jdbc://localhost:9999", new DatabaseCredentials("sa", "sa")))
@@ -52,14 +48,14 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
 
         StorageService multiDfs = new SchemeDelegatingStorage(
                 ImmutableMap.of(
-                        "file", filesystem,
+                        "s3", minio,
                         "jdbc", db
                 )
         );
 
         this.datasafeServices = DaggerDefaultDatasafeServices
                 .builder()
-                .config(new ProfilesOnDbDataOnFs(tempDir.toUri(), URI.create("jdbc://localhost:9999/h2:mem:test/")))
+                .config(new ProfilesOnDbDataOnMinio(minioPath.asURI(), URI.create("jdbc://localhost:9999/h2:mem:test/")))
                 .storage(multiDfs)
                 .build();
     }
@@ -83,22 +79,15 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
                 .containsExactly("jdbc://localhost:9999/h2:mem:test/private_profiles/john");
         assertThat(listDb("jdbc://localhost:9999/h2:mem:test/public_profiles/"))
                 .containsExactly("jdbc://localhost:9999/h2:mem:test/public_profiles/john");
-
-        Path encryptedFile = Files.walk(fsPath.resolve("john/private/files/")).collect(Collectors.toList()).get(1);
+        
         // File and keystore/pub keys are on FS
-        assertThat(Files.walk(fsPath))
-                .extracting(it -> fsPath.relativize(it))
-                .extracting(Path::toString)
-                .containsExactlyInAnyOrder(
-                        "",
-                        "john",
-                        "john/public",
-                        "john/public/pubkeys",
-                        "john/private",
-                        "john/private/keystore",
-                        "john/private/files",
-                        fsPath.relativize(encryptedFile).toString()
-                );
+        // File and keystore/pub keys are on minio
+        assertThat(minio.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(minioPath.resolve("")))))
+            .extracting(it -> minioPath.relativize(it.location()))
+            .extracting(it -> it.asURI().toString())
+            .contains("john/private/keystore", "john/public/pubkeys")
+            .anyMatch(it -> it.startsWith("john/private/files/"))
+            .hasSize(3);
     }
 
     private Stream<String> listDb(String path) {
@@ -106,11 +95,11 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
                 .map(it -> it.location().asURI().toString());
     }
 
-    static class ProfilesOnDbDataOnFs extends DefaultDFSConfig {
+    static class ProfilesOnDbDataOnMinio extends DefaultDFSConfig {
 
         private final Uri profilesPath;
 
-        ProfilesOnDbDataOnFs(URI fsPath, URI profilesPath) {
+        ProfilesOnDbDataOnMinio(URI fsPath, URI profilesPath) {
             super(fsPath, "PAZZWORT");
             this.profilesPath = new Uri(profilesPath);
         }
