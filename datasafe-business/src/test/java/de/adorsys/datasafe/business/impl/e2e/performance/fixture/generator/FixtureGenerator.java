@@ -76,12 +76,12 @@ class FixtureGenerator extends BaseMockitoTest {
                 storageByUser.entrySet().stream()
                         .collect(Collectors.toMap(
                                 it -> it.getKey().getUsername(),
-                                it -> it.getValue().getPrivateFiles().getFiles())
+                                it -> it.getValue().getPrivateOper().getFiles())
                         ),
                 storageByUser.entrySet().stream()
                         .collect(Collectors.toMap(
                                 it -> it.getKey().getUsername(),
-                                it -> it.getValue().getInboxFiles().getFiles())
+                                it -> it.getValue().getInboxOper().getFiles())
                         )
         );
 
@@ -118,6 +118,7 @@ class FixtureGenerator extends BaseMockitoTest {
                 RandomPathGenerator.DEFAULT_FILENAMES)
         );
         session.setGlobal("randomContent", new RandomContentIdGenerator(random(), 10));
+        session.setGlobal("randomUsers", new RandomUsers(random()));
         session.setGlobal("historyList", historyList);
 
         return session;
@@ -127,11 +128,11 @@ class FixtureGenerator extends BaseMockitoTest {
         return new Random(0);
     }
 
-    private static TestFileTree inbox(List<Operation> operations, TestUser user) {
-        return new TestFileTree(operations::add, user, StorageType.INBOX, random());
+    private static TestFileTreeOper inbox(List<Operation> operations, TestUser user) {
+        return new TestFileTreeOper(operations::add, user, StorageType.INBOX, random());
     }
 
-    private static TestFileTree privatespace(List<Operation> operations, TestUser user) {
-        return new TestFileTree(operations::add, user, StorageType.PRIVATE, random());
+    private static TestFileTreeOper privatespace(List<Operation> operations, TestUser user) {
+        return new TestFileTreeOper(operations::add, user, StorageType.PRIVATE, random());
     }
 }

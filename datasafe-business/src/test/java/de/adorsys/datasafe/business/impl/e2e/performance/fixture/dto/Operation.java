@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.net.URI;
 import java.util.Set;
@@ -8,7 +9,8 @@ import java.util.Set;
 /**
  * Represents operation done on DFS.
  */
-@Data
+@Getter
+@Builder
 public class Operation {
 
     /**

@@ -23,12 +23,10 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -86,10 +84,15 @@ public class OperationExecutor {
 
         try (InputStream is = openReadStream(user, oper)) {
             byte[] users = digest(is);
-            byte[] expected = digest(user.getGenerator().generate(oper.getExpected().getId()));
+            byte[] expected = digest(user.getGenerator().generate(oper.getResult().getContent().getId()));
 
             if (!Arrays.equals(users, expected)) {
-                log.error("Checksum mismatch for {}", oper);
+                log.error("Checksum mismatch for {} - found {} / expected {}",
+                        oper,
+                        Base64.getEncoder().encodeToString(users),
+                        Base64.getEncoder().encodeToString(expected)
+                );
+
                 throw new IllegalArgumentException("Failed reading - checksum mismatch");
             }
         }
@@ -99,7 +102,17 @@ public class OperationExecutor {
         UserSpec user = requireUser(oper);
 
         List<AbsoluteLocation<ResolvedResource>> resources = listResources(user, oper).collect(Collectors.toList());
-
+        Set<URI> paths = resources.stream()
+                .map(it -> it.location().asURI())
+                .collect(Collectors.toSet());
+        if (!paths.equals(oper.getResult().getDirContent())) {
+            log.error("Directory content mismatch for {} - found {} / expected {}",
+                    oper,
+                    paths,
+                    oper.getResult().getDirContent()
+            );
+            throw new IllegalArgumentException("Directory content mismatch");
+        }
         if (resources.isEmpty()) {
             log.info("Empty bucket");
         }

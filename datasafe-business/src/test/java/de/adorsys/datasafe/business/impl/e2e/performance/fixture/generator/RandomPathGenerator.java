@@ -25,9 +25,27 @@ public class RandomPathGenerator {
     private final int maxDepth;
     private final List<String> pathComponents;
     private final List<String> filenames;
+    private final List<String> extendedFilenames;
+
+    public RandomPathGenerator(Random random, int maxDepth, List<String> pathComponents, List<String> filenames) {
+        this.random = random;
+        this.maxDepth = maxDepth;
+        this.pathComponents = pathComponents;
+        this.filenames = filenames;
+        this.extendedFilenames = new ArrayList<>(filenames);
+        extendedFilenames.add("");
+    }
 
     public String generate() {
-        List<String> components = Stream.of(generatePath(), generateFilename())
+        List<String> components = Stream.of(generatePath(), generateFilename(filenames))
+                .filter(it -> !it.isEmpty())
+                .collect(Collectors.toList());
+
+        return "./" + String.join("/", components);
+    }
+
+    public String generateForList() {
+        List<String> components = Stream.of(generatePath(), generateFilename(new ArrayList<>(extendedFilenames)))
                 .filter(it -> !it.isEmpty())
                 .collect(Collectors.toList());
 
@@ -35,7 +53,7 @@ public class RandomPathGenerator {
     }
 
     public String generateInbox() {
-        return "./" + generateFilename();
+        return "./" + generateFilename(filenames);
     }
 
     private String generatePath() {
@@ -47,7 +65,7 @@ public class RandomPathGenerator {
         return String.join("/", components);
     }
 
-    private String generateFilename() {
-        return filenames.get(random.nextInt(filenames.size()));
+    private String generateFilename(List<String> allowedFilenames) {
+        return allowedFilenames.get(random.nextInt(allowedFilenames.size()));
     }
 }

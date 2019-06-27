@@ -1,13 +1,13 @@
 package de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.net.URI;
 import java.util.Set;
 
-@Data
-@RequiredArgsConstructor
+@Getter
+@Builder
 public class OperationResult {
 
     /**

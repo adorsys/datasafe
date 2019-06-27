@@ -5,10 +5,12 @@ import java.util.ArrayList
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.UserFileSystem
 import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.TestUser
 import de.adorsys.datasafe.types.api.actions.WriteRequest
+import java.util.List
 
 global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomPassGate randomPass
 global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomPathGenerator randomPath
 global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomContentIdGenerator randomContent
+global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomUsers randomUsers
 global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.HistoryList historyList
 
 dialect  "mvel"
@@ -18,7 +20,7 @@ rule "Random write into privatespace"
     when
        $f: UserFileSystem(historyList.canContinue(), randomPass.canPass(25, "WRITE PRIVATE"))
     then
-       $f.getPrivateFiles().write(randomPath.generate(), randomContent.randomContentId());
+       $f.getPrivateOper().write(randomPath.generate(), randomContent.randomContentId());
        update($f)
 end
 
@@ -27,7 +29,7 @@ rule "Random list privatespace"
     when
        $f: UserFileSystem(historyList.canContinue(), randomPass.canPass(25, "LIST PRIVATE"))
     then
-       $f.getPrivateFiles().list(randomPath.generate());
+       $f.getPrivateOper().list(randomPath.generateForList());
 end
 
 rule "Random list inbox"
@@ -35,53 +37,59 @@ rule "Random list inbox"
     when
        $f: UserFileSystem(historyList.canContinue(), randomPass.canPass(25, "LIST INBOX"))
     then
-       $f.getInboxFiles().list(randomPath.generate());
+       $f.getInboxOper().list(randomPath.generateForList());
 end
 
 rule "Random read privatespace"
     no-loop
     when
-       $f: UserFileSystem(historyList.canContinue(), !privateFiles.isEmpty(), randomPass.canPass(25, "READ PRIVATE"))
+       $f: UserFileSystem(historyList.canContinue(), !privateOper.isEmpty(), randomPass.canPass(25, "READ PRIVATE"))
     then
-       $f.getPrivateFiles().read($f.getPrivateFiles().getPathRandomly());
+       $f.getPrivateOper().read($f.getPrivateOper().getPathRandomly());
 end
 
 rule "Random delete privatespace"
     no-loop
     when
-       $f: UserFileSystem(historyList.canContinue(), !privateFiles.isEmpty(), randomPass.canPass(25, "DELETE PRIVATE"))
+       $f: UserFileSystem(historyList.canContinue(), !privateOper.isEmpty(), randomPass.canPass(25, "DELETE PRIVATE"))
     then
-       $f.getPrivateFiles().delete($f.getPrivateFiles().getPathRandomly());
+       $f.getPrivateOper().delete($f.getPrivateOper().getPathRandomly());
        update($f)
 end
 
 rule "Random read inbox"
     no-loop
     when
-       $f: UserFileSystem(historyList.canContinue(), !inboxFiles.isEmpty(), randomPass.canPass(25, "READ INBOX"))
+       $f: UserFileSystem(historyList.canContinue(), !inboxOper.isEmpty(), randomPass.canPass(25, "READ INBOX"))
     then
-       $f.getInboxFiles().read($f.getInboxFiles().getPathRandomly());
+       $f.getInboxOper().read($f.getInboxOper().getPathRandomly());
 end
 
 rule "Random delete inbox"
     no-loop
     when
-       $f: UserFileSystem(historyList.canContinue(), !inboxFiles.isEmpty(), randomPass.canPass(25, "DELETE INBOX"))
+       $f: UserFileSystem(historyList.canContinue(), !inboxOper.isEmpty(), randomPass.canPass(25, "DELETE INBOX"))
     then
-       $f.getInboxFiles().delete($f.getInboxFiles().getPathRandomly());
+       $f.getInboxOper().delete($f.getInboxOper().getPathRandomly());
        update($f)
 end
 
 rule "Random share file"
     no-loop
     when
-       $f: UserFileSystem(historyList.canContinue(), !privateFiles.isEmpty(), randomPass.canPass(25, "SHARE"))
+       $f: UserFileSystem(historyList.canContinue(), !privateOper.isEmpty(), randomPass.canPass(25, "SHARE"))
        $ts: ArrayList() from collect(UserFileSystem(user != $f))
     then
-        $f.
-       //$ts.getInboxFiles().write(
-       //        randomPath.generateInbox(),
-       //        $f.getPrivateFiles().read($f.getPrivateFiles().getPathRandomly())
-       //);
-       update($ts)
+        // send file to $ts users
+        List $recipients = $f.getInboxOper().share(
+                randomPath.generateInbox(),
+                $f.getPrivateOper().read($f.getPrivateOper().getPathRandomly()),
+                $ts,
+                randomUsers
+        );
+
+        // update recipients'
+        for (Object user : $recipients) {
+            update(user)
+        }
 end
