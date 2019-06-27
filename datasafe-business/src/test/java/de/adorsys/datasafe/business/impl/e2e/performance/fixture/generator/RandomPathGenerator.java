@@ -44,7 +44,7 @@ public class RandomPathGenerator {
     }
 
     public String generateInbox() {
-        return "./" + generateFilename();
+        return generateFilename();
     }
 
     private String pathFromFs(TestFileTreeOper fileSystem) {
@@ -61,14 +61,13 @@ public class RandomPathGenerator {
             return path;
         }
 
-        return URI.create(path)
-                .resolve("./" + IntStream.range(
-                        0,
-                        random.nextInt(
-                                Math.min(path.split("/").length,
-                                maxDepth)
-                        )).boxed().map(it -> "..").collect(Collectors.joining("/"))
-                ).toASCIIString();
+        int depth = Math.min(path.split("/").length, maxDepth);
+        String relPath = IntStream.range(
+                0,
+                depth > 0 ? random.nextInt(depth) : 0
+        ).boxed().map(it -> "..").collect(Collectors.joining("/"));
+
+        return URI.create(path).resolve(relPath).toASCIIString();
     }
 
     private String randomPath() {
@@ -76,7 +75,7 @@ public class RandomPathGenerator {
                 .filter(it -> !it.isEmpty())
                 .collect(Collectors.toList());
 
-        return "./" + String.join("/", components);
+        return String.join("/", components);
     }
 
     private String generatePath() {

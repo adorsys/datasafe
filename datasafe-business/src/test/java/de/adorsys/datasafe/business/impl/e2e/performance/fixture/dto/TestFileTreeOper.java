@@ -119,7 +119,8 @@ public class TestFileTreeOper {
     @Synchronized
     public Set<String> list(String path) {
         log.info(">LIST [{}]:{}", storageTag(), path);
-        Set<String> result = files.keySet().stream().filter(it -> it.startsWith(path)).collect(Collectors.toSet());
+        Set<String> result = files.keySet().stream()
+                .filter(it -> it.startsWith(path)).collect(Collectors.toSet());
         publishTo.accept(
                 Operation.builder()
                         .userId(testUser.getUsername())
