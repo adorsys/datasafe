@@ -1,0 +1,29 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+<changeSet id="private_profiles-create" author="maxim.grischenko">
+    <comment>Private_profiles table creation</comment>
+    <createTable tableName="private_profiles" remarks="">
+        <column name="key" type="varchar(512)">
+            <constraints nullable="false" primaryKey="true"/>
+        </column>
+        <column name="value" type="clob" />
+        <column name="last_modified" type="timestamp" defaultValue="CURRENT_TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<changeSet id="public_profiles-create" author="maxim.grischenko">
+    <comment>Public_profiles table creation</comment>
+    <createTable tableName="public_profiles">
+        <column name="key" type="varchar(512)">
+            <constraints nullable="false" primaryKey="true"/>
+        </column>
+        <column name="value" type="clob" />
+        <column name="last_modified" type="timestamp" defaultValue="CURRENT_TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+</databaseChangeLog>

@@ -42,7 +42,7 @@ public class VersionedDataTest extends BaseE2ETest {
     private VersionedDatasafeServices versionedDocusafeServices;
 
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("allDefaultStorages")
     void testVersionedWriteTopLevel(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -56,7 +56,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
     @SneakyThrows
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("allDefaultStorages")
     void testUserIsRemovedWithFiles(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");
@@ -71,7 +71,7 @@ public class VersionedDataTest extends BaseE2ETest {
     }
 
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("allDefaultStorages")
     void testVersionedWriteUsingAbsoluteAccess(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -87,7 +87,7 @@ public class VersionedDataTest extends BaseE2ETest {
     }
 
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("allDefaultStorages")
     void testVersionedRemove(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -104,7 +104,7 @@ public class VersionedDataTest extends BaseE2ETest {
     }
 
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("allDefaultStorages")
     void testVersionsOf(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -124,7 +124,7 @@ public class VersionedDataTest extends BaseE2ETest {
     }
 
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("allDefaultStorages")
     void testVersionsOfDirectPath(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -145,7 +145,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
     // this test imitates removal of old file versions
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("allDefaultStorages")
     void testOldRemoval(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -174,7 +174,7 @@ public class VersionedDataTest extends BaseE2ETest {
     }
 
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("allDefaultStorages")
     void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 

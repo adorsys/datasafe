@@ -106,8 +106,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
         OutputStream stream = writeToPrivate.write(WriteRequest.forDefaultPrivate(auth, path));
         stream.write(data.getBytes());
         stream.close();
-        log.info("File {} of user {} saved to {}", Obfuscate.secure(data), Obfuscate.secure(auth),
-                Obfuscate.secure(path.split("/"), "/"));
+        log.info("File {} of user {} saved to {}", Obfuscate.secure(data), auth, Obfuscate.secure(path, "/"));
     }
 
     @SneakyThrows
@@ -118,8 +117,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
         stream.write(data.getBytes());
         stream.close();
-        log.info("File {} of user {} saved to {}", Obfuscate.secure(data), Obfuscate.secure(auth),
-                Obfuscate.secure(path.split("/"), "/"));
+        log.info("File {} of user {} saved to {}", Obfuscate.secure(data), auth, Obfuscate.secure(path, "/"));
     }
 
     protected AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth owner) {
@@ -131,7 +129,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                 ListRequest.forDefaultPrivate(owner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in PRIVATE", owner.getUserID(), Obfuscate.secure(files));
+        log.info("{} has {} in PRIVATE", owner.getUserID(), files);
         return files;
     }
 
@@ -172,7 +170,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                 ListRequest.forDefaultPrivate(inboxOwner, "./")
         ).collect(Collectors.toList());
 
-        log.info("{} has {} in INBOX", inboxOwner, Obfuscate.secure(files));
+        log.info("{} has {} in INBOX", inboxOwner, files);
         return files;
     }
 
@@ -252,6 +250,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                     .extracting(URI::toString)
                     .containsExactlyInAnyOrder(
                             "",
+                            "users/",
                             "profiles/",
                             "profiles/public/",
                             "profiles/private/"

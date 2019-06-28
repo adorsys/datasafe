@@ -5,6 +5,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
+import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
@@ -28,6 +30,7 @@ import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -41,7 +44,7 @@ import java.util.stream.Stream;
 @Getter
 public abstract class WithStorageProvider extends BaseMockitoTest {
 
-    private static String deeperBucketPath = "deeper/and/deeper";
+    private static String bucketPath =  UUID.randomUUID().toString();
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
     private static String minioAccessKeyID = "admin";
@@ -51,11 +54,12 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String minioUrl = "http://localhost";
     private static String minioMappedUrl;
 
+    // Note that CEPH is used to test bucket-level versioning, so you will get versioned bucket:
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
     private static String cephRegion = "eu-central-1";
     private static String cephBucketName = "home";
-    private static String cephUrl = "http://localhost";
+    private static String cephUrl = "http://0.0.0.0"; // not localhost!
     private static String cephMappedUrl;
 
     private static String amazonAccessKeyID = System.getProperty("AWS_ACCESS_KEY");
@@ -108,11 +112,15 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         if (null != minio) {
-            removeObjectFromS3(minio, minioBucketName, deeperBucketPath);
+            removeObjectFromS3(minio, minioBucketName, bucketPath);
+        }
+
+        if (null != ceph) {
+            removeObjectFromS3(ceph, cephBucketName, bucketPath);
         }
 
         if (null != amazonS3) {
-            removeObjectFromS3(amazonS3, amazonBucket, deeperBucketPath);
+            removeObjectFromS3(amazonS3, amazonBucket, bucketPath);
         }
     }
 
@@ -135,28 +143,26 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     @ValueSource
-    protected static Stream<WithStorageProvider.StorageDescriptor> allStorages() {
+    protected static Stream<StorageDescriptor> allDefaultStorages() {
         return Stream.of(
                 fs(),
                 minio(),
+                /* No CEPH here because it is quite slow*/
                 s3()
         ).filter(Objects::nonNull);
     }
 
     @ValueSource
-    protected static Stream<WithStorageProvider.StorageDescriptor> minioStorage() {
+    protected static Stream<StorageDescriptor> allStorages() {
         return Stream.of(
-                minio()
-        ).filter(Objects::nonNull);
-    }
-    @ValueSource
-    protected static Stream<WithStorageProvider.StorageDescriptor> fsStorage() {
-        return Stream.of(
-                fs()
+                fs(),
+                minio(),
+                cephVersioned(),
+                s3()
         ).filter(Objects::nonNull);
     }
 
-    private static WithStorageProvider.StorageDescriptor fs() {
+    protected static StorageDescriptor fs() {
         return new StorageDescriptor(
                 StorageDescriptorName.FILESYSTEM,
                 () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
@@ -173,26 +179,26 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     minioStorage.get();
                     return new S3StorageService(minio, minioBucketName, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + minioBucketName + "/" + deeperBucketPath + "/"),
+                new Uri("s3://" + minioBucketName + "/" + bucketPath + "/"),
                 minioAccessKeyID,
                 minioSecretAccessKey,
                 minioRegion,
-                minioBucketName + "/" + deeperBucketPath
+                minioBucketName + "/" + bucketPath
         );
     }
 
-    protected static StorageDescriptor ceph() {
+    protected static StorageDescriptor cephVersioned() {
         return new StorageDescriptor(
                 StorageDescriptorName.CEPH,
                 () -> {
                     cephStorage.get();
                     return new S3StorageService(ceph, cephBucketName, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + cephBucketName + "/" + deeperBucketPath + "/"),
+                new Uri("s3://" + cephBucketName + "/" + bucketPath + "/"),
                 cephAccessKeyID,
                 cephSecretAccessKey,
                 cephRegion,
-                cephBucketName  + "/" + deeperBucketPath
+                cephBucketName  + "/" + bucketPath
         );
     }
 
@@ -207,11 +213,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     amazonSotrage.get();
                     return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + amazonBucket + "/" + deeperBucketPath + "/"),
+                new Uri("s3://" + amazonBucket + "/" + bucketPath + "/"),
                 amazonAccessKeyID,
                 amazonSecretAccessKey,
                 amazonRegion,
-                amazonBucket + "/" + deeperBucketPath
+                amazonBucket + "/" + bucketPath
         );
     }
 
@@ -237,7 +243,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .withRegion(amazonRegion)
                 .build();
 
-        amazonMappedUrl = "s3://" + amazonBucket + "/" + deeperBucketPath + "/";
+        amazonMappedUrl = "s3://" + amazonBucket + "/" + bucketPath + "/";
         log.info("Amazon napped URL:" + amazonMappedUrl);
     }
 
@@ -272,20 +278,25 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static void startCeph() {
         log.info("Starting CEPH");
-        cephContainer = new GenericContainer("localrepo/ceph-nano")
-                .withExposedPorts(5000)
-                .withEnv("MON_IP", "0.0.0.0")
+        cephContainer = new GenericContainer("ceph/daemon")
+                .withExposedPorts(8000, 5000)
+                .withEnv("RGW_FRONTEND_PORT", "8000")
+                .withEnv("SREE_PORT", "5000")
+                .withEnv("DEBUG", "verbose")
+                .withEnv("CEPH_DEMO_UID", "nano")
+                .withEnv("MON_IP", "127.0.0.1")
                 .withEnv("CEPH_PUBLIC_NETWORK", "0.0.0.0/0")
-                .withEnv("CEPH_DEMO_UID", "ceph")
+                .withEnv("CEPH_DAEMON", "demo")
+                .withEnv("DEMO_DAEMONS", "mon,mgr,osd,rgw")
                 .withEnv("CEPH_DEMO_ACCESS_KEY", cephAccessKeyID)
                 .withEnv("CEPH_DEMO_SECRET_KEY", cephSecretAccessKey)
-                .withEnv("CEPH_DEMO_BUCKET", cephBucketName)
+                .withCommand("mkdir -p /etc/ceph && mkdir -p /var/lib/ceph && /entrypoint.sh")
                 .waitingFor(Wait.defaultWaitStrategy());
 
         cephContainer.start();
-        Integer mappedPort = cephContainer.getMappedPort(9000);
-        log.info("Ceph mapped URL:" + cephMappedUrl);
+        Integer mappedPort = cephContainer.getMappedPort(8000);
         cephMappedUrl = cephUrl + ":" + mappedPort;
+        log.info("Ceph mapped URL:" + cephMappedUrl);
         ceph = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(
                         new AwsClientBuilder.EndpointConfiguration(cephMappedUrl, cephRegion)
@@ -298,8 +309,16 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .enablePathStyleAccess()
                 .build();
 
-
         ceph.createBucket(cephBucketName);
+        // curiously enough CEPH docs are incorrect, looks like they do support version id:
+        // https://github.com/ceph/ceph/blame/bc065cae7857c352ca36d5f06cdb5107cf72ed41/src/rgw/rgw_rest_s3.cc
+        // so for versioned local tests we can use CEPH
+        ceph.setBucketVersioningConfiguration(
+                new SetBucketVersioningConfigurationRequest(
+                        cephBucketName,
+                        new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
+                )
+        );
     }
 
     @Getter

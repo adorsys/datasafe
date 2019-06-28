@@ -8,7 +8,7 @@ import de.adorsys.datasafe.metainfo.version.api.actions.VersionedRead;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedRemove;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedWrite;
 import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
+import de.adorsys.datasafe.metainfo.version.impl.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionInfoService;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionEncoderDecoderRuntimeDelegatable;

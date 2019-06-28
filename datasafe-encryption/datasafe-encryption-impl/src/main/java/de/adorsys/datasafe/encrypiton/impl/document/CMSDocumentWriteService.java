@@ -6,9 +6,11 @@ import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -39,7 +41,9 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     public OutputStream write(Map<PublicKeyIDWithPublicKey, AbsoluteLocation> recipientsWithInbox) {
 
         FanOutStream dfsSink = new FanOutStream(
-                recipientsWithInbox.values().stream().map(writeService::write).collect(Collectors.toList())
+                recipientsWithInbox.values().stream()
+                        .map(it -> writeService.write(WithCallback.noCallback(it)))
+                        .collect(Collectors.toList())
         );
 
         OutputStream encryptionSink = cms.buildEncryptionOutputStream(
@@ -51,9 +55,17 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     }
 
     @Override
-    public OutputStream write(AbsoluteLocation<PrivateResource> location, SecretKeyIDWithKey secretKey) {
+    public OutputStream write(
+            WithCallback<AbsoluteLocation<PrivateResource>, ResourceWriteCallback> locationWithCallback,
+            SecretKeyIDWithKey secretKey
+    ) {
 
-        OutputStream dfsSink = writeService.write(location);
+        OutputStream dfsSink = writeService.write(
+                WithCallback.<AbsoluteLocation, ResourceWriteCallback>builder()
+                        .wrapped(locationWithCallback.getWrapped())
+                        .callbacks(locationWithCallback.getCallbacks())
+                        .build()
+        );
 
         OutputStream encryptionSink = cms.buildEncryptionOutputStream(
                 dfsSink,

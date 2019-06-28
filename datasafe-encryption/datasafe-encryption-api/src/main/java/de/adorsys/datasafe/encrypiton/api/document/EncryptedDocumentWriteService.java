@@ -2,8 +2,10 @@ package de.adorsys.datasafe.encrypiton.api.document;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 
 import java.io.OutputStream;
 import java.util.Map;
@@ -24,11 +26,14 @@ public interface EncryptedDocumentWriteService {
 
     /**
      * Writes and encrypts data using symmetric cryptography.
-     * @param location Where to write data
+     * @param locationWithCallback Where to write data with callbacks to notify
      * @param secretKey Secret key and its ID to encrypt with
      * @return Sink where you can send unencrypted data that will be encrypted and stored
      */
-    OutputStream write(AbsoluteLocation<PrivateResource> location, SecretKeyIDWithKey secretKey);
+    OutputStream write(
+            WithCallback<AbsoluteLocation<PrivateResource>, ResourceWriteCallback> locationWithCallback,
+            SecretKeyIDWithKey secretKey
+    );
 }
 
 

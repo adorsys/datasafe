@@ -3,17 +3,14 @@ package de.adorsys.datasafe.metainfo.version.impl.version.latest.actions;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedWrite;
 import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
-import de.adorsys.datasafe.metainfo.version.api.version.VersionEncoderDecoder;
+import de.adorsys.datasafe.metainfo.version.impl.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.callback.SoftwareVersionCallback;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.Uri;
-import de.adorsys.datasafe.types.api.utils.Obfuscate;
+import de.adorsys.datasafe.types.api.resource.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -60,7 +57,8 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
                         request.getOwner(), request.getLocation()
                 );
 
-        Uri decryptedPath = encoder.newVersion(request.getLocation().location()).getPathWithVersion();
+        VersionedUri decryptedPathWithVersion = encoder.newVersion(request.getLocation().location());
+        Uri decryptedPath = decryptedPathWithVersion.getPathWithVersion();
 
         PrivateResource resourceRelativeToPrivate = encryptPath(
                 request.getOwner(),
@@ -69,6 +67,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
         );
 
         return new VersionCommittingStream(
+                decryptedPathWithVersion.getVersion(),
                 writeToPrivate.write(
                         request.toBuilder().location(BasePrivateResource.forPrivate(decryptedPath)).build()
                 ),
@@ -91,6 +90,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
     @RequiredArgsConstructor
     private static final class VersionCommittingStream extends OutputStream {
 
+        private final String version;
         private final OutputStream streamToWrite;
         private final WriteToPrivate writeToPrivate;
         private final WriteRequest<UserIDAuth, PrivateResource> request;
@@ -112,10 +112,18 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
             super.close();
             streamToWrite.close();
 
-            log.debug("Committing file {} with blob {}", Obfuscate.secure(request.getLocation()), Obfuscate.secure(writtenResource));
+            log.debug("Committing file {} with blob {}",
+                    request.getLocation().encryptedPath(),
+                    writtenResource.encryptedPath()
+            );
+
             try (OutputStream os = writeToPrivate.write(request)) {
                 os.write(writtenResource.location().toASCIIString().getBytes());
             }
+
+            request.getCallbacks().stream()
+                    .filter(it -> it instanceof SoftwareVersionCallback)
+                    .forEach(it -> ((SoftwareVersionCallback) it).handleVersionAssigned(version));
         }
     }
 }

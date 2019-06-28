@@ -1,7 +1,9 @@
 package de.adorsys.datasafe.storage.api;
 
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +20,9 @@ class SchemeDelegatingStorageTest extends BaseMockitoTest {
     private AbsoluteLocation locationExists = new AbsoluteLocation<>(
             BasePrivateResource.forPrivate(PROTOCOL + "://bucket")
     );
+
+    private WithCallback<AbsoluteLocation, ResourceWriteCallback> locationExistsWithCallback =
+            WithCallback.noCallback(locationExists);
 
     private AbsoluteLocation locationNotExists = new AbsoluteLocation<>(
             BasePrivateResource.forPrivate("ZZZZ://bucket")
@@ -62,9 +67,9 @@ class SchemeDelegatingStorageTest extends BaseMockitoTest {
 
     @Test
     void writeDelegates() {
-        tested.write(locationExists);
+        tested.write(locationExistsWithCallback);
 
-        verify(service).write(locationExists);
+        verify(service).write(locationExistsWithCallback);
     }
 
     @Test
@@ -97,7 +102,7 @@ class SchemeDelegatingStorageTest extends BaseMockitoTest {
 
     @Test
     void writeFails() {
-        assertThrows(IllegalArgumentException.class, () -> tested.write(locationNotExists));
+        assertThrows(IllegalArgumentException.class, () -> tested.write(WithCallback.noCallback(locationNotExists)));
 
         verify(service, never()).write(any());
     }
