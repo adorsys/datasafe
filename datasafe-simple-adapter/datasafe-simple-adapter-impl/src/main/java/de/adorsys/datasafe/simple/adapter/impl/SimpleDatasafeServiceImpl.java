@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
+    private static final String AMAZON_URL = "https://s3.amazonaws.com";
+
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private final static ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
@@ -81,12 +83,19 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
             log.info(lsf.toString());
-            AmazonS3 amazons3 = AmazonS3ClientBuilder.standard()
-                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(amazonS3DFSCredentials.getUrl(), amazonS3DFSCredentials.getRegion()))
+            AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(amazonS3DFSCredentials.getAccessKey(), amazonS3DFSCredentials.getSecretKey())))
-                    .enablePathStyleAccess()
-                    .build();
+                    .enablePathStyleAccess();
 
+            boolean useEndpoint = (!amazonS3DFSCredentials.getUrl().equals(AMAZON_URL));
+            if (useEndpoint) {
+                AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(amazonS3DFSCredentials.getUrl(), amazonS3DFSCredentials.getRegion());
+                amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
+            } else {
+                amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
+            }
+
+            AmazonS3 amazons3 = amazonS3ClientBuilder.build();
 
             if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
                 amazons3.createBucket(amazonS3DFSCredentials.getContainer());
