@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class UriEncoderDecoder {
 
     // naive approach, one should really use URI builder
-    private static final Pattern SEGMENTS = Pattern.compile("(.+:///*[^/]+/)*(.*)");
+    private static final Pattern SEGMENTS = Pattern.compile("(.+:///*[^/]+/*)*(.*)");
 
     public URI encode(String uri) {
         return encode(uri, UriEncoderDecoder::encodeSegment);

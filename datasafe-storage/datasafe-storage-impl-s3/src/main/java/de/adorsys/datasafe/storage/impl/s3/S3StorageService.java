@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
@@ -137,7 +138,7 @@ public class S3StorageService implements StorageService {
             return BasePrivateResource.forPrivate(root.location());
         }
 
-        return BasePrivateResource.forPrivate(relUrl).resolveFrom(root);
+        return BasePrivateResource.forPrivate(URI.create(relUrl)).resolveFrom(root);
     }
 
     private void execute(AbsoluteLocation location,

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.function.Function;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -99,7 +100,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
             hasStarted = true;
         }
 
-        return new Uri(result.toString());
+        // Resulting string must be URL-safe
+        return new Uri(URI.create(result.toString()));
     }
 
     private static void validateArgs(SecretKey secretKey, Uri bucketPath) {

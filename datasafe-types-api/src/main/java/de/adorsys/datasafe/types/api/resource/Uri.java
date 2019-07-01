@@ -73,7 +73,7 @@ public class Uri {
      * For example, http://example.com/foo/ becomes http://example.com/foo.
      */
     public Uri asDir() {
-        return isDir() ? this : new Uri(this.wrapped.toASCIIString() + "/");
+        return isDir() ? this : new Uri(URI.create(this.wrapped.toString() + "/"));
     }
 
     /**
@@ -81,7 +81,7 @@ public class Uri {
      * For example, http://example.com/foo becomes http://example.com/foo/ so it can be resolved against.
      */
     public Uri asFile() {
-        return isDir() ? new Uri(this.wrapped.toASCIIString().replaceAll("/$", "")) : this;
+        return isDir() ? new Uri(URI.create(this.wrapped.toString().replaceAll("/$", ""))) : this;
     }
 
     /**
@@ -104,7 +104,7 @@ public class Uri {
      * @return If wrapped resource is not empty string.
      */
     public boolean isEmpty() {
-        return this.wrapped.toASCIIString().isEmpty();
+        return this.wrapped.toString().isEmpty();
     }
 
     /**
@@ -114,7 +114,7 @@ public class Uri {
      * "http://example.com/foo/".resolve("bar") transforms to http://example.com/foo/bar, so it is path root.
      */
     public boolean isDir() {
-        return this.wrapped.toASCIIString().endsWith("/");
+        return this.wrapped.toString().endsWith("/");
     }
 
     /**
