@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.types.api.resource;
 
+import com.google.common.net.UrlEscapers;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.*;
 
@@ -20,7 +21,7 @@ public class Uri {
     @SneakyThrows
     public Uri(String path) {
         try {
-            this.wrapped = new URI(path);
+            this.wrapped = new URI(UrlEscapers.urlFragmentEscaper().escape(path));
         } catch (URISyntaxException ex) {
             throw new URISyntaxException(Obfuscate.secure(ex.getInput(), "/"), ex.getReason());
         }
@@ -40,7 +41,7 @@ public class Uri {
      * @return Uri that has <b>wrapped Uri + {@code uri}</b> as its path.
      */
     public Uri resolve(String uri) {
-        return new Uri(this.wrapped.resolve(uri));
+        return new Uri(this.wrapped.resolve(UrlEscapers.urlPathSegmentEscaper().escape(uri)));
     }
 
     /**
@@ -131,6 +132,14 @@ public class Uri {
      */
     public URI withoutAuthority() {
         return URI.create(withoutAuthority(wrapped));
+    }
+
+    /**
+     * Returns URL-decoded representation of this class, and strips authority
+     * @return URL-decoded value (i.e. %20 will become ' ')
+     */
+    public String asString() {
+        return withoutAuthority(wrapped);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.examples.business.filesystem;
+package de.adorsys.datasafe.examples.business.s3;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
  * This test shows simplistic usage of Datasafe default services that reside on versioned storage system.
  */
 @Slf4j
-class BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage {
+class BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorageTest {
 
     private static final String MY_OWN_FILE_TXT = "my/own/file.txt";
 

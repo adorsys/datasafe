@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -126,6 +125,6 @@ public class VersionController {
                         .collect(Collectors.toList());
 
         log.debug("Versions for path {} returned {} items", path, versionList.size());
-        return versionList.stream().map(a -> a.absolute().getResource().asPrivate().decryptedPath().toASCIIString()).collect(Collectors.toList());
+        return versionList.stream().map(a -> a.absolute().getResource().asPrivate().decryptedPath().asString()).collect(Collectors.toList());
     }
 }

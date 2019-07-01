@@ -214,7 +214,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     protected void assertPrivateSpaceList(UserIDAuth user, String root, String... expected) {
         List<String> paths = listPrivate.list(ListRequest.forDefaultPrivate(user, root))
-                .map(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+                .map(it -> it.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());
 
         for (String toFind : expected) {
@@ -224,7 +224,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     protected void assertInboxSpaceList(UserIDAuth user, String root, String... expected) {
         List<String> paths = listInbox.list(ListRequest.forDefaultPrivate(user, root))
-                .map(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+                .map(it -> it.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());
 
         for (String toFind : expected) {
