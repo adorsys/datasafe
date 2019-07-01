@@ -155,6 +155,64 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
+    void listingValidationPathWithUnicode(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerJohnAndJane();
+
+        writeDataToPrivate(jane, "prüfungsdokument.doc", MESSAGE_ONE);
+        writeDataToPrivate(jane, "уровень1/файл", MESSAGE_ONE);
+        writeDataToPrivate(jane, "уровень1/уровень2/файл", MESSAGE_ONE);
+
+        assertPrivateSpaceList(jane, "", "prüfungsdokument.doc", "уровень1/файл", "уровень1/уровень2/файл");
+        assertPrivateSpaceList(jane, "./", "prüfungsdokument.doc", "уровень1/файл", "уровень1/уровень2/файл");
+        assertPrivateSpaceList(jane, ".", "prüfungsdokument.doc", "уровень1/файл", "уровень1/уровень2/файл");
+
+        assertPrivateSpaceList(jane, "prüfungsdokument.doc", "prüfungsdokument.doc");
+        assertPrivateSpaceList(jane, "./prüfungsdokument.doc", "prüfungsdokument.doc");
+    }
+
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void listingValidationContentWithUnicode(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        jane = registerUser("jane");
+
+
+        String unicodeMessage = "привет мир!";
+        writeDataToPrivate(jane, PRIVATE_FILE_PATH, unicodeMessage);
+
+        AbsoluteLocation<ResolvedResource> privateJane = getFirstFileInPrivate(jane);
+
+        String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource().asPrivate());
+
+        assertThat(unicodeMessage).isEqualTo(privateContentJane);
+
+        removeFromPrivate(jane, privateJane.getResource().asPrivate());
+    }
+
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void listingValidationPathWithSpaces(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        registerJohnAndJane();
+
+        writeDataToPrivate(jane, "file_one.doc", MESSAGE_ONE);
+        writeDataToPrivate(jane, "level 1/ test file", MESSAGE_ONE);
+        writeDataToPrivate(jane, "level 1/level 2/test file", MESSAGE_ONE);
+
+        assertPrivateSpaceList(jane, "", "file_one.doc", "level 1/test file", "level 1/level 2/test file");
+        assertPrivateSpaceList(jane, "./", "file_one.doc", "level 1/test file", "level 1/level 2/test file");
+        assertPrivateSpaceList(jane, ".", "file_one.doc", "level 1/test file", "level 1/level 2/test file");
+
+        assertPrivateSpaceList(jane, "file_one.doc", "file_one.doc");
+        assertPrivateSpaceList(jane, "./file_one.doc", "file_one.doc");
+    }
+
+    @ParameterizedTest
+    @MethodSource("allStorages")
     void listingInboxValidation(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
