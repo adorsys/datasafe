@@ -48,7 +48,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
 
         this.datasafeServices = DaggerDefaultDatasafeServices
                 .builder()
-                .config(new ProfilesOnFsDataOnMinio(minioPath, tempDir))
+                .config(new ProfilesOnFsDataOnMinio(minioPath, new Uri(tempDir.toUri())))
                 .storage(multiDfs)
                 .build();
     }
@@ -67,25 +67,34 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
             os.write("Hello".getBytes());
         }
 
-        // Profiles are on FS
+        // Profiles are on FS - note that raw file path has `+` instead of space
         assertThat(Files.walk(fsPath))
                 .extracting(it -> fsPath.relativize(it))
                 .extracting(Path::toString)
-                .containsExactlyInAnyOrder("", "public-john", "private-john");
+                .containsExactlyInAnyOrder(
+                        "",
+                        "prüfungs",
+                        "prüfungs/мой+профиль:приватный-$&=john",
+                        "prüfungs/мой+профиль:публичный-$&=john");
         // File and keystore/pub keys are on minio
         assertThat(minio.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(minioPath.resolve("")))))
                 .extracting(it -> minioPath.relativize(it.location()))
                 .extracting(it -> it.asURI().toString())
-                .contains("users/john/private/keystore", "users/john/public/pubkeys")
-                .anyMatch(it -> it.startsWith("users/john/private/files/"))
+                .contains(
+                        "users/john/root%2Bpr%C3%BCfungs%2B%3F%3D/%D1%82%D0%B5%D1%81%D1%82%3A%D1%82%D0%B5%D1%81%D1%82%26/private/keystore",
+                        "users/john/root%2Bpr%C3%BCfungs%2B%3F%3D/%D1%82%D0%B5%D1%81%D1%82%3A%D1%82%D0%B5%D1%81%D1%82%26/public/pubkeys"
+                )
+                .anyMatch(it -> it.startsWith(
+                        "users/john/root%2Bpr%C3%BCfungs%2B%3F%3D/%D1%82%D0%B5%D1%81%D1%82%3A%D1%82%D0%B5%D1%81%D1%82%26/private/files/")
+                )
                 .hasSize(3);
     }
 
     static class ProfilesOnFsDataOnMinio extends DefaultDFSConfig {
 
-        private final Path profilesPath;
+        private final Uri profilesPath;
 
-        ProfilesOnFsDataOnMinio(Uri minioBucketPath, Path profilesPath) {
+        ProfilesOnFsDataOnMinio(Uri minioBucketPath, Uri profilesPath) {
             super(minioBucketPath, "PAZZWORT");
             this.profilesPath = profilesPath;
         }
@@ -94,7 +103,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         public AbsoluteLocation publicProfile(UserID forUser) {
             return new AbsoluteLocation<>(
                     BasePrivateResource.forPrivate(profilesPath.resolve(
-                            "prüfungs/мой профиль публичный-" + forUser.getValue()).toUri())
+                            "prüfungs/мой профиль:публичный-$&=" + forUser.getValue()))
             );
         }
 
@@ -102,13 +111,13 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         public AbsoluteLocation privateProfile(UserID forUser) {
             return new AbsoluteLocation<>(
                     BasePrivateResource.forPrivate(
-                            profilesPath.resolve("prüfungs/мой профиль приватный-" + forUser.getValue()).toUri())
+                            profilesPath.resolve("prüfungs/мой профиль:приватный-$&=" + forUser.getValue()))
             );
         }
 
         @Override
         protected Uri userRoot(UserID userID) {
-            return super.userRoot(userID).resolve("root prüfungs");
+            return super.userRoot(userID).resolve("root prüfungs ?=/тест:тест&/");
         }
     }
 }

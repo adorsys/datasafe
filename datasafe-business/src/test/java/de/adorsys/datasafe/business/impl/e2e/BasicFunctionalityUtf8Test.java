@@ -48,33 +48,14 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
 
         String unicodeMessage = "привет мир!";
-        writeDataToPrivate(jane, " привет/prüfungsdokument/файл с пробелом.док", unicodeMessage);
+        writeDataToPrivate(jane, " привет/prüfungsdokument=/файл:&? с пробелом.док", unicodeMessage);
 
         String privateContentJane = readPrivateUsingPrivateKey(
                 jane,
-                BasePrivateResource.forPrivate(" привет/prüfungsdokument/файл с пробелом.док")
+                BasePrivateResource.forPrivate(" привет/prüfungsdokument=/файл:&? с пробелом.док")
         );
 
         assertThat(privateContentJane).isEqualTo(unicodeMessage);
-    }
-
-    @ParameterizedTest
-    @MethodSource("allStorages")
-    void listingPrivatePathWithSpaces(WithStorageProvider.StorageDescriptor descriptor) {
-        init(descriptor);
-
-        registerJohnAndJane();
-
-        writeDataToPrivate(jane, "file_one.doc", MESSAGE_ONE);
-        writeDataToPrivate(jane, "level 1/ test file", MESSAGE_ONE);
-        writeDataToPrivate(jane, "level 1/level 2/test file", MESSAGE_ONE);
-
-        assertPrivateSpaceList(jane, "", "file_one.doc", "level 1/ test file", "level 1/level 2/test file");
-        assertPrivateSpaceList(jane, "./", "file_one.doc", "level 1/ test file", "level 1/level 2/test file");
-        assertPrivateSpaceList(jane, ".", "file_one.doc", "level 1/ test file", "level 1/level 2/test file");
-
-        assertPrivateSpaceList(jane, "file_one.doc", "file_one.doc");
-        assertPrivateSpaceList(jane, "./file_one.doc", "file_one.doc");
     }
 
     @ParameterizedTest
@@ -86,11 +67,11 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
         writeDataToPrivate(jane, "prüfungsdokument.doc", MESSAGE_ONE);
         writeDataToPrivate(jane, "уровень1/?файл", MESSAGE_ONE);
-        writeDataToPrivate(jane, "уровень1/уровень2=/&файл", MESSAGE_ONE);
+        writeDataToPrivate(jane, "уровень1/уровень2=/&файл пробел", MESSAGE_ONE);
 
-        assertPrivateSpaceList(jane, "", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл");
-        assertPrivateSpaceList(jane, "./", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл");
-        assertPrivateSpaceList(jane, ".", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл");
+        assertPrivateSpaceList(jane, "", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
+        assertPrivateSpaceList(jane, "./", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
+        assertPrivateSpaceList(jane, ".", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
 
         assertPrivateSpaceList(jane, "prüfungsdokument.doc", "prüfungsdokument.doc");
         assertPrivateSpaceList(jane, "./prüfungsdokument.doc", "prüfungsdokument.doc");
@@ -105,51 +86,14 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
 
         String unicodeMessage = "привет мир!";
-        writeDataToInbox(jane, " привет/prüfungsdokument/файл с пробелом.док", unicodeMessage);
+        writeDataToInbox(jane, " привет/prüfungsdokument=/файл:&? с пробелом.док", unicodeMessage);
 
         String inboxContentJane = readInboxUsingPrivateKey(
                 jane,
-                BasePrivateResource.forPrivate(" привет/prüfungsdokument/файл с пробелом.док")
+                BasePrivateResource.forPrivate(" привет/prüfungsdokument=/файл:&? с пробелом.док")
         );
 
         assertThat(inboxContentJane).isEqualTo(unicodeMessage);
-    }
-
-    @ParameterizedTest
-    @MethodSource("allStorages")
-    void readInboxContentWithUnicode(WithStorageProvider.StorageDescriptor descriptor) {
-        init(descriptor);
-
-        jane = registerUser("jane");
-
-
-        String unicodeMessage = "привет мир!";
-        writeDataToInbox(jane, PRIVATE_FILE_PATH, unicodeMessage);
-
-        AbsoluteLocation<ResolvedResource> privateJane = getFirstFileInInbox(jane);
-
-        String inboxContentJane = readInboxUsingPrivateKey(jane, privateJane.getResource().asPrivate());
-
-        assertThat(inboxContentJane).isEqualTo(unicodeMessage);
-    }
-
-    @ParameterizedTest
-    @MethodSource("allStorages")
-    void listingInboxPathWithSpaces(WithStorageProvider.StorageDescriptor descriptor) {
-        init(descriptor);
-
-        registerJohnAndJane();
-
-        writeDataToInbox(jane, "file_one.doc", MESSAGE_ONE);
-        writeDataToInbox(jane, "level 1/ test file", MESSAGE_ONE);
-        writeDataToInbox(jane, "level 1/level 2/test file", MESSAGE_ONE);
-
-        assertInboxSpaceList(jane, "", "file_one.doc", "level 1/ test file", "level 1/level 2/test file");
-        assertInboxSpaceList(jane, "./", "file_one.doc", "level 1/ test file", "level 1/level 2/test file");
-        assertInboxSpaceList(jane, ".", "file_one.doc", "level 1/ test file", "level 1/level 2/test file");
-
-        assertInboxSpaceList(jane, "file_one.doc", "file_one.doc");
-        assertInboxSpaceList(jane, "./file_one.doc", "file_one.doc");
     }
 
     @ParameterizedTest
@@ -161,11 +105,11 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
         writeDataToInbox(jane, "prüfungsdokument.doc", MESSAGE_ONE);
         writeDataToInbox(jane, "уровень1/?файл", MESSAGE_ONE);
-        writeDataToInbox(jane, "уровень1/уровень2=/&файл", MESSAGE_ONE);
+        writeDataToInbox(jane, "уровень1/уровень2=/&файл пробел", MESSAGE_ONE);
 
-        assertInboxSpaceList(jane, "", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл");
-        assertInboxSpaceList(jane, "./", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл");
-        assertInboxSpaceList(jane, ".", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл");
+        assertInboxSpaceList(jane, "", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
+        assertInboxSpaceList(jane, "./", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
+        assertInboxSpaceList(jane, ".", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
 
         assertInboxSpaceList(jane, "prüfungsdokument.doc", "prüfungsdokument.doc");
         assertInboxSpaceList(jane, "./prüfungsdokument.doc", "prüfungsdokument.doc");

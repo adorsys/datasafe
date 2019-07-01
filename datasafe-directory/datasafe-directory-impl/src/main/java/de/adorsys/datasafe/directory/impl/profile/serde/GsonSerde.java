@@ -7,6 +7,7 @@ import de.adorsys.datasafe.types.api.resource.*;
 import lombok.experimental.Delegate;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.security.PublicKey;
 
 /**
@@ -26,7 +27,7 @@ public class GsonSerde {
         gsonBuilder.registerTypeAdapter(
                 PublicResource.class,
                 (JsonDeserializer<PublicResource>)
-                        (elem, type, ctx) -> new BasePublicResource(new Uri(elem.getAsString()))
+                        (elem, type, ctx) -> new BasePublicResource(new Uri(URI.create(elem.getAsString())))
         );
 
         gsonBuilder.registerTypeAdapter(
@@ -37,7 +38,7 @@ public class GsonSerde {
         gsonBuilder.registerTypeAdapter(
                 PrivateResource.class,
                 (JsonDeserializer<PrivateResource>)
-                        (elem, type, ctx) -> new BasePrivateResource(new Uri(elem.getAsString()))
+                        (elem, type, ctx) -> new BasePrivateResource(new Uri(URI.create(elem.getAsString())))
         );
 
         gsonBuilder.registerTypeAdapter(
