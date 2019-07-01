@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -12,11 +13,12 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
-import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
+import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
@@ -34,6 +36,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * This test shows simplistic usage of Datasafe default services that reside on versioned storage system.
@@ -166,6 +169,42 @@ class BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage {
         // END_SNIPPET
 
         assertThat(defaultDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(user, ""))).hasSize(1);
+    }
+
+    /**
+     * Example of how to remove specific version id
+     */
+    @Test
+    @SneakyThrows
+    void removeSpecificVersionId() {
+        // BEGIN_SNIPPET:Versioned storage support - removing specific version
+        // creating new user
+        UserIDAuth user = registerUser("john");
+
+        // writing data to my/own/file.txt 2 times with different content:
+        String versionId = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 1");
+        writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
+
+        // now, we read old file version
+        assertThat(defaultDatasafeServices.privateService().read(
+                ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
+        ).hasContent("Hello 1");
+
+        // now, we remove old file version
+        defaultDatasafeServices.privateService().remove(
+                RemoveRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId))
+        );
+
+        // it is removed from storage, so when we read it we get exception
+        assertThrows(AmazonS3Exception.class, () -> defaultDatasafeServices.privateService().read(
+                ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
+        );
+
+        // but latest file version is still available
+        assertThat(defaultDatasafeServices.privateService().read(
+                ReadRequest.forDefaultPrivate(user, MY_OWN_FILE_TXT))
+        ).hasContent("Hello 2");
+        // END_SNIPPET
     }
 
     @SneakyThrows

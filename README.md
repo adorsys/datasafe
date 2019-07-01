@@ -343,7 +343,7 @@ assertThat(savedOnPC).isAfter(savedOnMobile);
 ## Datasafe on versioned storage
 If you have storage for user files on **versioned S3 bucket** and want to get object version when you write
 object or to read some older version encrypted object, you can follow this example of how to do that:
-[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage.java#L132-L166)
+[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage.java#L135-L169)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -376,8 +376,39 @@ assertThat(defaultDatasafeServices.privateService().read(
 
 // but if we specify file version - we get content for it:
 assertThat(defaultDatasafeServices.privateService().read(
-        ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new S3Version(initialVersionId)))
+        ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(initialVersionId)))
 ).hasContent("Hello 1");
+```
+Removing old file version can be done by [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#non-current-days-calculations)
+or manually, using this snippet:
+[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage.java#L180-L207)
+```groovy
+// creating new user
+UserIDAuth user = registerUser("john");
+
+// writing data to my/own/file.txt 2 times with different content:
+String versionId = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 1");
+writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
+
+// now, we read old file version
+assertThat(defaultDatasafeServices.privateService().read(
+        ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
+).hasContent("Hello 1");
+
+// now, we remove old file version
+defaultDatasafeServices.privateService().remove(
+        RemoveRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId))
+);
+
+// it is removed from storage, so when we read it we get exception
+assertThrows(AmazonS3Exception.class, () -> defaultDatasafeServices.privateService().read(
+        ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
+);
+
+// but latest file version is still available
+assertThat(defaultDatasafeServices.privateService().read(
+        ReadRequest.forDefaultPrivate(user, MY_OWN_FILE_TXT))
+).hasContent("Hello 2");
 ```
 
 ## Overriding Datasafe functionality

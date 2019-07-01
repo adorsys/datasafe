@@ -1,7 +1,9 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
@@ -18,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StorageBasedVersioningTest extends BaseE2ETest {
 
@@ -57,6 +60,20 @@ class StorageBasedVersioningTest extends BaseE2ETest {
         assertThat(readByVersion(jane, FILE, new StorageVersion(oldVersion))).isEqualTo("Hello 1");
     }
 
+    @Test
+    void testVersionedRemoveManually() {
+        init(cephVersioned());
+        registerJohnAndJane();
+
+        String oldVersion = writeAndGetVersion(jane, FILE, "Hello 1");
+        writeAndGetVersion(jane, FILE, "Hello 2");
+        writeAndGetVersion(jane, FILE, "Hello 3");
+
+        removeByVersion(jane, FILE, new StorageVersion(oldVersion));
+        assertThrows(AmazonS3Exception.class, () -> readByVersion(jane, FILE, new StorageVersion(oldVersion)));
+        assertThat(readPrivateUsingPrivateKey(jane, BasePrivateResource.forPrivate(FILE))).isEqualTo("Hello 3");
+    }
+
     @SneakyThrows
     private String writeAndGetVersion(UserIDAuth user, String path, String data) {
         AtomicReference<String> version = new AtomicReference<>();
@@ -69,6 +86,11 @@ class StorageBasedVersioningTest extends BaseE2ETest {
         }
 
         return version.get();
+    }
+
+    @SneakyThrows
+    private void removeByVersion(UserIDAuth user, String path, StorageVersion version) {
+        removeFromPrivate.remove(RemoveRequest.forDefaultPrivateWithVersion(user, path, version));
     }
 
     @SneakyThrows
