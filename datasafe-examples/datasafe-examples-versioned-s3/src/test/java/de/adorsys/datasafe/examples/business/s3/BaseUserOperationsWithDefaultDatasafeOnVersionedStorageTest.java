@@ -165,7 +165,6 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
         ).hasContent("Hello 1");
         // END_SNIPPET
 
-        log.debug("AFFE");
         log.debug("version 1 " + version1);
         log.debug("version 2 " + version2);
         log.debug("version 3 " + version3);
