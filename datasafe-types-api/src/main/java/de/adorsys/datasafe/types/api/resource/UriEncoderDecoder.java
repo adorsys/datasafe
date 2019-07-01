@@ -99,7 +99,7 @@ public class UriEncoderDecoder {
     @SneakyThrows
     private void decodePathIntoStringBuilder(String path, StringBuilder sb, Function<String, String> decode) {
         boolean isStarted = false;
-        for (String segment : path.split("/")) {
+        for (String segment : path.split("/", -1)) {
             if (isStarted) {
                 sb.append("/");
             } else {
