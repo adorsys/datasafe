@@ -97,7 +97,7 @@ class FixtureGenerator extends BaseMockitoTest {
         KieFileSystem fileSystem = services.newKieFileSystem();
 
         // rules to use when generating random actions:
-        fileSystem.write(ResourceFactory.newClassPathResource("performance/fixture/generator/drools/user.drl"));
+        fileSystem.write(ResourceFactory.newClassPathResource("fixture/generator/drools/user.drl"));
 
         KieBuilder kb = services.newKieBuilder(fileSystem);
         kb.buildAll();
