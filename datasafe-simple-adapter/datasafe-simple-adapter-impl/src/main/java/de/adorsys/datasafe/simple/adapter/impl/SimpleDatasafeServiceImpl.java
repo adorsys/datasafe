@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,10 +66,10 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
             log.info(lsf.toString());
-            URI systemRoot = filesystemDFSCredentials.getRoot().toAbsolutePath().toUri();
+            URI systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
-                    .storage(new FileSystemStorageService(filesystemDFSCredentials.getRoot()))
+                    .storage(new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot())))
                     .overridesRegistry(baseOverridesRegistry)
                     .build();
 

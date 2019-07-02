@@ -45,7 +45,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         switch (descriptor.getName()) {
             case FILESYSTEM: {
                 log.info("uri:" + descriptor.getRootBucket());
-                dfsCredentials = FilesystemDFSCredentials.builder().root(FileSystems.getDefault().getPath(descriptor.getRootBucket())).build();
+                dfsCredentials = FilesystemDFSCredentials.builder().root(descriptor.getRootBucket()).build();
                 break;
 
             }
