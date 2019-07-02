@@ -4,7 +4,6 @@ import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
 
@@ -13,12 +12,15 @@ import java.net.URI;
  * Note: Always prefer using functions that take URI as arguments.
  */
 @EqualsAndHashCode(of = "wrapped")
-@RequiredArgsConstructor
 public class Uri {
 
     @NonNull
     @Getter
     private final URI wrapped;
+
+    public Uri(@NonNull URI wrapped) {
+        this.wrapped = wrapped;
+    }
 
     public Uri(String path) {
         this.wrapped = UriEncoderDecoder.encode(path);
@@ -30,6 +32,14 @@ public class Uri {
      */
     public String getPath() {
         return wrapped.getPath();
+    }
+
+    /**
+     * {@link URI#getRawPath()}
+     * @return Path part of wrapped URI.
+     */
+    public String getRawPath() {
+        return wrapped.getRawPath();
     }
 
     /**

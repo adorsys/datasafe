@@ -51,18 +51,7 @@ public class UriEncoderDecoder {
     }
 
     public String decodeAndDropAuthority(URI uri, Function<String, String> decode) {
-        String encoded = withoutAuthority(uri);
-        Matcher matcher = SEGMENTS.matcher(encoded);
-        if (!matcher.find()) {
-            throw new IllegalArgumentException("Unparsable string " + uri);
-        }
-
-        if (matcher.groupCount() == 2 && null != matcher.group(1)) {
-            return matcher.group(1) +
-                    Arrays.stream(matcher.group(2).split("/", -1)).map(decode).collect(Collectors.joining("/"));
-        }
-
-        return Arrays.stream(encoded.split("/", -1)).map(decode).collect(Collectors.joining("/"));
+        return withoutAuthority(uri, decode);
     }
 
     public String withoutAuthority(URI uri) {
@@ -89,8 +78,13 @@ public class UriEncoderDecoder {
             sb.append(uri.getPort());
         }
 
-        if (null != uri.getPath()) {
-            decodePathIntoStringBuilder(uri.getPath(), sb, decode);
+        if (null != uri.getRawPath()) {
+            decodePathIntoStringBuilder(uri.getRawPath(), sb, decode);
+        }
+
+        // Our paths might be composed of path/?patssegment/tada
+        if (null != uri.getRawQuery()) {
+            decodePathIntoStringBuilder(uri.getRawQuery(), sb, decode);
         }
 
         return sb.toString();
@@ -111,11 +105,12 @@ public class UriEncoderDecoder {
 
     @SneakyThrows
     private String decodeSegment(String segment) {
-        return URLDecoder.decode(segment, StandardCharsets.UTF_8.name());
+        return URLDecoder.decode(segment
+                .replaceAll("%20", "+"), StandardCharsets.UTF_8.name());
     }
 
     @SneakyThrows
     private String encodeSegment(String segment) {
-        return URLEncoder.encode(segment, StandardCharsets.UTF_8.name());
+        return URLEncoder.encode(segment, StandardCharsets.UTF_8.name()).replaceAll("\\+", "%20");
     }
 }

@@ -65,16 +65,21 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
         registerJohnAndJane();
 
-        writeDataToPrivate(jane, "prüfungsdokument.doc", MESSAGE_ONE);
-        writeDataToPrivate(jane, "уровень1/?файл", MESSAGE_ONE);
-        writeDataToPrivate(jane, "уровень1/уровень2=/&файл пробел", MESSAGE_ONE);
+        writeDataToPrivate(jane, "prüfungsdokument.doc+doc", MESSAGE_ONE);
+        writeDataToPrivate(jane, "уровень1/?файл+doc", MESSAGE_ONE);
+        writeDataToPrivate(jane, "уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
 
-        assertPrivateSpaceList(jane, "", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
-        assertPrivateSpaceList(jane, "./", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
-        assertPrivateSpaceList(jane, ".", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
+        assertPrivateSpaceList(jane, "", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertPrivateSpaceList(jane, "./", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertPrivateSpaceList(jane, ".", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
 
-        assertPrivateSpaceList(jane, "prüfungsdokument.doc", "prüfungsdokument.doc");
-        assertPrivateSpaceList(jane, "./prüfungsdokument.doc", "prüfungsdokument.doc");
+        assertPrivateSpaceList(jane, "prüfungsdokument.doc+doc", "prüfungsdokument.doc+doc");
+        assertPrivateSpaceList(jane, "./prüfungsdokument.doc+doc", "prüfungsdokument.doc+doc");
+
+        assertPrivateSpaceList(jane, "уровень1/уровень 2=+", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertPrivateSpaceList(jane, "уровень1/уровень 2=+/", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertPrivateSpaceList(jane, "./уровень1/уровень 2=+", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertPrivateSpaceList(jane, "./уровень1/уровень 2=+/", "уровень1/уровень 2=+/&файл пробел+плюс");
     }
 
     @ParameterizedTest
@@ -103,16 +108,21 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
         registerJohnAndJane();
 
-        writeDataToInbox(jane, "prüfungsdokument.doc", MESSAGE_ONE);
-        writeDataToInbox(jane, "уровень1/?файл", MESSAGE_ONE);
-        writeDataToInbox(jane, "уровень1/уровень2=/&файл пробел", MESSAGE_ONE);
+        writeDataToInbox(jane, "prüfungsdokument.doc+doc", MESSAGE_ONE);
+        writeDataToInbox(jane, "уровень1/?файл+doc", MESSAGE_ONE);
+        writeDataToInbox(jane, "уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
 
-        assertInboxSpaceList(jane, "", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
-        assertInboxSpaceList(jane, "./", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
-        assertInboxSpaceList(jane, ".", "prüfungsdokument.doc", "уровень1/?файл", "уровень1/уровень2=/&файл пробел");
+        assertInboxSpaceList(jane, "", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, ".", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
 
-        assertInboxSpaceList(jane, "prüfungsdokument.doc", "prüfungsdokument.doc");
-        assertInboxSpaceList(jane, "./prüfungsdokument.doc", "prüfungsdokument.doc");
+        assertInboxSpaceList(jane, "prüfungsdokument.doc+doc", "prüfungsdokument.doc+doc");
+        assertInboxSpaceList(jane, "./prüfungsdokument.doc+doc", "prüfungsdokument.doc+doc");
+
+        assertInboxSpaceList(jane, "уровень1/уровень 2=+", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "уровень1/уровень 2=+/", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./уровень1/уровень 2=+", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./уровень1/уровень 2=+/", "уровень1/уровень 2=+/&файл пробел+плюс");
     }
 
     private void init(StorageDescriptor descriptor) {

@@ -217,9 +217,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                 .map(it -> it.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());
 
-        for (String toFind : expected) {
-            assertThat(paths.stream().anyMatch(it -> it.equals(toFind))).isTrue();
-        }
+        assertThat(paths).containsExactlyInAnyOrder(expected);
     }
 
     protected void assertInboxSpaceList(UserIDAuth user, String root, String... expected) {
@@ -227,9 +225,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
                 .map(it -> it.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());
 
-        for (String toFind : expected) {
-            assertThat(paths.stream().anyMatch(it -> it.equals(toFind))).isTrue();
-        }
+        assertThat(paths).containsExactlyInAnyOrder(expected);
     }
 
     @SneakyThrows

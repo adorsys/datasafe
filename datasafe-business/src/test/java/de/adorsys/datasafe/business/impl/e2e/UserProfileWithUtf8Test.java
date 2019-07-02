@@ -74,18 +74,18 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
                 .containsExactlyInAnyOrder(
                         "",
                         "prüfungs",
-                        "prüfungs/мой+профиль:приватный-$&=john",
-                        "prüfungs/мой+профиль:публичный-$&=john");
+                        "prüfungs/мой профиль+:приватный-$&=john",
+                        "prüfungs/мой профиль+:публичный-$&=john");
         // File and keystore/pub keys are on minio
         assertThat(minio.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(minioPath.resolve("")))))
                 .extracting(it -> minioPath.relativize(it.location()))
-                .extracting(it -> it.asURI().toString())
+                .extracting(Uri::asString)
                 .contains(
-                        "users/john/root%2Bpr%C3%BCfungs%2B%3F%3D/%D1%82%D0%B5%D1%81%D1%82%3A%D1%82%D0%B5%D1%81%D1%82%26/private/keystore",
-                        "users/john/root%2Bpr%C3%BCfungs%2B%3F%3D/%D1%82%D0%B5%D1%81%D1%82%3A%D1%82%D0%B5%D1%81%D1%82%26/public/pubkeys"
+                        "users/john/root prüfungs+?=/тест:тест&/private/keystore",
+                        "users/john/root prüfungs+?=/тест:тест&/public/pubkeys"
                 )
                 .anyMatch(it -> it.startsWith(
-                        "users/john/root%2Bpr%C3%BCfungs%2B%3F%3D/%D1%82%D0%B5%D1%81%D1%82%3A%D1%82%D0%B5%D1%81%D1%82%26/private/files/")
+                        "users/john/root prüfungs+?=/тест:тест&/private/files/")
                 )
                 .hasSize(3);
     }
@@ -103,7 +103,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         public AbsoluteLocation publicProfile(UserID forUser) {
             return new AbsoluteLocation<>(
                     BasePrivateResource.forPrivate(profilesPath.resolve(
-                            "prüfungs/мой профиль:публичный-$&=" + forUser.getValue()))
+                            "prüfungs/мой профиль+:публичный-$&=" + forUser.getValue()))
             );
         }
 
@@ -111,13 +111,13 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         public AbsoluteLocation privateProfile(UserID forUser) {
             return new AbsoluteLocation<>(
                     BasePrivateResource.forPrivate(
-                            profilesPath.resolve("prüfungs/мой профиль:приватный-$&=" + forUser.getValue()))
+                            profilesPath.resolve("prüfungs/мой профиль+:приватный-$&=" + forUser.getValue()))
             );
         }
 
         @Override
         protected Uri userRoot(UserID userID) {
-            return super.userRoot(userID).resolve("root prüfungs ?=/тест:тест&/");
+            return super.userRoot(userID).resolve("root prüfungs+?=/тест:тест&/");
         }
     }
 }

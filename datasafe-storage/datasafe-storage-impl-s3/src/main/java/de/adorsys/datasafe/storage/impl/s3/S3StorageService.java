@@ -25,6 +25,8 @@ import java.util.stream.StreamSupport;
 
 /**
  * Amazon S3, minio and CEPH compatible default S3 interface adapter.
+ * Note: It is using rawPath of URI that is url-encoded due to:
+ * https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
  */
 @Slf4j
 public class S3StorageService implements StorageService {
@@ -52,7 +54,7 @@ public class S3StorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         log.debug("List at {}", location.location());
-        String prefix = location.location().getPath().replaceFirst("^/", "");
+        String prefix = location.location().getRawPath().replaceFirst("^/", "");
 
         S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, prefix);
         Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);

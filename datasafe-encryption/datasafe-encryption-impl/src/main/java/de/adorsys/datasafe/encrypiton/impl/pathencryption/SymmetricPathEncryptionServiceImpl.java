@@ -10,7 +10,9 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -45,7 +47,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
         return processURIparts(
                 bucketPath,
-                str -> encode(str, cipher)
+                str -> encode(str, cipher),
+                uri -> new Uri(URI.create(uri)) // resulting string is URL-safe
         );
     }
 
@@ -62,21 +65,33 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
         return processURIparts(
                 bucketPath,
-                str -> decode(str, cipher)
+                str -> decode(str, cipher),
+                Uri::new // resulting string is not URL safe
         );
     }
 
     @SneakyThrows
     private String decode(String str, Cipher cipher) {
+        if (str.isEmpty()) {
+            return str;
+        }
+
         return new String(cipher.doFinal(encryptionConfig.byteDeserializer(str)), UTF_8);
     }
 
     @SneakyThrows
     private String encode(String str, Cipher cipher) {
+        if (str.isEmpty()) {
+            return str;
+        }
+
         return encryptionConfig.byteSerializer(cipher.doFinal(str.getBytes(UTF_8)));
     }
 
-    private static Uri processURIparts(Uri bucketPath, Function<String, String> process) {
+    private static Uri processURIparts(
+            Uri bucketPath,
+            Function<String, String> process,
+            Function<String, Uri> uriMapper) {
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getPath();
@@ -88,20 +103,12 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         if (path.isEmpty()) {
             return new Uri(result.toString());
         }
-        boolean hasStarted = false;
-        for (String part : path.split(PATH_SEPARATOR)) {
 
-            if (hasStarted) {
-                result.append(PATH_SEPARATOR);
-            }
-
-            result.append(process.apply(part));
-
-            hasStarted = true;
-        }
-
-        // Resulting string must be URL-safe
-        return new Uri(URI.create(result.toString()));
+        return uriMapper.apply(
+                Arrays.stream(path.split(PATH_SEPARATOR, -1))
+                        .map(process)
+                        .collect(Collectors.joining(PATH_SEPARATOR))
+        );
     }
 
     private static void validateArgs(SecretKey secretKey, Uri bucketPath) {
