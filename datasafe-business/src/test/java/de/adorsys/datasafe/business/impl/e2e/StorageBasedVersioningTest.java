@@ -1,17 +1,18 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.actions.RemoveRequest;
-import de.adorsys.datasafe.types.api.resource.StorageVersion;
+import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.shaded.com.google.common.io.ByteStreams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;

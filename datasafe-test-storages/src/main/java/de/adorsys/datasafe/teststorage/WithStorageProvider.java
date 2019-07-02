@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.e2e;
+package de.adorsys.datasafe.teststorage;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
+import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
@@ -23,7 +24,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.platform.commons.util.StringUtils;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
@@ -232,7 +232,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static void initS3() {
         log.info("Initializing S3");
-        if (StringUtils.isBlank(amazonAccessKeyID)) {
+        if (Strings.isNullOrEmpty(amazonAccessKeyID)) {
             return;
         }
 
