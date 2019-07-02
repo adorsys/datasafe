@@ -42,7 +42,7 @@ public class DatasafeSpringBeans {
         if (properties.getFilesystem() != null) {
             SpringFilesystemDFSCredentialsProperties props = properties.getFilesystem();
             dfsCredentials = FilesystemDFSCredentials.builder()
-                    .root(FileSystems.getDefault().getPath(props.getRootbucket()))
+                    .root(props.getRootbucket())
                     .build();
         }
         if (dfsCredentials == null) {

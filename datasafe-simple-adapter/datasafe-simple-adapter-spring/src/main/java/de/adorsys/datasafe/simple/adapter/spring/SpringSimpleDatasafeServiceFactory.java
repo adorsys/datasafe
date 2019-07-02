@@ -30,7 +30,7 @@ public class SpringSimpleDatasafeServiceFactory {
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
             d = FilesystemDFSCredentials.builder()
-                    .root(filesystemDFSCredentials.getRoot().resolve("/" + subdirBelowRoot))
+                    .root(filesystemDFSCredentials.getRoot() + "/" + subdirBelowRoot)
                     .build();
 
         }
