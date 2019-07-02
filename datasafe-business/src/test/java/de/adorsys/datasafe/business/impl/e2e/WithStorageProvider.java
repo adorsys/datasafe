@@ -62,10 +62,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String cephUrl = "http://0.0.0.0"; // not localhost!
     private static String cephMappedUrl;
 
-    private static String amazonAccessKeyID = System.getProperty("AWS_ACCESS_KEY");
-    private static String amazonSecretAccessKey = System.getProperty("AWS_SECRET_KEY");
-    private static String amazonRegion = System.getProperty("AWS_REGION", "eu-central-1");
-    private static String amazonBucket = System.getProperty("AWS_BUCKET", "adorsys-docusafe");
+    private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
+    private static String amazonSecretAccessKey = readPropOrEnv("AWS_SECRET_KEY");
+    private static String amazonRegion = readPropOrEnv("AWS_REGION", "eu-central-1");
+    private static String amazonBucket = readPropOrEnv("AWS_BUCKET", "adorsys-docusafe");
     private static String amazonMappedUrl;
 
     private static GenericContainer minioContainer;
@@ -236,12 +236,12 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             return;
         }
 
-                amazonS3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(
-                        new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
-                )
-                .withRegion(amazonRegion)
-                .build();
+        amazonS3 = AmazonS3ClientBuilder.standard()
+        .withCredentials(new AWSStaticCredentialsProvider(
+                new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
+        )
+        .withRegion(amazonRegion)
+        .build();
 
         amazonMappedUrl = "s3://" + amazonBucket + "/" + bucketPath + "/";
         log.info("Amazon napped URL:" + amazonMappedUrl);
@@ -319,6 +319,26 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                         new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
                 )
         );
+    }
+
+    /**
+     * Reads property by {@code name} and if such property doesn't exist then it reads it from environment variables.
+     * @param name Property/environment variable name
+     * @param defaultValue Default value if none are present
+     * @return Property value
+     */
+    private static String readPropOrEnv(String name, String defaultValue) {
+        String fromEnv = System.getProperty(name, System.getenv(name));
+        return null != fromEnv ? fromEnv : defaultValue;
+    }
+
+    /**
+     * Reads property by {@code name} and if such property doesn't exist then it reads it from environment variables.
+     * @param name Property/environment variable name
+     * @return Property value
+     */
+    private static String readPropOrEnv(String name) {
+        return readPropOrEnv(name, null);
     }
 
     @Getter
