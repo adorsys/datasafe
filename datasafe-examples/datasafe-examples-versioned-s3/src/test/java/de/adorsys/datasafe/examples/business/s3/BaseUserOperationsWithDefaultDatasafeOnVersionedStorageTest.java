@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.examples.business.filesystem;
+package de.adorsys.datasafe.examples.business.s3;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
  * This test shows simplistic usage of Datasafe default services that reside on versioned storage system.
  */
 @Slf4j
-class BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage {
+class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
 
     private static final String MY_OWN_FILE_TXT = "my/own/file.txt";
 
@@ -147,12 +147,12 @@ class BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage {
             os.write("Hello 1".getBytes(StandardCharsets.UTF_8));
         }
         // this variable has our initial file version:
-        String initialVersionId = version.get();
+        String version1 = version.get();
 
         // Write 2 more times different data to same file - my/own/file.txt:
-        writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
+        String version2 = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
         // Last version will contain "Hello 3":
-        writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 3");
+        String version3 = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 3");
 
         // now, when we read file without specifying version - we see latest file content:
         assertThat(defaultDatasafeServices.privateService().read(
@@ -161,11 +161,16 @@ class BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage {
 
         // but if we specify file version - we get content for it:
         assertThat(defaultDatasafeServices.privateService().read(
-                ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(initialVersionId)))
+                ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(version1)))
         ).hasContent("Hello 1");
         // END_SNIPPET
 
+        log.debug("version 1 " + version1);
+        log.debug("version 2 " + version2);
+        log.debug("version 3 " + version3);
         assertThat(defaultDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(user, ""))).hasSize(1);
+        assertThat(version1.equals(version2)).isFalse();
+        assertThat(version1.equals(version3)).isFalse();
     }
 
     @SneakyThrows
