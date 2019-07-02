@@ -1,7 +1,7 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator;
+package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator;
 
 import com.google.common.collect.Iterables;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.TestFileTreeOper;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.TestFileTreeOper;
 import lombok.RequiredArgsConstructor;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 

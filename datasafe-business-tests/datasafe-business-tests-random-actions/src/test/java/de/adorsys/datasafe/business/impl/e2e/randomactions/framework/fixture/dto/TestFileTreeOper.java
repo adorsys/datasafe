@@ -1,7 +1,7 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto;
+package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto;
 
 import com.google.common.collect.Iterables;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomUsers;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomUsers;
 import lombok.Data;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;

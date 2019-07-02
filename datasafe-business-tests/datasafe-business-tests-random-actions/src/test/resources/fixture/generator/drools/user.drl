@@ -2,16 +2,16 @@ package de.adorsys.datasafe;
 
 import java.util.ArrayList
 
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.UserFileSystem
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.TestUser
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.UserFileSystem
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.TestUser
 import de.adorsys.datasafe.types.api.actions.WriteRequest
 import java.util.List
 
-global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomPassGate randomPass
-global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomPathGenerator randomPath
-global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomContentIdGenerator randomContent
-global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.RandomUsers randomUsers
-global de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.HistoryList historyList
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomPassGate randomPass
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomPathGenerator randomPath
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomContentIdGenerator randomContent
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomUsers randomUsers
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.HistoryList historyList
 
 dialect  "mvel"
 

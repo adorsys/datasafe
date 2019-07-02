@@ -1,7 +1,7 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator;
+package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator;
 
 import com.google.gson.Gson;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.*;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator.FixtureGenerator.GENERATE_FIXTURE_SIZE;
+import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.FixtureGenerator.GENERATE_FIXTURE_SIZE;
 
 /**
  * This is not a real test, instead it generates test fixture that can be used in other tests.

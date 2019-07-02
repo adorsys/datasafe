@@ -1,8 +1,8 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.services;
+package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services;
 
 import com.google.gson.Gson;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Operation;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.OperationType;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.Operation;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.OperationType;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

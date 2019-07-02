@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto;
+package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;

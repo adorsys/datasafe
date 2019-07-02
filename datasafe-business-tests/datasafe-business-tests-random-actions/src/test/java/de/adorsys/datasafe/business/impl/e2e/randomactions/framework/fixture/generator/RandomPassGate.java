@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator;
+package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

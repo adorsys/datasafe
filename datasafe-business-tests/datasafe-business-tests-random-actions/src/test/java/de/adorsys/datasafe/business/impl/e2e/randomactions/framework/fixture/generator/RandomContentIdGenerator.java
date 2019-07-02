@@ -1,6 +1,6 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.fixture.generator;
+package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator;
 
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.ContentId;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.ContentId;
 
 import java.util.ArrayList;
 import java.util.List;

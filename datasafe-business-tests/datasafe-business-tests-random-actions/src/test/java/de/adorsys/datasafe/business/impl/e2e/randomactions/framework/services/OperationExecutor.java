@@ -1,10 +1,10 @@
-package de.adorsys.datasafe.business.impl.e2e.performance.services;
+package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.business.impl.e2e.performance.dto.UserSpec;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.Operation;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.OperationType;
-import de.adorsys.datasafe.business.impl.e2e.performance.fixture.dto.StorageType;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.dto.UserSpec;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.Operation;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.OperationType;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.StorageType;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.InboxService;
