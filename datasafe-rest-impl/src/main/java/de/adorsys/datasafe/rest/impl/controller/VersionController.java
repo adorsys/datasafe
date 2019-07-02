@@ -44,7 +44,7 @@ public class VersionController {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = Optional.ofNullable(path).orElse("./");
         List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(ListRequest.forDefaultPrivate(userIDAuth, path))
-                .map(e -> e.absolute().getResource().decryptedPath().getPath())
+                .map(e -> e.absolute().getResource().decryptedPath().asString())
                 .collect(Collectors.toList());
         log.debug("List for path {} returned {} items", path, documentList.size());
         return documentList;

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class UriEncoderDecoder {
 
     // naive approach, one should really use URI builder
-    private static final Pattern SEGMENTS = Pattern.compile("(.+:///*[^/]+/*)*(.*)");
+    private static final Pattern SEGMENTS = Pattern.compile("(?<hostWithAuth>.+:///*[^/]+/*)*(<path>.*)");
 
     public URI encode(String uri) {
         return encode(uri, UriEncoderDecoder::encodeSegment);
@@ -34,10 +34,10 @@ public class UriEncoderDecoder {
             throw new IllegalArgumentException("Unparsable string " + uri);
         }
 
-        if (matcher.groupCount() == 2 && null != matcher.group(1)) {
+        if (null != matcher.group("path") && null != matcher.group("hostWithAuth")) {
             return URI.create(
-                    matcher.group(1) +
-                    Arrays.stream(matcher.group(2).split("/", -1)).map(encode).collect(Collectors.joining("/"))
+                    matcher.group("hostWithAuth") +
+                    Arrays.stream(matcher.group("path").split("/", -1)).map(encode).collect(Collectors.joining("/"))
             );
         }
 

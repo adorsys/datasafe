@@ -54,7 +54,7 @@ public class FileSystemStorageService implements StorageService {
                         new BaseResolvedResource(
                                 // We store path in uri-encoded form, so toUri calls will fail
                                 new BasePrivateResource(
-                                        new Uri(URI.create("file:///" + it.toFile().getAbsolutePath()))
+                                        new Uri(URI.create("file://" + it.toFile().getAbsolutePath()))
                                 ),
                                 Instant.ofEpochMilli(it.toFile().lastModified()))
                         )

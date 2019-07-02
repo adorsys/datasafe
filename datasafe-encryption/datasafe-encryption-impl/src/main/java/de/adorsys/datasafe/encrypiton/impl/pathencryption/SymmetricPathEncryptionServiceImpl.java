@@ -94,10 +94,10 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
             Function<String, Uri> uriMapper) {
         StringBuilder result = new StringBuilder();
 
-        String path = bucketPath.getPath();
-        if (bucketPath.getPath().startsWith("./")) {
+        String path = bucketPath.getRawPath();
+        if (bucketPath.getRawPath().startsWith("./")) {
             result.append("./");
-            path = bucketPath.getPath().substring(2);
+            path = bucketPath.getRawPath().substring(2);
         }
 
         if (path.isEmpty()) {

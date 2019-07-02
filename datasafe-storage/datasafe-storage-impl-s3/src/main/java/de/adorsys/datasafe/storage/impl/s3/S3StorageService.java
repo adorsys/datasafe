@@ -164,7 +164,7 @@ public class S3StorageService implements StorageService {
                          BiFunction<String, StorageVersion, T> ifVersion) {
 
         String key = location.getResource().location()
-                .getPath()
+                .getRawPath()
                 .replaceFirst("^/", "")
                 .replaceFirst("/$", "");
         Optional<StorageVersion> version = extractVersion(location);
