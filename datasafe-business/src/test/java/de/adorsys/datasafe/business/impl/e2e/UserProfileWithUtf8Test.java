@@ -19,6 +19,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -70,7 +71,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         // Profiles are on FS - note that raw file path has `+` instead of space
         assertThat(Files.walk(fsPath))
                 .extracting(it -> fsPath.relativize(it))
-                .extracting(Path::toString)
+                .extracting(it -> URI.create(it.toString()).getPath())
                 .containsExactlyInAnyOrder(
                         "",
                         "prüfungs",

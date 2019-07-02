@@ -47,8 +47,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
         return processURIparts(
                 bucketPath,
-                str -> encode(str, cipher),
-                uri -> new Uri(URI.create(uri)) // resulting string is URL-safe
+                str -> encode(str, cipher)
         );
     }
 
@@ -65,8 +64,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
         return processURIparts(
                 bucketPath,
-                str -> decode(str, cipher),
-                Uri::new // resulting string is not URL safe
+                str -> decode(str, cipher)
         );
     }
 
@@ -90,8 +88,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
     private static Uri processURIparts(
             Uri bucketPath,
-            Function<String, String> process,
-            Function<String, Uri> uriMapper) {
+            Function<String, String> process) {
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getRawPath();
@@ -104,10 +101,13 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
             return new Uri(result.toString());
         }
 
-        return uriMapper.apply(
-                Arrays.stream(path.split(PATH_SEPARATOR, -1))
-                        .map(process)
-                        .collect(Collectors.joining(PATH_SEPARATOR))
+        // Resulting value of `path` is URL-safe
+        return new Uri(
+                URI.create(
+                        Arrays.stream(path.split(PATH_SEPARATOR, -1))
+                                .map(process)
+                                .collect(Collectors.joining(PATH_SEPARATOR))
+                )
         );
     }
 
