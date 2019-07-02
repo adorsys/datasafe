@@ -16,6 +16,11 @@
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-types-api</artifactId>
+            <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
         <dependency>
@@ -24,14 +29,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <scope>compile</scope>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
@@ -43,5 +43,34 @@
             <artifactId>datasafe-storage-impl-s3</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

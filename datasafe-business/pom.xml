@@ -17,7 +17,6 @@
             <artifactId>datasafe-directory-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-encryption-api</artifactId>
@@ -95,10 +94,6 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -106,16 +101,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-test-storages</artifactId>
@@ -125,12 +110,6 @@
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-storage-impl-fs</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-storage-impl-s3</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -148,6 +127,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <scope>test</scope>
@@ -155,11 +144,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-commons</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -173,14 +157,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-compiler</artifactId>
-            <scope>test</scope>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.11.2</version>
         </dependency>
         <dependency>
             <groupId>org.awaitility</groupId>
@@ -230,14 +209,10 @@
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.drools:drools-core</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.drools:drools-compiler</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>com.h2database:h2</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredUsedUndeclaredDependencies>
-                                <ignoredUsedUndeclaredDependency>org.kie:kie-api</ignoredUsedUndeclaredDependency>
-                                <ignoredUsedUndeclaredDependency>org.kie:kie-internal</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>com.amazonaws</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
@@ -257,7 +232,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>

@@ -193,6 +193,18 @@
                 <version>${auto-service.version}</version>
             </dependency>
 
+            <!-- Storages -->
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-s3</artifactId>
+                <version>${amazon.aws.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-core</artifactId>
+                <version>${amazon.aws.version}</version>
+            </dependency>
+
             <!--
             You will still need to add `test` scope when using dependency, here it is just for clarity, because
             it is not inherited
