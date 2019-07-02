@@ -28,9 +28,15 @@ deploy:
       tags: true
       condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
 
+#  - provider: script
+#    skip_cleanup: true
+#    script: /bin/bash .travis/deploy_develop_to_openshift.sh
+#    on:
+#      branch: develop
+
   - provider: script
     skip_cleanup: true
-    script: /bin/bash .travis/deploy_develop_to_openshift.sh
+    script: /bin/bash .travis/deploy_dockerhub.sh
     on:
       branch: develop
 

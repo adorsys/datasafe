@@ -1,0 +1,10 @@
+kind: ImageStream
+apiVersion: v1
+metadata:
+  name: datasafe
+spec:
+  tags:
+    - from:
+        kind: DockerImage
+        name: docker.io/max402/datasafe:latest
+      name: latest
