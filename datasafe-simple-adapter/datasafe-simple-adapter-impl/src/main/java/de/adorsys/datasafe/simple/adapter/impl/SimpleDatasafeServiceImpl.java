@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
+    private static final String AMAZON_URL = "https://s3.amazonaws.com";
+
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private final static ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
@@ -65,7 +67,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             log.info(lsf.toString());
             URI systemRoot = filesystemDFSCredentials.getRoot().toAbsolutePath().toUri();
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
-                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()).userProfileLocation(new CustomizedUserProfileLocation(systemRoot)))
+                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .storage(new FileSystemStorageService(filesystemDFSCredentials.getRoot()))
                     .overridesRegistry(baseOverridesRegistry)
                     .build();
@@ -81,19 +83,26 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
             log.info(lsf.toString());
-            AmazonS3 amazons3 = AmazonS3ClientBuilder.standard()
-                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(amazonS3DFSCredentials.getUrl(), amazonS3DFSCredentials.getRegion()))
+            AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(amazonS3DFSCredentials.getAccessKey(), amazonS3DFSCredentials.getSecretKey())))
-                    .enablePathStyleAccess()
-                    .build();
+                    .enablePathStyleAccess();
 
+            boolean useEndpoint = (!amazonS3DFSCredentials.getUrl().equals(AMAZON_URL));
+            if (useEndpoint) {
+                AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(amazonS3DFSCredentials.getUrl(), amazonS3DFSCredentials.getRegion());
+                amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
+            } else {
+                amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
+            }
+
+            AmazonS3 amazons3 = amazonS3ClientBuilder.build();
 
             if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
                 amazons3.createBucket(amazonS3DFSCredentials.getContainer());
             }
             String systemRoot = S3_PREFIX + amazonS3DFSCredentials.getRootBucket();
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
-                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()).userProfileLocation(new CustomizedUserProfileLocation(systemRoot)))
+                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .storage(new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE))
                     .overridesRegistry(baseOverridesRegistry)
                     .build();
@@ -120,11 +129,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
     @Override
-    public void registerDFSCredentials(UserIDAuth userIDAuth, DFSCredentials dfsCredentials) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
     @SneakyThrows
     public void storeDocument(UserIDAuth userIDAuth, DSDocument dsDocument) {
         try (OutputStream os = customlyBuiltDatasafeServices.privateService()
@@ -142,16 +146,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             documentContent = new DocumentContent(ByteStreams.toByteArray(is));
         }
         return new DSDocument(documentFQN, documentContent);
-    }
-
-    @Override
-    public void storeDocumentStream(UserIDAuth userIDAuth, DSDocumentStream dsDocumentStream) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public DSDocumentStream readDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        throw new SimpleAdapterException("NYI");
     }
 
     @Override
@@ -188,33 +182,4 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         return l.stream().filter(el -> StringUtils.countMatches(el.getDatasafePath(), "/") == numberOfSlashesExpected).collect(Collectors.toList());
     }
 
-    @Override
-    public List<DocumentFQN> listInbox(UserIDAuth userIDAuth) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public void writeDocumentToInboxOfUser(UserID receiverUserID, DSDocument document, DocumentFQN destDocumentFQN) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public DSDocument readDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN source) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public void deleteDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public void moveDocumnetToInboxOfUser(UserIDAuth userIDAuth, UserID receiverUserID, DocumentFQN sourceDocumentFQN, DocumentFQN destDocumentFQN, MoveType moveType) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public DSDocument moveDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN source, DocumentFQN destination) {
-        throw new SimpleAdapterException("NYI");
-    }
 }

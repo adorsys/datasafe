@@ -58,7 +58,7 @@ public class S3StorageService implements StorageService {
         return objectStream
                 .map(os -> new AbsoluteLocation<>(
                         new BaseResolvedResource(
-                                createResource(location, os, prefix.length()),
+                                createPath(location, os, prefix.length()),
                                 os.getLastModified().toInstant()
                         ))
                 );
@@ -131,7 +131,7 @@ public class S3StorageService implements StorageService {
         return pathExists;
     }
 
-    private PrivateResource createResource(AbsoluteLocation root, S3ObjectSummary os, int prefixLen) {
+    private PrivateResource createPath(AbsoluteLocation root, S3ObjectSummary os, int prefixLen) {
         String relUrl = os.getKey().substring(prefixLen).replaceFirst("^/", "");
         if ("".equals(relUrl)) {
             return BasePrivateResource.forPrivate(root.location());

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>datasafe</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.0.15-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -135,6 +135,12 @@
         </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-db</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
             <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -180,6 +186,11 @@
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -221,6 +232,7 @@
                                 <ignoredUnusedDeclaredDependency>org.drools:drools-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.drools:drools-compiler</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>com.h2database:h2</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>org.kie:kie-api</ignoredUsedUndeclaredDependency>

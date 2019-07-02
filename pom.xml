@@ -22,7 +22,7 @@
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>0.0.15-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -109,6 +109,10 @@
         <auto-service.version>1.0-rc4</auto-service.version>
         <compile-testing.version>0.18</compile-testing.version>
         <maven.jar.plugin>3.1.0</maven.jar.plugin>
+        <spring.jdbc>5.1.8.RELEASE</spring.jdbc>
+        <hikari.cp>3.3.1</hikari.cp>
+        <h2.database>1.4.199</h2.database>
+        <liquibase>3.6.1</liquibase>
     </properties>
 
     <dependencies>
@@ -262,6 +266,27 @@
                 <artifactId>awaitility</artifactId>
                 <version>${awaitility.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.database}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${spring.jdbc}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP</artifactId>
+                <version>${hikari.cp}</version>
             </dependency>
 	    </dependencies>
 	</dependencyManagement>
