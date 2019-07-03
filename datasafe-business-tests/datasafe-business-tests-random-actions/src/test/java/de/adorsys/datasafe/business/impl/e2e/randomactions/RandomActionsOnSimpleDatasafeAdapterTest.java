@@ -76,7 +76,7 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                                 request.getOwner(),
                                 asFqnDir(request.getLocation()),
                                 ListRecursiveFlag.TRUE
-                        ).stream().map(it -> new AbsoluteLocation<>(asResolved(it)));
+                        ).stream().map(it -> new AbsoluteLocation<>(asResolved(descriptor.getLocation(), it)));
                     }
 
                     @Override
@@ -110,7 +110,7 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                             super.close();
                             datasafeService.storeDocument(
                                     userIDAuth,
-                                    new DSDocument(documentFQN, new DocumentContent(buf))
+                                    new DSDocument(documentFQN, new DocumentContent(super.toByteArray()))
                             );
                         }
                     }
@@ -192,9 +192,9 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
         return new DocumentFQN(resource.location().getPath());
     }
 
-    private ResolvedResource asResolved(DocumentFQN resource) {
+    private ResolvedResource asResolved(Uri root, DocumentFQN resource) {
         return new BaseResolvedResource(
-                BasePrivateResource.forPrivate(resource.getDatasafePath()),
+                new BasePrivateResource(root, new Uri(""), new Uri(resource.getDatasafePath())),
                 Instant.now()
         );
     }

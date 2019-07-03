@@ -47,8 +47,8 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     @BeforeEach
     void prepare() {
         // Enable logging obfuscation
-        System.setProperty("SECURE_LOGS", "on");
-        System.setProperty("SECURE_SENSITIVE", "on");
+        //System.setProperty("SECURE_LOGS", "on");
+        ///System.setProperty("SECURE_SENSITIVE", "on");
     }
 
     protected Fixture smallSimpleDocusafeAdapterFixture() {
