@@ -98,7 +98,7 @@ public class InboxController {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = Optional.ofNullable(path).orElse("./");
         List<String> inboxList = dataSafeService.inboxService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
-                .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
+                .map(e -> e.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());
         log.debug("User's {} inbox contains {} items", user, inboxList.size());
         return inboxList;

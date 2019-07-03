@@ -1,29 +1,29 @@
 package de.adorsys.datasafe.types.api.resource;
 
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Hardened URI class that prevents leaking of URI content.
+ * Note: Always prefer using functions that take URI as arguments.
  */
 @EqualsAndHashCode(of = "wrapped")
-@RequiredArgsConstructor
 public class Uri {
 
     @NonNull
     @Getter
     private final URI wrapped;
 
-    @SneakyThrows
+    public Uri(@NonNull URI wrapped) {
+        this.wrapped = wrapped;
+    }
+
     public Uri(String path) {
-        try {
-            this.wrapped = new URI(path);
-        } catch (URISyntaxException ex) {
-            throw new URISyntaxException(Obfuscate.secure(ex.getInput(), "/"), ex.getReason());
-        }
+        this.wrapped = UriEncoderDecoder.encode(path);
     }
 
     /**
@@ -35,12 +35,20 @@ public class Uri {
     }
 
     /**
+     * {@link URI#getRawPath()}
+     * @return Path part of wrapped URI.
+     */
+    public String getRawPath() {
+        return wrapped.getRawPath();
+    }
+
+    /**
      * {@link URI#resolve(String)}
      * @param uri Path to resolve.
      * @return Uri that has <b>wrapped Uri + {@code uri}</b> as its path.
      */
     public Uri resolve(String uri) {
-        return new Uri(this.wrapped.resolve(uri));
+        return new Uri(this.wrapped.resolve(UriEncoderDecoder.encode(uri)));
     }
 
     /**
@@ -75,7 +83,7 @@ public class Uri {
      * For example, http://example.com/foo/ becomes http://example.com/foo.
      */
     public Uri asDir() {
-        return isDir() ? this : new Uri(this.wrapped.toASCIIString() + "/");
+        return isDir() ? this : new Uri(URI.create(this.wrapped.toString() + "/"));
     }
 
     /**
@@ -83,7 +91,7 @@ public class Uri {
      * For example, http://example.com/foo becomes http://example.com/foo/ so it can be resolved against.
      */
     public Uri asFile() {
-        return isDir() ? new Uri(this.wrapped.toASCIIString().replaceAll("/$", "")) : this;
+        return isDir() ? new Uri(URI.create(this.wrapped.toString().replaceAll("/$", ""))) : this;
     }
 
     /**
@@ -106,7 +114,7 @@ public class Uri {
      * @return If wrapped resource is not empty string.
      */
     public boolean isEmpty() {
-        return this.wrapped.toASCIIString().isEmpty();
+        return this.wrapped.toString().isEmpty();
     }
 
     /**
@@ -116,7 +124,7 @@ public class Uri {
      * "http://example.com/foo/".resolve("bar") transforms to http://example.com/foo/bar, so it is path root.
      */
     public boolean isDir() {
-        return this.wrapped.toASCIIString().endsWith("/");
+        return this.wrapped.toString().endsWith("/");
     }
 
     /**
@@ -130,40 +138,21 @@ public class Uri {
      * @return wrapped resource without authority
      */
     public URI withoutAuthority() {
-        return URI.create(withoutAuthority(wrapped));
+        return URI.create(UriEncoderDecoder.withoutAuthority(wrapped));
+    }
+
+    /**
+     * Returns human-friendly URL-decoded representation of this class, and strips authority
+     * @return URL-decoded value (i.e. %20 will become ' ')
+     */
+    public String asString() {
+        return UriEncoderDecoder.decodeAndDropAuthority(wrapped);
     }
 
     @Override
     public String toString() {
         return "Uri{" +
-                "uri=" + Obfuscate.secure(withoutAuthority(wrapped), "/") +
+                "uri=" + Obfuscate.secure(UriEncoderDecoder.withoutAuthority(wrapped), "/") +
                 '}';
-    }
-
-    private String withoutAuthority(URI uri) {
-        if (uri == null) {
-            return null;
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        if (null != uri.getScheme()) {
-            sb.append(uri.getScheme()).append("://");
-        }
-
-        if (null != uri.getHost()) {
-            sb.append(uri.getHost());
-        }
-
-        if (-1 != uri.getPort()) {
-            sb.append(":");
-            sb.append(uri.getPort());
-        }
-
-        if (null != uri.getPath()) {
-            sb.append(uri.getPath());
-        }
-
-        return sb.toString();
     }
 }

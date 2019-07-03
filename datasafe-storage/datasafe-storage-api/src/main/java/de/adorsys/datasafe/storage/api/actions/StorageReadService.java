@@ -5,7 +5,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import java.io.InputStream;
 
 /**
- * Raw file read operation at a given location.
+ * Raw file read operation at a given location. Paths use URL-encoding.
  */
 @FunctionalInterface
 public interface StorageReadService {

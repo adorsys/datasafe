@@ -72,11 +72,11 @@ class DatabaseStorageServiceTest extends BaseMockitoTest {
         writeData(OTHER_FILE, MESSAGE);
 
         assertThat(storageService.list(FILE))
-                .extracting(it -> it.getResource().location().asURI().toString())
+                .extracting(it -> it.getResource().location().asString())
                 .containsOnly("jdbc://localhost:9999/h2:mem:test/private_profiles/path/hello.txt");
 
         assertThat(storageService.list(ROOT))
-                .extracting(it -> it.getResource().location().asURI().toString())
+                .extracting(it -> it.getResource().location().asString())
                 .containsOnly(
                         "jdbc://localhost:9999/h2:mem:test/private_profiles/path/hello.txt",
                         "jdbc://localhost:9999/h2:mem:test/private_profiles/path/hello1.txt"

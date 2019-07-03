@@ -7,7 +7,7 @@ import de.adorsys.datasafe.types.api.resource.WithCallback;
 import java.io.OutputStream;
 
 /**
- * Raw file write operation at a given location.
+ * Raw file write operation at a given location. Paths use URL-encoding.
  */
 @FunctionalInterface
 public interface StorageWriteService {

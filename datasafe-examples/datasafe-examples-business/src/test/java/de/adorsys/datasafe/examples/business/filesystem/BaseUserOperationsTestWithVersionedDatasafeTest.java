@@ -32,7 +32,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 /**
  * This test shows simplistic usage of Datasafe versioned services that reside on filesystem.
  */
-class BaseUserOperationsTestWithVersionedDatasafe {
+class BaseUserOperationsTestWithVersionedDatasafeTest {
 
     private VersionedDatasafeServices versionedServices;
 

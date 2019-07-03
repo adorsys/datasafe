@@ -31,7 +31,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 /**
  * This test shows simplistic usage of Datasafe default services that reside on filesystem.
  */
-class BaseUserOperationsTestWithDefaultDatasafe {
+class BaseUserOperationsTestWithDefaultDatasafeTest {
 
     private DefaultDatasafeServices defaultDatasafeServices;
 
@@ -180,7 +180,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
                 .list(ListRequest.forDefaultPrivate(user, "")).collect(Collectors.toList());
         // same files we created
         assertThat(johnsPrivateFilesInRoot)
-                .extracting(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+                .extracting(it -> it.getResource().asPrivate().decryptedPath().asString())
                 .containsExactlyInAnyOrder(
                         "home/my/secret.txt",
                         "home/watch/films.txt",
@@ -192,7 +192,7 @@ class BaseUserOperationsTestWithDefaultDatasafe {
                 .list(ListRequest.forDefaultPrivate(user, "home/watch")).collect(Collectors.toList());
         // same files we created
         assertThat(johnsPrivateFilesInWatch)
-                .extracting(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
+                .extracting(it -> it.getResource().asPrivate().decryptedPath().asString())
                 .containsExactly(
                         "home/watch/films.txt"
                 );

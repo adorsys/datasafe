@@ -36,7 +36,7 @@ public class DefaultVersionEncoderDecoder implements VersionEncoderDecoder {
 
     @Override
     public Optional<VersionedUri> decodeVersion(Uri uri) {
-        String[] parts = uri.getPath().split(SEPARATOR);
+        String[] parts = uri.getRawPath().split(SEPARATOR);
 
         if (parts.length < 2) {
             return Optional.empty();
