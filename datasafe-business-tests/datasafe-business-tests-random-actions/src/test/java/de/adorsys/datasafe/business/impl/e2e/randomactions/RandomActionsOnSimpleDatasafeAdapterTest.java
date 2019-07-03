@@ -6,7 +6,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Imitates close-to-production Datasafe deployment.
+ * Executes random user actions in multiple threads against SimpleDatasafeAdapter.
+ * Set of predefined actions fixture is executed by multiple threads and result is validated.
+ * Imitates close-to-production SimpleDatasafeAdapter deployment.
  */
 class RandomActionsOnSimpleDatasafeAdapterTest extends WithStorageProvider {
 

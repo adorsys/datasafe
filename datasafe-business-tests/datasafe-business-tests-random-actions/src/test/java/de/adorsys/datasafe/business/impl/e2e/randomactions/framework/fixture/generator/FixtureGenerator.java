@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.extern.slf4j.Slf4j;
@@ -85,8 +85,8 @@ class FixtureGenerator extends BaseMockitoTest {
                         )
         );
 
-        log.info("Fixture:");
-        log.info("{}", new Gson().toJson(fixture));
+        System.out.println("------------------------- Fixture: -----------------------------------");
+        System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(fixture));
     }
 
     /**

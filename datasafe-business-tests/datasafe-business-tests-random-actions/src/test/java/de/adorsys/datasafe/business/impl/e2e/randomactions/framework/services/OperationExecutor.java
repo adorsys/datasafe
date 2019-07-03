@@ -1,10 +1,9 @@
 package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services;
 
+import com.google.common.collect.Streams;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.dto.UserSpec;
-import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.Operation;
-import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.OperationType;
-import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.StorageType;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.*;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.InboxService;
@@ -69,8 +68,48 @@ public class OperationExecutor {
         }
     }
 
+    public void validateUserStorageContent(
+            Map<String, Map<String, ContentId>> userIdToPrivateSpace,
+            Map<String, Map<String, ContentId>> userIdToInboxSpace) {
+
+        userIdToPrivateSpace.forEach((user, storage) ->
+                generateValidatingOperations(user, storage, StorageType.PRIVATE).forEach(this::execute)
+        );
+
+        userIdToInboxSpace.forEach((user, storage) ->
+                generateValidatingOperations(user, storage, StorageType.INBOX).forEach(this::execute)
+        );
+    }
+
+    private Stream<Operation> generateValidatingOperations(String userId, Map<String, ContentId> storage,
+                                                           StorageType type) {
+        return Streams.concat(
+                Stream.of(Operation.builder()
+                        .type(OperationType.LIST)
+                        .userId(userId)
+                        .location(URI.create(""))
+                        .storageType(type)
+                        .result(
+                                OperationResult.builder()
+                                        .dirContent(
+                                                storage.keySet().stream().map(URI::create).collect(Collectors.toSet())
+                                        ).build())
+                        .build()
+                ),
+                storage.entrySet().stream().map(it ->
+                        Operation.builder()
+                                .type(OperationType.READ)
+                                .userId(userId)
+                                .location(URI.create(it.getKey()))
+                                .storageType(type)
+                                .result(OperationResult.builder().content(it.getValue()).build())
+                                .build()
+                )
+        );
+    }
+
     @SneakyThrows
-    public void doWrite(Operation oper) {
+    private void doWrite(Operation oper) {
         UserSpec user = requireUser(oper);
 
         try (OutputStream os = openWriteStream(user, oper)) {
@@ -79,7 +118,7 @@ public class OperationExecutor {
     }
 
     @SneakyThrows
-    public void doRead(Operation oper) {
+    private void doRead(Operation oper) {
         UserSpec user = requireUser(oper);
 
         try (InputStream is = openReadStream(user, oper)) {
@@ -98,7 +137,7 @@ public class OperationExecutor {
         }
     }
 
-    public void doList(Operation oper) {
+    private void doList(Operation oper) {
         UserSpec user = requireUser(oper);
 
         List<AbsoluteLocation<ResolvedResource>> resources = listResources(user, oper).collect(Collectors.toList());
@@ -118,7 +157,7 @@ public class OperationExecutor {
         }
     }
 
-    public void doDelete(Operation oper) {
+    private void doDelete(Operation oper) {
         UserSpec user = requireUser(oper);
 
         RemoveRequest<UserIDAuth, PrivateResource> request =
@@ -177,13 +216,17 @@ public class OperationExecutor {
         return digest.digest();
     }
 
-    private UserSpec requireUser(Operation oper) {
-        UserSpec user = users.get(oper.getUserId());
+    private UserSpec requireUser(String userId) {
+        UserSpec user = users.get(userId);
         if (null == user) {
-            log.error("No such user for {}", oper);
-            throw new UserNotFoundException(oper.getUserId());
+            log.error("No such user {}", userId);
+            throw new UserNotFoundException(userId);
         }
         return user;
+    }
+
+    private UserSpec requireUser(Operation oper) {
+        return requireUser(oper.getUserId());
     }
 
     @SneakyThrows
