@@ -1,3 +1,4 @@
+This file is not used, as the mapped url supplied by docker is known after spring has already done its configuration ....
 datasafe:
   storeconnection:
     amazons3:

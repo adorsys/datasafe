@@ -7,7 +7,6 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.spring.annotations.UseDatasafeSpringConfiguration;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,10 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @UseDatasafeSpringConfiguration
 public class InjectionTest extends WithStorageProvider {
 
-    @Autowired
-    SimpleDatasafeService datasafeService;
-
-    public void testCreateUser() {
+    public void testCreateUser(SimpleDatasafeService datasafeService) {
         assertThat(datasafeService).isNotNull();
         UserID userid = new UserID("peter");
         ReadKeyPassword password = new ReadKeyPassword("password");
