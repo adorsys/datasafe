@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.spring;
 
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
+import de.adorsys.datasafe.simple.adapter.spring.annotations.UseDatasafeSpringConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
 @SpringBootConfiguration
+@UseDatasafeSpringConfiguration
+
 public class InjectionTest {
 
     @Autowired

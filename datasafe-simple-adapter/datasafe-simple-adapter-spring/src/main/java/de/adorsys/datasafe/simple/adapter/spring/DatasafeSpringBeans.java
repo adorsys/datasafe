@@ -47,7 +47,7 @@ public class DatasafeSpringBeans {
                     .build();
         }
         if (dfsCredentials == null) {
-            throw new SimpleAdapterException("missing switch for SpringDFSCredentialProperties");
+            throw new SimpleAdapterException("missing switch for SpringDFSCredentialProperties: " + properties);
         }
 
         return dfsCredentials;
