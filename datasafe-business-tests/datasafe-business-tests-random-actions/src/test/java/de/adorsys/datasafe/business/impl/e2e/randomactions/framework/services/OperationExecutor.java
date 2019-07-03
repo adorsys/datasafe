@@ -80,12 +80,20 @@ public class OperationExecutor {
             Map<String, Map<String, ContentId>> userIdToInboxSpace) {
 
         userIdToPrivateSpace.forEach((user, storage) ->
-                generateValidatingOperations(execId, user, storage, StorageType.PRIVATE).forEach(this::execute)
+                generateValidatingOperations(execId, user, storage, StorageType.PRIVATE)
+                        .forEach(this::executeWithoutReport)
         );
 
         userIdToInboxSpace.forEach((user, storage) ->
-                generateValidatingOperations(execId, user, storage, StorageType.INBOX).forEach(this::execute)
+                generateValidatingOperations(execId, user, storage, StorageType.INBOX)
+                        .forEach(this::executeWithoutReport)
         );
+    }
+
+    private void executeWithoutReport(Operation oper) {
+        log.trace("[N/A] [{} {}/{}/{}] Executing {} (no report)",
+                oper.getType(), oper.getUserId(), oper.getStorageType(), oper.getLocation(), oper);
+        handlers.get(oper.getType()).accept(oper);
     }
 
     private Stream<Operation> generateValidatingOperations(String execId,

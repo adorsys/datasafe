@@ -94,7 +94,18 @@ class RandomActionsOnDatasafeTest extends BaseRandomActions {
         } while (!executionIds.isEmpty() && exceptions.isEmpty());
 
         executorService.shutdown();
-        return executorService.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
+        boolean status = executorService.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
+        if (!status) {
+            return false;
+        }
+
+        executionIds.forEach(it -> executor.validateUsersStorageContent(
+                it,
+                fixture.getUserPrivateSpace(),
+                fixture.getUserPublicSpace())
+        );
+
+        return true;
     }
 
     private void createUsers(OperationExecutor executor) {
@@ -125,25 +136,7 @@ class RandomActionsOnDatasafeTest extends BaseRandomActions {
             return;
         }
 
-        validateResultingStorage(executor, executorService, blockedExecIds, exceptions, threadId);
         execIds.remove(threadId);
-    }
-
-    private void validateResultingStorage(OperationExecutor executor, ExecutorService executorService,
-                                          Set<String> blockedExecIds, List<Throwable> exceptions, String execId) {
-        log.info("Validating data for execution {}", execId);
-        executeWithThreadName(
-                execId,
-                execId,
-                executorService,
-                blockedExecIds,
-                exceptions,
-                () -> executor.validateUsersStorageContent(
-                        execId,
-                        fixture.getUserPrivateSpace(),
-                        fixture.getUserPublicSpace()
-                )
-        );
     }
 
     private void executeOperation(OperationExecutor executor,
