@@ -381,7 +381,7 @@ assertThat(defaultDatasafeServices.privateService().read(
 ```
 Removing old file version can be done by [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#non-current-days-calculations)
 or manually, using this snippet:
-[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorage.java#L180-L207)
+[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorageTest.java#L180-L207)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
