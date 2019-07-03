@@ -153,6 +153,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
         assertPrivateSpaceList(jane, "level1/level2/", "level1/level2/file");
     }
 
+
     @ParameterizedTest
     @MethodSource("allStorages")
     void listingInboxValidation(WithStorageProvider.StorageDescriptor descriptor) {

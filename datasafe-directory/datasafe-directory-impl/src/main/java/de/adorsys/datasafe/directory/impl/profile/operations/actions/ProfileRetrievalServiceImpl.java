@@ -81,7 +81,7 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
     @SneakyThrows
     private <T> T readProfile(AbsoluteLocation resource, Class<T> clazz) {
         try (InputStream is = readService.read(access.withSystemAccess(resource))) {
-            log.debug("read profile {}", resource.location().getPath());
+            log.debug("read profile {}", resource.location());
             return serde.fromJson(new String(ByteStreams.toByteArray(is)), clazz);
         }
     }

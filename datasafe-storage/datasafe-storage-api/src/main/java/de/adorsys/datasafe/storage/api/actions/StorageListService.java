@@ -6,7 +6,7 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import java.util.stream.Stream;
 
 /**
- * Raw list operation at a given location.
+ * Raw list operation at a given location. Paths use URL-encoding.
  */
 @FunctionalInterface
 public interface StorageListService {

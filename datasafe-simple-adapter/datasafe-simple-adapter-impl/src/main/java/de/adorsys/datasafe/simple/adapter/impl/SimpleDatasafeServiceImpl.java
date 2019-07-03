@@ -23,10 +23,8 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,8 +33,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -174,7 +170,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public List<DocumentFQN> list(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN, ListRecursiveFlag recursiveFlag) {
         List<DocumentFQN> l = customlyBuiltDatasafeServices.privateService().list(
                 ListRequest.forDefaultPrivate(userIDAuth, documentDirectoryFQN.getDatasafePath()))
-                .map(it -> new DocumentFQN(it.getResource().asPrivate().decryptedPath().toASCIIString()))
+                .map(it -> new DocumentFQN(it.getResource().asPrivate().decryptedPath().asString()))
                 .collect(Collectors.toList());
         if (recursiveFlag.equals(ListRecursiveFlag.TRUE)) {
             return l;

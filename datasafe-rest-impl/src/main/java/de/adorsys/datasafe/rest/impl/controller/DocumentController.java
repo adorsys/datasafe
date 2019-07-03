@@ -84,7 +84,7 @@ public class DocumentController {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = Optional.ofNullable(path).orElse("./");
         List<String> documentList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
-                .map(e -> e.getResource().asPrivate().decryptedPath().getPath())
+                .map(e -> e.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());
         log.debug("List for path {} returned {} items", path, documentList.size());
         return documentList;

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyStore;
 
@@ -35,7 +36,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
     @Test
-    void testSuccessEncryptDecryptPath() throws URISyntaxException {
+    void testSuccessEncryptDecryptPath() {
         String testPath = "path/to/file";
 
         log.info("Test path: {}", testPath);
@@ -77,7 +78,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
         assertThrows(BadPaddingException.class,
                 () -> bucketPathEncryptionService.decrypt(secretKey,
-                        new Uri("bRQiW8qLNPEy5tO7shfV0w==/k0HooCVlmhHkQFw8mc_BROKEN_PATH")));
+                        new Uri(URI.create("bRQiW8qLNPEy5tO7shfV0w==/k0HooCVlmhHkQFw8mc=="))));
     }
 
     @Test

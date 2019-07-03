@@ -11,6 +11,7 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 
 import javax.inject.Inject;
+import java.net.URI;
 
 /**
  * Default encrypted resource resolver that delegates the task of encrypting/decrypting path to
@@ -101,10 +102,10 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
             return root.relativize(resource);
         }
 
-        String rootString = root.toASCIIString();
-        String resourceString = resource.toASCIIString();
+        String rootString = root.asString();
+        String resourceString = resource.asString();
 
         String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
-        return new Uri(relative);
+        return new Uri(URI.create(relative));
     }
 }
