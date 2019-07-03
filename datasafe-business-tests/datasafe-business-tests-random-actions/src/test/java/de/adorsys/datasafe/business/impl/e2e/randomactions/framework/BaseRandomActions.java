@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public abstract class BaseRandomActions extends WithStorageProvider {
 
     private static final Set<Integer> threadCount = ImmutableSet.of(4, 8);
-    private static final Set<Integer> fileSizeMBytes = ImmutableSet.of(1, 10, 30);
+    private static final Set<Integer> fileSizeMBytes = ImmutableSet.of(1, 10);
 
     protected static Fixture fixture;
 

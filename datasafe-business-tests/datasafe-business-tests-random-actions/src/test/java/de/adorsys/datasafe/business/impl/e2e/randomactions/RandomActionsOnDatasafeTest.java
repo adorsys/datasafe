@@ -65,6 +65,16 @@ class RandomActionsOnDatasafeTest extends BaseRandomActions {
 
         assertThat(exceptions).isEmpty();
         assertThat(terminatedOk).isTrue();
+
+        log.info("==== Statistics for {} with {} threads and {} Mb filesize: ====",
+                descriptor.getName(),
+                threadCount,
+                filesizeInMb
+        );
+
+        statisticService.generateReport().forEach((name, percentiles) ->
+                log.info("{} : {}", name, percentiles)
+        );
     }
 
     @SneakyThrows

@@ -171,9 +171,6 @@ public class OperationExecutor {
             );
             throw new IllegalArgumentException("Directory content mismatch");
         }
-        if (resources.isEmpty()) {
-            log.info("Empty bucket");
-        }
     }
 
     private void doDelete(Operation oper) {
