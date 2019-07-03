@@ -125,11 +125,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
     @Override
-    public void registerDFSCredentials(UserIDAuth userIDAuth, DFSCredentials dfsCredentials) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
     @SneakyThrows
     public void storeDocument(UserIDAuth userIDAuth, DSDocument dsDocument) {
         try (OutputStream os = customlyBuiltDatasafeServices.privateService()
@@ -147,16 +142,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             documentContent = new DocumentContent(ByteStreams.toByteArray(is));
         }
         return new DSDocument(documentFQN, documentContent);
-    }
-
-    @Override
-    public void storeDocumentStream(UserIDAuth userIDAuth, DSDocumentStream dsDocumentStream) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public DSDocumentStream readDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        throw new SimpleAdapterException("NYI");
     }
 
     @Override
@@ -193,33 +178,4 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         return l.stream().filter(el -> StringUtils.countMatches(el.getDatasafePath(), "/") == numberOfSlashesExpected).collect(Collectors.toList());
     }
 
-    @Override
-    public List<DocumentFQN> listInbox(UserIDAuth userIDAuth) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public void writeDocumentToInboxOfUser(UserID receiverUserID, DSDocument document, DocumentFQN destDocumentFQN) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public DSDocument readDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN source) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public void deleteDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public void moveDocumnetToInboxOfUser(UserIDAuth userIDAuth, UserID receiverUserID, DocumentFQN sourceDocumentFQN, DocumentFQN destDocumentFQN, MoveType moveType) {
-        throw new SimpleAdapterException("NYI");
-    }
-
-    @Override
-    public DSDocument moveDocumentFromInbox(UserIDAuth userIDAuth, DocumentFQN source, DocumentFQN destination) {
-        throw new SimpleAdapterException("NYI");
-    }
 }
