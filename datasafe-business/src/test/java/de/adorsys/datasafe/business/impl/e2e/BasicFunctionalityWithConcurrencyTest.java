@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Slf4j
 class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
-    private static final int TIMEOUT_S = 10;
+    private static final int TIMEOUT_S = 15;
 
     private static int NUMBER_OF_TEST_USERS = 3;
     private static int NUMBER_OF_TEST_FILES = 5;
@@ -139,7 +139,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             UserIDAuth user = createJohnTestUser(i);
 
-            await().atMost(5, SECONDS).until(
+            await().atMost(TIMEOUT_S, SECONDS).until(
                     () -> listAllPrivateFiles(user).size() == EXPECTED_NUMBER_OF_FILES_PER_USER
             );
             List<AbsoluteLocation<ResolvedResource>> resourceList = listAllPrivateFiles(user);
