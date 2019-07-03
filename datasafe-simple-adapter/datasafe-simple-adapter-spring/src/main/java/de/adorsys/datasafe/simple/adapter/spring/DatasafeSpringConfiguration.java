@@ -8,8 +8,4 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan(basePackageClasses = {DatasafeSpringBeans.class})
 @Slf4j
 public class DatasafeSpringConfiguration {
-
-    public DatasafeSpringConfiguration() {
-        log.info("CREATING DATASAFE BEANS");
-    }
 }

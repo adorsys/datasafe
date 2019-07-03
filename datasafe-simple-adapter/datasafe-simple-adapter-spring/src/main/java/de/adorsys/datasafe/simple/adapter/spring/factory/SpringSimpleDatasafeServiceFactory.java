@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.simple.adapter.spring;
+package de.adorsys.datasafe.simple.adapter.spring.factory;
 
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;

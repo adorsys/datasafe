@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.simple.adapter.spring;
+package de.adorsys.datasafe.simple.adapter.spring.properties;
 
 import lombok.Getter;
 import lombok.Setter;
