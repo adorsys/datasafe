@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
@@ -24,6 +25,8 @@ import java.util.stream.StreamSupport;
 
 /**
  * Amazon S3, minio and CEPH compatible default S3 interface adapter.
+ * Note: It is using rawPath of URI that is url-encoded due to:
+ * https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
  */
 @Slf4j
 public class S3StorageService implements StorageService {
@@ -51,7 +54,7 @@ public class S3StorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         log.debug("List at {}", location.location());
-        String prefix = location.location().getPath().replaceFirst("^/", "");
+        String prefix = location.location().getRawPath().replaceFirst("^/", "");
 
         S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, prefix);
         Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);
@@ -137,7 +140,7 @@ public class S3StorageService implements StorageService {
             return BasePrivateResource.forPrivate(root.location());
         }
 
-        return BasePrivateResource.forPrivate(relUrl).resolveFrom(root);
+        return BasePrivateResource.forPrivate(URI.create(relUrl)).resolveFrom(root);
     }
 
     private void execute(AbsoluteLocation location,
@@ -161,7 +164,7 @@ public class S3StorageService implements StorageService {
                          BiFunction<String, StorageVersion, T> ifVersion) {
 
         String key = location.getResource().location()
-                .getPath()
+                .getRawPath()
                 .replaceFirst("^/", "")
                 .replaceFirst("/$", "");
         Optional<StorageVersion> version = extractVersion(location);

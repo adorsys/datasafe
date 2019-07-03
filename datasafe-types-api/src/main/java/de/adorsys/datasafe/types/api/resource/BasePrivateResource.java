@@ -115,7 +115,7 @@ public class BasePrivateResource implements PrivateResource {
     }
 
     private static Uri resolveContainer(Uri root, Uri encryptedPath) {
-        String pathStr = encryptedPath.toASCIIString();
+        String pathStr = encryptedPath.asString();
 
         if (pathStr.contains("/")) {
             pathStr = pathStr.split("/", 2)[0];
@@ -125,13 +125,13 @@ public class BasePrivateResource implements PrivateResource {
             return root;
         }
 
-        String rootStr = root.toASCIIString();
+        String rootStr = root.asString();
         int pos = rootStr.indexOf(pathStr);
 
         if (pos <= 0) {
             return root;
         }
 
-        return new Uri(rootStr.substring(0, pos));
+        return new Uri(URI.create(rootStr.substring(0, pos)));
     }
 }

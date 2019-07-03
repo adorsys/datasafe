@@ -120,6 +120,10 @@ public class DefaultDFSConfig implements DFSConfig {
                 .build();
     }
 
+    protected Uri userRoot(UserID userID) {
+        return dfsRoot().location().resolve(USERS_ROOT).resolve(userID.getValue() + "/");
+    }
+
     /**
      * Where system files like users' private and public profile are located within DFS.
      */
@@ -141,10 +145,6 @@ public class DefaultDFSConfig implements DFSConfig {
 
     private AbsoluteLocation<PrivateResource> accessPrivate(Uri path) {
         return new AbsoluteLocation<>(new BasePrivateResource(path, new Uri(""), new Uri("")));
-    }
-
-    private Uri userRoot(UserID userID) {
-        return dfsRoot().location().resolve(USERS_ROOT).resolve(userID.getValue() + "/");
     }
 
     private Uri inbox(Uri rootLocation) {
@@ -174,5 +174,4 @@ public class DefaultDFSConfig implements DFSConfig {
         }
         return systemRoot + "/";
     }
-
 }

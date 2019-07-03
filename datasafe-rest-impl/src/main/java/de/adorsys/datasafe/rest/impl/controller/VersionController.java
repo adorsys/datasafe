@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,7 +44,7 @@ public class VersionController {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = Optional.ofNullable(path).orElse("./");
         List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(ListRequest.forDefaultPrivate(userIDAuth, path))
-                .map(e -> e.absolute().getResource().decryptedPath().getPath())
+                .map(e -> e.absolute().getResource().decryptedPath().asString())
                 .collect(Collectors.toList());
         log.debug("List for path {} returned {} items", path, documentList.size());
         return documentList;
@@ -126,6 +125,6 @@ public class VersionController {
                         .collect(Collectors.toList());
 
         log.debug("Versions for path {} returned {} items", path, versionList.size());
-        return versionList.stream().map(a -> a.absolute().getResource().asPrivate().decryptedPath().toASCIIString()).collect(Collectors.toList());
+        return versionList.stream().map(a -> a.absolute().getResource().asPrivate().decryptedPath().asString()).collect(Collectors.toList());
     }
 }
