@@ -9,10 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 
-/**
- * Created by peter on 05.10.18.
- */
-
 @ConfigurationProperties(prefix = "datasafe.storeconnection.filesystem")
 @Validated
 @Getter
