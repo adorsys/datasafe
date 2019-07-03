@@ -2,15 +2,16 @@ package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dt
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
-import java.net.URI;
 import java.util.Set;
 
 /**
  * Represents operation done on DFS.
  */
 @Getter
-@Builder
+@Builder(toBuilder = true)
+@ToString
 public class Operation {
 
     /**
@@ -36,7 +37,7 @@ public class Operation {
     /**
      * Where to write content
      */
-    private final URI location;
+    private final String location;
 
     /**
      * Recipients for sharing operation.

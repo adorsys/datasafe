@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.URI;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class TestFileTreeOper {
                 Operation.builder()
                         .userId(testUser.getUsername())
                         .contentId(id)
-                        .location(URI.create(path))
+                        .location(path)
                         .storageType(storageType)
                         .type(OperationType.WRITE)
                         .build()
@@ -76,7 +75,7 @@ public class TestFileTreeOper {
                 Operation.builder()
                         .userId(testUser.getUsername())
                         .contentId(id)
-                        .location(URI.create(path))
+                        .location(path)
                         .recipients(shareWith
                                 .stream()
                                 .map(it -> it.getUser().getUsername())
@@ -104,7 +103,7 @@ public class TestFileTreeOper {
         publishTo.accept(
                 Operation.builder()
                         .userId(testUser.getUsername())
-                        .location(URI.create(path))
+                        .location(path)
                         .storageType(storageType)
                         .type(OperationType.READ)
                         .result(OperationResult.builder().content(value).build())
@@ -124,12 +123,10 @@ public class TestFileTreeOper {
         publishTo.accept(
                 Operation.builder()
                         .userId(testUser.getUsername())
-                        .location(URI.create(path))
+                        .location(path)
                         .storageType(storageType)
                         .type(OperationType.LIST)
-                        .result(OperationResult.builder()
-                                .dirContent(result.stream().map(URI::create).collect(Collectors.toSet())).build()
-                        )
+                        .result(OperationResult.builder().dirContent(result).build())
                         .build()
         );
         return result;
@@ -150,7 +147,7 @@ public class TestFileTreeOper {
         publishTo.accept(
                 Operation.builder()
                         .userId(testUser.getUsername())
-                        .location(URI.create(path))
+                        .location(path)
                         .storageType(storageType)
                         .type(OperationType.DELETE)
                         .build()

@@ -4,6 +4,7 @@ import com.google.common.collect.Streams;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.dto.UserSpec;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.*;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.InboxService;
@@ -15,6 +16,8 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.shared.ContentGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +25,6 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.*;
@@ -39,6 +41,7 @@ import java.util.stream.Stream;
 public class OperationExecutor {
 
     private final Map<OperationType, Consumer<Operation>> handlers = ImmutableMap.of(
+            OperationType.CREATE_USER, this::doCreate,
             OperationType.WRITE, this::doWrite,
             OperationType.READ, this::doRead,
             OperationType.LIST, this::doList,
@@ -47,6 +50,8 @@ public class OperationExecutor {
 
     private final AtomicLong counter = new AtomicLong();
 
+    private final int fileContentSize;
+    private final ProfileRegistrationService registrationService;
     private final PrivateSpaceService privateSpace;
     private final InboxService inboxService;
     private final Map<String, UserSpec> users;
@@ -68,7 +73,7 @@ public class OperationExecutor {
         }
     }
 
-    public void validateUserStorageContent(
+    public void validateUsersStorageContent(
             Map<String, Map<String, ContentId>> userIdToPrivateSpace,
             Map<String, Map<String, ContentId>> userIdToInboxSpace) {
 
@@ -87,25 +92,31 @@ public class OperationExecutor {
                 Stream.of(Operation.builder()
                         .type(OperationType.LIST)
                         .userId(userId)
-                        .location(URI.create(""))
+                        .location("")
                         .storageType(type)
                         .result(
                                 OperationResult.builder()
-                                        .dirContent(
-                                                storage.keySet().stream().map(URI::create).collect(Collectors.toSet())
-                                        ).build())
+                                        .dirContent(storage.keySet())
+                                        .build())
                         .build()
                 ),
                 storage.entrySet().stream().map(it ->
                         Operation.builder()
                                 .type(OperationType.READ)
                                 .userId(userId)
-                                .location(URI.create(it.getKey()))
+                                .location(it.getKey())
                                 .storageType(type)
                                 .result(OperationResult.builder().content(it.getValue()).build())
                                 .build()
                 )
         );
+    }
+
+    @SneakyThrows
+    private void doCreate(Operation oper) {
+        UserIDAuth auth = new UserIDAuth(oper.getUserId(), oper.getUserId());
+        registrationService.registerUsingDefaults(auth);
+        users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
     }
 
     @SneakyThrows
@@ -141,8 +152,8 @@ public class OperationExecutor {
         UserSpec user = requireUser(oper);
 
         List<AbsoluteLocation<ResolvedResource>> resources = listResources(user, oper).collect(Collectors.toList());
-        Set<URI> paths = resources.stream()
-                .map(it -> it.location().asURI())
+        Set<String> paths = resources.stream()
+                .map(it -> it.location().getPath())
                 .collect(Collectors.toSet());
         if (!paths.equals(oper.getResult().getDirContent())) {
             log.error("Directory content mismatch for {} - found {} / expected {}",
@@ -161,7 +172,7 @@ public class OperationExecutor {
         UserSpec user = requireUser(oper);
 
         RemoveRequest<UserIDAuth, PrivateResource> request =
-                RemoveRequest.forDefaultPrivate(user.getAuth(), oper.getLocation());
+                RemoveRequest.forDefaultPrivate(user.getAuth(), new Uri(oper.getLocation()));
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
             inboxService.remove(request);

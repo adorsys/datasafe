@@ -2,12 +2,13 @@ package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dt
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
-import java.net.URI;
 import java.util.Set;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
+@ToString
 public class OperationResult {
 
     /**
@@ -18,5 +19,5 @@ public class OperationResult {
     /**
      * Folder content that is expected for i.e. list operation
      */
-    private final Set<URI> dirContent;
+    private final Set<String> dirContent;
 }
