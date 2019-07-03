@@ -40,13 +40,14 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class OperationExecutor {
 
-    private final Map<OperationType, Consumer<Operation>> handlers = ImmutableMap.of(
-            OperationType.CREATE_USER, this::doCreate,
-            OperationType.WRITE, this::doWrite,
-            OperationType.READ, this::doRead,
-            OperationType.LIST, this::doList,
-            OperationType.DELETE, this::doDelete
-    );
+    private final Map<OperationType, Consumer<Operation>> handlers = ImmutableMap.<OperationType, Consumer<Operation>>builder()
+            .put(OperationType.CREATE_USER, this::doCreate)
+            .put(OperationType.WRITE, this::doWrite)
+            .put(OperationType.SHARE, this::doWrite)
+            .put(OperationType.READ, this::doRead)
+            .put(OperationType.LIST, this::doList)
+            .put(OperationType.DELETE, this::doDelete)
+            .build();
 
     private final AtomicLong counter = new AtomicLong();
 
@@ -74,37 +75,44 @@ public class OperationExecutor {
     }
 
     public void validateUsersStorageContent(
+            String execId,
             Map<String, Map<String, ContentId>> userIdToPrivateSpace,
             Map<String, Map<String, ContentId>> userIdToInboxSpace) {
 
         userIdToPrivateSpace.forEach((user, storage) ->
-                generateValidatingOperations(user, storage, StorageType.PRIVATE).forEach(this::execute)
+                generateValidatingOperations(execId, user, storage, StorageType.PRIVATE).forEach(this::execute)
         );
 
         userIdToInboxSpace.forEach((user, storage) ->
-                generateValidatingOperations(user, storage, StorageType.INBOX).forEach(this::execute)
+                generateValidatingOperations(execId, user, storage, StorageType.INBOX).forEach(this::execute)
         );
     }
 
-    private Stream<Operation> generateValidatingOperations(String userId, Map<String, ContentId> storage,
+    private Stream<Operation> generateValidatingOperations(String execId,
+                                                           String userId,
+                                                           Map<String, ContentId> storage,
                                                            StorageType type) {
         return Streams.concat(
                 Stream.of(Operation.builder()
                         .type(OperationType.LIST)
                         .userId(userId)
-                        .location("")
+                        .location(execId)
                         .storageType(type)
                         .result(
                                 OperationResult.builder()
-                                        .dirContent(storage.keySet())
-                                        .build())
+                                        .dirContent(
+                                                storage.keySet().stream()
+                                                        .map(it -> execId + "/" + it)
+                                                        .collect(Collectors.toSet())
+                                        ).build()
+                        )
                         .build()
                 ),
                 storage.entrySet().stream().map(it ->
                         Operation.builder()
                                 .type(OperationType.READ)
                                 .userId(userId)
-                                .location(it.getKey())
+                                .location(execId + "/" + it.getKey())
                                 .storageType(type)
                                 .result(OperationResult.builder().content(it.getValue()).build())
                                 .build()
@@ -153,7 +161,7 @@ public class OperationExecutor {
 
         List<AbsoluteLocation<ResolvedResource>> resources = listResources(user, oper).collect(Collectors.toList());
         Set<String> paths = resources.stream()
-                .map(it -> it.location().getPath())
+                .map(it -> it.getResource().asPrivate().decryptedPath().getPath())
                 .collect(Collectors.toSet());
         if (!paths.equals(oper.getResult().getDirContent())) {
             log.error("Directory content mismatch for {} - found {} / expected {}",
@@ -185,7 +193,9 @@ public class OperationExecutor {
     private OutputStream openWriteStream(UserSpec user, Operation oper) {
         if (StorageType.INBOX.equals(oper.getStorageType())) {
             return inboxService.write(WriteRequest.forDefaultPublic(
-                    Collections.singleton(user.getAuth().getUserID()),
+                    oper.getRecipients().stream()
+                            .map(it -> requireUser(it).getAuth().getUserID())
+                            .collect(Collectors.toSet()),
                     oper.getLocation())
             );
         }
