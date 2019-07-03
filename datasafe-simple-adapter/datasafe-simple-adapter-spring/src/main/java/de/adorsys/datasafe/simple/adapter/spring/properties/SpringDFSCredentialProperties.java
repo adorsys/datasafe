@@ -5,10 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-@Component
 @ConfigurationProperties(prefix = "datasafe.storeconnection")
 @Validated
 @Getter

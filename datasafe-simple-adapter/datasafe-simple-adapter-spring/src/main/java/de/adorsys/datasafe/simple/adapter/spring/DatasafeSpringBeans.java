@@ -5,15 +5,21 @@ import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
+import de.adorsys.datasafe.simple.adapter.spring.factory.SpringSimpleDatasafeServiceFactory;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringAmazonS3DFSCredentialsProperties;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDFSCredentialProperties;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringFilesystemDFSCredentialsProperties;
-import de.adorsys.datasafe.simple.adapter.spring.factory.SpringSimpleDatasafeServiceFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@EnableConfigurationProperties({
+        SpringDFSCredentialProperties.class,
+        SpringFilesystemDFSCredentialsProperties.class,
+        SpringAmazonS3DFSCredentialsProperties.class}
+)
 @Slf4j
 public class DatasafeSpringBeans {
     public DatasafeSpringBeans() {

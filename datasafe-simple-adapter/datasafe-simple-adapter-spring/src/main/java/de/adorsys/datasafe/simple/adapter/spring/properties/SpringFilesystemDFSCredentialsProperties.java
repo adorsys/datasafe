@@ -7,14 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 /**
  * Created by peter on 05.10.18.
  */
-@Component
-@ConfigurationProperties(prefix = "docusafe.storeconnection.filesystem")
+
+@ConfigurationProperties(prefix = "datasafe.storeconnection.filesystem")
 @Validated
 @Getter
 @Setter

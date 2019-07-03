@@ -7,14 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 /**
  * Created by peter on 04.10.18.
  */
-@Component
-@ConfigurationProperties(prefix = "docusafe.storeconnection.amazons3")
+@ConfigurationProperties(prefix = "datasafe.storeconnection.amazons3")
 @Validated
 @Getter
 @Setter
