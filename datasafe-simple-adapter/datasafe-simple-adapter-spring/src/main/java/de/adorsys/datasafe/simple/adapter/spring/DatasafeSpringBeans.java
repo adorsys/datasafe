@@ -21,14 +21,15 @@ public class DatasafeSpringBeans {
     }
 
     @Bean
-    SpringSimpleDatasafeServiceFactory simpleDatasafeServiceFactory(SpringDFSCredentialProperties springDFSCredentialProperties) {
-        return new SpringSimpleDatasafeServiceFactory(getDFSCredentialsFromSpringDFSCredentialProperties(springDFSCredentialProperties));
+    SpringSimpleDatasafeServiceFactory simpleDatasafeServiceFactory(SpringDFSCredentialProperties properties) {
+        if (properties == null) {
+            throw new SimpleAdapterException("Spring properties are null. Please use at least one of those:\n" + SpringFilesystemDFSCredentialsProperties.template + SpringAmazonS3DFSCredentialsProperties.template);
+        }
+        log.info("*** properties comming from spring look like:" + properties);
+        return new SpringSimpleDatasafeServiceFactory(getDFSCredentialsFromSpringDFSCredentialProperties(properties));
     }
 
     private DFSCredentials getDFSCredentialsFromSpringDFSCredentialProperties(SpringDFSCredentialProperties properties) {
-        if (properties == null) {
-            throw new SimpleAdapterException("Spring properties are not set. Please use at least one of those:\n" + SpringFilesystemDFSCredentialsProperties.template + SpringAmazonS3DFSCredentialsProperties.template);
-        }
         DFSCredentials dfsCredentials = null;
         if (properties.getAmazons3() != null) {
             SpringAmazonS3DFSCredentialsProperties props = properties.getAmazons3();
@@ -47,7 +48,7 @@ public class DatasafeSpringBeans {
                     .build();
         }
         if (dfsCredentials == null) {
-            throw new SimpleAdapterException("missing switch for SpringDFSCredentialProperties: " + properties);
+            throw new SimpleAdapterException("Spring properties are not set correctly. Please use at least one of those:\n" + SpringFilesystemDFSCredentialsProperties.template + SpringAmazonS3DFSCredentialsProperties.template);
         }
 
         return dfsCredentials;
