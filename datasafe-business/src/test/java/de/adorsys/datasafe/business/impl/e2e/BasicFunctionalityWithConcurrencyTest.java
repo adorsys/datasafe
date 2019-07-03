@@ -236,7 +236,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
     @ValueSource
     protected static Stream<Arguments> differentThreadsTestOptions() {
-        Stream<StorageDescriptor> storageDescriptorMap = allDefaultStorages();
+        Stream<StorageDescriptor> storageDescriptorMap = allLocalDefaultStorages();
         List<Arguments> arguments = new ArrayList<>();
 
         storageDescriptorMap.forEach(storageDescriptor -> {

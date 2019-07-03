@@ -143,11 +143,28 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     @ValueSource
+    protected static Stream<StorageDescriptor> allLocalDefaultStorages() {
+        return Stream.of(
+                fs(),
+                minio()
+                /* No CEPH here because it is quite slow*/
+        );
+    }
+
+    @ValueSource
+    protected static Stream<StorageDescriptor> allLocalStorages() {
+        return Stream.of(
+                fs(),
+                minio(),
+                cephVersioned()
+        );
+    }
+
+    @ValueSource
     protected static Stream<StorageDescriptor> allDefaultStorages() {
         return Stream.of(
                 fs(),
                 minio(),
-                /* No CEPH here because it is quite slow*/
                 s3()
         ).filter(Objects::nonNull);
     }

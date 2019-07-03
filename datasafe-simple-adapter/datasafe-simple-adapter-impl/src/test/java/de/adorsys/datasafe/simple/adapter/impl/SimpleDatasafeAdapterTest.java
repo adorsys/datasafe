@@ -82,7 +82,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     private static Stream<Arguments> parameterCombination() {
             return Sets.cartesianProduct(
-                    allStorages().collect(Collectors.toSet()),
+                    allLocalStorages().collect(Collectors.toSet()),
                     withOrWithoutEncryption().collect(Collectors.toSet())
             ).stream().map(it -> Arguments.of(it.get(0), it.get(1)));
     }

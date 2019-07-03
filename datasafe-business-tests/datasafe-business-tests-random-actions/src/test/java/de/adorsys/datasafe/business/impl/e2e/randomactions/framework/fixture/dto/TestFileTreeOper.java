@@ -137,13 +137,13 @@ public class TestFileTreeOper {
      */
     @Synchronized
     public void delete(String path) {
-        ContentId value = files.get(path);
-        if (null == value) {
-            throw new IllegalArgumentException("Deleting non-existing path");
-        }
+        Set<String> toRemove = files.keySet().stream()
+                .filter(it -> it.startsWith(path))
+                .collect(Collectors.toSet());
 
-        log.info(">DELETE [{}]:{}:{}", storageTag(), path, value);
-        files.remove(path);
+        log.info(">DELETE [{}]:{}:{}", storageTag(), path, toRemove);
+        toRemove.forEach(files::remove);
+
         publishTo.accept(
                 Operation.builder()
                         .userId(testUser.getUsername())
@@ -160,6 +160,16 @@ public class TestFileTreeOper {
     public String getPathRandomly() {
         log.info("GET RANDOMLY [{}]", storageTag());
         return Iterables.get(files.keySet(), random.nextInt(files.size()));
+    }
+
+    public String getDirPathRandomly() {
+        log.info("GET RANDOMLY [{}]", storageTag());
+        String path = Iterables.get(files.keySet(), random.nextInt(files.size()));
+        if (!path.contains("/")) {
+            return "";
+        }
+
+        return path.replaceAll("([^/]*)$", "");
     }
 
     private String storageTag() {
