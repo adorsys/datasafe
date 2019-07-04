@@ -1,9 +1,6 @@
 package de.adorsys.datasafe.types.api.actions;
 
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResourceLocation;
-import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.resource.*;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -27,6 +24,16 @@ public class RemoveRequest<T, L extends ResourceLocation> {
 
     public static <T> RemoveRequest<T, PrivateResource> forPrivate(T owner, PrivateResource path) {
         return new RemoveRequest<>(owner, path);
+    }
+
+    public static <T> RemoveRequest<T, PrivateResource> forDefaultPrivateWithVersion(
+            T owner, String path, Version version) {
+        return forDefaultPrivateWithVersion(owner, BasePrivateResource.forPrivate(path), version);
+    }
+
+    public static <T> RemoveRequest<T, PrivateResource> forDefaultPrivateWithVersion(
+            T owner, PrivateResource path, Version version) {
+        return new RemoveRequest<>(owner, new VersionedPrivateResource<>(path, version));
     }
 
     public static <T> RemoveRequest<T, PrivateResource> forDefaultPrivate(T owner, URI path) {

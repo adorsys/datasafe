@@ -19,6 +19,7 @@ import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.RemoveFromPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -53,7 +54,6 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
     protected static final String PUBLIC_COMPONENT = "public";
     protected static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
-    protected static final String VERSION_COMPONENT = "versions";
 
     protected DFSConfig dfsConfig;
     protected ListPrivate listPrivate;

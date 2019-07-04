@@ -17,6 +17,8 @@
         <module>datasafe-rest-impl</module>
         <module>datasafe-examples</module>
         <module>datasafe-simple-adapter</module>
+        <module>datasafe-test-storages</module>
+        <module>datasafe-business-tests</module>
         <module>last-module-codecoverage-check</module>
     </modules>
 
@@ -189,6 +191,18 @@
                 <groupId>com.google.auto.service</groupId>
                 <artifactId>auto-service</artifactId>
                 <version>${auto-service.version}</version>
+            </dependency>
+
+            <!-- Storages -->
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-s3</artifactId>
+                <version>${amazon.aws.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-core</artifactId>
+                <version>${amazon.aws.version}</version>
             </dependency>
 
             <!--
