@@ -14,19 +14,37 @@ import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
-import de.adorsys.datasafe.simple.adapter.api.types.*;
+import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
+import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
+import de.adorsys.datasafe.simple.adapter.impl.DFSTestCredentialsFactory;
 import de.adorsys.datasafe.simple.adapter.impl.SimpleDatasafeServiceImpl;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.BaseResolvedResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.FileSystems;
 import java.time.Instant;
 import java.util.Set;
@@ -46,7 +64,7 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
 class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
 
     @ParameterizedTest
-    @MethodSource("actionsOnAllSoragesAndThreadsAndFilesizes")
+    @MethodSource("actionsOnSoragesAndThreadsAndFilesizes")
     void testRandomActionsParallelThreads(StorageDescriptor descriptor, int threadCount, int filesizeInMb) {
         DefaultDatasafeServices datasafeServices = datasafeServicesFromSimpleDatasafeAdapter(descriptor);
         StatisticService statisticService = new StatisticService();
@@ -64,7 +82,9 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
     }
 
     private DefaultDatasafeServices datasafeServicesFromSimpleDatasafeAdapter(StorageDescriptor descriptor) {
-        SimpleDatasafeService datasafeService = new SimpleDatasafeServiceImpl(getCredentials(descriptor));
+        SimpleDatasafeService datasafeService = new SimpleDatasafeServiceImpl(
+            DFSTestCredentialsFactory.credentials(descriptor)
+        );
 
         return new DefaultDatasafeServices() {
             @Override

@@ -32,6 +32,13 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * This class performs fixturized actions. Each execution (which is serial by design) submits available action
+ * into thread pool (submitted action is serial within owning execution but is parallel to actions in other executions)
+ * Execution1 [Action1,Action2,Action3] -- Action3 \
+ * Execution2 [Action1,Action2,Action3] -- Action1 - Thread pool - Execute [Action3,Action1,Action1] on shared user set
+ * Execution3 [Action1,Action2,Action3] -- Action1 /
+ */
 public abstract class BaseRandomActions extends WithStorageProvider {
 
     public static final String DISABLE_RANDOM_ACTIONS_TEST = "DISABLE_RANDOM_ACTIONS_TEST";
@@ -41,14 +48,14 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     private static final int MEGABYTE_TO_BYTE = 1024 * 1024;
     private static final long TIMEOUT = 30L;
 
-    private static final Set<Integer> threadCount = ImmutableSet.of(4, 8);
-    private static final Set<Integer> fileSizeMBytes = ImmutableSet.of(1, 10);
+    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(4, 8);
+    private static final Set<Integer> FILE_SIZE_M_BYTES = ImmutableSet.of(1, 10);
 
     @BeforeEach
     void prepare() {
         // Enable logging obfuscation
-        //System.setProperty("SECURE_LOGS", "on");
-        ///System.setProperty("SECURE_SENSITIVE", "on");
+        System.setProperty("SECURE_LOGS", "on");
+        System.setProperty("SECURE_SENSITIVE", "on");
     }
 
     protected Fixture smallSimpleDocusafeAdapterFixture() {
@@ -69,11 +76,11 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     @ValueSource
-    protected static Stream<Arguments> actionsOnAllSoragesAndThreadsAndFilesizes() {
+    protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
-                allLocalDefaultStorages().collect(Collectors.toSet()),
-                threadCount,
-                fileSizeMBytes
+                Collections.singleton(minio()),
+            THREAD_COUNT,
+            FILE_SIZE_M_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
     }
 

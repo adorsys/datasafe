@@ -5,8 +5,12 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
-import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
-import de.adorsys.datasafe.simple.adapter.api.types.*;
+import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
+import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +22,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.nio.file.FileSystems;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
@@ -27,7 +30,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public class SimpleDatasafeAdapterTest extends WithStorageProvider {
@@ -42,35 +49,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         }
         System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, encryption ? Boolean.FALSE.toString(): Boolean.TRUE.toString());
 
-        switch (descriptor.getName()) {
-            case FILESYSTEM: {
-                log.info("uri:" + descriptor.getRootBucket());
-                dfsCredentials = FilesystemDFSCredentials.builder().root(FileSystems.getDefault().getPath(descriptor.getRootBucket())).build();
-                break;
-
-            }
-            case MINIO:
-            case CEPH:
-            case AMAZON: {
-                descriptor.getStorageService().get();
-                log.info("uri       :" + descriptor.getLocation());
-                log.info("accesskey :" + descriptor.getAccessKey());
-                log.info("secretkey :" + descriptor.getSecretKey());
-                log.info("region    :" + descriptor.getRegion());
-                log.info("rootbucket:" + descriptor.getRootBucket());
-                log.info("mapped uri:" + descriptor.getMappedUrl());
-                dfsCredentials = AmazonS3DFSCredentials.builder()
-                        .accessKey(descriptor.getAccessKey())
-                        .secretKey(descriptor.getSecretKey())
-                        .region(descriptor.getRegion())
-                        .rootBucket(descriptor.getRootBucket())
-                        .url(descriptor.getMappedUrl())
-                        .build();
-                break;
-            }
-            default:
-                throw new SimpleAdapterException("missing switch for " + descriptor.getName());
-        }
+        dfsCredentials = DFSTestCredentialsFactory.credentials(descriptor);
     }
 
     @ValueSource

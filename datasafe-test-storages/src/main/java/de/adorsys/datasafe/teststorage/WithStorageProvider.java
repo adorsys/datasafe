@@ -29,6 +29,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -296,7 +297,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static void startCeph() {
         log.info("Starting CEPH");
         cephContainer = new GenericContainer("ceph/daemon")
-                .withExposedPorts(8000, 5000)
+                .withExposedPorts(8000)
                 .withEnv("RGW_FRONTEND_PORT", "8000")
                 .withEnv("SREE_PORT", "5000")
                 .withEnv("DEBUG", "verbose")
@@ -308,7 +309,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .withEnv("CEPH_DEMO_ACCESS_KEY", cephAccessKeyID)
                 .withEnv("CEPH_DEMO_SECRET_KEY", cephSecretAccessKey)
                 .withCommand("mkdir -p /etc/ceph && mkdir -p /var/lib/ceph && /entrypoint.sh")
-                .waitingFor(Wait.defaultWaitStrategy());
+                .waitingFor(Wait.defaultWaitStrategy().withStartupTimeout(Duration.ofSeconds(60)));
 
         cephContainer.start();
         Integer mappedPort = cephContainer.getMappedPort(8000);

@@ -97,6 +97,13 @@
         </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-simple-adapter-impl</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
             <artifactId>datasafe-test-storages</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
