@@ -343,7 +343,7 @@ assertThat(savedOnPC).isAfter(savedOnMobile);
 ## Datasafe on versioned storage
 If you have storage for user files on **versioned S3 bucket** and want to get object version when you write
 object or to read some older version encrypted object, you can follow this example of how to do that:
-[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorageTest.java#L135-L169)
+[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L135-L169)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -362,12 +362,12 @@ try (OutputStream os = defaultDatasafeServices.privateService()
     os.write("Hello 1".getBytes(StandardCharsets.UTF_8));
 }
 // this variable has our initial file version:
-String initialVersionId = version.get();
+String version1 = version.get();
 
 // Write 2 more times different data to same file - my/own/file.txt:
-writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
+String version2 = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
 // Last version will contain "Hello 3":
-writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 3");
+String version3 = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 3");
 
 // now, when we read file without specifying version - we see latest file content:
 assertThat(defaultDatasafeServices.privateService().read(
@@ -376,12 +376,12 @@ assertThat(defaultDatasafeServices.privateService().read(
 
 // but if we specify file version - we get content for it:
 assertThat(defaultDatasafeServices.privateService().read(
-        ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(initialVersionId)))
+        ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(version1)))
 ).hasContent("Hello 1");
 ```
 Removing old file version can be done by [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#non-current-days-calculations)
 or manually, using this snippet:
-[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsTestWithDefaultDatasafeOnVersionedStorageTest.java#L180-L207)
+[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L185-L212)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
