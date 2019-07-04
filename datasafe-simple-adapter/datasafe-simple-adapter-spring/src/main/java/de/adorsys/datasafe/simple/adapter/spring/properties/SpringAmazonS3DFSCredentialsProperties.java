@@ -20,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 public class SpringAmazonS3DFSCredentialsProperties {
     private final static String DEFAULT_REGION = "eu-central-1";
     private final static String DEFAULT_ROOT = "datasafe-root";
-    private final static Logger LOGGER = LoggerFactory.getLogger(SpringAmazonS3DFSCredentialsProperties.class);
     public final static String template = "\n" +
             "datasafe:\n" +
             "  storeconnection:\n" +

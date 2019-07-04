@@ -5,7 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackageClasses = {DatasafeSpringBeans.class})
+@ComponentScan(basePackageClasses = DatasafeSpringBeans.class)
 @Slf4j
 public class DatasafeSpringConfiguration {
 }

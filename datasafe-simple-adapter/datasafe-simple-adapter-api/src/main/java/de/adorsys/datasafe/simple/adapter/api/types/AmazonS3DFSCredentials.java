@@ -1,10 +1,9 @@
 package de.adorsys.datasafe.simple.adapter.api.types;
 
-import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 public class AmazonS3DFSCredentials extends DFSCredentials {
     private final String rootBucket;

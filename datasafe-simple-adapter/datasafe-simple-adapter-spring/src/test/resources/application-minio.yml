@@ -1,10 +1,9 @@
-This file is not used, as the mapped url supplied by docker is known after spring has already done its configuration ....
 datasafe:
   storeconnection:
     amazons3:
-      url: http://localhost
-      accesskey: simpleAccessKey
-      secretkey: simpleSecretKey
+      url: ${MINIO_URL}
+      accesskey: admin
+      secretkey: password
       rootbucket: adorsys
 
 
