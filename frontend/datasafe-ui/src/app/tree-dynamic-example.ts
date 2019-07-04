@@ -3,6 +3,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component, Injectable} from '@angular/core';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {ApiService} from "./api.service";
 
 /** Flat node with expandable and level information */
 export class DynamicFlatNode {
@@ -120,22 +121,23 @@ export class DynamicDataSource {
   providers: [DynamicDatabase]
 })
 export class TreeDynamicExample {
-  constructor(database: DynamicDatabase) {
+
+  treeControl: FlatTreeControl<DynamicFlatNode>;
+  dataSource: DynamicDataSource;
+  getLevel = (node: DynamicFlatNode) => node.level;
+  isExpandable = (node: DynamicFlatNode) => node.expandable;
+  hasChild = (_: number, _nodeData: DynamicFlatNode) => _nodeData.expandable;
+
+  constructor(database: DynamicDatabase, private api: ApiService) {
     this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database);
 
     this.dataSource.data = database.initialData();
   }
 
-  treeControl: FlatTreeControl<DynamicFlatNode>;
-
-  dataSource: DynamicDataSource;
-
-  getLevel = (node: DynamicFlatNode) => node.level;
-
-  isExpandable = (node: DynamicFlatNode) => node.expandable;
-
-  hasChild = (_: number, _nodeData: DynamicFlatNode) => _nodeData.expandable;
+  public handleAuthorizeClick(){
+    this.api.authorize("root", "root");
+  }
 }
 
 
