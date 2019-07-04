@@ -48,7 +48,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     private static final int MEGABYTE_TO_BYTE = 1024 * 1024;
     private static final long TIMEOUT = 30L;
 
-    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(4, 8);
+    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(2, 4);
     private static final Set<Integer> FILE_SIZE_M_BYTES = ImmutableSet.of(1, 10);
 
     @BeforeEach
