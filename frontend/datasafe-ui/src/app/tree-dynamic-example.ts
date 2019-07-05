@@ -134,10 +134,6 @@ export class TreeDynamicExample {
 
     this.dataSource.data = database.initialData();
   }
-
-  public handleAuthorizeClick(){
-    this.api.authorize("root", "root");
-  }
 }
 
 

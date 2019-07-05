@@ -1,37 +1,64 @@
-import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
+import {Observable, of} from "rxjs";
+import {map} from "rxjs/operators";
 
 @Injectable({providedIn: 'root'})
 export class ApiService {
 
-  public apiUserName = "root";
-  public apiPassword = "root";
+    private static TOKEN_HEADER = "token";
 
-  private uri = "http://localhost:8080";
-  private authorizeUri = this.uri + "/api/authenticate";
-  private createUserUri = this.uri + "/api/authenticate";
+    public apiUserName = "root";
+    public apiPassword = "root";
 
-  private token;
+    private uri = "http://localhost:8080";
+    private authorizeUri = this.uri + "/api/authenticate";
+    private createUserUri = this.uri + "/api/authenticate";
 
-  constructor(private httpClient: HttpClient) { }
+    private token: string;
 
-  public authorize(apiUsername: string, apiPassword: string){
-    return this.httpClient.post(
-        this.authorizeUri,
-        {"userName": apiUsername, "password": apiPassword},
-        {observe: 'response'}
-    ).subscribe(res => {
-      this.token = res.headers.get('token');
-    });
-  }
+    constructor(private httpClient: HttpClient) {
+    }
 
-  public createUser(username: string, password: string){
-    return this.httpClient.put(
-        this.createUserUri,
-        {"userName": username, "password": password},
-        {observe: 'response'}
-    ).subscribe(res => {
-      this.token = res.headers.get('token');
-    });
-  }
+    public authorize() {
+        let result = this.httpClient.post(
+            this.authorizeUri,
+            {"userName": this.apiUserName, "password": this.apiPassword},
+            {observe: 'response'}
+        );
+
+        result.subscribe(res => {
+            this.token = ApiService.extractToken(res)
+        });
+
+        return result;
+    }
+
+    public createUser(username: string, password: string) {
+        this.withAuthorization(
+            token => this.httpClient.put(
+                this.createUserUri,
+                {"userName": username, "password": password},
+                ApiService.headers(token)
+                )
+        )
+    }
+
+    private withAuthorization(call: (token: string) => any) : Observable<string> {
+        if (null == this.token) {
+            return this.authorize()
+                .pipe(map(res => ApiService.extractToken(res)))
+                .pipe(map(token => call(token)))
+        }
+
+        return of(this.token).pipe(map(token => call(token)))
+    }
+
+    private static headers(token: string) {
+        return {"headers": {[ApiService.TOKEN_HEADER]: token}};
+    }
+
+    private static extractToken(response: HttpResponse<Object>) {
+        return response.headers.get(ApiService.TOKEN_HEADER)
+    }
 }
