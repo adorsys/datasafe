@@ -155,7 +155,7 @@ public class DatabaseStorageService implements StorageService {
         ParsedLocation(AbsoluteLocation location, Set<String> allowedTables) {
             this.allowedTables = allowedTables;
             this.tableName = extractTable(location);
-            this.path = location.location().getPath();
+            this.path = location.location().getRawPath();
             this.pathWithUser = path.substring(path.indexOf(tableName) + tableName.length() + 1);
         }
 

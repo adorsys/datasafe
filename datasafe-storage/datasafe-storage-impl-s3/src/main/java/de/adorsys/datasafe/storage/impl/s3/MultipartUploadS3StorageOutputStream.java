@@ -70,7 +70,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                                          ExecutorService executorService,
                                          List<? extends ResourceWriteCallback> callbacks) {
         this.bucketName = bucketName;
-        this.objectName = resource.location().getPath().replaceFirst("^/", "");
+        this.objectName = resource.location().getRawPath().replaceFirst("^/", "");
         this.amazonS3 = amazonS3;
         this.completionService = new ExecutorCompletionService<>(executorService);
         this.callbacks = callbacks;

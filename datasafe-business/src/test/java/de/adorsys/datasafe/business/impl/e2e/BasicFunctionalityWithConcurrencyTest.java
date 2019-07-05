@@ -5,6 +5,7 @@ import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -54,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Slf4j
 class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
-    private static final int TIMEOUT_S = 10;
+    private static final int TIMEOUT_S = 15;
 
     private static int NUMBER_OF_TEST_USERS = 3;
     private static int NUMBER_OF_TEST_FILES = 5;
@@ -139,7 +140,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         for (int i = 0; i < NUMBER_OF_TEST_USERS; i++) {
             UserIDAuth user = createJohnTestUser(i);
 
-            await().atMost(5, SECONDS).until(
+            await().atMost(TIMEOUT_S, SECONDS).until(
                     () -> listAllPrivateFiles(user).size() == EXPECTED_NUMBER_OF_FILES_PER_USER
             );
             List<AbsoluteLocation<ResolvedResource>> resourceList = listAllPrivateFiles(user);
@@ -235,7 +236,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
     @ValueSource
     protected static Stream<Arguments> differentThreadsTestOptions() {
-        Stream<StorageDescriptor> storageDescriptorMap = allDefaultStorages();
+        Stream<StorageDescriptor> storageDescriptorMap = allLocalDefaultStorages();
         List<Arguments> arguments = new ArrayList<>();
 
         storageDescriptorMap.forEach(storageDescriptor -> {

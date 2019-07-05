@@ -1,0 +1,18 @@
+@startuml
+
+skinparam ranksep 10
+skinparam linetype ortho
+
+cloud "Executions" {
+
+    cloud "Execution 1" {
+    }
+
+    cloud "Execution 2" {
+    }
+
+    cloud "Execution 3" {
+    }
+}
+
+@enduml

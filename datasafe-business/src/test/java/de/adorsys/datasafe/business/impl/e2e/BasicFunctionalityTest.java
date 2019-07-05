@@ -4,6 +4,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -152,6 +153,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
         assertPrivateSpaceList(jane, "level1/level2", "level1/level2/file");
         assertPrivateSpaceList(jane, "level1/level2/", "level1/level2/file");
     }
+
 
     @ParameterizedTest
     @MethodSource("allStorages")

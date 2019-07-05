@@ -17,12 +17,14 @@
         <module>datasafe-rest-impl</module>
         <module>datasafe-examples</module>
         <module>datasafe-simple-adapter</module>
+        <module>datasafe-test-storages</module>
+        <module>datasafe-business-tests</module>
         <module>last-module-codecoverage-check</module>
     </modules>
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -113,6 +115,8 @@
         <hikari.cp>3.3.1</hikari.cp>
         <h2.database>1.4.199</h2.database>
         <liquibase>3.6.1</liquibase>
+        <spring.framework.version>5.1.7.RELEASE</spring.framework.version>
+        <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>
     </properties>
 
     <dependencies>
@@ -189,6 +193,18 @@
                 <groupId>com.google.auto.service</groupId>
                 <artifactId>auto-service</artifactId>
                 <version>${auto-service.version}</version>
+            </dependency>
+
+            <!-- Storages -->
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-s3</artifactId>
+                <version>${amazon.aws.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-core</artifactId>
+                <version>${amazon.aws.version}</version>
             </dependency>
 
             <!--
