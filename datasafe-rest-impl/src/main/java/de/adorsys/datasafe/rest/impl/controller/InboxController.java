@@ -4,12 +4,18 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.rest.impl.exceptions.EmptyInputStreamException;
+import de.adorsys.datasafe.rest.impl.exceptions.FileNotFoundException;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,6 +43,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Api(description = "Operations with inbox")
 public class InboxController {
 
     private final DefaultDatasafeServices dataSafeService;
@@ -46,9 +53,17 @@ public class InboxController {
      */
     @SneakyThrows
     @PutMapping(value = "/inbox/document/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation("Send document to inbox")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document was successfully sent"),
+            @ApiResponse(code = 403, message = "Access denied")
+    })
     public void writeToInbox(@RequestHeader Set<String> users,
                              @PathVariable String path,
                              @RequestParam("file") MultipartFile file) {
+        if (file.getInputStream().available() == 0) {
+            throw new EmptyInputStreamException("Input stream is empty");
+        }
         Set<UserID> toUsers = users.stream().map(UserID::new).collect(Collectors.toSet());
         try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path));
              InputStream is = file.getInputStream()) {
@@ -62,6 +77,12 @@ public class InboxController {
      */
     @SneakyThrows
     @GetMapping(value = "/inbox/document/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
+    @ApiOperation("Read document from inbox")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document was successfully read"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 404, message = "Document not found")
+    })
     public void readFromInbox(@RequestHeader String user,
                               @RequestHeader String password,
                               @PathVariable String path,
@@ -75,6 +96,8 @@ public class InboxController {
              OutputStream os = response.getOutputStream()
         ) {
             StreamUtils.copy(is, os);
+        } catch (Exception e) {
+            throw new FileNotFoundException(String.format("File '%s' not found for user '%s'", path, user), e);
         }
         log.debug("User {}, read from INBOX file {}", user, resource);
     }
@@ -83,6 +106,11 @@ public class InboxController {
      * Deletes file from users' INBOX.
      */
     @DeleteMapping("/inbox/document/{path:.*}")
+    @ApiOperation("Delete document from inbox")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document successfully deleted"),
+            @ApiResponse(code = 403, message = "Access denied")
+    })
     public void deleteFromInbox(@RequestHeader String user,
                                 @RequestHeader String password,
                                 @PathVariable String path) {
@@ -97,6 +125,11 @@ public class InboxController {
      * list files in users' INBOX.
      */
     @GetMapping(value = "/inbox/documents/{path:.*}", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation("List files in inbox")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List command successfully completed"),
+            @ApiResponse(code = 403, message = "Access denied")
+    })
     public List<String> listInbox(@RequestHeader String user,
                                   @RequestHeader String password,
                                   @ApiParam(defaultValue = ".")

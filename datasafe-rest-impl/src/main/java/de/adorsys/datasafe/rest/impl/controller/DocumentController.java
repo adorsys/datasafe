@@ -4,6 +4,8 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.rest.impl.exceptions.EmptyInputStreamException;
+import de.adorsys.datasafe.rest.impl.exceptions.FileNotFoundException;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -11,6 +13,10 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +36,12 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
- * User privatespace REST api.
+ * User private space REST api.
  */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Api(description = "Operations with private documents")
 public class DocumentController {
 
     private final DefaultDatasafeServices dataSafeService;
@@ -44,6 +51,12 @@ public class DocumentController {
      */
     @SneakyThrows
     @GetMapping(value = "/document/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
+    @ApiOperation("Read document from user's private space")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document was successfully read"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 404, message = "Document not found")
+    })
     public void readDocument(@RequestHeader String user,
                              @RequestHeader String password,
                              @PathVariable String path,
@@ -58,6 +71,8 @@ public class DocumentController {
              OutputStream os = response.getOutputStream()
         ) {
             StreamUtils.copy(is, os);
+        } catch (Exception e) {
+            throw new FileNotFoundException(String.format("File '%s' not found for user '%s'", path, user), e);
         }
         log.debug("User: {}, read private file from: {}", user, resource);
     }
@@ -67,10 +82,18 @@ public class DocumentController {
      */
     @SneakyThrows
     @PutMapping(value = "/document/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation("Write document to user's private space")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document was successfully written"),
+            @ApiResponse(code = 403, message = "Access denied")
+    })
     public void writeDocument(@RequestHeader String user,
                               @RequestHeader String password,
                               @PathVariable String path,
                               @RequestParam("file") MultipartFile file) {
+        if (file.getInputStream().available() == 0) {
+           throw new EmptyInputStreamException("Input stream is empty");
+        }
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(userIDAuth, path);
         try (OutputStream os = dataSafeService.privateService().write(request);
@@ -84,6 +107,11 @@ public class DocumentController {
      * lists files in user's private space.
      */
     @GetMapping("/documents/{path:.*}")
+    @ApiOperation("List documents in user's private space")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List command successfully completed"),
+            @ApiResponse(code = 403, message = "Access denied")
+    })
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
                                       @ApiParam(defaultValue = ".")
@@ -103,6 +131,11 @@ public class DocumentController {
      * deletes files from user's private space.
      */
     @DeleteMapping("/document/{path:.*}")
+    @ApiOperation("Delete document from user's private space")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document successfully deleted"),
+            @ApiResponse(code = 403, message = "Access denied")
+    })
     public void removeDocument(@RequestHeader String user,
                                @RequestHeader String password,
                                @PathVariable String path) {
