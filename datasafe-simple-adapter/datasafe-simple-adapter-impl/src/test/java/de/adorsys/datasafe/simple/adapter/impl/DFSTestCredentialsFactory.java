@@ -20,7 +20,7 @@ public class DFSTestCredentialsFactory {
                 log.info("uri:" + descriptor.getRootBucket());
                 return FilesystemDFSCredentials
                     .builder()
-                    .root(FileSystems.getDefault().getPath(descriptor.getRootBucket()))
+                    .root(descriptor.getRootBucket())
                     .build();
 
             }

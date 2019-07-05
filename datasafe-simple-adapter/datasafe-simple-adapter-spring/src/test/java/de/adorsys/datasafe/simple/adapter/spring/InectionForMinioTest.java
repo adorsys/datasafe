@@ -1,10 +1,10 @@
 package de.adorsys.datasafe.simple.adapter.spring;
 
-import de.adorsys.datasafe.business.impl.e2e.WithStorageProvider;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.spring.annotations.UseDatasafeSpringConfiguration;
 import de.adorsys.datasafe.simple.adapter.spring.factory.SpringSimpleDatasafeServiceFactory;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDFSCredentialProperties;
+import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
