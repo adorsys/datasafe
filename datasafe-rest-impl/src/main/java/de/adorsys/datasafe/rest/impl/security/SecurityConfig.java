@@ -2,6 +2,7 @@ package de.adorsys.datasafe.rest.impl.security;
 
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -46,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(SWAGGER_RESOURCES).permitAll()
                 .antMatchers(SecurityConstants.AUTH_LOGIN_URL).permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityProperties))
@@ -69,10 +71,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
         CorsConfiguration authConfig = new CorsConfiguration().applyPermitDefaultValues();
         authConfig.addExposedHeader(TOKEN_HEADER);
         source.registerCorsConfiguration(SecurityConstants.AUTH_LOGIN_URL, authConfig);
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+
+        CorsConfiguration globalConfig = new CorsConfiguration().applyPermitDefaultValues();
+        globalConfig.addAllowedMethod(HttpMethod.OPTIONS);
+        globalConfig.addAllowedMethod(HttpMethod.PUT);
+        globalConfig.addAllowedMethod(HttpMethod.DELETE);
+        source.registerCorsConfiguration("/**", globalConfig);
+
         return source;
     }
 

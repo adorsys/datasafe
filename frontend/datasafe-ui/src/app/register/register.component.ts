@@ -10,6 +10,8 @@ import {
     Validators
 } from "@angular/forms";
 import {ErrorStateMatcher} from "@angular/material";
+import {Router} from "@angular/router";
+import {CredentialsService} from "../credentials.service";
 
 export class FieldErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -57,7 +59,8 @@ export class RegisterComponent implements OnInit {
     private fieldMatcher = new FieldErrorStateMatcher();
     private parentOrFieldMatcher = new ParentOrFieldErrorStateMatcher();
 
-    constructor(private api: ApiService, private fb: FormBuilder) {
+    constructor(private router: Router, private api: ApiService, private fb: FormBuilder,
+                private creds: CredentialsService) {
     }
 
     ngOnInit() {
@@ -68,7 +71,18 @@ export class RegisterComponent implements OnInit {
             return
         }
 
-        this.api.createUser(this.userNameControl.value, this.passwordControl.value);
+        this.api.createUser(this.userNameControl.value, this.passwordControl.value)
+            .then(res => {
+                this.creds.setCredentials(this.userNameControl.value, this.passwordControl.value);
+                this.router.navigate(['/user'])
+            })
+            .catch(error => this.handleServerError(error))
+    }
+
+    private handleServerError(error) {
+        this.registerForm.setErrors({
+            'createFailed': error.error.message.substring(0, 32) + (error.error.message.length >= 32 ? "..." : "")
+        })
     }
 
     private static checkPasswords(group: FormGroup) { // here we have the 'passwords' group

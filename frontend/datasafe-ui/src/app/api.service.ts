@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
-import {map} from "rxjs/operators";
+import {flatMap, map} from "rxjs/operators";
 
 @Injectable({providedIn: 'root'})
 export class ApiService {
@@ -13,7 +13,7 @@ export class ApiService {
 
     private uri = "http://localhost:8080";
     private authorizeUri = this.uri + "/api/authenticate";
-    private createUserUri = this.uri + "/api/authenticate";
+    private createUserUri = this.uri + "/user";
 
     private token: string;
 
@@ -35,30 +35,29 @@ export class ApiService {
     }
 
     public createUser(username: string, password: string) {
-        this.withAuthorization(
-            token => this.httpClient.put(
-                this.createUserUri,
-                {"userName": username, "password": password},
-                ApiService.headers(token)
-                )
-        )
+        return this.withAuthorization()
+            .pipe(flatMap(token =>
+                this.httpClient.put(
+                    this.createUserUri,
+                    {"userName": username, "password": password},
+                    ApiService.headers(token)
+            ))).toPromise();
     }
 
-    private withAuthorization(call: (token: string) => any) : Observable<string> {
+    private withAuthorization() : Observable<string> {
         if (null == this.token) {
             return this.authorize()
-                .pipe(map(res => ApiService.extractToken(res)))
-                .pipe(map(token => call(token)))
+                .pipe(map((res) => ApiService.extractToken(res)))
         }
 
-        return of(this.token).pipe(map(token => call(token)))
+        return of(this.token)
     }
 
     private static headers(token: string) {
         return {"headers": {[ApiService.TOKEN_HEADER]: token}};
     }
 
-    private static extractToken(response: HttpResponse<Object>) {
+    private static extractToken(response: HttpResponse<Object>) : string {
         return response.headers.get(ApiService.TOKEN_HEADER)
     }
 }
