@@ -1,33 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from "../api.service";
-import {
-    AbstractControl,
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    FormGroupDirective,
-    NgForm,
-    Validators
-} from "@angular/forms";
-import {ErrorStateMatcher} from "@angular/material";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CredentialsService} from "../credentials.service";
-
-export class FieldErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-        const isSubmitted = form && form.submitted;
-        return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
-    }
-}
-
-export class ParentOrFieldErrorStateMatcher implements ErrorStateMatcher {
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-        const invalidCtrl = !!(control && control.invalid && control.parent.dirty);
-        const invalidParent = !!(control && control.parent && control.parent.invalid && control.parent.dirty);
-
-        return (invalidCtrl || invalidParent);
-    }
-}
+import {FieldErrorStateMatcher, ParentOrFieldErrorStateMatcher} from "../app.component";
 
 @Component({
     selector: 'app-register',

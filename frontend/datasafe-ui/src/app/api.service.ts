@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {flatMap, map} from "rxjs/operators";
+import {Credentials} from "./credentials.service";
 
 @Injectable({providedIn: 'root'})
 export class ApiService {
@@ -14,6 +15,7 @@ export class ApiService {
     private uri = "http://localhost:8080";
     private authorizeUri = this.uri + "/api/authenticate";
     private createUserUri = this.uri + "/user";
+    private listDocumentUri = this.uri + "/documents";
 
     private token: string;
 
@@ -44,6 +46,15 @@ export class ApiService {
             ))).toPromise();
     }
 
+    public listDocuments(path: string, creds: Credentials) {
+        return this.withAuthorization()
+            .pipe(flatMap(token =>
+                this.httpClient.get(
+                    this.listDocumentUri + path,
+                    ApiService.headersWithAuth(token, creds)
+                ))).toPromise();
+    }
+
     private withAuthorization() : Observable<string> {
         if (null == this.token) {
             return this.authorize()
@@ -55,6 +66,14 @@ export class ApiService {
 
     private static headers(token: string) {
         return {"headers": {[ApiService.TOKEN_HEADER]: token}};
+    }
+
+    private static headersWithAuth(token: string, creds: Credentials) {
+        return {"headers": {
+                [ApiService.TOKEN_HEADER]: token,
+                "user": creds.username,
+                "password": creds.password}
+        };
     }
 
     private static extractToken(response: HttpResponse<Object>) : string {
