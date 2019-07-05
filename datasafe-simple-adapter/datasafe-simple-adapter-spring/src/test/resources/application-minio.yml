@@ -1,0 +1,9 @@
+datasafe:
+  storeconnection:
+    amazons3:
+      url: ${MINIO_URL}
+      accesskey: admin
+      secretkey: password
+      rootbucket: adorsys
+
+

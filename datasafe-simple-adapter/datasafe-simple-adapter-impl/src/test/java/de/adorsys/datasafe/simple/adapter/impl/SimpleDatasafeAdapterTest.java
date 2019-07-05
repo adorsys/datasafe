@@ -1,16 +1,11 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
-import com.google.common.collect.Sets;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
-import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
-import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
-import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
-import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
-import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
-import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
+import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
+import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +13,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -27,14 +21,9 @@ import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class SimpleDatasafeAdapterTest extends WithStorageProvider {
@@ -42,14 +31,42 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     UserIDAuth userIDAuth;
     DFSCredentials dfsCredentials;
 
-    private void myinit(WithStorageProvider.StorageDescriptor descriptor, Boolean encryption) {
+
+    private void myinit(WithStorageProvider.StorageDescriptor descriptor) {
         if (descriptor == null) {
             dfsCredentials = null;
             return;
         }
-        System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, encryption ? Boolean.FALSE.toString(): Boolean.TRUE.toString());
 
-        dfsCredentials = DFSTestCredentialsFactory.credentials(descriptor);
+        switch (descriptor.getName()) {
+            case FILESYSTEM: {
+                log.info("uri:" + descriptor.getRootBucket());
+                dfsCredentials = FilesystemDFSCredentials.builder().root(descriptor.getRootBucket()).build();
+                break;
+
+            }
+            case MINIO:
+            case CEPH:
+            case AMAZON: {
+                descriptor.getStorageService().get();
+                log.info("uri       :" + descriptor.getLocation());
+                log.info("accesskey :" + descriptor.getAccessKey());
+                log.info("secretkey :" + descriptor.getSecretKey());
+                log.info("region    :" + descriptor.getRegion());
+                log.info("rootbucket:" + descriptor.getRootBucket());
+                log.info("mapped uri:" + descriptor.getMappedUrl());
+                dfsCredentials = AmazonS3DFSCredentials.builder()
+                        .accessKey(descriptor.getAccessKey())
+                        .secretKey(descriptor.getSecretKey())
+                        .region(descriptor.getRegion())
+                        .rootBucket(descriptor.getRootBucket())
+                        .url(descriptor.getMappedUrl())
+                        .build();
+                break;
+            }
+            default:
+                throw new SimpleAdapterException("missing switch for " + descriptor.getName());
+        }
     }
 
     @ValueSource
@@ -59,11 +76,8 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
                 Boolean.FALSE);
     }
 
-    private static Stream<Arguments> parameterCombination() {
-            return Sets.cartesianProduct(
-                    allLocalStorages().collect(Collectors.toSet()),
-                    withOrWithoutEncryption().collect(Collectors.toSet())
-            ).stream().map(it -> Arguments.of(it.get(0), it.get(1)));
+    private static Stream<StorageDescriptor> storages() {
+            return allDefaultStorages();
     }
 
     @BeforeEach
@@ -88,18 +102,18 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("parameterCombination")
+    @MethodSource("storages")
     @SneakyThrows
-    public void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor, Boolean encryption) {
-        myinit(descriptor, encryption);
+    public void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
         mystart();
         log.info("test create user and delete user with " + descriptor.getName());
     }
 
     @ParameterizedTest
-    @MethodSource("parameterCombination")
-    public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
-        myinit(descriptor, encryption);
+    @MethodSource("storages")
+    public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
         mystart();
         String content = "content of document";
         String path = "a/b/c.txt";
@@ -115,9 +129,9 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("parameterCombination")
-    public void writeAndReadFileWithSlash(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
-        myinit(descriptor, encryption);
+    @MethodSource("storages")
+    public void writeAndReadFileWithSlash(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
         mystart();
         String content = "content of document";
         String path = "/a/b/c.txt";
@@ -134,9 +148,9 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
 
     @ParameterizedTest
-    @MethodSource("parameterCombination")
-    public void writeAndReadFiles(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
-        myinit(descriptor, encryption);
+    @MethodSource("storages")
+    public void writeAndReadFiles(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
         mystart();
         DocumentDirectoryFQN root = new DocumentDirectoryFQN("affe");
         List<DSDocument> list = TestHelper.createDocuments(root, 2, 2, 3);
@@ -181,9 +195,9 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("parameterCombination")
-    public void testTwoUsers(WithStorageProvider.StorageDescriptor descriptor,  Boolean encryption) {
-        myinit(descriptor, encryption);
+    @MethodSource("storages")
+    public void testTwoUsers(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
         mystart();
         UserIDAuth userIDAuth2 = new UserIDAuth(new UserID("peter2"), new ReadKeyPassword("password2"));
         simpleDatasafeService.createUser(userIDAuth2);

@@ -223,7 +223,7 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
         switch (descriptor.getName()) {
             case FILESYSTEM: {
                 return FilesystemDFSCredentials.builder()
-                        .root(FileSystems.getDefault().getPath(descriptor.getRootBucket()))
+                        .root(descriptor.getRootBucket())
                         .build();
             }
             case MINIO:

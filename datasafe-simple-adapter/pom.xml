@@ -14,6 +14,7 @@
     <modules>
         <module>datasafe-simple-adapter-api</module>
         <module>datasafe-simple-adapter-impl</module>
+        <module>datasafe-simple-adapter-spring</module>
     </modules>
 
 
