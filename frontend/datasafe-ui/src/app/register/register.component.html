@@ -1,3 +1,29 @@
-<p>
-  register works!
-</p>
+<div id="register-form" class="main-div">
+  <mat-card class="example-card" layout-align="center center">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Create new Datasafe user</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field>
+        <input name="username" matInput placeholder="New username" type="text">
+      </mat-form-field>
+      <br/>
+      <mat-form-field>
+        <input name="password" matInput placeholder="New password" [type]="hide ? 'password' : 'text'">
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+      </mat-form-field>
+      <br/>
+      <div [hidden]="!hide">
+      <mat-form-field>
+        <input name="confirmPassword" type='password' matInput placeholder="Confirm password">
+      </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button class="align-right">Create user</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RegisterComponent implements OnInit {
 
+  private hide = false;
+
   constructor() { }
 
   ngOnInit() {
