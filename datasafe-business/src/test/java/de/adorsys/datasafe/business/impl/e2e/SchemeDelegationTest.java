@@ -8,6 +8,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
@@ -34,7 +35,7 @@ class SchemeDelegationTest extends WithStorageProvider {
 
     @BeforeEach
     void initialize(@TempDir Path tempDir) {
-        StorageDescriptor minioDescriptor = minio();
+        WithStorageProvider.StorageDescriptor minioDescriptor = minio();
         this.fsPath = tempDir;
         this.minio = minioDescriptor.getStorageService().get();
         this.filesystem = new FileSystemStorageService(tempDir);

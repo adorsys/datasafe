@@ -1,0 +1,50 @@
+package de.adorsys.datasafe;
+
+import java.util.ArrayList
+
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.UserFileSystem
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.TestUser
+import de.adorsys.datasafe.types.api.actions.WriteRequest
+import java.util.List
+
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomPassGate randomPass
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomPathGenerator randomPath
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomContentIdGenerator randomContent
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.RandomUsers randomUsers
+global de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator.HistoryList historyList
+
+dialect  "mvel"
+
+rule "Random write into privatespace"
+    no-loop
+    when
+       $f: UserFileSystem(historyList.canContinue(), randomPass.canPass(25, "WRITE PRIVATE"))
+    then
+       $f.getPrivateOper().write(randomPath.generate(), randomContent.randomContentId());
+       update($f)
+end
+
+rule "Random list privatespace"
+    no-loop
+    when
+       $f: UserFileSystem(historyList.canContinue(), randomPass.canPass(25, "LIST PRIVATE"))
+    then
+       $f.getPrivateOper().list(randomPath.generateList($f.getPrivateOper()));
+end
+
+rule "Random read privatespace"
+    no-loop
+    when
+       $f: UserFileSystem(historyList.canContinue(), !privateOper.isEmpty(), randomPass.canPass(25, "READ PRIVATE"))
+    then
+       $f.getPrivateOper().read($f.getPrivateOper().getPathRandomly());
+end
+
+rule "Random delete privatespace"
+    no-loop
+    when
+       $f: UserFileSystem(historyList.canContinue(), !privateOper.isEmpty(), randomPass.canPass(25, "DELETE PRIVATE"))
+    then
+       $f.getPrivateOper().delete($f.getPrivateOper().getDirPathRandomly());
+       update($f)
+end
