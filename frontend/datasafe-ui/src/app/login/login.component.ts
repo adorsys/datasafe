@@ -11,22 +11,22 @@ import {FieldErrorStateMatcher} from "../app.component";
 })
 export class LoginComponent implements OnInit {
 
-  private hide = true;
+  hide = true;
 
-  private userNameControl = new FormControl('', [
+  userNameControl = new FormControl('', [
     Validators.required
   ]);
 
-  private passwordControl = new FormControl('', [
+  passwordControl = new FormControl('', [
     Validators.required
   ]);
 
-  private loginForm = this.fb.group({
+  loginForm = this.fb.group({
     username: this.userNameControl,
     passwords: this.passwordControl,
   });
 
-  private fieldMatcher = new FieldErrorStateMatcher();
+  fieldMatcher = new FieldErrorStateMatcher();
 
   constructor(private router: Router, private fb: FormBuilder, private creds: CredentialsService) { }
 
@@ -40,5 +40,9 @@ export class LoginComponent implements OnInit {
 
     this.creds.setCredentials(this.userNameControl.value, this.passwordControl.value);
     this.router.navigate(['/user']);
+  }
+
+  public handleRegisterClick() {
+    this.router.navigate(['/register']);
   }
 }

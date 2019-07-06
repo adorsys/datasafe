@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {CredentialsService} from "../credentials.service";
 import {ApiService} from "../api.service";
 import {Router} from "@angular/router";
+import {ErrorMessageUtil} from "../app.component";
 
 @Component({
   selector: 'app-user',
@@ -10,7 +11,7 @@ import {Router} from "@angular/router";
 })
 export class UserComponent implements OnInit {
 
-  private error: string;
+  error: string;
 
   constructor(private creds: CredentialsService, private api: ApiService, private router: Router) { }
 
@@ -26,7 +27,7 @@ export class UserComponent implements OnInit {
             this.router.navigate(['']);
             return;
           }
-          this.error = err.error.message
+          this.error = ErrorMessageUtil.extract(err);
         });
   }
 }

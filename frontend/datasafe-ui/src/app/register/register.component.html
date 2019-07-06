@@ -19,10 +19,15 @@
                 <br/>
 
                 <mat-form-field>
-                    <input name="password" matInput placeholder="New password" [type]="hide ? 'password' : 'text'" [formControl]="passwordControl" [errorStateMatcher]="parentOrFieldMatcher">
-                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-                            [attr.aria-pressed]="hide">
-                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    <input name="password" matInput placeholder="New password" [type]="passwordMatchControl.visible() ? 'password' : 'text'" [formControl]="passwordControl" [errorStateMatcher]="parentOrFieldMatcher">
+                    <button mat-icon-button matSuffix
+                            (click)="
+                            passwordMatchControl.Hidden = passwordMatchControl.visible();
+                            passwordMatchControl.setValue(passwordMatchControl.value);
+                            passwordControl.setValue(passwordControl.value)"
+                            [attr.aria-label]="'Hide password'"
+                            [attr.aria-pressed]="passwordMatchControl.Hidden">
+                        <mat-icon>{{passwordMatchControl.visible() ? 'visibility_off' : 'visibility'}}</mat-icon>
                     </button>
                     <mat-error *ngIf="passwordControl.hasError('required')">
                         Password is <strong>required</strong>
@@ -32,7 +37,7 @@
                     </mat-error>
                 </mat-form-field>
 
-                <div [hidden]="!hide">
+                <div [hidden]="passwordMatchControl.Hidden">
                     <mat-form-field>
                         <input name="matchPasswords" type='password' matInput placeholder="Confirm password" [formControl]="passwordMatchControl" [errorStateMatcher]="parentOrFieldMatcher">
                         <mat-error *ngIf="registerForm.hasError('notSame')">

@@ -3,7 +3,26 @@ import {ApiService} from "../api.service";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CredentialsService} from "../credentials.service";
-import {FieldErrorStateMatcher, ParentOrFieldErrorStateMatcher} from "../app.component";
+import {ErrorMessageUtil, FieldErrorStateMatcher, ParentOrFieldErrorStateMatcher} from "../app.component";
+
+class PasswordsMatchControl extends FormControl {
+
+    constructor(private hidden: boolean) {
+        super('', [])
+    }
+
+    get Hidden(): boolean {
+        return this.hidden;
+    }
+
+    visible(): boolean {
+        return !this.hidden;
+    }
+
+    set Hidden(hidden: boolean) {
+        this.hidden = hidden;
+    }
+}
 
 @Component({
     selector: 'app-register',
@@ -12,30 +31,29 @@ import {FieldErrorStateMatcher, ParentOrFieldErrorStateMatcher} from "../app.com
 })
 export class RegisterComponent implements OnInit {
 
-    private hide = true;
-
-    private userNameControl = new FormControl('', [
+    userNameControl = new FormControl('', [
         Validators.required,
         Validators.minLength(3)
     ]);
 
-    private passwordControl = new FormControl('', [
+    passwordControl = new FormControl('', [
         Validators.required,
         Validators.minLength(3)
     ]);
 
-    private passwordMatchControl = new FormControl('', []);
+    passwordMatchControl = new PasswordsMatchControl(false);
 
-    private registerForm = this.fb.group({
+    registerForm = this.fb.group({
         username: this.userNameControl,
         passwords: this.passwordControl,
         matchPasswords: this.passwordMatchControl
-    }, {validator: RegisterComponent.checkPasswords });
+    }, {validator: RegisterComponent.checkPasswords});
 
-    private fieldMatcher = new FieldErrorStateMatcher();
-    private parentOrFieldMatcher = new ParentOrFieldErrorStateMatcher();
 
-    constructor(private router: Router, private api: ApiService, private fb: FormBuilder,
+    fieldMatcher = new FieldErrorStateMatcher();
+    parentOrFieldMatcher = new ParentOrFieldErrorStateMatcher();
+
+    constructor(protected router: Router, private api: ApiService, private fb: FormBuilder,
                 private creds: CredentialsService) {
     }
 
@@ -52,19 +70,14 @@ export class RegisterComponent implements OnInit {
                 this.creds.setCredentials(this.userNameControl.value, this.passwordControl.value);
                 this.router.navigate(['/user'])
             })
-            .catch(error => this.handleServerError(error))
-    }
-
-    private handleServerError(error) {
-        this.registerForm.setErrors({
-            'createFailed': error.error.message.substring(0, 32) + (error.error.message.length >= 32 ? "..." : "")
-        })
+            .catch(error => this.registerForm.setErrors({'createFailed': ErrorMessageUtil.extract(error)}));
     }
 
     private static checkPasswords(group: FormGroup) { // here we have the 'passwords' group
+        let matchControl = <PasswordsMatchControl>group.controls.matchPasswords;
         let pass = group.controls.passwords.value;
-        let confirmPass = group.controls.matchPasswords.value;
+        let confirmPass = matchControl.value;
 
-        return pass === confirmPass ? null : { notSame: true }
+        return (matchControl.Hidden || pass === confirmPass) ? null : {notSame: true}
     }
 }

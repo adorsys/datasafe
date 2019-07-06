@@ -16,6 +16,7 @@ import { LoginComponent } from './login/login.component';
 import { DirComponent } from './dir/dir.component';
 import { RegisterComponent } from './register/register.component';
 import {AppComponent} from "./app.component";
+import { FiletreeComponent } from './filetree/filetree.component';
 
 const appRoutes: Routes = [
   {path: '', component: LoginComponent},
@@ -36,7 +37,7 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes)
   ],
   entryComponents: [AppComponent],
-  declarations: [AppComponent, TreeDynamicExample, UserComponent, LoginComponent, DirComponent, RegisterComponent],
+  declarations: [AppComponent, TreeDynamicExample, UserComponent, LoginComponent, DirComponent, RegisterComponent, FiletreeComponent],
   bootstrap: [AppComponent],
   providers: []
 })
