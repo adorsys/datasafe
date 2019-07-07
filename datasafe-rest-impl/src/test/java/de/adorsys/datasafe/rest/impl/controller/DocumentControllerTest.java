@@ -8,14 +8,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -53,8 +56,8 @@ class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
     void writeDocumentTest() {
         when(dataSafeService.privateService().write(any())).thenReturn(new ByteArrayOutputStream());
         String path = "path/to/file";
-        mvc.perform(put("/document/{path}", path)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
+        mvc.perform(putFileBuilder("/document/{path}", path)
+                .content(new MockMultipartFile("file", path.getBytes()).getBytes())
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)

@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * User INBOX REST api.
@@ -42,15 +44,14 @@ public class InboxController {
      * Sends file to multiple users' INBOX.
      */
     @SneakyThrows
-    @PutMapping(value = "/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
+    @PutMapping(value = "/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
     public void writeToInbox(@RequestHeader Set<String> users,
                              @PathVariable String path,
-                             InputStream is) {
+                             @RequestParam("file") MultipartFile file) {
         Set<UserID> toUsers = users.stream().map(UserID::new).collect(Collectors.toSet());
-        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path))) {
+        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path));
+             InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
-        } finally {
-            is.close();
         }
         log.debug("Users {}, write to INBOX file: {}", toUsers, path);
     }

@@ -14,7 +14,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -24,6 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * User privatespace REST api.
@@ -59,17 +67,16 @@ public class DocumentController {
      * Writes file to user's private space.
      */
     @SneakyThrows
-    @PutMapping(value = "/document/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
+    @PutMapping(value = "/document/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
     public void writeDocument(@RequestHeader String user,
                               @RequestHeader String password,
                               @PathVariable String path,
-                              InputStream is) {
+                              @RequestParam("file") MultipartFile file) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(userIDAuth, path);
-        try (OutputStream os = dataSafeService.privateService().write(request)) {
+        try (OutputStream os = dataSafeService.privateService().write(request);
+             InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
-        } finally {
-            is.close();
         }
         log.debug("User: {}, write private file to: {}", user, path);
     }

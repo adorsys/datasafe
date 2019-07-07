@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CredentialsService} from "../credentials.service";
 import {ApiService} from "../api.service";
 import {Router} from "@angular/router";
-import {ErrorMessageUtil} from "../app.component";
 
 @Component({
   selector: 'app-user',
@@ -19,15 +18,5 @@ export class UserComponent implements OnInit {
     if (null == this.creds.getCredentialsForApi()) {
       this.router.navigate([''])
     }
-
-    this.api.listDocuments("", this.creds.getCredentialsForApi())
-        .then(data => console.log("Data: " + data))
-        .catch(err => {
-          if (err.code == 401 || err.code == 403) {
-            this.router.navigate(['']);
-            return;
-          }
-          this.error = ErrorMessageUtil.extract(err);
-        });
   }
 }

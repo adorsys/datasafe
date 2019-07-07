@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,8 +39,8 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
     void writeToInboxTest() {
         when(dataSafeService.inboxService().write(any())).thenReturn(new ByteArrayOutputStream());
 
-        mvc.perform(put("/inbox/{path}", TEST_PATH)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
+        mvc.perform(putFileBuilder("/inbox/{path}", TEST_PATH)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header("users", TEST_USER)
                 .header("token", token)
         )

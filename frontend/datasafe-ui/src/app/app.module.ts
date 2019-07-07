@@ -8,15 +8,13 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DemoMaterialModule} from './material-module';
-import {Router, RouterModule, Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 
-import {TreeDynamicExample} from './tree-dynamic-example';
-import { UserComponent } from './user/user.component';
-import { LoginComponent } from './login/login.component';
-import { DirComponent } from './dir/dir.component';
-import { RegisterComponent } from './register/register.component';
+import {UserComponent} from './user/user.component';
+import {LoginComponent} from './login/login.component';
+import {RegisterComponent} from './register/register.component';
 import {AppComponent} from "./app.component";
-import { FiletreeComponent } from './filetree/filetree.component';
+import {FiletreeComponent} from './filetree/filetree.component';
 
 const appRoutes: Routes = [
   {path: '', component: LoginComponent},
@@ -37,7 +35,7 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes)
   ],
   entryComponents: [AppComponent],
-  declarations: [AppComponent, TreeDynamicExample, UserComponent, LoginComponent, DirComponent, RegisterComponent, FiletreeComponent],
+  declarations: [AppComponent, UserComponent, LoginComponent, RegisterComponent, FiletreeComponent],
   bootstrap: [AppComponent],
   providers: []
 })

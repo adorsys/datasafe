@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -55,8 +56,8 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
     void writeVersionedDocumentTest() {
         when(versionedDatasafeServices.latestPrivate().write(any())).thenReturn(new ByteArrayOutputStream());
         String path = "path/to/file";
-        mvc.perform(put("/versioned/{path}", path)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
+        mvc.perform(putFileBuilder("/versioned/{path}", path)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)

@@ -16,6 +16,8 @@ export class ApiService {
     private authorizeUri = this.uri + "/api/authenticate";
     private createUserUri = this.uri + "/user";
     private listDocumentUri = this.uri + "/documents";
+    private getDocumentUri = this.uri + "/document/";
+    private deleteDocumentUri = this.uri + "/document/";
 
     private token: string;
 
@@ -51,6 +53,39 @@ export class ApiService {
             .pipe(flatMap(token =>
                 this.httpClient.get(
                     this.listDocumentUri + path,
+                    ApiService.headersWithAuth(token, creds)
+                ))).toPromise();
+    }
+
+    public downloadDocument(path: string, creds: Credentials) {
+        this.withAuthorization()
+            .pipe(flatMap(token =>
+                this.httpClient.get(
+                    this.getDocumentUri + path,
+                    {
+                        "headers": ApiService.headersWithAuth(token, creds)["headers"],
+                        responseType: 'blob' as 'json'
+                    }
+                )
+            )).subscribe(
+            (response: any) => {
+                let dataType = response.type;
+                let binaryData = [];
+                binaryData.push(response);
+                let downloadLink = document.createElement('a');
+                downloadLink.href = window.URL.createObjectURL(new Blob(binaryData, {type: dataType}));
+                downloadLink.setAttribute('download', path.match(/(.+\/)*([^/]+)$/)[2]);
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            }
+        )
+    }
+
+    public deleteDocument(path: string, creds: Credentials) {
+        return this.withAuthorization()
+            .pipe(flatMap(token =>
+                this.httpClient.delete(
+                    this.deleteDocumentUri + path,
                     ApiService.headersWithAuth(token, creds)
                 ))).toPromise();
     }
