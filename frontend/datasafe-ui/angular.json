@@ -14,7 +14,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/my-app",
+            "outputPath": "dist/datasafe-ui",
             "index": "src/index.html",
             "main": "src/app/app.module.ts",
             "polyfills": "src/app/polyfills.ts",
@@ -104,5 +104,5 @@
       }
     }
   },
-  "defaultProject": "my-app"
+  "defaultProject": "datasafe-ui"
 }
