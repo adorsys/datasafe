@@ -69,10 +69,8 @@ class UserFileSystem {
 
   private putToFolder(folder: string, name: string) {
     if (folder === "") {
-      if (name.endsWith("/")) {
-        return;
-      }
       folder = name;
+      name = null;
     }
 
     if (!this.fs.has(folder)) {
