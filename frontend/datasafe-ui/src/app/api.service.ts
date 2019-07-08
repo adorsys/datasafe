@@ -3,6 +3,7 @@ import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {flatMap, map} from "rxjs/operators";
 import {Credentials} from "./credentials.service";
+import {FileUploader} from "ng2-file-upload";
 
 @Injectable({providedIn: 'root'})
 export class ApiService {
@@ -16,8 +17,10 @@ export class ApiService {
     private authorizeUri = this.uri + "/api/authenticate";
     private createUserUri = this.uri + "/user";
     private listDocumentUri = this.uri + "/documents";
+    private putDocumentUri = this.uri + "/document/";
     private getDocumentUri = this.uri + "/document/";
     private deleteDocumentUri = this.uri + "/document/";
+    private uploader: FileUploader = new FileUploader({method: 'PUT'});
 
     private token: string;
 
@@ -56,6 +59,23 @@ export class ApiService {
                     ApiService.headersWithAuth(token, creds)
                 ))).toPromise();
     }
+
+    public uploadDocument(document, path: string, creds: Credentials) {
+        let formData: FormData = new FormData();
+        formData.append('file', document);
+
+        return this.withAuthorization()
+            .pipe(flatMap(token =>
+                this.httpClient.put(
+                    this.putDocumentUri + path,
+                    formData,
+                    {
+                        "headers": ApiService.headersWithAuth(token, creds)["headers"],
+                        responseType: 'blob' as 'json'
+                    })
+            )).toPromise();
+    }
+
 
     public downloadDocument(path: string, creds: Credentials) {
         this.withAuthorization()

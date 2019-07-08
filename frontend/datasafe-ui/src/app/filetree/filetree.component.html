@@ -1,10 +1,11 @@
 <div>
-    <button mat-icon-button>
+    <button mat-icon-button (click)="addUiFolder()">
         <mat-icon>create_new_folder</mat-icon>
     </button>
-    <button mat-icon-button ngf-multiple='true' ngf-select='uploadFile($file)'>
+    <button mat-icon-button (click)="uploader.click()">
         <mat-icon>cloud_upload</mat-icon>
     </button>
+    <input hidden type="file" #uploader (change)="uploadFile($event)"/>
 </div>
 <div>
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
@@ -25,13 +26,20 @@
                 </mat-icon>
             </button>
             {{node.name}}
+
+            <input hidden type="file" #uploaderWithPath name="{{node.path}}" (change)="uploadFileWithPathFromName($event)"/>
+            <button mat-icon-button (click)="uploaderWithPath.click()">
+                <mat-icon>cloud_upload</mat-icon>
+            </button>
+            <button mat-icon-button name="{{node.path}}" (click)="addUiFolderWithpathFromName($event)">
+                <mat-icon>create_new_folder</mat-icon>
+            </button>
             <mat-progress-bar *ngIf="node.isLoading"
                               mode="indeterminate"
                               class="example-tree-progress-bar"></mat-progress-bar>
         </mat-tree-node>
-
-        <mat-error *ngIf="null != error">
-            Listing storage failed: {{error}}
-        </mat-error>
     </mat-tree>
+    <mat-error *ngIf="null != error">
+        {{error}}
+    </mat-error>
 </div>

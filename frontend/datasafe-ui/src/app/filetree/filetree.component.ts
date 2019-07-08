@@ -1,20 +1,27 @@
 import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {Component, Injectable} from '@angular/core';
+import {Component, Inject, Injectable} from '@angular/core';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ApiService} from "../api.service";
 import {CredentialsService} from "../credentials.service";
 import {Router} from "@angular/router";
 import {ErrorMessageUtil} from "../app.component";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 
 class UserFileSystem {
 
+  uiCreatedFolders = new Set<string>();
   fs = new Map<string, Set<string>>();
 
   buildFs(files: Array<string>) {
     this.fs.clear();
     files.forEach(it => this.addEntry(it));
+    this.uiCreatedFolders.forEach(it => this.addEntry(it + "/"));
+  }
+
+  rebuildFs() {
+    this.uiCreatedFolders.forEach(it => this.addEntry(it + "/"));
   }
 
   rootLevelNodes() : string[] {
@@ -43,16 +50,21 @@ class UserFileSystem {
   }
 
   private addEntry(path: string) {
+
     var fullPath = "";
     var folder = "";
-    path.split("/").forEach(segment => {
+    path.split("/").filter(res => "" !== res).forEach(segment => {
       fullPath += segment;
       fullPath += (fullPath === path ? "" : "/");
 
-      let name = (fullPath === path ? segment : segment + "/");
+      let name = (((fullPath === path) && (!path.endsWith("/"))) ? segment : segment + "/");
       this.putToFolder(folder, name);
       folder = fullPath
     })
+  }
+
+  private addDirEntry(path: string) {
+    this.putToFolder(path, null);
   }
 
   private putToFolder(folder: string, name: string) {
@@ -66,7 +78,6 @@ class UserFileSystem {
     if (!this.fs.has(folder)) {
       this.fs.set(folder, new Set<string>());
     }
-
     this.fs.get(folder).add(name);
   }
 }
@@ -98,12 +109,18 @@ export class DynamicDatabase {
             return;
           }
 
-          filetreeComponent.error = ErrorMessageUtil.extract(err);
+          filetreeComponent.error = 'Listing storage failed: ' + ErrorMessageUtil.extract(err);
         });
   }
 
+  rebuildView(filetreeComponent: FiletreeComponent) {
+    this.storageTree.rebuildFs();
+    filetreeComponent.dataSource.data = this.storageTree.rootLevelNodes()
+        .map(path => this.storageTree.treeNodeFromPath(path));
+  }
+
   getChildren(node: string): string[] | undefined {
-    return Array.from(this.storageTree.fs.get(node)).map(it => node + it);
+    return Array.from(this.storageTree.fs.get(node)).filter(res => res !== null).map(it => node + it);
   }
 }
 /**
@@ -171,6 +188,26 @@ export class DynamicDataSource {
   }
 }
 
+export interface NewFolderData {
+  folderPath: string;
+}
+
+@Component({
+  selector: 'add-folder-dialog',
+  templateUrl: 'add.folder.dialog.html',
+  styleUrls: ['add.folder.dialog.css'],
+})
+export class AddFolderDialog {
+
+  constructor(
+      public dialogRef: MatDialogRef<AddFolderDialog>,
+      @Inject(MAT_DIALOG_DATA) public data: NewFolderData) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+}
+
 /**
  * @title Tree with dynamic data
  */
@@ -190,11 +227,33 @@ export class FiletreeComponent {
   error: any;
 
   constructor(private database: DynamicDatabase, private api: ApiService, private creds: CredentialsService,
-              private router: Router) {
+              private router: Router, public dialog: MatDialog) {
     this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database);
 
     database.loadData(api, creds, this, router);
+  }
+
+  addUiFolderWithPath(path: string) {
+    const dialogRef = this.dialog.open(AddFolderDialog, {
+      width: '250px',
+      data: {folderPath: ""}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this.database.storageTree.uiCreatedFolders.add("" !== path ? path + result : result);
+        this.database.rebuildView(this);
+      }
+    });
+  }
+
+  addUiFolder() {
+    this.addUiFolderWithPath("");
+  }
+
+  addUiFolderWithpathFromName(event) {
+    this.addUiFolderWithPath(event.currentTarget.name);
   }
 
   loadTree() {
@@ -211,11 +270,27 @@ export class FiletreeComponent {
     this.error = '';
     this.api.deleteDocument(path, this.creds.getCredentialsForApi())
         .then(res => this.loadTree())
-        .catch(err => this.error = ErrorMessageUtil.extract(err));
+        .catch(err => this.error = 'Delete failed: ' + ErrorMessageUtil.extract(err));
   }
 
-  uploadFile(file) {
+  uploadFile(event) {
     this.error = '';
-    console.log('Upload ' + file)
+    this.api.uploadDocument(event.target.files[0], event.target.files[0].name, this.creds.getCredentialsForApi())
+        .then(res => this.loadTree())
+        .catch(err => {
+          this.error = 'Upload failed: ' + ErrorMessageUtil.extract(err);
+        });
+  }
+
+  uploadFileWithPathFromName(event) {
+    this.error = '';
+    this.api.uploadDocument(
+        event.currentTarget.files[0],
+        event.currentTarget.name + event.currentTarget.files[0].name,
+        this.creds.getCredentialsForApi())
+        .then(res => this.loadTree())
+        .catch(err => {
+          this.error = 'Upload failed: ' + ErrorMessageUtil.extract(err);
+        });
   }
 }

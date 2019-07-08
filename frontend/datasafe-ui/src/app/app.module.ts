@@ -14,7 +14,7 @@ import {UserComponent} from './user/user.component';
 import {LoginComponent} from './login/login.component';
 import {RegisterComponent} from './register/register.component';
 import {AppComponent} from "./app.component";
-import {FiletreeComponent} from './filetree/filetree.component';
+import {AddFolderDialog, FiletreeComponent} from './filetree/filetree.component';
 
 const appRoutes: Routes = [
   {path: '', component: LoginComponent},
@@ -34,8 +34,8 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     RouterModule.forRoot(appRoutes)
   ],
-  entryComponents: [AppComponent],
-  declarations: [AppComponent, UserComponent, LoginComponent, RegisterComponent, FiletreeComponent],
+  entryComponents: [AppComponent, AddFolderDialog],
+  declarations: [AppComponent, UserComponent, LoginComponent, RegisterComponent, FiletreeComponent, AddFolderDialog],
   bootstrap: [AppComponent],
   providers: []
 })
