@@ -75,8 +75,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("password", TEST_PASS)
                 .header("token", token)
                 .accept(APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(header().string(CONTENT_TYPE, APPLICATION_JSON_VALUE));
+                .andExpect(status().isOk());
         verify(inboxService).list(any());
     }
 
