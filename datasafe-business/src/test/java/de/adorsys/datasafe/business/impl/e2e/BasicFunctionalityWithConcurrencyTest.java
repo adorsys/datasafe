@@ -5,6 +5,7 @@ import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -235,7 +236,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
     @ValueSource
     protected static Stream<Arguments> differentThreadsTestOptions() {
-        Stream<StorageDescriptor> storageDescriptorMap = allDefaultStorages();
+        Stream<StorageDescriptor> storageDescriptorMap = allLocalDefaultStorages();
         List<Arguments> arguments = new ArrayList<>();
 
         storageDescriptorMap.forEach(storageDescriptor -> {

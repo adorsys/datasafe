@@ -36,10 +36,10 @@ public class DFSCredentialsFactory {
             log.info("create DFSCredentials for FILESYSTEM to root bucket " + parts[0]);
 
             return FilesystemDFSCredentials.builder()
-                    .root(FileSystems.getDefault().getPath(parts[0])).build();
+                    .root(parts[0]).build();
         }
         log.info("create DFSCredentials for FILESYSTEM to root bucket " + DEFAULT_ROOT_BUCKET);
         return FilesystemDFSCredentials.builder()
-                .root(FileSystems.getDefault().getPath(DEFAULT_ROOT_BUCKET)).build();
+                .root(DEFAULT_ROOT_BUCKET).build();
     }
 }

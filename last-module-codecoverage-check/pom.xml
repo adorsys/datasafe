@@ -5,7 +5,7 @@
     <parent>
         <artifactId>datasafe</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.1.1-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -115,6 +115,11 @@
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-simple-adapter-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-simple-adapter-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
 

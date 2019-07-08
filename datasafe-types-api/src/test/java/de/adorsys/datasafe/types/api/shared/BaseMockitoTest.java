@@ -28,5 +28,6 @@ public abstract class BaseMockitoTest {
     @AfterAll
     public static void afterAll() {
         System.setProperty("SECURE_LOGS", "on");
+        System.setProperty("SECURE_SENSITIVE", "on");
     }
 }

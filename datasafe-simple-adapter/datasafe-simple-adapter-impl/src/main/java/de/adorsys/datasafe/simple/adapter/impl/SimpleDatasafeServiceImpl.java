@@ -12,10 +12,12 @@ import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
+import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -32,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +44,7 @@ import java.util.stream.Collectors;
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private static final String AMAZON_URL = "https://s3.amazonaws.com";
 
+    private StorageService storageService;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private final static ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
@@ -54,6 +58,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
         BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
         PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args -> new SwitchablePathEncryptionImpl(args.getBucketPathEncryptionService(), args.getPrivateKeyService()));
+        CMSEncryptionServiceImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args -> new SwitchableCmsEncryptionImpl(args.getEncryptionConfig()));
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
             LogStringFrame lsf = new LogStringFrame();
@@ -61,10 +66,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
             log.info(lsf.toString());
-            URI systemRoot = filesystemDFSCredentials.getRoot().toAbsolutePath().toUri();
+            URI systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
+            storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
-                    .storage(new FileSystemStorageService(filesystemDFSCredentials.getRoot()))
+                    .storage(getStorageService())
                     .overridesRegistry(baseOverridesRegistry)
                     .build();
 
@@ -96,14 +102,19 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
                 amazons3.createBucket(amazonS3DFSCredentials.getContainer());
             }
+            storageService = new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE);
             String systemRoot = S3_PREFIX + amazonS3DFSCredentials.getRootBucket();
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
-                    .storage(new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE))
+                    .storage(getStorageService())
                     .overridesRegistry(baseOverridesRegistry)
                     .build();
             log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
         }
+    }
+
+    public StorageService getStorageService() {
+        return storageService;
     }
 
     @Override
