@@ -16,7 +16,10 @@ import java.io.ByteArrayOutputStream;
 import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -47,7 +50,8 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("password", TEST_PASS)
                 .header("token", token)
                 .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(header().string(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE));
         verify(versionedPrivateSpaceService).read(any());
     }
 

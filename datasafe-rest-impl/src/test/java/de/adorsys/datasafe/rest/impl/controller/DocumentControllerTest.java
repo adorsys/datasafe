@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.ByteArrayInputStream;
@@ -17,8 +16,11 @@ import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -46,8 +48,9 @@ class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)
-                .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
-                .andExpect(status().isOk());
+                .accept(APPLICATION_OCTET_STREAM_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(header().string(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE));
         verify(privateSpaceService).read(any());
     }
 

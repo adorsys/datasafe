@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -67,6 +68,9 @@ public class InboxController {
                               HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
+        // this is needed for swagger, produces is just a directive:
+        response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
+
         try (InputStream is = dataSafeService.inboxService().read(ReadRequest.forPrivate(userIDAuth, resource));
              OutputStream os = response.getOutputStream()
         ) {
