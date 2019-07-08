@@ -10,6 +10,7 @@ import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -85,9 +86,12 @@ public class DocumentController {
     @GetMapping("/documents/{path:.*}")
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
+                                      @ApiParam(defaultValue = ".")
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        path = Optional.ofNullable(path).orElse("./");
+        path = Optional.ofNullable(path)
+                .map(it -> it.replaceAll("^\\.$", ""))
+                .orElse("./");
         List<String> documentList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                 .map(e -> e.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());

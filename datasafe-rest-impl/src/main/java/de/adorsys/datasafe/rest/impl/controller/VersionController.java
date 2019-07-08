@@ -10,6 +10,7 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.*;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,6 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RestController
-@RequestMapping
 @RequiredArgsConstructor
 public class VersionController {
 
@@ -114,9 +114,12 @@ public class VersionController {
     @GetMapping(value = "/versions/list/{path:.*}", produces = APPLICATION_JSON_VALUE)
     public List<String> versionsOf(@RequestHeader String user,
                                    @RequestHeader String password,
+                                   @ApiParam(defaultValue = ".")
                                    @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        path = Optional.ofNullable(path).orElse("./");
+        path = Optional.ofNullable(path)
+                .map(it -> it.replaceAll("^\\.$", ""))
+                .orElse("./");
         PrivateResource resource = BasePrivateResource.forPrivate(path);
 
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.<UserIDAuth, PrivateResource>builder()

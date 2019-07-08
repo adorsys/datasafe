@@ -42,7 +42,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
     void writeToInboxTest() {
         when(dataSafeService.inboxService().write(any())).thenReturn(new ByteArrayOutputStream());
 
-        mvc.perform(putFileBuilder("/inbox/{path}", TEST_PATH)
+        mvc.perform(putFileBuilder("/inbox/document/{path}", TEST_PATH)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header("users", TEST_USER)
                 .header("token", token)
@@ -56,7 +56,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
     void readFromInboxTest() {
         when(dataSafeService.inboxService().read(any())).thenReturn(new ByteArrayInputStream("hello".getBytes()));
 
-        mvc.perform(get("/inbox/{path}", TEST_PATH)
+        mvc.perform(get("/inbox/document/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)
@@ -70,7 +70,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
     @Test
     void removeFromInboxTest() {
 
-        mvc.perform(delete("/inbox/{path}", TEST_PATH)
+        mvc.perform(delete("/inbox/documents/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)
