@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -68,9 +69,22 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
 
     @SneakyThrows
     @Test
+    void listInboxTest() {
+        mvc.perform(get("/inbox/documents/{path}", TEST_PATH)
+                .header("user", TEST_USER)
+                .header("password", TEST_PASS)
+                .header("token", token)
+                .accept(APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(header().string(CONTENT_TYPE, APPLICATION_JSON_VALUE));
+        verify(inboxService).list(any());
+    }
+
+    @SneakyThrows
+    @Test
     void removeFromInboxTest() {
 
-        mvc.perform(delete("/inbox/documents/{path}", TEST_PATH)
+        mvc.perform(delete("/inbox/document/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)
