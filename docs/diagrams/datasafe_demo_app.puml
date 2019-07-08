@@ -1,0 +1,109 @@
+@startuml
+
+skinparam ranksep 10
+skinparam linetype ortho
+
+actor User as u
+
+rectangle "Local system" as ls{
+    rectangle create_profile [
+        Create user
+    ]
+
+    rectangle delete_profile [
+        Delete user
+    ]
+
+    rectangle user_profile [
+        Where is user's profile?
+    ]
+
+    rectangle doc [
+        WRITE <&file>\n<b>some/file.txt</b>
+    ]
+
+    database "<b>RDBMS</b>\n<b>Filesystem</b>\n(No encryption)" as local_storage {
+    }
+
+    rectangle syn_s3 [
+        <b>Synchronize with S3</b> \n- user's(create/delete)\nor \n- Filesystem(save/update)
+    ]
+}
+
+rectangle "amazon s3 web console" as aweb{
+    rectangle web [
+        <b>Filesystem</b>
+        ---
+        Display file folder
+    ]
+}
+
+rectangle "Datasafe\nRestApi's" as datasafe_restapi{
+    rectangle api [
+        <b>User's</b>
+        ---
+        <b>Files's</b>
+        ---
+        <b>Inbox</b>
+        ---
+        <b>Version</b>
+    ]
+
+}
+
+rectangle Directory {
+
+    frame "DFSConfig\nBootstrap" as DFSConfig {
+        component "<&link-intact>UserPublicProfile location" as UPub_loc
+        component "<&link-intact>UserPrivateProfile location" as UPriv_loc
+    }
+
+    database "<b>Profile DB</b>\nRDBMS\nS3\nfilesystem" as profiles_storage {
+        rectangle UPub [
+        UserPublicProfile
+        --
+        <&link-intact>publicKeys location
+        <&link-intact>inbox location
+        ]
+
+        rectangle UPriv [
+          UserPrivateProfile
+          --
+          <&link-intact>keystore location
+          <&link-intact>privateStorage location
+          <&link-intact>inboxWithFullAccess location
+        ]
+    }
+    rectangle Credentials [
+        <b>BucketAccessService</b>
+        ---
+        Enhance request\nwith credentials\nPerform routing
+    ]
+
+    DFSConfig -[hidden]down- profiles_storage
+    UPub -[hidden]down- Credentials
+    UPriv -[hidden]down- Credentials
+}
+
+database "<b>Private files</b>\non remote storage\nS3\nfilesystem" as private_files_storage {
+}
+
+u --> create_profile
+create_profile --> local_storage : Update\nthe user's\ndetails
+u --> delete_profile
+delete_profile --> local_storage : Update\nthe user's\ndetails
+u --> doc
+doc --> user_profile
+user_profile --> local_storage : Store the file's\ninto Filesystem
+u --> syn_s3
+syn_s3 --> datasafe_restapi
+datasafe_restapi --> syn_s3
+datasafe_restapi --> Directory
+Directory --> datasafe_restapi
+
+Credentials ==> UPriv : \n\nREAD <&file>\n<b>file:///username:password@host/folder/profile/my_private_profile</b>\n\n
+Credentials ==> private_files_storage : \n\nWRITE <&file>\n<b>s3://user:password@bucket/files/private/encrypted(some)/encrypted(file.txt)\n\n
+Directory --> aweb
+aweb --> Directory
+
+@enduml

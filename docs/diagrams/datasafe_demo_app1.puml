@@ -1,0 +1,73 @@
+@startuml
+
+skinparam ranksep 10
+skinparam linetype ortho
+
+actor User as u
+
+rectangle "Local system" as ls{
+    rectangle User_Process [
+        Create/Delete user
+    ]
+
+    rectangle user_profile [
+        Where is user's profile?
+    ]
+
+    rectangle doc [
+        WRITE <&file>\n<b>some/file.txt</b>
+    ]
+
+    database "<b>RDBMS</b>\n<b>Filesystem</b>\n(No encryption)" as local_storage {
+    }
+
+    rectangle syn_s3 [
+        <b>Synchronize with S3</b> \n- user's(create/delete)\nor \n- Filesystem(save/update)
+    ]
+}
+
+frame "Amazon" as amazon_S3 {
+    rectangle s3 [
+            S3 bucket
+    ]
+}
+
+rectangle "amazon s3 web console" as aweb{
+    rectangle web [
+        <b>Filesystem</b>
+        ---
+        Display file folder
+    ]
+}
+
+rectangle "Datasafe\nRestApi's" as datasafe_restapi{
+    rectangle api [
+        <b>User's</b>
+        ---
+        <b>Files's</b>
+        ---
+        <b>Inbox</b>
+        ---
+        <b>Version</b>
+    ]
+
+}
+
+u --> User_Process
+User_Process --> local_storage : Update\nthe user's\ndetails
+u --> doc
+doc --> user_profile
+user_profile --> local_storage : Store the file's\ninto Filesystem
+u --> syn_s3
+syn_s3 --> datasafe_restapi
+datasafe_restapi --> amazon_S3
+
+amazon_S3 --> datasafe_restapi
+datasafe_restapi --> syn_s3
+
+amazon_S3 --> aweb
+aweb --> amazon_S3
+
+aweb --> u
+
+@enduml
