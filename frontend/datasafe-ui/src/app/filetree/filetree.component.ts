@@ -11,17 +11,17 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 
 class UserFileSystem {
 
+  // We need such thing because s3 does not support folders
   uiCreatedFolders = new Set<string>();
   fs = new Map<string, Set<string>>();
 
   buildFs(files: Array<string>) {
     this.fs.clear();
-    files.forEach(it => this.addEntry(it));
-    this.uiCreatedFolders.forEach(it => this.addEntry(it + "/"));
-  }
 
-  rebuildFs() {
-    this.uiCreatedFolders.forEach(it => this.addEntry(it + "/"));
+    // maintain consistent order
+    files.concat(Array.from(this.uiCreatedFolders).map(it => it + "/"))
+        .sort()
+        .forEach(it => this.addEntry(it));
   }
 
   rootLevelNodes() : string[] {
@@ -53,7 +53,7 @@ class UserFileSystem {
 
     var fullPath = "";
     var folder = "";
-    path.split("/").filter(res => "" !== res).forEach(segment => {
+    path.split("/").forEach(segment => {
       fullPath += segment;
       fullPath += (fullPath === path ? "" : "/");
 
@@ -63,11 +63,11 @@ class UserFileSystem {
     })
   }
 
-  private addDirEntry(path: string) {
-    this.putToFolder(path, null);
-  }
-
   private putToFolder(folder: string, name: string) {
+    if ("" === name || "/" === name) {
+      name = null;
+    }
+
     if (folder === "") {
       folder = name;
       name = null;
@@ -112,9 +112,24 @@ export class DynamicDatabase {
   }
 
   rebuildView(filetreeComponent: FiletreeComponent) {
-    this.storageTree.rebuildFs();
+    let paths = this.memoizedFs();
+
+    this.storageTree.buildFs(Array.from(paths));
     filetreeComponent.dataSource.data = this.storageTree.rootLevelNodes()
         .map(path => this.storageTree.treeNodeFromPath(path));
+  }
+
+  private memoizedFs() {
+    let paths = new Set<string>();
+    this.storageTree.fs.forEach((values, key) => {
+      paths.add(key);
+      values.forEach(file => {
+        if (null != file) {
+          paths.add(key + file);
+        }
+      })
+    });
+    return paths;
   }
 
   getChildren(node: string): string[] | undefined {
@@ -131,12 +146,31 @@ export class DynamicDatabase {
 @Injectable()
 export class DynamicDataSource {
 
+  private expandedMemoize = new Set<string>();
+
   dataChange = new BehaviorSubject<DynamicFlatNode[]>([]);
 
   get data(): DynamicFlatNode[] { return this.dataChange.value; }
   set data(value: DynamicFlatNode[]) {
     this.treeControl.dataNodes = value;
     this.dataChange.next(value);
+    // keep expanded node visible:
+    this.keepExpandedNodesState();
+  }
+
+  private keepExpandedNodesState() {
+    let toExpand = new Set<string>(this.expandedMemoize);
+    let expanded = false;
+    do {
+      expanded = false;
+      this.treeControl.dataNodes
+          .filter(it => toExpand.has(it.path))
+          .forEach(node => {
+            this.treeControl.expansionModel.select(node);
+            expanded = true;
+            toExpand.delete(node.path);
+          });
+    } while (toExpand.size != 0 && expanded);
   }
 
   constructor(private treeControl: FlatTreeControl<DynamicFlatNode>,
@@ -174,9 +208,11 @@ export class DynamicDataSource {
     }
 
     if (expand) {
+      this.expandedMemoize.add(node.path);
       const nodes = children.map(path => this.database.storageTree.treeNodeFromPath(path));
       this.data.splice(index + 1, 0, ...nodes);
     } else {
+      this.expandedMemoize.delete(node.path);
       let count = 0;
       for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {}
       this.data.splice(index + 1, count);
@@ -266,9 +302,17 @@ export class FiletreeComponent {
 
   deleteFile(path: string) {
     this.error = '';
+    this.removePathFromUiCreatedFolders(path);
     this.api.deleteDocument(path, this.creds.getCredentialsForApi())
         .then(res => this.loadTree())
         .catch(err => this.error = 'Delete failed: ' + ErrorMessageUtil.extract(err));
+  }
+
+  private removePathFromUiCreatedFolders(path: string) {
+    let pathPrefix = path.replace(/\/$/, "");
+    let toRemove = Array.from(this.database.storageTree.uiCreatedFolders)
+        .filter(it => it.startsWith(pathPrefix));
+    toRemove.forEach(remove => this.database.storageTree.uiCreatedFolders.delete(remove));
   }
 
   uploadFile(event) {
