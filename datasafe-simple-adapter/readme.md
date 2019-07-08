@@ -1,9 +1,9 @@
 # 1. SimpleDatasafeAdapter
 
-The simple datasafe adapter is an easy to use wrapper about the basic functionality of the main service.
+The simple datasafe adapter is an easy to use wrapper about the basic functionality of the main service. This service is called the SimpleDatasafeService.
 Its interface looks very similar to the DocumentSafeService of the business-layer of the previous project docusafe (https://github.com/adorsys/docusafe).
 
-The adapter is currenty reduced to the main functionalities:
+The SimpleDatasafeService is currenty reduced to the main functionalities:
 
 - create/destroy/check existance of user
 - create/delete/list files
@@ -60,8 +60,8 @@ datasafe:
 
 ### 1.1.2 factory injection
 Rather than autowiring the DataSafeService directly, it can be created with an autowired SpringSimpleDatasafeServiceFactory.
-The factory has a method, to get a SimpleDatasafeService with another rootBucket, or to be more precies, with a deeper bucket which is below the default root bucket.
-So accessing a SimpleDatasafeAdapter with
+The factory has a method, to get a SimpleDatasafeService with another rootBucket, or to be more precise, with a deeper bucket which is below the default root bucket.
+So accessing a SimpleDatasafeService with
 ```
        @Autowired
        private SpringSimpleDatasafeServiceFactory factory;
@@ -77,7 +77,7 @@ and a default root bucket target/datasafe-file would return a SimpleDatasafeServ
 ```
 
 ### 1.1.3 alternative
-Another - but not recommended - way to retrieve an instance of the SimpleDatasafeAdapter is the direct instantiation with
+Another - but not recommended - way to retrieve an instance of the SimpleDatasafeService is the direct instantiation with
 ```
 new SimpleDatasafeServiceImp()
 ```
@@ -88,7 +88,7 @@ In this case, the DFS can be defined by the two system properites:
 ```
 
 ## 1.2 features
-The default behavior of the datasafe service is to encrypt all data and to encrypt the path of the deocuments too. For testing  - and for testing only - theses features can be switched off.
+The default behavior of the datasafe service is to encrypt all data and to encrypt the path of the documents too. For testing  - and for testing only - theses features can be switched off.
 So the following properties *never must be used in production*:
 ```
 SC-NO-BUCKETPATH-ENCRYPTION 
@@ -97,3 +97,25 @@ SC-NO-CMSENCRYPTION-AT-ALL
 So running the app with <code>-DSC-NO-BUCKETPATH-ENCRYPTION</code> (or <code>-DSC-NO-BUCKETPATH-ENCRYPTION=true</code>) would avoid any path encryption. Ommitting the property or setting it to false would run with the default behaviour.
 Similar running the app with <code>-DSC-NO-CMSENCRYPTION-AT-ALL</code> (or <code>-DSC-NO-CMSENCRYPTION-AT-ALL=true</code>) would suppress any content encryption.
 
+
+## 1.3 pom
+
+### 1.3.1 spring
+If spring is used the only module to be included now is  
+```
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-simple-adapter-spring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+```
+
+### 1.3.2 direct instantiation
+If spring is not used the only module to be included now is  
+```
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-simple-adapter-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+```
