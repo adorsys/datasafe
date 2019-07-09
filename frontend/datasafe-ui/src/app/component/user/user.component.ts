@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {CredentialsService} from "../credentials.service";
-import {ApiService} from "../api.service";
 import {Router} from "@angular/router";
+import {CredentialsService} from "../../service/credentials/credentials.service";
+import {ApiService} from "../../service/api/api.service";
 
 @Component({
   selector: 'app-user',

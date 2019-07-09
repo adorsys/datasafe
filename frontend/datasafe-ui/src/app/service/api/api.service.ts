@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {flatMap, map} from "rxjs/operators";
-import {Credentials} from "./credentials.service";
-import {FileUploader} from "ng2-file-upload";
+import {Credentials} from "../credentials/credentials.service";
 
 @Injectable({providedIn: 'root'})
 export class ApiService {
@@ -20,7 +19,6 @@ export class ApiService {
     private putDocumentUri = this.uri + "/document/";
     private getDocumentUri = this.uri + "/document/";
     private deleteDocumentUri = this.uri + "/document/";
-    private uploader: FileUploader = new FileUploader({method: 'PUT'});
 
     private token: string;
 

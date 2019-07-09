@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from "../api.service";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {CredentialsService} from "../credentials.service";
-import {ErrorMessageUtil, FieldErrorStateMatcher, ParentOrFieldErrorStateMatcher} from "../app.component";
+import {ApiService} from "../../service/api/api.service";
+import {CredentialsService} from "../../service/credentials/credentials.service";
+import {ErrorMessageUtil, FieldErrorStateMatcher, ParentOrFieldErrorStateMatcher} from "../../app.component";
 
 class PasswordsMatchControl extends FormControl {
 

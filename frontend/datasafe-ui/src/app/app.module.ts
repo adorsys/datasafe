@@ -10,11 +10,11 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DemoMaterialModule} from './material-module';
 import {RouterModule, Routes} from '@angular/router';
 
-import {UserComponent} from './user/user.component';
-import {LoginComponent} from './login/login.component';
-import {RegisterComponent} from './register/register.component';
+import {UserComponent} from './component/user/user.component';
+import {LoginComponent} from './component/login/login.component';
+import {RegisterComponent} from './component/register/register.component';
+import {AddFolderDialog, FiletreeComponent} from './component/filetree/filetree.component';
 import {AppComponent} from "./app.component";
-import {AddFolderDialog, FiletreeComponent} from './filetree/filetree.component';
 
 const appRoutes: Routes = [
   {path: '', component: LoginComponent},

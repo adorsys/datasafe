@@ -3,10 +3,10 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component, Inject, Injectable} from '@angular/core';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ApiService} from "../api.service";
-import {CredentialsService} from "../credentials.service";
+import {ApiService} from "../../service/api/api.service";
+import {CredentialsService} from "../../service/credentials/credentials.service";
 import {Router} from "@angular/router";
-import {ErrorMessageUtil} from "../app.component";
+import {ErrorMessageUtil} from "../../app.component";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 
 class UserFileSystem {

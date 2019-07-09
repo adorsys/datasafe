@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {FormBuilder, FormControl, Validators} from "@angular/forms";
-import {CredentialsService} from "../credentials.service";
-import {FieldErrorStateMatcher} from "../app.component";
+import {CredentialsService} from "../../service/credentials/credentials.service";
+import {FieldErrorStateMatcher} from "../../app.component";
 
 @Component({
   selector: 'app-login',
