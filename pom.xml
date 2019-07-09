@@ -18,7 +18,7 @@
         <module>datasafe-examples</module>
         <module>datasafe-simple-adapter</module>
         <module>datasafe-test-storages</module>
-        <module>datasafe-business-tests</module>
+        <module>datasafe-long-run-tests</module>
         <module>last-module-codecoverage-check</module>
     </modules>
 
