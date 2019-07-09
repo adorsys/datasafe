@@ -85,6 +85,7 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
         mvc.perform(
                putFileBuilder("/inbox/{path}", TEST_PATH).
                contentType(MediaType.MULTIPART_FORM_DATA_VALUE).
+               content("file content".getBytes()).
                header("users", TEST_USER).
                header(SecurityConstants.TOKEN_HEADER, token))
            .andExpect(status().isOk());
