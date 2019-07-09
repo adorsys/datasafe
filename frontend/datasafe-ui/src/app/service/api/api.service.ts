@@ -10,8 +10,8 @@ export class ApiService {
 
     private static TOKEN_HEADER = "token";
 
-    public apiUserName = Env.apiUsername;
-    public apiPassword = Env.apiPassword;
+    apiUserName = Env.apiUsername;
+    apiPassword = Env.apiPassword;
 
     private uri = Env.apiUrl;
     private authorizeUri = this.uri + "/api/authenticate";
@@ -26,7 +26,7 @@ export class ApiService {
     constructor(private httpClient: HttpClient) {
     }
 
-    public authorize() {
+    authorize() {
         let result = this.httpClient.post(
             this.authorizeUri,
             {"userName": this.apiUserName, "password": this.apiPassword},
@@ -40,7 +40,7 @@ export class ApiService {
         return result;
     }
 
-    public createUser(username: string, password: string) {
+    createUser(username: string, password: string) {
         return this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.put(
@@ -50,7 +50,7 @@ export class ApiService {
             ))).toPromise();
     }
 
-    public listDocuments(path: string, creds: Credentials) {
+    listDocuments(path: string, creds: Credentials) {
         return this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.get(
@@ -59,7 +59,7 @@ export class ApiService {
                 ))).toPromise();
     }
 
-    public uploadDocument(document, path: string, creds: Credentials) {
+    uploadDocument(document, path: string, creds: Credentials) {
         let formData: FormData = new FormData();
         formData.append('file', document);
 
@@ -76,7 +76,7 @@ export class ApiService {
     }
 
 
-    public downloadDocument(path: string, creds: Credentials) {
+    downloadDocument(path: string, creds: Credentials) {
         this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.get(
@@ -100,7 +100,7 @@ export class ApiService {
         )
     }
 
-    public deleteDocument(path: string, creds: Credentials) {
+    deleteDocument(path: string, creds: Credentials) {
         return this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.delete(
@@ -110,7 +110,7 @@ export class ApiService {
     }
 
     private withAuthorization() : Observable<string> {
-        if (null == this.token) {
+        if (null === this.token) {
             return this.authorize()
                 .pipe(map((res) => ApiService.extractToken(res)))
         }
@@ -130,7 +130,7 @@ export class ApiService {
         };
     }
 
-    private static extractToken(response: HttpResponse<Object>) : string {
+    private static extractToken(response: HttpResponse<{}>) : string {
         return response.headers.get(ApiService.TOKEN_HEADER)
     }
 }

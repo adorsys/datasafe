@@ -15,7 +15,7 @@ class UserFileSystem {
   uiCreatedFolders = new Set<string>();
   fs = new Map<string, Set<string>>();
 
-  buildFs(files: Array<string>) {
+  buildFs(files: string[]) {
     this.fs.clear();
 
     // maintain consistent order
@@ -102,7 +102,7 @@ export class DynamicDatabase {
               .map(path => this.storageTree.treeNodeFromPath(path));
         })
         .catch(err => {
-          if (err.code == 401 || err.code == 403) {
+          if (err.code === 401 || err.code === 403) {
             router.navigate(['']);
             return;
           }
