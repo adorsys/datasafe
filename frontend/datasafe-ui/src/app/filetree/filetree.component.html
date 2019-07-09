@@ -5,6 +5,9 @@
     <button mat-icon-button (click)="uploader.click()">
         <mat-icon>cloud_upload</mat-icon>
     </button>
+    <button mat-icon-button (click)="refresh()">
+        <mat-icon>refresh</mat-icon>
+    </button>
     <input hidden type="file" #uploader (change)="uploadFile($event)"/>
 </div>
 <div>

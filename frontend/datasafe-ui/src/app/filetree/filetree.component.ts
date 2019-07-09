@@ -335,4 +335,9 @@ export class FiletreeComponent {
           this.error = 'Upload failed: ' + ErrorMessageUtil.extract(err);
         });
   }
+
+  refresh() {
+    this.error = '';
+    this.database.loadData(this.api, this.creds, this, this.router);
+  }
 }
