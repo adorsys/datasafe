@@ -42,7 +42,7 @@ before_install:
 # preparations to build frontend
 install:
   - nvm install 11.12.0
-  - cd frontend/datasafe-ui && npm install
+  - cd frontend/datasafe-ui && npm install && cd ../..
 
 after_success:
   - /bin/bash .travis/codecov_bash.sh
