@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
@@ -13,6 +14,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
+import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -238,10 +240,19 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         simpleDatasafeService.destroyUser(userIDAuth2);
         // TODO: better check
         // users' keystore is dropped from cache, so it is not possible to find decrypted path
-        assertThrows(
-            NoSuchFileException.class,
-            () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
-        );
+        // because access to keystore throws exception
+        if (descriptor.getStorageService().get() instanceof FileSystemStorageService) {
+            assertThrows(
+                NoSuchFileException.class,
+                () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
+            );
+        } else {
+            assertThrows(
+                AmazonS3Exception.class,
+                () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
+            );
+        }
+
         assertFalse(simpleDatasafeService.userExists(userIDAuth2.getUserID()));
 
         assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
