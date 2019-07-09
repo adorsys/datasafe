@@ -16,7 +16,7 @@ export class ApiService {
     private uri = Env.apiUrl;
     private authorizeUri = this.uri + "/api/authenticate";
     private createUserUri = this.uri + "/user";
-    private listDocumentUri = this.uri + "/documents";
+    private listDocumentUri = this.uri + "/documents/";
     private putDocumentUri = this.uri + "/document/";
     private getDocumentUri = this.uri + "/document/";
     private deleteDocumentUri = this.uri + "/document/";
