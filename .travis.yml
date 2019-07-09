@@ -42,6 +42,7 @@ before_install:
 # preparations to build frontend
 install:
   - nvm install 11.12.0
+  - npm install -g @angular/cli
   - cd frontend/datasafe-ui && npm install && cd ../..
 
 after_success:
