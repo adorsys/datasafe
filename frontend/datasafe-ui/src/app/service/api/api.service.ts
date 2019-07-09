@@ -3,16 +3,17 @@ import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {flatMap, map} from "rxjs/operators";
 import {Credentials} from "../credentials/credentials.service";
+import {Env} from "../../app.component";
 
 @Injectable({providedIn: 'root'})
 export class ApiService {
 
     private static TOKEN_HEADER = "token";
 
-    public apiUserName = "root";
-    public apiPassword = "root";
+    public apiUserName = Env.apiUsername;
+    public apiPassword = Env.apiPassword;
 
-    private uri = "http://localhost:8080";
+    private uri = Env.apiUrl;
     private authorizeUri = this.uri + "/api/authenticate";
     private createUserUri = this.uri + "/user";
     private listDocumentUri = this.uri + "/documents";
