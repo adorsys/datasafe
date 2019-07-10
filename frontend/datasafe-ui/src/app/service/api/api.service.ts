@@ -41,6 +41,7 @@ export class ApiService {
     }
 
     createUser(username: string, password: string) {
+        console.log("send message to " + this.createUserUri);
         return this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.put(
