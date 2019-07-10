@@ -12,6 +12,7 @@ import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.security.Security;
@@ -22,6 +23,7 @@ import java.util.concurrent.Executors;
  * Encryption provider: BouncyCastle.
  */
 @Configuration
+@Conditional(SingleDfsCondition.class)
 public class DatasafeConfig {
 
     @Bean
@@ -57,7 +59,7 @@ public class DatasafeConfig {
     }
 
     @Bean
-    VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig) {
+    VersionedDatasafeServices dataSafeService(StorageService storageService, DFSConfig dfsConfig) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -67,4 +69,5 @@ public class DatasafeConfig {
                 .storage(storageService)
                 .build();
     }
+
 }

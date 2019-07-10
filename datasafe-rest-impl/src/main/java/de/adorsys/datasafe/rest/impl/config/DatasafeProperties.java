@@ -22,4 +22,12 @@ public class DatasafeProperties {
      * Password used to open keystore. It is not sufficient to read private/secret keys with it.
      */
     private String keystorePassword;
+
+    private String fsDevPath;
+    private String s3Path;
+    private String dbProfilePath;
+
+    private String amazonAccessKeyID;
+    private String amazonSecretAccessKey;
+    private String amazonRegion;
 }
