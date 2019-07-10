@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
+import {HttpClient, HttpResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {flatMap, map} from "rxjs/operators";
 import {Credentials} from "../credentials/credentials.service";
@@ -10,13 +10,13 @@ export class ApiService {
 
     private static TOKEN_HEADER = "token";
 
-    public apiUserName = Env.apiUsername;
-    public apiPassword = Env.apiPassword;
+    apiUserName = Env.apiUsername;
+    apiPassword = Env.apiPassword;
 
     private uri = Env.apiUrl;
     private authorizeUri = this.uri + "/api/authenticate";
     private createUserUri = this.uri + "/user";
-    private listDocumentUri = this.uri + "/documents";
+    private listDocumentUri = this.uri + "/documents/";
     private putDocumentUri = this.uri + "/document/";
     private getDocumentUri = this.uri + "/document/";
     private deleteDocumentUri = this.uri + "/document/";
@@ -26,7 +26,7 @@ export class ApiService {
     constructor(private httpClient: HttpClient) {
     }
 
-    public authorize() {
+    authorize() {
         let result = this.httpClient.post(
             this.authorizeUri,
             {"userName": this.apiUserName, "password": this.apiPassword},
@@ -40,7 +40,7 @@ export class ApiService {
         return result;
     }
 
-    public createUser(username: string, password: string) {
+    createUser(username: string, password: string) {
         return this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.put(
@@ -50,7 +50,7 @@ export class ApiService {
             ))).toPromise();
     }
 
-    public listDocuments(path: string, creds: Credentials) {
+    listDocuments(path: string, creds: Credentials) {
         return this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.get(
@@ -59,7 +59,7 @@ export class ApiService {
                 ))).toPromise();
     }
 
-    public uploadDocument(document, path: string, creds: Credentials) {
+    uploadDocument(document, path: string, creds: Credentials) {
         let formData: FormData = new FormData();
         formData.append('file', document);
 
@@ -76,7 +76,7 @@ export class ApiService {
     }
 
 
-    public downloadDocument(path: string, creds: Credentials) {
+    downloadDocument(path: string, creds: Credentials) {
         this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.get(
@@ -100,7 +100,7 @@ export class ApiService {
         )
     }
 
-    public deleteDocument(path: string, creds: Credentials) {
+    deleteDocument(path: string, creds: Credentials) {
         return this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.delete(
@@ -110,7 +110,7 @@ export class ApiService {
     }
 
     private withAuthorization() : Observable<string> {
-        if (null == this.token) {
+        if (!this.token) {
             return this.authorize()
                 .pipe(map((res) => ApiService.extractToken(res)))
         }
@@ -130,7 +130,7 @@ export class ApiService {
         };
     }
 
-    private static extractToken(response: HttpResponse<Object>) : string {
+    private static extractToken(response: HttpResponse<{}>) : string {
         return response.headers.get(ApiService.TOKEN_HEADER)
     }
 }

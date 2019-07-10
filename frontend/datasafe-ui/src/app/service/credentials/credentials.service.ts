@@ -19,11 +19,11 @@ export class CredentialsService {
 
   constructor() { }
 
-  public setCredentials(username: string, password: string) {
+  setCredentials(username: string, password: string) {
     this.credentials = new Credentials(username, password)
   }
 
-  public getCredentialsForApi() : Credentials {
+  getCredentialsForApi() : Credentials {
     return this.credentials
   }
 }
