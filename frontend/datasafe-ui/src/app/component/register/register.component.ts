@@ -53,7 +53,7 @@ export class RegisterComponent implements OnInit {
     fieldMatcher = new FieldErrorStateMatcher();
     parentOrFieldMatcher = new ParentOrFieldErrorStateMatcher();
 
-    constructor(protected router: Router, private api: ApiService, private fb: FormBuilder,
+    constructor(public router: Router, private api: ApiService, private fb: FormBuilder,
                 private creds: CredentialsService) {
     }
 
