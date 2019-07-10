@@ -22,4 +22,9 @@ public class DatasafeProperties {
      * Password used to open keystore. It is not sufficient to read private/secret keys with it.
      */
     private String keystorePassword;
+
+    /**
+     * From where to serve static resources.
+     */
+    private String staticResources;
 }
