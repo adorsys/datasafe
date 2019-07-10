@@ -691,8 +691,8 @@ Http methods of request is PUT.</p>
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/user' -i -X PUT \
     -H 'Accept: application/json' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDIyLCJyb2wiOlsiUk9MRV9VU0VSIl19.BVkYiafLhDXNlFkSNa7p82ThTs0fHv5XwTMniBlImnqniqPTT988D-pIQq9sFDb-hUvsjr97N13q0C6OYIkn6w' \
     -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDAwLCJyb2wiOlsiUk9MRV9VU0VSIl19.3IRw989Hr8e7o2qJyUB1VvIoZ3hmv_CgovG6dZX6fCWkrfzEdpaQEJGNTBgvH8ft02OWrpnNHPGeyYcKX1BqXA' \
     -d '{"userName":"testUser","password":"testPassword"}'</code></pre>
 </div>
 </div>
@@ -724,10 +724,10 @@ Http method of request is DELETE.</p>
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/user' -i -X DELETE \
     -H 'Accept: application/json' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDIzLCJyb2wiOlsiUk9MRV9VU0VSIl19.60-fqHIUrYAHjxhQ8mU6L0Zit2e9QBKQNhBk1Je8kI3cCyLyDy3o5_-2yYHxrYsYEbbDDPewcxCrI1E9NvX_jQ' \
     -H 'password: test' \
     -H 'user: test' \
-    -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDAwLCJyb2wiOlsiUk9MRV9VU0VSIl19.3IRw989Hr8e7o2qJyUB1VvIoZ3hmv_CgovG6dZX6fCWkrfzEdpaQEJGNTBgvH8ft02OWrpnNHPGeyYcKX1BqXA'</code></pre>
+    -H 'Content-Type: application/json;charset=UTF-8'</code></pre>
 </div>
 </div>
 </div>
@@ -788,8 +788,8 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/documents/' -i -X GET \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDExLCJyb2wiOlsiUk9MRV9VU0VSIl19.QmLO3ahgNtbxt0l02k7krXWLXD5Y4Ff3uDwxZv9vudisQjIVAQCxe65HqrR6MR7IsKU_4EgDx94PS6UDSOoyIw' \
     -H 'password: test' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDMyLCJyb2wiOlsiUk9MRV9VU0VSIl19.1Vo12stR0MiWwUAP24QxzwV3RwdL8emmRUgarQoZK74FuUj_omx_Z-0cqojhhTBf4vRACHuDWdojBOxdeuKVjw' \
     -H 'user: test'</code></pre>
 </div>
 </div>
@@ -879,7 +879,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/document/path/to/file' -i -X GET \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDExLCJyb2wiOlsiUk9MRV9VU0VSIl19.QmLO3ahgNtbxt0l02k7krXWLXD5Y4Ff3uDwxZv9vudisQjIVAQCxe65HqrR6MR7IsKU_4EgDx94PS6UDSOoyIw' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDMzLCJyb2wiOlsiUk9MRV9VU0VSIl19.3_wby9u5LlVzO9K3dyqwcTMrbDi-e4n9S3d-S5AyHuii8GmdI8kjdcb2AZ0HJZTJSRkjW56Tcnnv2xEi9mkiQg' \
     -H 'password: test' \
     -H 'Accept: application/octet-stream' \
     -H 'user: test'</code></pre>
@@ -970,7 +970,7 @@ file content</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/document/path/to/file' -i -X PUT \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDExLCJyb2wiOlsiUk9MRV9VU0VSIl19.QmLO3ahgNtbxt0l02k7krXWLXD5Y4Ff3uDwxZv9vudisQjIVAQCxe65HqrR6MR7IsKU_4EgDx94PS6UDSOoyIw' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDMzLCJyb2wiOlsiUk9MRV9VU0VSIl19.3_wby9u5LlVzO9K3dyqwcTMrbDi-e4n9S3d-S5AyHuii8GmdI8kjdcb2AZ0HJZTJSRkjW56Tcnnv2xEi9mkiQg' \
     -H 'Content-Type: application/octet-stream;charset=UTF-8' \
     -H 'password: test' \
     -H 'user: test' \
@@ -1051,7 +1051,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/document/path/to/file' -i -X DELETE \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDExLCJyb2wiOlsiUk9MRV9VU0VSIl19.QmLO3ahgNtbxt0l02k7krXWLXD5Y4Ff3uDwxZv9vudisQjIVAQCxe65HqrR6MR7IsKU_4EgDx94PS6UDSOoyIw' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDMzLCJyb2wiOlsiUk9MRV9VU0VSIl19.3_wby9u5LlVzO9K3dyqwcTMrbDi-e4n9S3d-S5AyHuii8GmdI8kjdcb2AZ0HJZTJSRkjW56Tcnnv2xEi9mkiQg' \
     -H 'password: test' \
     -H 'user: test'</code></pre>
 </div>
@@ -1114,7 +1114,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate</code></pre>
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/inbox/' -i -X GET \
     -H 'password: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDE0LCJyb2wiOlsiUk9MRV9VU0VSIl19.WSf5MKNBL-i6dt49nB_pc_JM7prL8jgSc2Ep8fRKQ2DetVR2jNqOP_wwVV-7YD9NC0R3LYIXgQlu-2g9LBaAlg' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDM1LCJyb2wiOlsiUk9MRV9VU0VSIl19.wZmdGWfxtnSD769WB-nUDomFLM9WYcQHdrnSCyE45cRKenW74CdimTDX2qtp4H5RTlPszJQxv8pJr1cBQ8L1gA' \
     -H 'user: test'</code></pre>
 </div>
 </div>
@@ -1206,7 +1206,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/inbox/test.txt' -i -X GET \
     -H 'password: test' \
     -H 'Accept: application/octet-stream' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDE0LCJyb2wiOlsiUk9MRV9VU0VSIl19.WSf5MKNBL-i6dt49nB_pc_JM7prL8jgSc2Ep8fRKQ2DetVR2jNqOP_wwVV-7YD9NC0R3LYIXgQlu-2g9LBaAlg' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDM1LCJyb2wiOlsiUk9MRV9VU0VSIl19.wZmdGWfxtnSD769WB-nUDomFLM9WYcQHdrnSCyE45cRKenW74CdimTDX2qtp4H5RTlPszJQxv8pJr1cBQ8L1gA' \
     -H 'user: test'</code></pre>
 </div>
 </div>
@@ -1292,7 +1292,7 @@ hello</code></pre>
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/inbox/test.txt' -i -X PUT \
     -H 'Content-Type: application/octet-stream;charset=UTF-8' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDE0LCJyb2wiOlsiUk9MRV9VU0VSIl19.WSf5MKNBL-i6dt49nB_pc_JM7prL8jgSc2Ep8fRKQ2DetVR2jNqOP_wwVV-7YD9NC0R3LYIXgQlu-2g9LBaAlg' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDM1LCJyb2wiOlsiUk9MRV9VU0VSIl19.wZmdGWfxtnSD769WB-nUDomFLM9WYcQHdrnSCyE45cRKenW74CdimTDX2qtp4H5RTlPszJQxv8pJr1cBQ8L1gA' \
     -H 'users: test' \
     -d 'file content'</code></pre>
 </div>
@@ -1372,7 +1372,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate</code></pre>
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/inbox/test.txt' -i -X DELETE \
     -H 'password: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDE0LCJyb2wiOlsiUk9MRV9VU0VSIl19.WSf5MKNBL-i6dt49nB_pc_JM7prL8jgSc2Ep8fRKQ2DetVR2jNqOP_wwVV-7YD9NC0R3LYIXgQlu-2g9LBaAlg' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDM1LCJyb2wiOlsiUk9MRV9VU0VSIl19.wZmdGWfxtnSD769WB-nUDomFLM9WYcQHdrnSCyE45cRKenW74CdimTDX2qtp4H5RTlPszJQxv8pJr1cBQ8L1gA' \
     -H 'user: test'</code></pre>
 </div>
 </div>
@@ -1436,7 +1436,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate</code></pre>
     -H 'password: test' \
     -H 'user: test' \
     -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDA0LCJyb2wiOlsiUk9MRV9VU0VSIl19.FBsYqnTlkEaxj8DrldkBTU-ytHiPpor2T5v0l2HqLnt7b8L-v0M7I7srGPcEbA5mykcFmakiDqpQT_wv_2qwfA'</code></pre>
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDI2LCJyb2wiOlsiUk9MRV9VU0VSIl19.24jP3iGeT2yqWJjaSyehbDNV1FovqvwT1aF7ObNHCi2_i_egoq_G5YlGpyrrGSTPdZ5nAtuqsIlGZfiI5dX8hQ'</code></pre>
 </div>
 </div>
 </div>
@@ -1528,7 +1528,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
     -H 'password: test' \
     -H 'Accept: application/octet-stream' \
     -H 'user: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDA0LCJyb2wiOlsiUk9MRV9VU0VSIl19.FBsYqnTlkEaxj8DrldkBTU-ytHiPpor2T5v0l2HqLnt7b8L-v0M7I7srGPcEbA5mykcFmakiDqpQT_wv_2qwfA'</code></pre>
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDI2LCJyb2wiOlsiUk9MRV9VU0VSIl19.24jP3iGeT2yqWJjaSyehbDNV1FovqvwT1aF7ObNHCi2_i_egoq_G5YlGpyrrGSTPdZ5nAtuqsIlGZfiI5dX8hQ'</code></pre>
 </div>
 </div>
 </div>
@@ -1619,7 +1619,7 @@ hello</code></pre>
     -H 'Content-Type: application/octet-stream;charset=UTF-8' \
     -H 'password: test' \
     -H 'user: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDA0LCJyb2wiOlsiUk9MRV9VU0VSIl19.FBsYqnTlkEaxj8DrldkBTU-ytHiPpor2T5v0l2HqLnt7b8L-v0M7I7srGPcEbA5mykcFmakiDqpQT_wv_2qwfA' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDI2LCJyb2wiOlsiUk9MRV9VU0VSIl19.24jP3iGeT2yqWJjaSyehbDNV1FovqvwT1aF7ObNHCi2_i_egoq_G5YlGpyrrGSTPdZ5nAtuqsIlGZfiI5dX8hQ' \
     -d 'file content'</code></pre>
 </div>
 </div>
@@ -1699,7 +1699,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate</code></pre>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://example.com/datasafe/versioned/path/to/file' -i -X DELETE \
     -H 'password: test' \
     -H 'user: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNTU5MDA0LCJyb2wiOlsiUk9MRV9VU0VSIl19.FBsYqnTlkEaxj8DrldkBTU-ytHiPpor2T5v0l2HqLnt7b8L-v0M7I7srGPcEbA5mykcFmakiDqpQT_wv_2qwfA'</code></pre>
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDI2LCJyb2wiOlsiUk9MRV9VU0VSIl19.24jP3iGeT2yqWJjaSyehbDNV1FovqvwT1aF7ObNHCi2_i_egoq_G5YlGpyrrGSTPdZ5nAtuqsIlGZfiI5dX8hQ'</code></pre>
 </div>
 </div>
 </div>

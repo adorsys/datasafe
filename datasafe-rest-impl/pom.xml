@@ -226,6 +226,17 @@
                                     <outputDirectory>${project.basedir}/docs</outputDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>generate-xml-doc</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>process-asciidoc</goal>
+                                </goals>
+                                <configuration>
+                                    <doctype>book</doctype>
+                                    <outputDirectory>${project.basedir}/docs</outputDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                         <dependencies>
                             <dependency>
@@ -244,6 +255,33 @@
                                 <version>2.0.3.RELEASE</version>
                             </dependency>
                         </dependencies>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>pandoc</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>pandoc</executable>
+                                    <workingDirectory></workingDirectory>
+                                    <arguments>
+                                        <argument>-f</argument>
+                                        <argument>docbook</argument>
+                                        <argument>-t</argument>
+                                        <argument>gfm</argument>
+                                        <argument>${project.basedir}/docs/Datasafe-Rest-API.xml</argument>
+                                        <argument>-o</argument>
+                                        <argument>${project.basedir}/README.md</argument>
+                                    </arguments>
+                                </configuration>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
