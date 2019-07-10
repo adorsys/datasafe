@@ -128,7 +128,7 @@ Additionally, user can implement his own storage adapter to support i.e. storing
 interface.
  
 # Project overview
-* [Achitecture](general/docusafe_future_client.md)
+* [Achitecture](general/architecture.md)
 
 # JavaDoc
 You can read JavaDoc [here](javadoc/latest/index.html)
@@ -139,9 +139,9 @@ Command to generate JavaDoc from sources:
 # Usage examples
 
 # Modular design overview
-* [Modular design](modular/modular.md)
+* [Modular design](general/modular.md)
 
 # Contributing
-* [CodingRules](codingrules/CodingRules.md)
-* [Branching and commiting](branching/branch-and-commit.md)
-* [Deployment to maven central](general/deployment_maven_central.md)
+* [CodingRules](https://github.com/adorsys/datasafe/blob/develop/docs/codingrules/CodingRules.md)
+* [Branching and commiting](https://github.com/adorsys/datasafe/blob/develop/docs/branching/branch-and-commit.md)
+* [Deployment to maven central](https://github.com/adorsys/datasafe/blob/develop/docs/general/deployment_maven_central.md)
