@@ -1,11 +1,15 @@
 package de.adorsys.datasafe.rest.impl.config;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -18,8 +22,12 @@ import java.util.regex.Pattern;
  * Custom configuration of Spring MVC that allows using PathVariables that contain slash. For example, when
  * doing request path matching mapping {@code /documents/{path:.*}} will be converted to {@code /documents/**}.
  */
+@Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class MvcConfig extends WebMvcConfigurationSupport {
+
+    private final DatasafeProperties datasafeProperties;
 
     /**
      * Register customized request matcher that maps /{path:.*} to /** and extracts variables properly.
@@ -30,6 +38,21 @@ public class MvcConfig extends WebMvcConfigurationSupport {
         RequestMappingHandlerMapping handlerMapping = super.requestMappingHandlerMapping();
         handlerMapping.setPathMatcher(new ExtendedMatcher());
         return handlerMapping;
+    }
+
+    /**
+     * Register static resources - frontend UI.
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        if (StringUtils.isEmpty(datasafeProperties.getStaticResources())) {
+            return;
+        }
+
+        log.info("Serving static resources from {} as /static/**", datasafeProperties.getStaticResources());
+        registry
+                .addResourceHandler("/static/**")
+                .addResourceLocations(datasafeProperties.getStaticResources());
     }
 
     /**

@@ -1,0 +1,22 @@
+<div>
+  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Welcome">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item class="noevents">
+      <mat-icon>person</mat-icon>
+      {{userName}}
+    </button>
+    <button mat-menu-item (click)="doLogout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+
+  <file-tree></file-tree>
+</div>
+<div>
+  <mat-error *ngIf="null != error">
+    Listing storage failed: {{error}}
+  </mat-error>
+</div>

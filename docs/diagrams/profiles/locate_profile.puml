@@ -62,7 +62,13 @@ rectangle "Write file into private space" as Request {
         <&file> <b>s3://user-bucket/somewhere/files/private/</b>
     ]
     rectangle ResolveEncrypt [
-        Resolve encrypted path\nwithin private space
+        Resolve encrypted path\nwithin private space,\nby encrypting relative path:
+        **some/file.txt** -encrypt -> **encrypted(some)/encrypted(file.txt)**
+        (i.e. some/file.txt -> **jlkfjklja/hjkhjkh**)
+        and appending encrypted path to private files root
+        s3://bucket/files/private ->
+        s3://bucket/files/private/encrypted(some)/encrypted(file.txt)
+        (i.e. some/file.txt -> s3://bucket/files/private/**jlkfjklja/hjkhjkh**)
     ]
     rectangle WriteTo [
         WRITE <&file>\n<b>s3://bucket/files/private/encrypted(some)/encrypted(file.txt)</b>
@@ -78,20 +84,20 @@ rectangle "Write file into private space" as Request {
     PrivateFiles -[hidden]down- WriteTo
 }
 
-u --> initial : Write <&file> into my private\nspace with path <b>/some/file.txt</b>
-initial --> resolve_profile : find\nusers\nprofile
+u --> initial : **1.** Write <&file> into my private\nspace with path <b>/some/file.txt</b>
+initial --> resolve_profile : **2.** find\nusers\nprofile
 resolve_profile --> UPriv_loc
-UPriv_loc ..> retrieve_profile
-profile ==> Credentials : Read\nprofile\nfrom
-Credentials ==> UPriv : \n\nREAD <&file>\n<b>file:///username:password@host/folder/profile/my_private_profile</b>\n\n
+UPriv_loc ..> retrieve_profile : **3.** Users' profile location
+profile ==> Credentials : **4.** Read\nusers'\nprofile\nfrom storage
+Credentials ==> UPriv : **5.** Physical \n\nREAD <&file>\n<b>file:///username:password@host/folder/profile/my_private_profile</b>\n\n
 retrieve_profile --> profile
 profile --> get_private
-UPriv ..> get_private
-get_private --> PrivateFiles
-PrivateFiles --> ResolveEncrypt : private\nfiles\nroot
-initial --> ResolveEncrypt : relative\nfile\nlocation
-ResolveEncrypt --> WriteTo : absolute\nresource\nlocation
+UPriv ..> get_private : **6.** User profile\nthat declares\npaths\nwhere is everything\nowned by user
+get_private --> PrivateFiles : **7.** Path to users'\nprivate files root
+PrivateFiles --> ResolveEncrypt :  Private\nfiles\nroot
+initial --> ResolveEncrypt : Relative\nfile\nlocation:\n **some/file.txt**
+ResolveEncrypt --> WriteTo :  **8.** absolute\nresource\nlocation
 WriteTo ==> Credentials
-Credentials ==> private_files_storage : \n\nWRITE <&file>\n<b>s3://user:password@bucket/files/private/encrypted(some)/encrypted(file.txt)\n\n
+Credentials ==> private_files_storage :  **9.** \n\nWRITE <&file>\n<b>s3://user:password@bucket/files/private/encrypted(some)/encrypted(file.txt)\n\n
 
 @enduml

@@ -1,11 +1,20 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
-import de.adorsys.datasafe.simple.adapter.api.types.*;
+import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
+import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
+import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.nio.file.NoSuchFileException;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
@@ -23,7 +33,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public class SimpleDatasafeAdapterTest extends WithStorageProvider {
@@ -224,7 +238,23 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         assertArrayEquals(content.getBytes(), dsDocument2.getDocumentContent().getValue());
 
         simpleDatasafeService.destroyUser(userIDAuth2);
-        assertFalse(simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN()));
+        // TODO: better check
+        // users' keystore is dropped from cache, so it is not possible to find decrypted path
+        // because access to keystore throws exception
+        if (descriptor.getStorageService().get() instanceof FileSystemStorageService) {
+            assertThrows(
+                NoSuchFileException.class,
+                () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
+            );
+        } else {
+            assertThrows(
+                AmazonS3Exception.class,
+                () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
+            );
+        }
+
+        assertFalse(simpleDatasafeService.userExists(userIDAuth2.getUserID()));
+
         assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
 
     }

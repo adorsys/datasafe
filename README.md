@@ -67,7 +67,7 @@ This diagram shows path resolution flow for private space with more details. It 
 inbox files, with the only difference that private files have relative path (relative to private space location)
 additionally encrypted.
 
-![Path resolution](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/profiles/locate_profile.puml&fmt=svg&vvv=1&sanitize=true)
+![Path resolution](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/profiles/locate_profile.puml&fmt=svg&vvv=2&sanitize=true)
 
 ## Storing private files
 

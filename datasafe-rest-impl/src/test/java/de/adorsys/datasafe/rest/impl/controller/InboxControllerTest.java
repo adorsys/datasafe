@@ -11,10 +11,15 @@ import org.springframework.http.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
@@ -38,8 +43,8 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
     void writeToInboxTest() {
         when(dataSafeService.inboxService().write(any())).thenReturn(new ByteArrayOutputStream());
 
-        mvc.perform(put("/inbox/{path}", TEST_PATH)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
+        mvc.perform(putFileBuilder("/inbox/document/{path}", TEST_PATH)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header("users", TEST_USER)
                 .header("token", token)
         )
@@ -52,20 +57,33 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
     void readFromInboxTest() {
         when(dataSafeService.inboxService().read(any())).thenReturn(new ByteArrayInputStream("hello".getBytes()));
 
-        mvc.perform(get("/inbox/{path}", TEST_PATH)
+        mvc.perform(get("/inbox/document/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)
                 .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(header().string(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE));
         verify(inboxService).read(any());
+    }
+
+    @SneakyThrows
+    @Test
+    void listInboxTest() {
+        mvc.perform(get("/inbox/documents/{path}", TEST_PATH)
+                .header("user", TEST_USER)
+                .header("password", TEST_PASS)
+                .header("token", token)
+                .accept(APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(inboxService).list(any());
     }
 
     @SneakyThrows
     @Test
     void removeFromInboxTest() {
 
-        mvc.perform(delete("/inbox/{path}", TEST_PATH)
+        mvc.perform(delete("/inbox/document/{path}", TEST_PATH)
                 .header("user", TEST_USER)
                 .header("password", TEST_PASS)
                 .header("token", token)
