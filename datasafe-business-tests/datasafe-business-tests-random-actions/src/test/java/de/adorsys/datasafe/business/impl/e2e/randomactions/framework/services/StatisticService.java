@@ -44,9 +44,12 @@ public class StatisticService {
     public static class Percentiles {
 
         private final Map<Integer, Double> stat;
+        private final double throughput;
 
         private Percentiles(List<Integer> values) {
             this.stat = percentiles().indexes(50, 75, 90, 95, 99).compute(values);
+            // note that time is in ms, so we scale 1k coef.
+            this.throughput = ((double) values.size() * 1000.0) / values.stream().mapToDouble(it -> it).sum();
         }
     }
 }
