@@ -13,6 +13,7 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     private static final String FILE = "file.txt";
 
     @Test
+    @DisabledIfSystemProperty(named = SKIP_CEPH, matches = "true")
     void testVersionedWriteReturnsVersionId() {
         init(cephVersioned());
         registerJohnAndJane();
@@ -38,6 +40,7 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     }
 
     @Test
+    @DisabledIfSystemProperty(named = SKIP_CEPH, matches = "true")
     void testVersionedWriteSequenceAndThenReadLatest() {
         init(cephVersioned());
         registerJohnAndJane();
@@ -50,6 +53,7 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     }
 
     @Test
+    @DisabledIfSystemProperty(named = SKIP_CEPH, matches = "true")
     void testVersionedWriteSequenceAndThenReadByVersion() {
         init(cephVersioned());
         registerJohnAndJane();
@@ -62,6 +66,7 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     }
 
     @Test
+    @DisabledIfSystemProperty(named = SKIP_CEPH, matches = "true")
     void testVersionedRemoveManually() {
         init(cephVersioned());
         registerJohnAndJane();

@@ -38,17 +38,10 @@ public class DatasafeConfig {
     @Bean
     StorageService storageService(DatasafeProperties properties) {
 
-        String value = System.getenv(FILESYSTEM_ENV);
-        if (value != null) {
+        String root = System.getenv(FILESYSTEM_ENV);
+        if (root != null) {
             log.info("==================== FILESYSTEM");
-            String[] parts = value.split(",");
-            if (parts.length != 1) {
-                throw new RuntimeException("expected <rootbucket> for " + FILESYSTEM_ENV);
-            }
-            String root = parts[0];
-
             log.info("build DFS to FILESYSTEM with root " + root);
-            // return new FileSystemStorageService(FileSystems.getDefault().getPath(root));
             return new FileSystemStorageService(FileSystems.getDefault().getPath(root));
         }
 
