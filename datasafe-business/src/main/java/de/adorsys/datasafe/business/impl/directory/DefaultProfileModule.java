@@ -13,14 +13,16 @@ import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImplRuntimeDelegatable;
-import de.adorsys.datasafe.directory.impl.profile.operations.DefaultUserProfileCache;
+import de.adorsys.datasafe.directory.impl.profile.operations.DefaultUserProfileCacheRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRegistrationServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRemovalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.resource.ResourceResolverImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 /**
@@ -34,7 +36,7 @@ public abstract class DefaultProfileModule {
      */
     @Provides
     @Singleton
-    static UserProfileCache userProfileCache() {
+    static UserProfileCache userProfileCache(@Nullable OverridesRegistry registry) {
         Cache<UserID, UserPublicProfile> publicProfileCache = CacheBuilder.newBuilder()
                 .initialCapacity(1000)
                 .build();
@@ -42,7 +44,11 @@ public abstract class DefaultProfileModule {
                 .initialCapacity(1000)
                 .build();
 
-        return new DefaultUserProfileCache(publicProfileCache.asMap(), privateProfileCache.asMap());
+        return new DefaultUserProfileCacheRuntimeDelegatable(
+                registry,
+                publicProfileCache.asMap(),
+                privateProfileCache.asMap()
+        );
     }
 
     /**
