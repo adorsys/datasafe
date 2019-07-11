@@ -8,7 +8,6 @@ import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
@@ -25,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureRestDocs(uriHost = "example.com/datasafe", uriPort = 80)
 class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     private Gson gson;
 
@@ -48,7 +46,7 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
         UserDTO request = new UserDTO("testUser", "testPassword");
 
         RestDocumentationResultHandler document = document("user-create-success",
-                requestHeaders(headerWithName("token").description("Bearer authentication token is required")),
+                requestHeaders(headerWithName("token").description(TOKEN_DESCRIPTION)),
                 requestFields(
                         fieldWithPath("userName").description("Name of user to create "),
                         fieldWithPath("password").description("Password of user")
@@ -89,9 +87,9 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     void deleteUserTest() {
         RestDocumentationResultHandler document = document("user-delete-success",
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 ));
 
         when(dataSafeService.userProfile().userExists(any())).thenReturn(true);

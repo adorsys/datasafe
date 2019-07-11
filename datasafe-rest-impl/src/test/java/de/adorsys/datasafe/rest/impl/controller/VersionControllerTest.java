@@ -6,10 +6,8 @@ import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionIn
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
@@ -37,8 +35,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Slf4j
-@AutoConfigureRestDocs(uriHost = "example.com/datasafe", uriPort = 80)
 public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
     @MockBean
     protected VersionedDatasafeServices versionedDatasafeServices;
@@ -65,9 +61,9 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 )
         );
 
@@ -93,9 +89,9 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 )
         );
 
@@ -129,9 +125,9 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 )
         );
 
@@ -155,9 +151,9 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 )
         );
 
@@ -191,9 +187,9 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 )
         );
 
@@ -205,7 +201,7 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("token", token)
         ).andExpect(status().isOk())
                 .andExpect(content().string("[]"))
-                .andDo(document);;
+                .andDo(document);
         verify(versionInfoService).versionsOf(any());
     }
 }

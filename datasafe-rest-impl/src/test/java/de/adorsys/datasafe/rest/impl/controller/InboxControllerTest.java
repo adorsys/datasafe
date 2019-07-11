@@ -6,7 +6,6 @@ import de.adorsys.datasafe.types.api.resource.*;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
@@ -33,7 +32,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureRestDocs(uriHost = "example.com/datasafe", uriPort = 80)
 class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
 
     private static final String TEST_PATH = "test.txt";
@@ -60,7 +58,7 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
                         headerWithName("users").description("recipients array")
                 )
         );
@@ -85,9 +83,9 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 )
         );
 
@@ -112,9 +110,9 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 )
         );
 
@@ -140,9 +138,9 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                         parameterWithName("path").description("path to the file")
                 ),
                 requestHeaders(
-                        headerWithName("token").description("Bearer authentication token is required"),
-                        headerWithName("user").description("datasafe username"),
-                        headerWithName("password").description("datasafe user's password")
+                        headerWithName("token").description(TOKEN_DESCRIPTION),
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION)
                 )
         );
 

@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -20,6 +21,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.UnrecoverableKeyException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -96,6 +99,8 @@ public class InboxController {
              OutputStream os = response.getOutputStream()
         ) {
             StreamUtils.copy(is, os);
+//        } catch (UnrecoverableKeyException e) {
+//            throw new BadCredentialsException("");
         } catch (Exception e) {
             throw new FileNotFoundException(String.format("File '%s' not found for user '%s'", path, user), e);
         }

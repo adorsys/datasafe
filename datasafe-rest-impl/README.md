@@ -43,8 +43,8 @@ is PUT.
 ``` bash
 $ curl 'http://example.com/datasafe/user' -i -X PUT \
     -H 'Accept: application/json' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDIyLCJyb2wiOlsiUk9MRV9VU0VSIl19.BVkYiafLhDXNlFkSNa7p82ThTs0fHv5XwTMniBlImnqniqPTT988D-pIQq9sFDb-hUvsjr97N13q0C6OYIkn6w' \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTA1LCJyb2wiOlsiUk9MRV9VU0VSIl19.7pOIzuFJbffo3w6f5O423ECMsaif-IrVN5h4Mc0PxqwG16XBnYW_fDxI83cg64GLeRPB_aJyLdk0sEFv0RRuZg' \
     -d '{"userName":"testUser","password":"testPassword"}'
 ```
 
@@ -70,8 +70,8 @@ method of request is DELETE.
 ``` bash
 $ curl 'http://example.com/datasafe/user' -i -X DELETE \
     -H 'Accept: application/json' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDIzLCJyb2wiOlsiUk9MRV9VU0VSIl19.60-fqHIUrYAHjxhQ8mU6L0Zit2e9QBKQNhBk1Je8kI3cCyLyDy3o5_-2yYHxrYsYEbbDDPewcxCrI1E9NvX_jQ' \
     -H 'password: test' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTA2LCJyb2wiOlsiUk9MRV9VU0VSIl19.JDAtiTfSoxnuKQmEZZchF4_g-hWjj19rJ__4cX5rX07XQn4XHVxDvYMi5I88dfmdPorXJU_KOlWz9JnM6qen4g' \
     -H 'user: test' \
     -H 'Content-Type: application/json;charset=UTF-8'
 ```
@@ -104,8 +104,8 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 
 ``` bash
 $ curl 'http://example.com/datasafe/documents/' -i -X GET \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTE1LCJyb2wiOlsiUk9MRV9VU0VSIl19.pJG4DCMc8PBuxZp3Mn7SyvlbSRpZqqpymuKm_5CaDJai8bIKrHMVYZFl1k-4pGxMmNLQUALqqp4ZYQYX8gKEog' \
     -H 'password: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDMyLCJyb2wiOlsiUk9MRV9VU0VSIl19.1Vo12stR0MiWwUAP24QxzwV3RwdL8emmRUgarQoZK74FuUj_omx_Z-0cqojhhTBf4vRACHuDWdojBOxdeuKVjw' \
     -H 'user: test'
 ```
 
@@ -151,10 +151,10 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 
 ``` bash
 $ curl 'http://example.com/datasafe/document/path/to/file' -i -X GET \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDMzLCJyb2wiOlsiUk9MRV9VU0VSIl19.3_wby9u5LlVzO9K3dyqwcTMrbDi-e4n9S3d-S5AyHuii8GmdI8kjdcb2AZ0HJZTJSRkjW56Tcnnv2xEi9mkiQg' \
     -H 'password: test' \
     -H 'Accept: application/octet-stream' \
-    -H 'user: test'
+    -H 'user: test' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTE2LCJyb2wiOlsiUk9MRV9VU0VSIl19.UR26MJ3IYnm0SbtVeyIxWeoSsGO10tYxEJfNQnmH5zn4Ve9O6YE3oiD1Jk7c0dlv4kvOMPjpGU6Duouj-DT9JA'
 ```
 
 ### Example success response
@@ -198,7 +198,7 @@ file content
 
 ``` bash
 $ curl 'http://example.com/datasafe/document/path/to/file' -i -X PUT \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDMzLCJyb2wiOlsiUk9MRV9VU0VSIl19.3_wby9u5LlVzO9K3dyqwcTMrbDi-e4n9S3d-S5AyHuii8GmdI8kjdcb2AZ0HJZTJSRkjW56Tcnnv2xEi9mkiQg' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTE1LCJyb2wiOlsiUk9MRV9VU0VSIl19.pJG4DCMc8PBuxZp3Mn7SyvlbSRpZqqpymuKm_5CaDJai8bIKrHMVYZFl1k-4pGxMmNLQUALqqp4ZYQYX8gKEog' \
     -H 'Content-Type: application/octet-stream;charset=UTF-8' \
     -H 'password: test' \
     -H 'user: test' \
@@ -239,9 +239,9 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 
 ``` bash
 $ curl 'http://example.com/datasafe/document/path/to/file' -i -X DELETE \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDMzLCJyb2wiOlsiUk9MRV9VU0VSIl19.3_wby9u5LlVzO9K3dyqwcTMrbDi-e4n9S3d-S5AyHuii8GmdI8kjdcb2AZ0HJZTJSRkjW56Tcnnv2xEi9mkiQg' \
     -H 'password: test' \
-    -H 'user: test'
+    -H 'user: test' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTE2LCJyb2wiOlsiUk9MRV9VU0VSIl19.UR26MJ3IYnm0SbtVeyIxWeoSsGO10tYxEJfNQnmH5zn4Ve9O6YE3oiD1Jk7c0dlv4kvOMPjpGU6Duouj-DT9JA'
 ```
 
 ### Example success response
@@ -273,8 +273,8 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 ``` bash
 $ curl 'http://example.com/datasafe/inbox/' -i -X GET \
     -H 'password: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDM1LCJyb2wiOlsiUk9MRV9VU0VSIl19.wZmdGWfxtnSD769WB-nUDomFLM9WYcQHdrnSCyE45cRKenW74CdimTDX2qtp4H5RTlPszJQxv8pJr1cBQ8L1gA' \
-    -H 'user: test'
+    -H 'user: test' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTIwLCJyb2wiOlsiUk9MRV9VU0VSIl19.DLtGjyz8jPfsAfWiBj9kXvTIOZE-9xFGBFY-K6fAWkeg3b5J-0rhcOkbrMdIOLJsyB5goTve1HAm2nxb1cIasA'
 ```
 
 ### Example success response
@@ -321,8 +321,8 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 $ curl 'http://example.com/datasafe/inbox/test.txt' -i -X GET \
     -H 'password: test' \
     -H 'Accept: application/octet-stream' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDM1LCJyb2wiOlsiUk9MRV9VU0VSIl19.wZmdGWfxtnSD769WB-nUDomFLM9WYcQHdrnSCyE45cRKenW74CdimTDX2qtp4H5RTlPszJQxv8pJr1cBQ8L1gA' \
-    -H 'user: test'
+    -H 'user: test' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTIwLCJyb2wiOlsiUk9MRV9VU0VSIl19.DLtGjyz8jPfsAfWiBj9kXvTIOZE-9xFGBFY-K6fAWkeg3b5J-0rhcOkbrMdIOLJsyB5goTve1HAm2nxb1cIasA'
 ```
 
 ### Example success response
@@ -366,8 +366,8 @@ hello
 ``` bash
 $ curl 'http://example.com/datasafe/inbox/test.txt' -i -X PUT \
     -H 'Content-Type: application/octet-stream;charset=UTF-8' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDM1LCJyb2wiOlsiUk9MRV9VU0VSIl19.wZmdGWfxtnSD769WB-nUDomFLM9WYcQHdrnSCyE45cRKenW74CdimTDX2qtp4H5RTlPszJQxv8pJr1cBQ8L1gA' \
     -H 'users: test' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTIwLCJyb2wiOlsiUk9MRV9VU0VSIl19.DLtGjyz8jPfsAfWiBj9kXvTIOZE-9xFGBFY-K6fAWkeg3b5J-0rhcOkbrMdIOLJsyB5goTve1HAm2nxb1cIasA' \
     -d 'file content'
 ```
 
@@ -406,8 +406,8 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 ``` bash
 $ curl 'http://example.com/datasafe/inbox/test.txt' -i -X DELETE \
     -H 'password: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDM1LCJyb2wiOlsiUk9MRV9VU0VSIl19.wZmdGWfxtnSD769WB-nUDomFLM9WYcQHdrnSCyE45cRKenW74CdimTDX2qtp4H5RTlPszJQxv8pJr1cBQ8L1gA' \
-    -H 'user: test'
+    -H 'user: test' \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTIwLCJyb2wiOlsiUk9MRV9VU0VSIl19.DLtGjyz8jPfsAfWiBj9kXvTIOZE-9xFGBFY-K6fAWkeg3b5J-0rhcOkbrMdIOLJsyB5goTve1HAm2nxb1cIasA'
 ```
 
 ### Example success response
@@ -438,10 +438,10 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 
 ``` bash
 $ curl 'http://example.com/datasafe/versioned/' -i -X GET \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTA5LCJyb2wiOlsiUk9MRV9VU0VSIl19.40Bnuv3ciee27Z92ErTCL_gMYy18Kuj42Xw3PCg1kifiUCSvq8Sz-hlJ8bThBB1EBWXowC58KbROaaoJBdZPlw' \
     -H 'password: test' \
     -H 'user: test' \
-    -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDI2LCJyb2wiOlsiUk9MRV9VU0VSIl19.24jP3iGeT2yqWJjaSyehbDNV1FovqvwT1aF7ObNHCi2_i_egoq_G5YlGpyrrGSTPdZ5nAtuqsIlGZfiI5dX8hQ'
+    -H 'Content-Type: application/json;charset=UTF-8'
 ```
 
 ### Example success response
@@ -486,10 +486,10 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 
 ``` bash
 $ curl 'http://example.com/datasafe/versioned/path/to/file' -i -X GET \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTA5LCJyb2wiOlsiUk9MRV9VU0VSIl19.40Bnuv3ciee27Z92ErTCL_gMYy18Kuj42Xw3PCg1kifiUCSvq8Sz-hlJ8bThBB1EBWXowC58KbROaaoJBdZPlw' \
     -H 'password: test' \
     -H 'Accept: application/octet-stream' \
-    -H 'user: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDI2LCJyb2wiOlsiUk9MRV9VU0VSIl19.24jP3iGeT2yqWJjaSyehbDNV1FovqvwT1aF7ObNHCi2_i_egoq_G5YlGpyrrGSTPdZ5nAtuqsIlGZfiI5dX8hQ'
+    -H 'user: test'
 ```
 
 ### Example success response
@@ -533,10 +533,10 @@ hello
 
 ``` bash
 $ curl 'http://example.com/datasafe/versioned/path/to/file' -i -X PUT \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTA5LCJyb2wiOlsiUk9MRV9VU0VSIl19.40Bnuv3ciee27Z92ErTCL_gMYy18Kuj42Xw3PCg1kifiUCSvq8Sz-hlJ8bThBB1EBWXowC58KbROaaoJBdZPlw' \
     -H 'Content-Type: application/octet-stream;charset=UTF-8' \
     -H 'password: test' \
     -H 'user: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDI2LCJyb2wiOlsiUk9MRV9VU0VSIl19.24jP3iGeT2yqWJjaSyehbDNV1FovqvwT1aF7ObNHCi2_i_egoq_G5YlGpyrrGSTPdZ5nAtuqsIlGZfiI5dX8hQ' \
     -d 'file content'
 ```
 
@@ -574,9 +574,9 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 
 ``` bash
 $ curl 'http://example.com/datasafe/versioned/path/to/file' -i -X DELETE \
+    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNzIwOTA5LCJyb2wiOlsiUk9MRV9VU0VSIl19.40Bnuv3ciee27Z92ErTCL_gMYy18Kuj42Xw3PCg1kifiUCSvq8Sz-hlJ8bThBB1EBWXowC58KbROaaoJBdZPlw' \
     -H 'password: test' \
-    -H 'user: test' \
-    -H 'token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYzNjA0MDI2LCJyb2wiOlsiUk9MRV9VU0VSIl19.24jP3iGeT2yqWJjaSyehbDNV1FovqvwT1aF7ObNHCi2_i_egoq_G5YlGpyrrGSTPdZ5nAtuqsIlGZfiI5dX8hQ'
+    -H 'user: test'
 ```
 
 ### Example success response
