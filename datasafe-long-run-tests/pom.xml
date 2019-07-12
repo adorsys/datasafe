@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>datasafe-business-tests</artifactId>
+    <artifactId>datasafe-long-run-tests</artifactId>
     <packaging>pom</packaging>
     <modules>
         <module>datasafe-business-tests-random-actions</module>
