@@ -154,7 +154,7 @@ public class DatabaseConnectionRegistry {
         config.setConnectionTestQuery("SELECT 1");
         config.addDataSourceProperty("user", user);
         config.addDataSourceProperty("password", password);
-        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        //config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         return new HikariDataSource(config);
     }
