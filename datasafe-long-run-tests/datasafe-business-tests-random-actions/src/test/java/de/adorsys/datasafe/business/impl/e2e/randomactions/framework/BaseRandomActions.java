@@ -48,8 +48,8 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     private static final int MEGABYTE_TO_BYTE = 1024 * 1024;
     private static final long TIMEOUT = 30L;
 
-    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(1, 2, 3, 4);
-    private static final Set<Integer> FILE_SIZE_M_BYTES = ImmutableSet.of(1, 2, 10);
+    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(2, 4);
+    private static final Set<Integer> FILE_SIZE_M_BYTES = ImmutableSet.of(1, 10);
 
     @BeforeEach
     void prepare() {
@@ -78,7 +78,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     @ValueSource
     protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
-                Collections.singleton(fs()),
+                Collections.singleton(minio()),
             THREAD_COUNT,
             FILE_SIZE_M_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
