@@ -1,15 +1,13 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
-    "typeRoots": [
-      "node_modules/@types"
+    "types": [
+      "node"
     ],
     "lib": [
       "es2017",
@@ -19,10 +17,10 @@
     ]
   },
   "include": [
-    "main.ts",
-    "src/**/*"
+    "main.ts"
   ],
   "exclude": [
-    "../datasafe-electron/node_modules"
+    "node_modules",
+    "**/*.spec.ts"
   ]
 }
