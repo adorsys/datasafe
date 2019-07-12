@@ -14,7 +14,7 @@ Tests for Datasafe-wrapper:
  - [RandomActionsOnSimpleDatasafeAdapterTest](src/test/java/de/adorsys/datasafe/business/impl/e2e/randomactions/RandomActionsOnSimpleDatasafeAdapterTest.java)
 
 ### Test flow overview:
-![Path resolution](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/datasafe-long-run-tests/datasafe-business-tests-random-actions/high_level_view.puml&fmt=svg&vvv=1&sanitize=true)
+![Path resolution](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/datasafe-long-run-tests/datasafe-business-tests-random-actions/high_level_view.puml&fmt=svg&vvv=2&sanitize=true)
 
 This tests are based on json fixture files. Fixture contains list of actions with their result expectation. 
 For example it can contain sequence like this: 

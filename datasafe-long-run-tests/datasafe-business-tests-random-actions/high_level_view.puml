@@ -61,9 +61,9 @@ workQueue --> Threadpool
 
 component Datasafe
 
-rectangle "read\nuser1/exec1-file1.txt" as read1
-rectangle "read\nwrite user1/exec2-file1.txt" as write1
-rectangle "read\nuser2/exec1-file1.txt" as read2
+rectangle "**READ**\nuser1/exec1-file2.txt" as read1
+rectangle "**WRITE**\nuser1/exec2-file1.txt" as write1
+rectangle "**READ**\nuser2/exec1-file1.txt" as read2
 
 thread1 --> read1
 read1 --> Datasafe
