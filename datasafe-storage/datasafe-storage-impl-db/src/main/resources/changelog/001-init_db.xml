@@ -11,7 +11,7 @@
             <constraints nullable="false" primaryKey="true"/>
         </column>
         <column name="value" type="clob" />
-        <column name="last_modified" type="timestamp" defaultValue="CURRENT_TIMESTAMP"/>
+        <column name="last_modified" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
     </createTable>
 </changeSet>
 
@@ -22,7 +22,7 @@
             <constraints nullable="false" primaryKey="true"/>
         </column>
         <column name="value" type="clob" />
-        <column name="last_modified" type="timestamp" defaultValue="CURRENT_TIMESTAMP"/>
+        <column name="last_modified" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
     </createTable>
 </changeSet>
 

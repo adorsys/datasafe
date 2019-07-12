@@ -30,4 +30,8 @@ public class DatasafeProperties {
     private String amazonAccessKeyID;
     private String amazonSecretAccessKey;
     private String amazonRegion;
+
+    private String dbUrl;
+    private String dbUsername;
+    private String dbPassword;
 }

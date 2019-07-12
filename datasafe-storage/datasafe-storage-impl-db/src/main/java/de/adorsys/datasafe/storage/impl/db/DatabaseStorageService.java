@@ -44,7 +44,7 @@ public class DatabaseStorageService implements StorageService {
     @Override
     public boolean objectExists(AbsoluteLocation location) {
         ParsedLocation parsed = new ParsedLocation(location, allowedTables);
-        String sql = "SELECT COUNT(*) FROM " + parsed.getTableName() + " WHERE key = ?";
+        String sql = "SELECT COUNT(*) FROM " + parsed.getTableName() + " WHERE `key` = ?";
         return 0 != conn.jdbcTemplate(location).queryForObject(sql, Integer.class, parsed.getPathWithUser());
     }
 
@@ -52,7 +52,7 @@ public class DatabaseStorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         ParsedLocation parsed = new ParsedLocation(location, allowedTables);
-        String sql = "SELECT key,last_modified FROM " + parsed.getTableName() + " WHERE key LIKE '"
+        String sql = "SELECT `key`,`last_modified` FROM " + parsed.getTableName() + " WHERE `key` LIKE '"
                 + parsed.getPathWithUser() + "%'";
 
         List<Map<String, Object>> keys = conn.jdbcTemplate(location).queryForList(sql);
@@ -68,7 +68,7 @@ public class DatabaseStorageService implements StorageService {
     @Override
     public InputStream read(AbsoluteLocation location) {
         ParsedLocation parsed = new ParsedLocation(location, allowedTables);
-        final String sql = "SELECT value FROM " + parsed.getTableName() + " WHERE key = ?";
+        final String sql = "SELECT value FROM " + parsed.getTableName() + " WHERE `key` = ?";
         RowMapper<InputStream> rowMapper = (rs, i) -> rs.getClob("value").getAsciiStream();
         List<InputStream> values = conn.jdbcTemplate(location).query(
                 sql,
@@ -86,7 +86,7 @@ public class DatabaseStorageService implements StorageService {
     @Override
     public void remove(AbsoluteLocation location) {
         ParsedLocation parsed = new ParsedLocation(location, allowedTables);
-        String sql = "DELETE FROM " + parsed.getTableName() + " WHERE key = ?";
+        String sql = "DELETE FROM " + parsed.getTableName() + " WHERE `key` = ?";
         conn.jdbcTemplate(location).update(sql, parsed.getPathWithUser());
     }
 
@@ -126,7 +126,7 @@ public class DatabaseStorageService implements StorageService {
 
         @Override
         public void close() throws IOException {
-            String sql = "INSERT INTO " + tableName + " (key, value) VALUES(?, ?)";
+            String sql = "INSERT INTO " + tableName + " (`key`, `value`) VALUES(?, ?)";
             KeyHolder holder = new GeneratedKeyHolder();
             jdbcTemplate.update(writeData(sql), holder);
             super.close();
@@ -165,7 +165,7 @@ public class DatabaseStorageService implements StorageService {
             if (uri.getPath() == null) {
                 throw new IllegalArgumentException("Wrong url format");
             }
-
+            //TODO add exaple of url
             String[] uriParts = uri.getPath().split("/");
 
             if (!allowedTables.contains(uriParts[2])) {

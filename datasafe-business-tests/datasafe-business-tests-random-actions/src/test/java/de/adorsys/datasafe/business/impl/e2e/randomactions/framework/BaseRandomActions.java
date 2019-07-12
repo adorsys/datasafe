@@ -86,7 +86,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
 
     protected void executeTest(
             Fixture fixture,
-            StorageDescriptorName storageName,
+                StorageDescriptorName storageName,
             int filesizeInMb,
             int threads,
             ProfileRegistrationService profileRegistrationService,

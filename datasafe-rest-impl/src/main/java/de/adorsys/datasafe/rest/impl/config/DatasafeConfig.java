@@ -8,15 +8,15 @@ import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
-import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
+import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
+import java.nio.file.Paths;
 import java.security.Security;
-import java.util.concurrent.Executors;
 
 /**
  * Configures default (non-versioned) Datasafe service that uses S3 client as storage provider.
@@ -28,7 +28,7 @@ public class DatasafeConfig {
 
     @Bean
     DFSConfig dfsConfig(DatasafeProperties properties) {
-        return new DefaultDFSConfig(new Uri(properties.getSystemRoot()), properties.getKeystorePassword());
+        return new DefaultDFSConfig(new Uri(properties.getFsDevPath()), properties.getKeystorePassword());
     }
 
     /**
@@ -36,11 +36,13 @@ public class DatasafeConfig {
      */
     @Bean
     StorageService storageService(AmazonS3 s3, DatasafeProperties properties) {
-        return new S3StorageService(
+        /*return new S3StorageService(
                 s3,
                 properties.getBucketName(),
                 Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-        );
+        );*/
+         return new FileSystemStorageService(Paths.get(properties.getFsDevPath()));
+
     }
 
     /**

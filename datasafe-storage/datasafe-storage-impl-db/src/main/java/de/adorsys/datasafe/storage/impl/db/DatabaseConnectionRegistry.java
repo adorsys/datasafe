@@ -3,6 +3,8 @@ package de.adorsys.datasafe.storage.impl.db;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -17,23 +19,28 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import javax.sql.DataSource;
 import java.net.URI;
 import java.sql.Connection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 /**
  * This class acts as higher-level DataSource cache.
  */
 public class DatabaseConnectionRegistry {
-
     private final DbUriExtractor uriExtractor;
     private final Map<String, JdbcDaoSupport> dataSourceCache;
     private final Map<String, DatabaseCredentials> providedCredentials;
 
-    public DatabaseConnectionRegistry() {
+    /*public DatabaseConnectionRegistry() {
         this.uriExtractor = new DefaultDbUriExtractor();
         this.dataSourceCache = new ConcurrentHashMap<>();
         this.providedCredentials = Collections.emptyMap();
+    }*/
+
+    public DatabaseConnectionRegistry(Map<String, DatabaseCredentials> providedCredentials) {
+        this.uriExtractor = new DefaultDbUriExtractor();
+        this.dataSourceCache = new ConcurrentHashMap<>();
+        this.providedCredentials = providedCredentials;
     }
 
     /**
@@ -106,16 +113,33 @@ public class DatabaseConnectionRegistry {
         URI uri = location.location().asURI();
         String userInfo = uri.getUserInfo();
 
-        if (null !=  userInfo && !"".equals(userInfo)) {
+        if (null != userInfo && !"".equals(userInfo)) {
             return new DatabaseCredentials(location);
         }
 
         return providedCredentials.entrySet().stream()
-                .filter(it -> uri.toASCIIString().startsWith(it.getKey()))
+                .filter(equalDbURI(uri))
                 .findFirst()
                 .orElseThrow(
                         () -> new IllegalArgumentException("There is no associated database for this credentials")
                 ).getValue();
+    }
+
+    private Predicate<Map.Entry<String, DatabaseCredentials>> equalDbURI(URI uri) {
+        return it -> {
+            AbsoluteLocation<PrivateResource> location = BasePrivateResource.forAbsolutePrivate(URI.create(it.getKey()));
+
+            String scheme = location.location().getWrapped().getScheme();
+            String host = location.location().getWrapped().getHost();
+            String path = location.location().getWrapped().getPath();
+            int port = location.location().getWrapped().getPort();
+
+           // boolean equalPath = uri.getPath().contains(path.replaceAll("/", ""));
+            //return uri.toASCIIString().startsWith(scheme + "://" + host + ":" + port) && equalPath;
+            //return uri.toASCIIString().startsWith(it.toString());
+
+            return uri.toASCIIString().startsWith(scheme + "://" + host + ":" + port + path);
+        };
     }
 
     // includes credentials if they are present in URI
@@ -127,9 +151,11 @@ public class DatabaseConnectionRegistry {
     private static HikariDataSource getHikariDataSource(String url, String user, String password) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
-        config.setConnectionTestQuery("VALUES 1");
+        config.setConnectionTestQuery("SELECT 1");
         config.addDataSourceProperty("user", user);
         config.addDataSourceProperty("password", password);
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+
         return new HikariDataSource(config);
     }
 }

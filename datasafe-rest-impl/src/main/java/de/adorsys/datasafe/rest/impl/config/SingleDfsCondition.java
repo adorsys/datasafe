@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.rest.impl.config;
 
-import org.apache.commons.lang3.StringUtils;
+import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;

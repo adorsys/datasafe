@@ -56,7 +56,7 @@ public class SchemeDelegatingStorage implements StorageService {
     }
 
     private StorageService service(AbsoluteLocation location) {
-        String protocol = location.location().asURI().getScheme();
+        String protocol = location.location().asURI().getScheme().split("-")[0];
         StorageService service = storageByScheme.get(protocol);
         if (null == service) {
             throw new IllegalArgumentException("No storage service for this protocol: " + protocol);

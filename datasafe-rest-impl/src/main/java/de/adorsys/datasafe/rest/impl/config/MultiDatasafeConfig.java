@@ -2,6 +2,7 @@ package de.adorsys.datasafe.rest.impl.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -51,7 +52,7 @@ public class MultiDatasafeConfig {
 
     @Bean
     DFSConfig multiDfsConfig(DatasafeProperties properties) {
-        return new MultiDFSConfig(URI.create(properties.getS3Path()t ), URI.create(properties.getDbProfilePath()));
+        return new MultiDFSConfig(URI.create(properties.getS3Path()), URI.create(properties.getDbProfilePath()));
     }
 
     /**
@@ -59,9 +60,14 @@ public class MultiDatasafeConfig {
      */
     @Bean
     StorageService multiStorageService(DatasafeProperties properties) {
-        StorageService db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
+        /*StorageService db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
                 uri -> uri.location().getWrapped().getScheme() + ":" + uri.location().getPath().split("/")[1],
-                ImmutableMap.of("jdbc://localhost:9999", new DatabaseCredentials("sa", "sa")))
+                ImmutableMap.of(properties.getDbUrl(), new DatabaseCredentials(properties.getDbUsername(), properties.getDbPassword())))
+        );*/
+        StorageService db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
+                ImmutableMap.of(properties.getDbUrl(),
+                        new DatabaseCredentials(properties.getDbUsername(), properties.getDbPassword()))
+            )
         );
 
         S3StorageService s3StorageService = new S3StorageService(s3(properties), properties.getBucketName(), Executors.newFixedThreadPool(
@@ -84,11 +90,23 @@ public class MultiDatasafeConfig {
     @Bean
     AmazonS3 s3(DatasafeProperties properties) {
         return AmazonS3ClientBuilder.standard()
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration("http://192.168.1.63:9000", "eu-central-1")
+                )
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials("2JP7B2GZH4E6GWD9BW7K", "+M+lKaGKyv2aA3Kh1cjVbtoywsS+mQv+B7RWZVq+")
+                        )
+                )
+                .enablePathStyleAccess()
+                .build();
+
+       /* return AmazonS3ClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(
                         new BasicAWSCredentials(properties.getAmazonAccessKeyID(), properties.getAmazonSecretAccessKey()))
                 )
                 .withRegion(properties.getAmazonRegion())
-                .build();
+                .build();*/
     }
 
     /**
