@@ -11,8 +11,8 @@ import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.nio.file.Paths;
@@ -23,7 +23,7 @@ import java.security.Security;
  * Encryption provider: BouncyCastle.
  */
 @Configuration
-@Conditional(SingleDfsCondition.class)
+@ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
 public class DatasafeConfig {
 
     @Bean
@@ -61,7 +61,7 @@ public class DatasafeConfig {
     }
 
     @Bean
-    VersionedDatasafeServices dataSafeService(StorageService storageService, DFSConfig dfsConfig) {
+    VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig) {
 
         Security.addProvider(new BouncyCastleProvider());
 

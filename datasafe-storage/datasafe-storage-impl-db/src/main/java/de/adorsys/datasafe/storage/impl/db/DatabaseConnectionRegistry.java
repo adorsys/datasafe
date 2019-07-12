@@ -134,10 +134,6 @@ public class DatabaseConnectionRegistry {
             String path = location.location().getWrapped().getPath();
             int port = location.location().getWrapped().getPort();
 
-           // boolean equalPath = uri.getPath().contains(path.replaceAll("/", ""));
-            //return uri.toASCIIString().startsWith(scheme + "://" + host + ":" + port) && equalPath;
-            //return uri.toASCIIString().startsWith(it.toString());
-
             return uri.toASCIIString().startsWith(scheme + "://" + host + ":" + port + path);
         };
     }

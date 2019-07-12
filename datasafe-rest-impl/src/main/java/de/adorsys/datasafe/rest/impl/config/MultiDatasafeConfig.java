@@ -21,8 +21,8 @@ import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 
 @Configuration
-@Conditional(MultiDfsCondition.class)
+@ConditionalOnMissingBean(DatasafeConfig.class)
 public class MultiDatasafeConfig {
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
