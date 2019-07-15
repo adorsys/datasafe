@@ -50,8 +50,7 @@ public class VersionController {
     @GetMapping(value = "/versioned/{path:.*}", produces = APPLICATION_JSON_VALUE)
     @ApiOperation("List latest documents in user's private space")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List command successfully completed"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "List command successfully completed")
     })
     public List<String> listVersionedDocuments(@RequestHeader String user,
                                                @RequestHeader String password,
@@ -73,7 +72,6 @@ public class VersionController {
     @ApiOperation("Read latest document from user's private space")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Document was successfully read"),
-            @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 404, message = "Document not found")
     })
     public void readVersionedDocument(@RequestHeader String user,
@@ -103,8 +101,7 @@ public class VersionController {
     @PutMapping(value = "/versioned/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
     @ApiOperation("Write latest document to user's private space")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document was successfully written"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "Document was successfully written")
     })
     public void writeVersionedDocument(@RequestHeader String user,
                               @RequestHeader String password,
@@ -128,8 +125,7 @@ public class VersionController {
     @DeleteMapping("/versioned/{path:.*}")
     @ApiOperation("Delete latest document from user's private space")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document successfully deleted"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "Document successfully deleted")
     })
     public void deleteVersionedDocument(@RequestHeader String user,
                                         @RequestHeader String password,
@@ -147,8 +143,7 @@ public class VersionController {
     @GetMapping(value = "/versions/list/{path:.*}", produces = APPLICATION_JSON_VALUE)
     @ApiOperation("List versions of document")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List command successfully completed"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "List command successfully completed")
     })
     public List<String> versionsOf(@RequestHeader String user,
                                    @RequestHeader String password,

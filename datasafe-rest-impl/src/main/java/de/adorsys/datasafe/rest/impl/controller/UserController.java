@@ -45,8 +45,7 @@ public class UserController {
     @ApiOperation("Creates new user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User successfully created"),
-            @ApiResponse(code = 400, message = "User already exists"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 400, message = "User already exists")
     })
     public void createUser(@RequestBody UserDTO userDTO) {
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(userDTO.getPassword());
@@ -67,7 +66,6 @@ public class UserController {
     @ApiOperation("Deletes existing user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User successfully deleted"),
-            @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 404, message = "User does not exist")
     })
     public void deleteUser(@RequestHeader String user,

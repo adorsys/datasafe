@@ -83,7 +83,6 @@ public class InboxController {
     @ApiOperation("Read document from inbox")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Document was successfully read"),
-            @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 404, message = "Document not found")
     })
     public void readFromInbox(@RequestHeader String user,
@@ -113,8 +112,7 @@ public class InboxController {
     @DeleteMapping("/inbox/document/{path:.*}")
     @ApiOperation("Delete document from inbox")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document successfully deleted"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "Document successfully deleted")
     })
     public void deleteFromInbox(@RequestHeader String user,
                                 @RequestHeader String password,
@@ -132,8 +130,7 @@ public class InboxController {
     @GetMapping(value = "/inbox/documents/{path:.*}", produces = APPLICATION_JSON_VALUE)
     @ApiOperation("List files in inbox")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List command successfully completed"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "List command successfully completed")
     })
     public List<String> listInbox(@RequestHeader String user,
                                   @RequestHeader String password,

@@ -54,7 +54,6 @@ public class DocumentController {
     @ApiOperation("Read document from user's private space")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Document was successfully read"),
-            @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 404, message = "Document not found")
     })
     public void readDocument(@RequestHeader String user,
@@ -84,8 +83,7 @@ public class DocumentController {
     @PutMapping(value = "/document/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
     @ApiOperation("Write document to user's private space")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document was successfully written"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "Document was successfully written")
     })
     public void writeDocument(@RequestHeader String user,
                               @RequestHeader String password,
@@ -109,8 +107,7 @@ public class DocumentController {
     @GetMapping("/documents/{path:.*}")
     @ApiOperation("List documents in user's private space")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List command successfully completed"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "List command successfully completed")
     })
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
@@ -133,8 +130,7 @@ public class DocumentController {
     @DeleteMapping("/document/{path:.*}")
     @ApiOperation("Delete document from user's private space")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document successfully deleted"),
-            @ApiResponse(code = 403, message = "Access denied")
+            @ApiResponse(code = 200, message = "Document successfully deleted")
     })
     public void removeDocument(@RequestHeader String user,
                                @RequestHeader String password,
