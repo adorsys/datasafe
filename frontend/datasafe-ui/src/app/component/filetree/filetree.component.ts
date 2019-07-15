@@ -68,11 +68,11 @@ class UserFileSystem {
 
 export class DynamicFlatNode {
 
-      public name: string;
-      public path;
-      public level = 1;
-      public expandable = false;
-      public isLoading = false;
+      name: string;
+      path: string;
+      level: number;
+      expandable: boolean;
+      isLoading: boolean;
 
     constructor(path: string) {
       let level = path.split("/").length - 1;
