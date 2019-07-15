@@ -24,12 +24,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@DisabledIfSystemProperty(named = WithStorageProvider.SKIP_CEPH, matches = "true")
 class StorageBasedVersioningTest extends BaseE2ETest {
 
     private static final String FILE = "file.txt";
 
     @Test
-    @DisabledIfSystemProperty(named = SKIP_CEPH, matches = "true")
     void testVersionedWriteReturnsVersionId() {
         init(cephVersioned());
         registerJohnAndJane();
@@ -40,7 +40,6 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = SKIP_CEPH, matches = "true")
     void testVersionedWriteSequenceAndThenReadLatest() {
         init(cephVersioned());
         registerJohnAndJane();
@@ -53,7 +52,6 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = SKIP_CEPH, matches = "true")
     void testVersionedWriteSequenceAndThenReadByVersion() {
         init(cephVersioned());
         registerJohnAndJane();

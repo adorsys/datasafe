@@ -13,4 +13,4 @@ npm install
 ng build --deploy-url /static/ --base-href /static/ 
 mv dist ../../datasafe-rest-impl/target/dist 
 cd ../../datasafe-rest-impl
-docker build . -t datasafe-rest-test:latest --build-arg JAR_FILE=datasafe-rest-impl-0.2.1-SNAPSHOT.jar
+docker build . -t datasafe-rest-test:latest --build-arg JAR_FILE=datasafe-rest-impl-*.jar

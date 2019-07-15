@@ -419,7 +419,7 @@
 
     <profiles>
         <profile>
-            <id>simpletests</id>
+            <id>defaulttests</id>
             <build>
                 <plugins>
                     <plugin>
