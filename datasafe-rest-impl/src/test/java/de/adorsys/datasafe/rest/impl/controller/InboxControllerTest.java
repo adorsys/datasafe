@@ -28,7 +28,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -149,7 +148,8 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                 .header("password", TEST_PASS)
                 .header("token", token)
                 .accept(APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document);
         verify(inboxService).list(any());
     }
 }
