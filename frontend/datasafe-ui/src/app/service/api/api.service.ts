@@ -41,6 +41,7 @@ export class ApiService {
     }
 
     createUser(username: string, password: string) {
+        console.info(`Creating user using api URL '${this.uri}'`);
         return this.withAuthorization()
             .pipe(flatMap(token =>
                 this.httpClient.put(

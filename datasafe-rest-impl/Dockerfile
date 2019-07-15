@@ -7,7 +7,7 @@ ENV APP_HOME /usr/app
 WORKDIR $APP_HOME
 
 COPY target/${JAR_FILE} ${JAR_FILE}
-COPY dist/datasafe-ui frontend
+COPY target/dist/datasafe-ui frontend
 COPY run.sh run.sh
 
 RUN chmod +x run.sh

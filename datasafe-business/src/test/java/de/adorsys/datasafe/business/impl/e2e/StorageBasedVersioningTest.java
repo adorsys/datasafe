@@ -13,6 +13,7 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@DisabledIfSystemProperty(named = WithStorageProvider.SKIP_CEPH, matches = "true")
 class StorageBasedVersioningTest extends BaseE2ETest {
 
     private static final String FILE = "file.txt";

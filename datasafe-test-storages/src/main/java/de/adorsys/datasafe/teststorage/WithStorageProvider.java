@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.containers.GenericContainer;
@@ -44,6 +45,7 @@ import java.util.stream.Stream;
 @Slf4j
 @Getter
 public abstract class WithStorageProvider extends BaseMockitoTest {
+    public static final String SKIP_CEPH = "SKIP_CEPH";
 
     private static String bucketPath =  UUID.randomUUID().toString();
 
@@ -149,7 +151,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 fs(),
                 minio()
                 /* No CEPH here because it is quite slow*/
-        );
+        ).filter(Objects::nonNull);
     }
 
     @ValueSource
@@ -158,7 +160,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 fs(),
                 minio(),
                 cephVersioned()
-        );
+        ).filter(Objects::nonNull);
     }
 
     @ValueSource
@@ -206,6 +208,9 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     protected static StorageDescriptor cephVersioned() {
+        if (skipCeph()) {
+            return null;
+        }
         return new StorageDescriptor(
                 StorageDescriptorName.CEPH,
                 () -> {
@@ -218,6 +223,17 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 cephRegion,
                 cephBucketName  + "/" + bucketPath
         );
+    }
+
+    private static boolean skipCeph() {
+        String value = System.getProperty(SKIP_CEPH);
+        if (value == null) {
+            return false;
+        }
+        if (value.equalsIgnoreCase("false")) {
+            return false;
+        }
+        return true;
     }
 
     protected static StorageDescriptor s3() {

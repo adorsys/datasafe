@@ -25,6 +25,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * This test shows simplistic usage of Datasafe default services that reside on versioned storage system.
  */
 @Slf4j
+@DisabledIfSystemProperty(named = "SKIP_CEPH", matches = "true")
 class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
 
     private static final String MY_OWN_FILE_TXT = "my/own/file.txt";
