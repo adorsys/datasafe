@@ -35,20 +35,6 @@ class UserFileSystem {
     return Array.from(res)
   }
 
-  treeNodeFromPath(path: string): DynamicFlatNode {
-    let level = path.split("/").length - 1;
-    if (path.endsWith("/")) {
-      level = level - 1;
-    }
-
-    return new DynamicFlatNode(
-        path.replace(/\/$/, "").match(/(.+\/)*([^\/]+)$/)[2],
-        path,
-        level,
-        path.endsWith("/")
-    );
-  }
-
   private addEntry(path: string) {
 
     var fullPath = "";
@@ -81,12 +67,24 @@ class UserFileSystem {
 }
 
 export class DynamicFlatNode {
-  constructor(
-      public name: string,
-      public path,
-      public level = 1,
-      public expandable = false,
-      public isLoading = false) {}
+
+      public name: string;
+      public path;
+      public level = 1;
+      public expandable = false;
+      public isLoading = false;
+
+    constructor(path: string) {
+      let level = path.split("/").length - 1;
+      if (path.endsWith("/")) {
+        level = level - 1;
+      }
+
+      this.name = path.replace(/\/$/, "").match(/(.+\/)*([^\/]+)$/)[2];
+      this.path = path;
+      this.level = level;
+      this.expandable = path.endsWith("/");
+    }
 }
 
 
@@ -99,7 +97,7 @@ export class DynamicDatabase {
           this.storageTree.buildFs(<Array<string>> res);
 
           filetreeComponent.dataSource.data = this.storageTree.rootLevelNodes()
-              .map(path => this.storageTree.treeNodeFromPath(path));
+              .map(path => new DynamicFlatNode(path));
         })
         .catch(err => {
           if (err.code === 401 || err.code === 403) {
@@ -116,7 +114,7 @@ export class DynamicDatabase {
 
     this.storageTree.buildFs(Array.from(paths));
     filetreeComponent.dataSource.data = this.storageTree.rootLevelNodes()
-        .map(path => this.storageTree.treeNodeFromPath(path));
+        .map(path => new DynamicFlatNode(path));
   }
 
   private memoizedFs() {
@@ -209,7 +207,7 @@ export class DynamicDataSource {
 
     if (expand) {
       this.expandedMemoize.add(node.path);
-      const nodes = children.map(path => this.database.storageTree.treeNodeFromPath(path));
+      const nodes = children.map(path => new DynamicFlatNode(path));
       this.data.splice(index + 1, 0, ...nodes);
     } else {
       this.expandedMemoize.delete(node.path);
