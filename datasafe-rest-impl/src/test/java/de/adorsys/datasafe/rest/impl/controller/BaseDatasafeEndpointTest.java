@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,4 +49,18 @@ public abstract class BaseDatasafeEndpointTest extends BaseMockitoTest {
                 .andDo(print()).andExpect(statusMatcher)
                 .andReturn();
     }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "DATASAFE_SINGLE_STORAGE", matches = "true")
+    public void testDatasafeConfig() {
+
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "DATASAFE_SINGLE_STORAGE", matches = "false")
+    public void testMultiDatasafeConfig() {
+
+
+    }
+
 }
