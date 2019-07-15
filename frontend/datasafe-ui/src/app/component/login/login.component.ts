@@ -1,8 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import {FormBuilder, FormControl, Validators} from "@angular/forms";
-import {CredentialsService} from "../../service/credentials/credentials.service";
-import {FieldErrorStateMatcher} from "../../app.component";
+import {Component, Inject, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {FormBuilder, FormControl, Validators} from '@angular/forms';
+import {CredentialsService} from '../../service/credentials/credentials.service';
+import {Env, FieldErrorStateMatcher} from '../../app.component';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
+import {AddFolderDialog} from '../filetree/filetree.component';
+
+export interface ApiConfigData {
+  apiUrl: string;
+  username: string;
+  password: string;
+}
+
+@Component({
+  selector: 'configure-api',
+  templateUrl: 'configure.api.html',
+  styleUrls: ['configure.api.css'],
+})
+export class ConfigureApiDialog {
+
+  constructor(
+      public dialogRef: MatDialogRef<ConfigureApiDialog>,
+      @Inject(MAT_DIALOG_DATA) public data: ApiConfigData) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+}
 
 @Component({
   selector: 'app-login',
@@ -28,12 +52,12 @@ export class LoginComponent implements OnInit {
 
   fieldMatcher = new FieldErrorStateMatcher();
 
-  constructor(private router: Router, private fb: FormBuilder, private creds: CredentialsService) { }
+  constructor(private router: Router, private fb: FormBuilder, private creds: CredentialsService, private dialog: MatDialog) { }
 
   ngOnInit() {
   }
 
-  public handleLoginClick() {
+  handleLoginClick() {
     if (!this.loginForm.valid) {
       return
     }
@@ -42,7 +66,22 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['/user']);
   }
 
-  public handleRegisterClick() {
+  handleRegisterClick() {
     this.router.navigate(['/register']);
+  }
+
+  setupApiUrlAndCreds() {
+    const dialogRef = this.dialog.open(ConfigureApiDialog, {
+      width: '250px',
+      data: {apiUrl: Env.apiUrl, username: Env.apiUsername, password: Env.apiPassword}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        Env.apiUrl = result.apiUrl;
+        Env.apiUsername = result.username;
+        Env.apiPassword = result.password;
+      }
+    });
   }
 }

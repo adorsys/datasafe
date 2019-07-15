@@ -1,0 +1,19 @@
+<div mat-dialog-content>
+    <mat-form-field>
+        <p>API url</p>
+        <input matInput [(ngModel)]="data.apiUrl">
+    </mat-form-field>
+    <mat-form-field>
+        <p>API username</p>
+        <input matInput [(ngModel)]="data.username">
+    </mat-form-field>
+    <mat-form-field>
+        <p>API password</p>
+        <input type="password" matInput [(ngModel)]="data.password">
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
+</div>
+
