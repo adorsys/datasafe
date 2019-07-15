@@ -64,7 +64,6 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = SKIP_CEPH, matches = "true")
     void testVersionedRemoveManually() {
         init(cephVersioned());
         registerJohnAndJane();
