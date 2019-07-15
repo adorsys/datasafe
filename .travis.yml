@@ -16,10 +16,6 @@ script:
 # make frontend available for REST-docker
   - cd frontend/datasafe-ui && ng build --deploy-url /static/ --base-href /static/ && mv dist ../../datasafe-rest-impl/target/dist && cd ../..
 
-before_deploy:
-  - echo $GPG_SECRET_KEY | base64 --decode | $GPG_EXECUTABLE --import
-  - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
-
 deploy:
   - provider: script
     skip_cleanup: true
