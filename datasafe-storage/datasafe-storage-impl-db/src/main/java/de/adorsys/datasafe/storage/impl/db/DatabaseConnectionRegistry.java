@@ -13,12 +13,14 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import javax.sql.DataSource;
 import java.net.URI;
 import java.sql.Connection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -26,16 +28,17 @@ import java.util.function.Predicate;
 /**
  * This class acts as higher-level DataSource cache.
  */
+@Slf4j
 public class DatabaseConnectionRegistry {
     private final DbUriExtractor uriExtractor;
     private final Map<String, JdbcDaoSupport> dataSourceCache;
     private final Map<String, DatabaseCredentials> providedCredentials;
 
-    /*public DatabaseConnectionRegistry() {
+    public DatabaseConnectionRegistry() {
         this.uriExtractor = new DefaultDbUriExtractor();
         this.dataSourceCache = new ConcurrentHashMap<>();
         this.providedCredentials = Collections.emptyMap();
-    }*/
+    }
 
     public DatabaseConnectionRegistry(Map<String, DatabaseCredentials> providedCredentials) {
         this.uriExtractor = new DefaultDbUriExtractor();
@@ -118,14 +121,14 @@ public class DatabaseConnectionRegistry {
         }
 
         return providedCredentials.entrySet().stream()
-                .filter(equalDbURI(uri))
+                .filter(compareDatabaseURI(uri))
                 .findFirst()
                 .orElseThrow(
                         () -> new IllegalArgumentException("There is no associated database for this credentials")
                 ).getValue();
     }
 
-    private Predicate<Map.Entry<String, DatabaseCredentials>> equalDbURI(URI uri) {
+    private Predicate<Map.Entry<String, DatabaseCredentials>> compareDatabaseURI(URI uri) {
         return it -> {
             AbsoluteLocation<PrivateResource> location = BasePrivateResource.forAbsolutePrivate(URI.create(it.getKey()));
 
@@ -145,6 +148,8 @@ public class DatabaseConnectionRegistry {
     }
 
     private static HikariDataSource getHikariDataSource(String url, String user, String password) {
+        log.debug("Setup config for DB url: {0}", url);
+
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setConnectionTestQuery("SELECT 1");
