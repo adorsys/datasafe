@@ -143,23 +143,22 @@ public class DatasafeConfig {
                 new BasicAWSCredentials(properties.getAmazonAccessKeyID(), properties.getAmazonSecretAccessKey())
         );
 
+        AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard()
+                .withCredentials(credentialsProvider)
+                .withRegion(properties.getAmazonRegion());
+
         if(useEndpoint) {
-            amazonS3 = AmazonS3ClientBuilder
-                    .standard()
-                    .withEndpointConfiguration(
-                            new AwsClientBuilder.EndpointConfiguration(properties.getAmazonUrl(), properties.getAmazonRegion())
-                    )
-                    .withCredentials(credentialsProvider)
-                    .enablePathStyleAccess()
-                    .build();
-        } else {
-            amazonS3 = AmazonS3ClientBuilder.standard()
-                    .withCredentials(credentialsProvider)
-                    .withRegion(properties.getAmazonRegion())
-                    .build();
+            builder = builder.withEndpointConfiguration(
+                    new AwsClientBuilder.EndpointConfiguration(
+                            properties.getAmazonUrl(),
+                            properties.getAmazonRegion())
+            ).enablePathStyleAccess();
         }
 
-        if (!amazonS3.doesBucketExistV2(properties.getBucketName())) {
+        amazonS3 = builder.build();
+
+        // used by local deployment in conjunction with minio
+        if (useEndpoint && !amazonS3.doesBucketExistV2(properties.getBucketName())) {
             amazonS3.createBucket(properties.getBucketName());
         }
 
