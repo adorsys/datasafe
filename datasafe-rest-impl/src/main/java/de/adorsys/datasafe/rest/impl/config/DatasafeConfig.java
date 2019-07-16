@@ -19,19 +19,17 @@ import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.db.DatabaseConnectionRegistry;
 import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
-import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.security.Security;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -45,8 +43,13 @@ public class DatasafeConfig {
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
 
-
     private DatasafeProperties datasafeProperties;
+
+    @Autowired
+    private DFSConfig dfsConfig;
+
+    @Autowired
+    private StorageService storageService;
 
     @Inject
     DatasafeConfig(DatasafeProperties datasafeProperties) {
@@ -55,29 +58,18 @@ public class DatasafeConfig {
 
     @Bean
     DFSConfig dfsConfig(DatasafeProperties properties) {
-        return new DefaultDFSConfig(new Uri(properties.getFsDevPath()), properties.getKeystorePassword());
+        return new DefaultDFSConfig(new Uri(properties.getS3Path()), properties.getKeystorePassword());
     }
 
-    /**
-     * @return S3 based storage service
-     */
     @Bean
-    StorageService storageService(AmazonS3 s3, DatasafeProperties properties) {
-        /*return new S3StorageService(
-                s3,
-                properties.getBucketName(),
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-        );*/
-         return new FileSystemStorageService(Paths.get(properties.getFsDevPath()));
-
+    DFSConfig multiDfsConfig(DatasafeProperties properties) {
+        return new MultiDFSConfig(URI.create(properties.getS3Path()), URI.create(properties.getDbProfilePath()));
     }
 
     /**
      * @return Default implementation of Datasafe services.
      */
     @Bean
-    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
-    @Order(1)
     DefaultDatasafeServices datasafeService(StorageService storageService, DFSConfig dfsConfig) {
 
         Security.addProvider(new BouncyCastleProvider());
@@ -90,8 +82,6 @@ public class DatasafeConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
-    @Order(2)
     VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig) {
 
         Security.addProvider(new BouncyCastleProvider());
@@ -103,61 +93,38 @@ public class DatasafeConfig {
                 .build();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(DefaultDatasafeServices.class)
-    @Order(3)
-    DefaultDatasafeServices multiDatasafeService(StorageService storageService, DFSConfig dfsConfig) {
-
-        Security.addProvider(new BouncyCastleProvider());
-
-        return DaggerDefaultDatasafeServices
-                .builder()
-                .config(multiDfsConfig(datasafeProperties))
-                .storage(multiStorageService(datasafeProperties))
-                .build();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(VersionedDatasafeServices.class)
-    @Order(4)
-    VersionedDatasafeServices versionedMultiDatasafeServices(StorageService storageService, DFSConfig dfsConfig) {
-
-        Security.addProvider(new BouncyCastleProvider());
-
-        return DaggerVersionedDatasafeServices
-                .builder()
-                .config(multiDfsConfig(datasafeProperties))
-                .storage(multiStorageService(datasafeProperties))
-                .build();
-    }
-
-    //versioned multi dfs
-
-    @Bean
-    DFSConfig multiDfsConfig(DatasafeProperties properties) {
-        return new MultiDFSConfig(URI.create(properties.getS3Path()), URI.create(properties.getDbProfilePath()));
-    }
-
     /**
      * @return S3 based storage service
      */
     @Bean
+    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
+    StorageService storageService(AmazonS3 s3, DatasafeProperties properties) {
+        return new S3StorageService(
+                s3,
+                properties.getBucketName(),
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+        );
+    }
+
+    /**
+     * @return storage service based on the two data storage. Profiles saving to the relation DB(like MySQL) and
+     * data to the storage like Amazon S3, MinIO, CEPH
+     */
+    @Bean
+    @ConditionalOnMissingBean(StorageService.class)
     StorageService multiStorageService(DatasafeProperties properties) {
         StorageService db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
                 ImmutableMap.of(properties.getDbUrl(),
                         new DatabaseCredentials(properties.getDbUsername(), properties.getDbPassword()))
-        )
+            )
         );
 
         S3StorageService s3StorageService = new S3StorageService(s3(properties), properties.getBucketName(), Executors.newFixedThreadPool(
                 Runtime.getRuntime().availableProcessors())
         );
 
-        StorageService filesystem = new FileSystemStorageService(Paths.get(properties.getFsDevPath()));
-
         StorageService multiDfs = new SchemeDelegatingStorage(
                 ImmutableMap.of(
-                        //"file", filesystem,
                         "s3", s3StorageService,
                         "jdbc", db
                 )
