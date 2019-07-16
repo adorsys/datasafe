@@ -50,17 +50,4 @@ public abstract class BaseDatasafeEndpointTest extends BaseMockitoTest {
                 .andReturn();
     }
 
-    @Test
-    @EnabledIfEnvironmentVariable(named = "DATASAFE_SINGLE_STORAGE", matches = "true")
-    public void testDatasafeConfig() {
-
-    }
-
-    @Test
-    @EnabledIfEnvironmentVariable(named = "DATASAFE_SINGLE_STORAGE", matches = "false")
-    public void testMultiDatasafeConfig() {
-
-
-    }
-
 }
