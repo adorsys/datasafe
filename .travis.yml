@@ -14,7 +14,7 @@ services:
 script:
   - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
 # make frontend available for REST-docker
-  - cd frontend/datasafe-ui && ng build --deploy-url /static/ --base-href /static/ && mv dist ../../datasafe-rest-impl/dist && cd ../..
+  - cd frontend/datasafe-ui && ng build --deploy-url /static/ --base-href /static/ && mv dist ../../datasafe-rest-impl/target/dist && cd ../..
 
 before_deploy:
   - echo $GPG_SECRET_KEY | base64 --decode | $GPG_EXECUTABLE --import
