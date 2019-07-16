@@ -1,7 +1,19 @@
 <div id="login-form" class="main-div">
   <mat-card class="example-card" layout-align="center center">
     <mat-card-header>
-      <div mat-card-avatar class="example-header-image"></div>
+
+      <div>
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Welcome">
+            <mat-icon>settings</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item class="noevents" (click)="setupApiUrlAndCreds()">
+              <mat-icon>settings_remote</mat-icon>
+              Configure API endpoint
+            </button>
+          </mat-menu>
+      </div>
+
       <mat-card-title>Welcome to Datasafe!</mat-card-title>
       <mat-card-subtitle class="align-center">Client-side encrypted storage</mat-card-subtitle>
     </mat-card-header>
