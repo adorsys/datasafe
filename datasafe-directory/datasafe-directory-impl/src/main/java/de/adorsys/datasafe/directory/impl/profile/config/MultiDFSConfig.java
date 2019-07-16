@@ -11,8 +11,8 @@ public class MultiDFSConfig extends DefaultDFSConfig {
 
     private final Uri profilesPath;
 
-    public MultiDFSConfig(URI fsPath, URI profilesPath) {
-        super(fsPath, "PAZZWORT");
+    public MultiDFSConfig(URI fsPath, URI profilesPath, String systemPassword) {
+        super(fsPath, systemPassword);
         this.profilesPath = new Uri(profilesPath);
     }
 
