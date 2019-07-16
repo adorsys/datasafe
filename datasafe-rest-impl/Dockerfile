@@ -1,8 +1,17 @@
 FROM openjdk:8-jre-alpine
+
 ARG JAR_FILE
 ENV JAR_FILE ${JAR_FILE}
-EXPOSE 8080
 ENV APP_HOME /usr/app
-COPY target/${JAR_FILE} $APP_HOME/${JAR_FILE}
+
 WORKDIR $APP_HOME
-ENTRYPOINT ["sh", "-c", "java -jar ${JAR_FILE}"]
+
+COPY target/${JAR_FILE} ${JAR_FILE}
+COPY target/dist/datasafe-ui frontend
+COPY run.sh run.sh
+
+RUN chmod +x run.sh
+
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "$APP_HOME/run.sh"]

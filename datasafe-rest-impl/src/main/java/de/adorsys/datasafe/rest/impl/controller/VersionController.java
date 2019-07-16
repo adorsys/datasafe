@@ -10,11 +10,13 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.*;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -23,12 +25,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RestController
-@RequestMapping
 @RequiredArgsConstructor
 public class VersionController {
 
@@ -62,6 +65,9 @@ public class VersionController {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
+        // this is needed for swagger, produces is just a directive:
+        response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
+
         try (InputStream is = versionedDatasafeServices.latestPrivate().read(request);
              OutputStream os = response.getOutputStream()
         ) {
@@ -74,17 +80,16 @@ public class VersionController {
      * writes latest version of file to user's private space.
      */
     @SneakyThrows
-    @PutMapping(value = "/versioned/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
+    @PutMapping(value = "/versioned/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
     public void writeVersionedDocument(@RequestHeader String user,
                               @RequestHeader String password,
                               @PathVariable String path,
-                              InputStream is) {
+                              @RequestParam("file") MultipartFile file) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(userIDAuth, path);
-        try (OutputStream os = versionedDatasafeServices.latestPrivate().write(request)) {
+        try (OutputStream os = versionedDatasafeServices.latestPrivate().write(request);
+             InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
-        } finally {
-            is.close();
         }
         log.debug("User: {}, write private file to: {}", user, path);
     }
@@ -109,9 +114,12 @@ public class VersionController {
     @GetMapping(value = "/versions/list/{path:.*}", produces = APPLICATION_JSON_VALUE)
     public List<String> versionsOf(@RequestHeader String user,
                                    @RequestHeader String password,
+                                   @ApiParam(defaultValue = ".")
                                    @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        path = Optional.ofNullable(path).orElse("./");
+        path = Optional.ofNullable(path)
+                .map(it -> it.replaceAll("^\\.$", ""))
+                .orElse("./");
         PrivateResource resource = BasePrivateResource.forPrivate(path);
 
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.<UserIDAuth, PrivateResource>builder()

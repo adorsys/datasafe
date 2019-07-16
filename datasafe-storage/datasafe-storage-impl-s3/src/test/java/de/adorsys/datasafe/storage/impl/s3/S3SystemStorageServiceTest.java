@@ -150,9 +150,28 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
         assertThrows(AmazonS3Exception.class, () -> s3.getObject(bucketName, FILE));
     }
 
+    @Test
+    void removeCascades() {
+        createFileWithMessage("root/file1.txt");
+        createFileWithMessage("root/file2.txt");
+
+        AbsoluteLocation rootOfFiles = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("./root/"))
+                .resolveFrom(root));
+
+        storageService.remove(rootOfFiles);
+
+        assertThrows(AmazonS3Exception.class, () -> s3.getObject(bucketName, "root/file1.txt"));
+        assertThrows(AmazonS3Exception.class, () -> s3.getObject(bucketName, "root/file2.txt"));
+    }
+
+    @SneakyThrows
+    private void createFileWithMessage(String path) {
+        s3.putObject(bucketName, path, MESSAGE);
+    }
+
     @SneakyThrows
     private void createFileWithMessage() {
-        s3.putObject(bucketName, FILE, MESSAGE);
+        createFileWithMessage(FILE);
     }
 
     @AfterEach

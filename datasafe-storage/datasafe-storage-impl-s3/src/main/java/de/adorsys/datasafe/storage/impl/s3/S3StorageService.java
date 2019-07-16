@@ -110,7 +110,7 @@ public class S3StorageService implements StorageService {
 
         execute(
                 location,
-                key -> s3.deleteObject(bucketName, key),
+                key -> doRemove(bucketName, key),
                 (key, version) -> s3.deleteVersion(bucketName, key, version.getVersionId())
         );
     }
@@ -132,6 +132,15 @@ public class S3StorageService implements StorageService {
 
         log.debug("Path {} exists {}", location, pathExists);
         return pathExists;
+    }
+
+    private void doRemove(String bucket, String key) {
+        if (key.endsWith("/")) {
+            S3Objects.withPrefix(s3, bucket, key).forEach(it -> s3.deleteObject(bucket, it.getKey()));
+            return;
+        }
+
+        s3.deleteObject(bucket, key);
     }
 
     private PrivateResource createPath(AbsoluteLocation root, S3ObjectSummary os, int prefixLen) {
@@ -165,8 +174,8 @@ public class S3StorageService implements StorageService {
 
         String key = location.getResource().location()
                 .getRawPath()
-                .replaceFirst("^/", "")
-                .replaceFirst("/$", "");
+                .replaceFirst("^/", "");
+
         Optional<StorageVersion> version = extractVersion(location);
 
         if (!version.isPresent()) {

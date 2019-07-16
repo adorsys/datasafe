@@ -1,0 +1,59 @@
+<div id="register-form" class="main-div">
+    <mat-card class="example-card" layout-align="center center">
+        <mat-card-header>
+            <div mat-card-avatar class="example-header-image"></div>
+            <mat-card-title>Create new Datasafe user</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <form [formGroup]="registerForm">
+                <mat-form-field>
+                    <input name="username" matInput placeholder="New username" type="text" [formControl]="userNameControl" [errorStateMatcher]="fieldMatcher">
+                    <mat-error *ngIf="userNameControl.hasError('required')">
+                        Username is <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="userNameControl.hasError('minlength') && !userNameControl.hasError('required')">
+                        At least 3 characters
+                    </mat-error>
+                </mat-form-field>
+
+                <br/>
+
+                <mat-form-field>
+                    <input name="password" matInput placeholder="New password" [type]="passwordMatchControl.visible() ? 'password' : 'text'" [formControl]="passwordControl" [errorStateMatcher]="parentOrFieldMatcher">
+                    <button mat-icon-button matSuffix
+                            (click)="
+                            passwordMatchControl.Hidden = passwordMatchControl.visible();
+                            passwordMatchControl.setValue(passwordMatchControl.value);
+                            passwordControl.setValue(passwordControl.value)"
+                            [attr.aria-label]="'Hide password'"
+                            [attr.aria-pressed]="passwordMatchControl.Hidden">
+                        <mat-icon>{{passwordMatchControl.visible() ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                    <mat-error *ngIf="passwordControl.hasError('required')">
+                        Password is <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="passwordControl.hasError('minlength') && !passwordControl.hasError('required')">
+                        At least 3 characters
+                    </mat-error>
+                </mat-form-field>
+
+                <div [hidden]="passwordMatchControl.Hidden">
+                    <mat-form-field>
+                        <input name="matchPasswords" type='password' matInput placeholder="Confirm password" [formControl]="passwordMatchControl" [errorStateMatcher]="parentOrFieldMatcher">
+                        <mat-error *ngIf="registerForm.hasError('notSame')">
+                            Passwords do not match
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <mat-error *ngIf="registerForm.hasError('createFailed')">
+                    User creation failed: {{registerForm.errors['createFailed']}}
+                </mat-error>
+            </form>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-button (click)="handleCreateUserClick()">Create user</button>
+            <button mat-button class="align-right" (click)="router.navigate(['/login']);">Back to login</button>
+        </mat-card-actions>
+    </mat-card>
+</div>

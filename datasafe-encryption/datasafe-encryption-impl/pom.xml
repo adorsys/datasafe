@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>de.adorsys</groupId>
 		<artifactId>datasafe-encryption</artifactId>
-		<version>0.2.0</version>
+		<version>0.3.0</version>
 	</parent>
 	<artifactId>datasafe-encryption-impl</artifactId>
 	<dependencies>

@@ -4,6 +4,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.rest.impl.security.SecurityConstants;
+import de.adorsys.datasafe.storage.api.StorageService;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 
 import java.io.ByteArrayOutputStream;
 
+import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +74,7 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
 
     @SneakyThrows
     @Test
-    void testGetDataWithToken() {
+    void testPutDataWithToken() {
         when(dataSafeService.inboxService().write(any())).thenReturn(new ByteArrayOutputStream());
         UserDTO userDTO = new UserDTO();
         userDTO.setUserName(DEFAULT_TEST_USERNAME);
@@ -81,8 +83,8 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
         String token = sendAuthenticateRequest(userDTO).getResponse().getHeader(SecurityConstants.TOKEN_HEADER);
 
         mvc.perform(
-               put("/inbox/{path}", TEST_PATH).
-               contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE).
+               putFileBuilder("/inbox/{path}", TEST_PATH).
+               contentType(MediaType.MULTIPART_FORM_DATA_VALUE).
                header("users", TEST_USER).
                header(SecurityConstants.TOKEN_HEADER, token))
            .andExpect(status().isOk());
