@@ -1,22 +1,18 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.rest.impl.exceptions.EmptyInputStreamException;
-import de.adorsys.datasafe.rest.impl.exceptions.FileNotFoundException;
+import de.adorsys.datasafe.rest.impl.exceptions.UnauthorizedException;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -67,11 +63,8 @@ public class DocumentController {
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
 
         try (InputStream is = dataSafeService.privateService().read(request);
-             OutputStream os = response.getOutputStream()
-        ) {
+             OutputStream os = response.getOutputStream()) {
             StreamUtils.copy(is, os);
-        } catch (Exception e) {
-            throw new FileNotFoundException(String.format("File '%s' not found for user '%s'", path, user), e);
         }
         log.debug("User: {}, read private file from: {}", user, resource);
     }
@@ -89,9 +82,6 @@ public class DocumentController {
                               @RequestHeader String password,
                               @PathVariable String path,
                               @RequestParam("file") MultipartFile file) {
-        if (file.getInputStream().available() == 0) {
-           throw new EmptyInputStreamException("Input stream is empty");
-        }
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(userIDAuth, path);
         try (OutputStream os = dataSafeService.privateService().write(request);
@@ -107,7 +97,8 @@ public class DocumentController {
     @GetMapping("/documents/{path:.*}")
     @ApiOperation("List documents in user's private space")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List command successfully completed")
+            @ApiResponse(code = 200, message = "List command successfully completed"),
+            @ApiResponse(code = 401, message = "Unauthorised")
     })
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
@@ -117,11 +108,15 @@ public class DocumentController {
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");
-        List<String> documentList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
-                .map(e -> e.getResource().asPrivate().decryptedPath().asString())
-                .collect(Collectors.toList());
-        log.debug("List for path {} returned {} items", path, documentList.size());
-        return documentList;
+        try {
+            List<String> documentList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
+                    .map(e -> e.getResource().asPrivate().decryptedPath().asString())
+                    .collect(Collectors.toList());
+            log.debug("List for path {} returned {} items", path, documentList.size());
+            return documentList;
+        } catch (AmazonS3Exception e) {
+            throw new UnauthorizedException("Unauthorized: " + e.getMessage(), e);
+        }
     }
 
     /**

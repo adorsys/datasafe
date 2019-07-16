@@ -64,7 +64,7 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
         userDTO.setUserName("test");
         userDTO.setPassword("test");
 
-        String response = sendAuthenticateRequestWithStatus(userDTO, status().isForbidden())
+        String response = sendAuthenticateRequestWithStatus(userDTO, status().isUnauthorized())
                 .getResponse()
                 .getErrorMessage();
 
