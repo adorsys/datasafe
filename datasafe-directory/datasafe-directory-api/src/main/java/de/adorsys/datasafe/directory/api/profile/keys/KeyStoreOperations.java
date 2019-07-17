@@ -6,9 +6,9 @@ import java.security.Key;
 import java.util.Set;
 
 /**
- * Special keystore opener that allow fallbacks in case supplied ReadKeyPassword can't open the keystore.
+ * This class is responsible for accessing/updating/creating users' keystore on higher level.
  */
-public interface KeyStoreOpener {
+public interface KeyStoreOperations {
 
     /**
      * Read key from the keystore associated with user.

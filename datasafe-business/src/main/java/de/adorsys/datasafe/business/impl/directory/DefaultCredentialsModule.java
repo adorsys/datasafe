@@ -6,7 +6,7 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
-import de.adorsys.datasafe.directory.api.profile.keys.KeyStoreOpener;
+import de.adorsys.datasafe.directory.api.profile.keys.KeyStoreOperations;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
@@ -64,7 +64,7 @@ public abstract class DefaultCredentialsModule {
      * Keystore opener that hides keystore access from other components.
      */
     @Binds
-    abstract KeyStoreOpener keyStoreOpener(KeyStoreOpenerImplRuntimeDelegatable impl);
+    abstract KeyStoreOperations keyStoreOpener(KeyStoreOpenerImplRuntimeDelegatable impl);
 
     /**
      * Default private key service that reads user private/secret keys from the location specified by his

@@ -10,13 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
+import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
 
 @Slf4j
 @RuntimeDelegate
@@ -66,6 +67,29 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         KeyStore userKeyStore = keyStoreGenerator.generate();
         log.debug("finished create keystore ");
         return userKeyStore;
+    }
+
+    @Override
+    @SneakyThrows
+    public KeyStore updateKeyStoreReadKeyPassword(KeyStore current,
+                                                  KeyStoreAuth currentCredentials,
+                                                  KeyStoreAuth newCredentials) {
+        KeyStore newKeystore = KeyStore.getInstance(current.getType());
+        newKeystore.load(null, null);
+        Enumeration<String> aliases = current.aliases();
+
+        while (aliases.hasMoreElements()) {
+            String alias = aliases.nextElement();
+            Key currentKey = current.getKey(alias, currentCredentials.getReadKeyPassword().getValue().toCharArray());
+            newKeystore.setKeyEntry(
+                    alias,
+                    currentKey,
+                    newCredentials.getReadKeyPassword().getValue().toCharArray(),
+                    current.getCertificateChain(alias)
+            );
+        }
+
+        return newKeystore;
     }
 
     @Override
