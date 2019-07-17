@@ -22,7 +22,6 @@ import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -43,38 +42,15 @@ import java.util.concurrent.Executors;
 public class DatasafeConfig {
     public static final String FILESYSTEM_ENV = "USE_FILESYSTEM";
 
-    private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
+    private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("private_profiles", "public_profiles");
 
     private DatasafeProperties datasafeProperties;
-
-    @Autowired
-    private DFSConfig dfsConfig;
-
-    @Autowired
-    private StorageService storageService;
 
     @Inject
     DatasafeConfig(DatasafeProperties datasafeProperties) {
         this.datasafeProperties = datasafeProperties;
     }
 
-    /*@Bean
-    @ConditionalOnMissingBean(StorageService.class)
-    StorageService s3StorageService(DatasafeProperties properties) {
-        log.info("==================== AMAZONS3");
-        AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-                .enablePathStyleAccess()
-                .build();
-
-
-        return new S3StorageService(
-                s3,
-                properties.getBucketName(),
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-        );
-
-    }
-*/
     @Bean
     DFSConfig dfsConfig(DatasafeProperties properties) {
         return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());

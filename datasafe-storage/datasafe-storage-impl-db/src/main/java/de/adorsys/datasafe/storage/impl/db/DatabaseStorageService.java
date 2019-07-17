@@ -165,7 +165,7 @@ public class DatabaseStorageService implements StorageService {
             if (uri.getPath() == null) {
                 throw new IllegalArgumentException("Wrong url format");
             }
-            //TODO add exaple of url
+            //TODO add example of url
             String[] uriParts = uri.getPath().split("/");
 
             if (!allowedTables.contains(uriParts[2])) {
