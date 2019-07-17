@@ -1,0 +1,75 @@
+@startuml
+
+skinparam linetype ortho
+
+cloud " " as u1 {
+    actor user1
+    rectangle "Execution sequence 1" as u1.execution1 {
+        card "READ exec1-file1.txt" as u1e1rf1
+        card "WRITE exec1-file1.txt" as u1e1wf1
+        card "READ exec1-file2.txt" as u1e1rf2
+        u1e1rf1 -[hidden]left- u1e1wf1
+        u1e1rf2 -[hidden]left- u1e1rf2
+    }
+    
+    rectangle "Execution sequence 2" as u1.execution2 {
+        card "READ exec2-file1.txt" as u1e2rf1
+        card "WRITE exec2-file1.txt" as u1e2wf1
+        card "READ exec2-file2.txt" as u1e2rf2
+        u1e2rf1 -[hidden]left- u1e2wf1
+        u1e2rf2 -[hidden]left- u1e2rf2
+    }
+
+    u1.execution1 -[hidden]down- u1.execution2
+}
+
+cloud " " as u2 {
+    actor user2
+    rectangle "Execution sequence 1" as u2.execution1 {
+        card "READ exec1-file1.txt" as u2e1rf1
+        card "WRITE exec1-file1.txt" as u2e1wf1
+        card "READ exec1-file2.txt" as u2e1rf2
+        u2e1rf1 -[hidden]left- u2e1wf1
+        u2e1rf2 -[hidden]left- u2e1rf2
+    }
+    
+    rectangle "Execution sequence 2" as u2.execution2 {
+        card "READ exec2-file1.txt" as u2e2rf1
+        card "WRITE exec2-file1.txt" as u2e2wf1
+        card "READ exec2-file2.txt" as u2e2rf2
+        u2e2rf1 -[hidden]left- u2e2wf1
+        u2e2rf2 -[hidden]left- u2e2rf2
+    }
+    
+    u2.execution1 -[hidden]down- u2.execution2
+}
+
+queue "Actions to execute queue" as workQueue
+
+u1e1rf2 --> workQueue
+u2e1rf1 --> workQueue
+u1e2wf1 --> workQueue
+u2e2wf1 --> workQueue
+
+cloud Threadpool {
+    agent thread1
+    agent thread2
+    agent thread3
+}
+
+workQueue --> Threadpool
+
+component Datasafe
+
+rectangle "**READ**\nuser1/exec1-file2.txt" as read1
+rectangle "**WRITE**\nuser1/exec2-file1.txt" as write1
+rectangle "**READ**\nuser2/exec1-file1.txt" as read2
+
+thread1 --> read1
+read1 --> Datasafe
+thread2 --> read2
+read2 --> Datasafe
+thread3 --> write1
+write1 --> Datasafe
+
+@enduml

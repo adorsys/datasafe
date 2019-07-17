@@ -10,11 +10,13 @@ import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -24,15 +26,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * User INBOX REST api.
  */
 @Slf4j
 @RestController
-@RequestMapping("/inbox")
 @RequiredArgsConstructor
 public class InboxController {
 
@@ -42,15 +45,14 @@ public class InboxController {
      * Sends file to multiple users' INBOX.
      */
     @SneakyThrows
-    @PutMapping(value = "/{path:.*}", consumes = APPLICATION_OCTET_STREAM_VALUE)
+    @PutMapping(value = "/inbox/document/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
     public void writeToInbox(@RequestHeader Set<String> users,
                              @PathVariable String path,
-                             InputStream is) {
+                             @RequestParam("file") MultipartFile file) {
         Set<UserID> toUsers = users.stream().map(UserID::new).collect(Collectors.toSet());
-        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path))) {
+        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path));
+             InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
-        } finally {
-            is.close();
         }
         log.debug("Users {}, write to INBOX file: {}", toUsers, path);
     }
@@ -59,13 +61,16 @@ public class InboxController {
      * Reads file from users' INBOX.
      */
     @SneakyThrows
-    @GetMapping(value = "/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/inbox/document/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
     public void readFromInbox(@RequestHeader String user,
                               @RequestHeader String password,
                               @PathVariable String path,
                               HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
+        // this is needed for swagger, produces is just a directive:
+        response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
+
         try (InputStream is = dataSafeService.inboxService().read(ReadRequest.forPrivate(userIDAuth, resource));
              OutputStream os = response.getOutputStream()
         ) {
@@ -77,7 +82,7 @@ public class InboxController {
     /**
      * Deletes file from users' INBOX.
      */
-    @DeleteMapping("/{path:.*}")
+    @DeleteMapping("/inbox/document/{path:.*}")
     public void deleteFromInbox(@RequestHeader String user,
                                 @RequestHeader String password,
                                 @PathVariable String path) {
@@ -91,12 +96,15 @@ public class InboxController {
     /**
      * list files in users' INBOX.
      */
-    @GetMapping(value = "/{path:.*}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/inbox/documents/{path:.*}", produces = APPLICATION_JSON_VALUE)
     public List<String> listInbox(@RequestHeader String user,
                                   @RequestHeader String password,
+                                  @ApiParam(defaultValue = ".")
                                   @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        path = Optional.ofNullable(path).orElse("./");
+        path = Optional.ofNullable(path)
+                .map(it -> it.replaceAll("^\\.$", ""))
+                .orElse("./");
         List<String> inboxList = dataSafeService.inboxService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                 .map(e -> e.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());

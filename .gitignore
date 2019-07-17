@@ -39,3 +39,7 @@ hs_err_pid*
 # Visual studio code
 .vscode/
 
+# node.js / frontend
+node_modules/
+dist/
+

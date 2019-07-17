@@ -35,4 +35,9 @@ public class DatasafeProperties {
     private String dbUrl;
     private String dbUsername;
     private String dbPassword;
+
+    /**
+     * From where to serve static resources.
+     */
+    private String staticResources;
 }

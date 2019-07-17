@@ -18,13 +18,13 @@
         <module>datasafe-examples</module>
         <module>datasafe-simple-adapter</module>
         <module>datasafe-test-storages</module>
-        <module>datasafe-business-tests</module>
+        <module>datasafe-long-run-tests</module>
         <module>last-module-codecoverage-check</module>
     </modules>
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>0.2.1-SNAPSHOT</version>
+    <version>0.3.1-SNAPSHOT</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -419,6 +419,32 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>defaultTests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <systemProperties>
+                                <property>
+                                    <name>DISABLE_RANDOM_ACTIONS_TEST</name>
+                                    <value>true</value>
+                                </property>
+                                <property>
+                                    <name>SKIP_CEPH</name>
+                                    <value>true</value>
+                                </property>
+
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <!--
         This profile exist to show Lombok-generated code in javadoc without touching dev and release classes.
         You can generate JavaDoc with comments from lombok using:
