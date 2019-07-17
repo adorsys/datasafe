@@ -58,8 +58,8 @@ public class VersionController {
                     .collect(Collectors.toList());
             log.debug("List for path {} returned {} items", path, documentList.size());
             return documentList;
-        } catch (AmazonS3Exception e) {
-            throw new UnauthorizedException("Unauthorized: " + e.getMessage(), e);
+        } catch (AmazonS3Exception e) { // for list this exception most likely means that user credentials wrong
+            throw new UnauthorizedException("Unauthorized", e);
         }
 
     }

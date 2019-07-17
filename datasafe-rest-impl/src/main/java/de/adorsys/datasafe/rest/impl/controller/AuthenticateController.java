@@ -40,7 +40,7 @@ public class AuthenticateController {
     @ApiOperation("Get token for given username and password")
     @ApiResponses(value={
             @ApiResponse(code=200, message="Successfully logged in"),
-            @ApiResponse(code=404, message="Bad credentials")
+            @ApiResponse(code=401, message="Bad credentials")
     })
     public void authenticate(@RequestBody UserDTO credentialsDTO, HttpServletResponse response)  {
         String username = credentialsDTO.getUserName();

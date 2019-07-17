@@ -45,7 +45,7 @@ public class GenericControllerAdvice {
     @ExceptionHandler({AmazonS3Exception.class})
     public ResponseEntity<List<String>> handleFileNotFoundException(Exception ex) {
         log.debug("File not found exception: {}", ex.getMessage(), ex);
-        List<String> errors = Collections.singletonList(ex.getMessage());
+        List<String> errors = Collections.singletonList("File not found");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ArrayList<>(errors));
     }
 

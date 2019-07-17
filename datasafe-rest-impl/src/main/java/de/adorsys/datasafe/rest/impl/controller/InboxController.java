@@ -130,8 +130,8 @@ public class InboxController {
                     .collect(Collectors.toList());
             log.debug("User's {} inbox contains {} items", user, inboxList.size());
             return inboxList;
-        } catch (AmazonS3Exception e) {
-            throw new UnauthorizedException("Unauthorized: " + e.getMessage(), e);
+        } catch (AmazonS3Exception e) { // for list this exception most likely means that user credentials wrong
+            throw new UnauthorizedException("Unauthorized", e);
         }
     }
 }

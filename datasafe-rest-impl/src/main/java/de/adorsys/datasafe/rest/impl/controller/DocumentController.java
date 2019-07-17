@@ -50,7 +50,7 @@ public class DocumentController {
     @ApiOperation("Read document from user's private space")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Document was successfully read"),
-            @ApiResponse(code = 404, message = "Document not found")
+            @ApiResponse(code = 401, message = "Document not found")
     })
     public void readDocument(@RequestHeader String user,
                              @RequestHeader String password,
@@ -114,8 +114,8 @@ public class DocumentController {
                     .collect(Collectors.toList());
             log.debug("List for path {} returned {} items", path, documentList.size());
             return documentList;
-        } catch (AmazonS3Exception e) {
-            throw new UnauthorizedException("Unauthorized: " + e.getMessage(), e);
+        } catch (AmazonS3Exception e) { // for list this exception most likely means that user credentials wrong
+            throw new UnauthorizedException("Unauthorized", e);
         }
     }
 
