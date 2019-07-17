@@ -38,6 +38,7 @@ public class WriteToPrivateImpl implements WriteToPrivate {
 
     @Override
     public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
+        // Access check is explicit (will fail on bad keystore id):
         SecretKeyIDWithKey keySpec = privateKeyService.documentEncryptionSecretKey(request.getOwner());
 
         return writer.write(

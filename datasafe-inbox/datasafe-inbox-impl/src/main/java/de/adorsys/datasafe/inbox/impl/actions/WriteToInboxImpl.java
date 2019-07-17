@@ -42,6 +42,7 @@ public class WriteToInboxImpl implements WriteToInbox {
      */
     @Override
     public OutputStream write(WriteRequest<Set<UserID>, PublicResource> request) {
+        // No access check - anyone who knows user id can send a message to that user
         return writer.write(
                 request.getOwner().stream().collect(Collectors.toMap(
                         publicKeyService::publicKey,
