@@ -25,11 +25,11 @@ import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreation
 @RuntimeDelegate
 public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
-    private final KeyStoreOperations keyStoreOpener;
+    private final KeyStoreOperations keyStoreOper;
 
     @Inject
-    public DFSPrivateKeyServiceImpl(KeyStoreOperations keyStoreOpener) {
-        this.keyStoreOpener = keyStoreOpener;
+    public DFSPrivateKeyServiceImpl(KeyStoreOperations keyStoreOper) {
+        this.keyStoreOper = keyStoreOper;
     }
 
     /**
@@ -54,17 +54,17 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     @Override
     @SneakyThrows
     public Map<String, Key> keysByIds(UserIDAuth forUser, Set<String> keyIds) {
-        Set<String> aliases = keyStoreOpener.readAliases(forUser);
+        Set<String> aliases = keyStoreOper.readAliases(forUser);
         return keyIds.stream()
                 .filter(aliases::contains)
                 .collect(Collectors.toMap(
                         keyId -> keyId,
-                        keyId -> keyStoreOpener.getKey(forUser, keyId))
+                        keyId -> keyStoreOper.getKey(forUser, keyId))
                 );
     }
 
     private SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {
-        KeyID key = keyStoreOpener.readAliases(forUser).stream()
+        KeyID key = keyStoreOper.readAliases(forUser).stream()
                 .filter(it -> it.startsWith(prefix))
                 .map(KeyID::new)
                 .findFirst()
@@ -72,7 +72,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
         return new SecretKeyIDWithKey(
                 key,
-                (SecretKey) keyStoreOpener.getKey(forUser, key.getValue())
+                (SecretKey) keyStoreOper.getKey(forUser, key.getValue())
         );
     }
 }

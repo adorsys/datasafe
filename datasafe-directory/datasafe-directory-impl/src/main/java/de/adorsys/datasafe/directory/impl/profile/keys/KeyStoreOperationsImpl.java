@@ -20,7 +20,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
@@ -92,8 +91,7 @@ public class KeyStoreOperationsImpl implements KeyStoreOperations {
 
     @Override
     @SneakyThrows
-    public <T extends ResourceLocation<T>> List<PublicKeyIDWithPublicKey> createAndWriteKeyStore(
-            UserIDAuth forUser) {
+    public List<PublicKeyIDWithPublicKey> createAndWriteKeyStore(UserIDAuth forUser) {
         KeyStoreAuth auth = keystoreAuth(forUser, forUser.getReadKeyPassword());
         KeyStore keystoreBlob = keyStoreService.createKeyStore(
                 auth,

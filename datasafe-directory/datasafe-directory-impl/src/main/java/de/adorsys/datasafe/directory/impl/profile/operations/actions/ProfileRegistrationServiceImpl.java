@@ -82,14 +82,15 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
             return;
         }
 
-        keyStoreOper.
-
-        publishPublicKeysIfNeeded(profile.getPublishPubKeysTo(), publicKeys);
+        publishPublicKeysIfNeeded(
+                profile.getPublishPubKeysTo(),
+                keyStoreOper.createAndWriteKeyStore(profile.getId())
+        );
     }
 
     @Override
     public void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword) {
-        keyStoreOper.
+        keyStoreOper.updateReadKeyPassword(forUser, newPassword);
     }
 
     /**

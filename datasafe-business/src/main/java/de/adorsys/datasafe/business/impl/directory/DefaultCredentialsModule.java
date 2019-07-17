@@ -61,10 +61,10 @@ public abstract class DefaultCredentialsModule {
     abstract PublicKeyService publicKeyService(DFSPublicKeyServiceImplRuntimeDelegatable impl);
 
     /**
-     * Keystore opener that hides keystore access from other components.
+     * Keystore operations class that hides keystore access from other components.
      */
     @Binds
-    abstract KeyStoreOperations keyStoreOpener(KeyStoreOpenerImplRuntimeDelegatable impl);
+    abstract KeyStoreOperations keyStoreOperations(KeyStoreOperationsImplRuntimeDelegatable impl);
 
     /**
      * Default private key service that reads user private/secret keys from the location specified by his
