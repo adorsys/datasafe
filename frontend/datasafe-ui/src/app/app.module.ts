@@ -11,7 +11,7 @@ import {DemoMaterialModule} from './material-module';
 import {RouterModule, Routes} from '@angular/router';
 
 import {UserComponent} from './component/user/user.component';
-import {LoginComponent} from './component/login/login.component';
+import {ConfigureApiDialog, LoginComponent} from './component/login/login.component';
 import {RegisterComponent} from './component/register/register.component';
 import {AddFolderDialog, FiletreeComponent} from './component/filetree/filetree.component';
 import {AppComponent} from "./app.component";
@@ -34,8 +34,8 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     RouterModule.forRoot(appRoutes)
   ],
-  entryComponents: [AppComponent, AddFolderDialog],
-  declarations: [AppComponent, UserComponent, LoginComponent, RegisterComponent, FiletreeComponent, AddFolderDialog],
+  entryComponents: [AppComponent, AddFolderDialog, ConfigureApiDialog],
+  declarations: [AppComponent, UserComponent, LoginComponent, RegisterComponent, FiletreeComponent, AddFolderDialog, ConfigureApiDialog],
   bootstrap: [AppComponent],
   providers: []
 })

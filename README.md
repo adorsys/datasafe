@@ -75,7 +75,7 @@ Private files are always encrypted using users' secret symmetric key. Additional
 this encryption is very special in the sense that it has form of a/b/c encrypted as
 encrypted(a)/encrypted(b)/encrypted(c), so that folder traversal operations are efficient.
 
-![How privatespace diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private.puml&fmt=svg&vvv=1&sanitize=true)
+![How privatespace diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private.puml&fmt=svg&vvv=2&sanitize=true)
 
 | Reading files from private space | Writing files to private space  |
 |---|---|

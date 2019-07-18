@@ -27,5 +27,5 @@ docker run 										                                        \
 	-e AWS_SECRET_KEY=<your secret key>                      				            \
 	-e AWS_BUCKET=<your root bucket > 						                            \
 	-e AWS_REGION=<your region> 							                            \
-	-e ENABLE_FRONTEND=true 								                            \
+	-e EXPOSE_API_CREDS=true 								                            \
 	datasafe-rest-test:latest

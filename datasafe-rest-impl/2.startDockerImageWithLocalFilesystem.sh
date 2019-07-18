@@ -26,7 +26,7 @@ docker run 										                                        \
     -e DEFAULT_USER=your_user_to_come_to_the_rest_api 							        \
     -e DEFAULT_PASSWORD=password_for_rest_api 								            \
 	-p 8080:8080 										                                \
-	-e ENABLE_FRONTEND=true 								                            \
+	-e EXPOSE_API_CREDS=true 								                            \
 	-e USE_FILESYSTEM=file:///usr/app/ROOT_BUCKET                                       \
 	-v $(pwd)/target/ROOT_BUCKET:/usr/app/ROOT_BUCKET                                   \
 	datasafe-rest-test:latest

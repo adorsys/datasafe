@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.inbox.impl.actions;
 
+import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
@@ -17,17 +18,20 @@ import javax.inject.Inject;
 @RuntimeDelegate
 public class RemoveFromInboxImpl implements RemoveFromInbox {
 
+    private final PrivateKeyService keyService;
     private final ResourceResolver resolver;
     private final StorageRemoveService remover;
 
     @Inject
-    public RemoveFromInboxImpl(ResourceResolver resolver, StorageRemoveService remover) {
+    public RemoveFromInboxImpl(PrivateKeyService keyService, ResourceResolver resolver, StorageRemoveService remover) {
+        this.keyService = keyService;
         this.resolver = resolver;
         this.remover = remover;
     }
 
     @Override
     public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
+        keyService.documentEncryptionSecretKey(request.getOwner()); // Just checking user has access
         remover.remove(resolver.resolveRelativeToPrivateInbox(request.getOwner(), request.getLocation()));
     }
 }

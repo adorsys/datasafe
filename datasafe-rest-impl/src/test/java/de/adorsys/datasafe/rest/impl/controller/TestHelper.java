@@ -3,9 +3,9 @@ package de.adorsys.datasafe.rest.impl.controller;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @UtilityClass
 public class TestHelper {
@@ -18,7 +18,7 @@ public class TestHelper {
             "DATA".getBytes()
         );
 
-        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(path, vars).file(file);
+        MockMultipartHttpServletRequestBuilder builder = RestDocumentationRequestBuilders.fileUpload(path, vars).file(file);
         return builder.with(request -> {
             request.setMethod(HttpMethod.PUT.name());
             return request;

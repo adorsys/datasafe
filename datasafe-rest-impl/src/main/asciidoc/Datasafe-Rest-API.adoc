@@ -1,0 +1,272 @@
+= Datasafe REST Service
+:icons: font
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+:sectnums:
+:sectnumlevels: 3
+:leveloffset: 1
+
+:last-update-label!:
+
+[[resources-overview]]
+= Overview
+
+Datasafe REST Application exists for demonstration purposes of datasafe library.
+It consists endpoints for working with users, private documents, private documents with versioning support,
+public documents(documents exchange) and authentication.
+
+
+[[resources-AuthenticationAPI]]
+= Authentication API
+
+[[resources-UserAPI]]
+= User API
+
+[[resources-UserAPI-Objects]]
+== Objects
+
+[[user_dto]]
+.UserDTO
+|===
+| Code | Description
+
+|Username
+|username.
+
+|Password
+|password.
+
+|===
+
+[[resources-UserAPI-Methods]]
+== Methods
+
+[[resources-UserAPI-CreateUser]]
+=== Create user
+
+This method allows to create new datasafe user.
+Http methods of request is PUT.
+
+==== Request header
+include::../../../target/generated-snippets/user-create-success/request-headers.adoc[]
+
+==== Request fields
+include::../../../target/generated-snippets/user-create-success/request-fields.adoc[]
+
+==== Example request
+include::../../../target/generated-snippets/user-create-success/curl-request.adoc[]
+
+==== Example success response
+include::../../../target/generated-snippets/user-create-success/http-response.adoc[]
+
+[[resources-UserAPI-DeleteUser]]
+=== /user
+
+This method deletes user and all his files from datasafe storage.
+Http method of request is DELETE.
+
+==== Example request
+include::../../../target/generated-snippets/user-delete-success/curl-request.adoc[]
+
+==== Example success response
+include::../../../target/generated-snippets/user-delete-success/http-response.adoc[]
+
+[[resources-PrivateDocumentAPI]]
+= Private Document API
+
+[[resources-DocumentAPI-List]]
+== List Documents
+
+=== Request header
+include::../../../target/generated-snippets/document-list-success/request-headers.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/document-list-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/document-list-success/http-response.adoc[]
+
+==== Response body
+include::../../../target/generated-snippets/document-list-success/response-body.adoc[]
+
+[[resources-DocumentAPI-Read]]
+== Read Document
+
+=== Request header
+include::../../../target/generated-snippets/document-read-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/document-read-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/document-read-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/document-read-success/http-response.adoc[]
+
+==== Response body
+include::../../../target/generated-snippets/document-read-success/response-body.adoc[]
+
+[[resources-DocumentAPI-Write]]
+== Write Document
+
+=== Request header
+include::../../../target/generated-snippets/document-write-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/document-write-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/document-write-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/document-write-success/http-response.adoc[]
+
+[[resources-DocumentAPI-Remove]]
+== Remove Document
+
+=== Request header
+include::../../../target/generated-snippets/document-remove-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/document-remove-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/document-remove-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/document-remove-success/http-response.adoc[]
+
+[[resources-InboxAPI]]
+= Inbox API
+
+[[resources-InboxAPI-List]]
+== List Inbox
+
+=== Request header
+include::../../../target/generated-snippets/inbox-list-success/request-headers.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/inbox-list-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/inbox-list-success/http-response.adoc[]
+
+==== Response body
+include::../../../target/generated-snippets/inbox-list-success/response-body.adoc[]
+
+[[resources-InboxAPI-Read]]
+== Read from Inbox
+
+=== Request header
+include::../../../target/generated-snippets/inbox-read-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/inbox-read-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/inbox-read-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/inbox-read-success/http-response.adoc[]
+
+==== Response body
+include::../../../target/generated-snippets/inbox-read-success/response-body.adoc[]
+
+[[resources-InboxAPI-Write]]
+== Write to Inbox
+
+=== Request header
+include::../../../target/generated-snippets/inbox-write-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/inbox-write-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/inbox-write-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/inbox-write-success/http-response.adoc[]
+
+[[resources-InboxAPI-Remove]]
+== Remove from Inbox
+
+=== Request header
+include::../../../target/generated-snippets/inbox-remove-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/inbox-remove-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/inbox-remove-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/inbox-remove-success/http-response.adoc[]
+
+[[resources-VersionedAPI]]
+= Versioned Document API
+
+[[resources-VersionedAPI-List]]
+== List Documents
+
+=== Request header
+include::../../../target/generated-snippets/versioned-list-success/request-headers.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/versioned-list-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/versioned-list-success/http-response.adoc[]
+
+==== Response body
+include::../../../target/generated-snippets/versioned-list-success/response-body.adoc[]
+
+[[resources-VersionedAPI-Read]]
+== Read Document
+
+=== Request header
+include::../../../target/generated-snippets/versioned-read-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/versioned-read-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/versioned-read-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/versioned-read-success/http-response.adoc[]
+
+==== Response body
+include::../../../target/generated-snippets/versioned-read-success/response-body.adoc[]
+
+[[resources-VersionedAPI-Write]]
+== Write Document
+
+=== Request header
+include::../../../target/generated-snippets/versioned-write-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/versioned-write-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/versioned-write-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/versioned-write-success/http-response.adoc[]
+
+[[resources-VersionedAPI-Remove]]
+== Remove Document
+
+=== Request header
+include::../../../target/generated-snippets/versioned-remove-success/request-headers.adoc[]
+
+=== Path fields
+include::../../../target/generated-snippets/versioned-remove-success/path-parameters.adoc[]
+
+=== Example request
+include::../../../target/generated-snippets/versioned-remove-success/curl-request.adoc[]
+
+=== Example success response
+include::../../../target/generated-snippets/versioned-remove-success/http-response.adoc[]

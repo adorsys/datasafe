@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static de.adorsys.datasafe.business.impl.e2e.Const.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -30,12 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class BasicFunctionalityTest extends BaseE2ETest {
 
-    private static final String MESSAGE_ONE = "Hello here 1";
-    private static final String FOLDER = "folder1";
-    private static final String PRIVATE_FILE = "secret.txt";
-    private static final String PRIVATE_FILE_PATH = FOLDER + "/" + PRIVATE_FILE;
-    private static final String SHARED_FILE = "hello.txt";
-    private static final String SHARED_FILE_PATH = SHARED_FILE;
 
     private StorageService storage;
     private Uri location;
