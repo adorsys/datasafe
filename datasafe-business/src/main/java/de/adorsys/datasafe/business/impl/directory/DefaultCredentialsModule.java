@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import java.security.KeyStore;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -35,8 +36,10 @@ public abstract class DefaultCredentialsModule {
     static KeyStoreCache keyStoreCache(@Nullable OverridesRegistry registry) {
         Supplier<Cache<UserID, KeyStore>> cacheKeystore = () -> CacheBuilder.newBuilder()
                 .initialCapacity(1000)
+                .expireAfterWrite(15, TimeUnit.MINUTES)
                 .build();
 
+        // These are actually static, so no need to expire them right now
         Supplier<Cache<UserID, List<PublicKeyIDWithPublicKey>>> cachePubKeys = () -> CacheBuilder.newBuilder()
                 .initialCapacity(1000)
                 .build();
