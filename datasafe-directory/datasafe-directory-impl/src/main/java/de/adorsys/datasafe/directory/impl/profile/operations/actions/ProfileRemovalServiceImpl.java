@@ -2,6 +2,7 @@ package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
+import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
 @RuntimeDelegate
 public class ProfileRemovalServiceImpl implements ProfileRemovalService {
 
+    private final PrivateKeyService privateKeyService;
     private final KeyStoreCache keyStoreCache;
     private final UserProfileCache profileCache;
     private final StorageListService listService;
@@ -34,10 +36,11 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
     private final ProfileRetrievalService retrievalService;
 
     @Inject
-    public ProfileRemovalServiceImpl(KeyStoreCache keyStoreCache, UserProfileCache profileCache,
-                                     StorageListService listService, BucketAccessService access,
-                                     DFSConfig dfsConfig, StorageRemoveService removeService,
-                                     ProfileRetrievalService retrievalService) {
+    public ProfileRemovalServiceImpl(PrivateKeyService privateKeyService, KeyStoreCache keyStoreCache,
+                                     UserProfileCache profileCache, StorageListService listService,
+                                     BucketAccessService access, DFSConfig dfsConfig,
+                                     StorageRemoveService removeService, ProfileRetrievalService retrievalService) {
+        this.privateKeyService = privateKeyService;
         this.keyStoreCache = keyStoreCache;
         this.profileCache = profileCache;
         this.listService = listService;
@@ -56,6 +59,9 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
             log.debug("User deregistation failed. User '{}' does not exist", userID);
             throw new UserNotFoundException("User not found: " + userID);
         }
+
+        // NOP just check that user has access
+        privateKeyService.documentEncryptionSecretKey(userID);
 
         // TODO test
         profileCache.getPrivateProfile().remove(userID.getUserID());

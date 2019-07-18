@@ -11,7 +11,8 @@ import java.util.Optional;
 
 // TODO: Move it into another subproject - it is very heavyweight and used mostly in profile module.
 /**
- * This class is responsible for creating,serializing keystores as well as reading keys from keystores.
+ * This class is responsible for creating,serializing keystores as well as reading keys from keystores but works
+ * with concrete keystore blob.
  */
 public interface KeyStoreService {
 
@@ -38,6 +39,17 @@ public interface KeyStoreService {
                             KeyStoreType keyStoreType,
                             KeyStoreCreationConfig config,
                             Map<KeyID, Optional<SecretKeyEntry>> secretKeys);
+
+    /**
+     * Updates keystore access credentials and returns new keystore with new credentials.
+     * @param current Original keystore
+     * @param currentCredentials Oriignal keystore credentials
+     * @param newCredentials New credentials to use
+     * @return Cloned old keystore that can be opened using new credentials only.
+     */
+    KeyStore updateKeyStoreReadKeyPassword(KeyStore current,
+                                           KeyStoreAuth currentCredentials,
+                                           KeyStoreAuth newCredentials);
 
     /**
      * Reads public keys from the keystore.

@@ -11,6 +11,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
@@ -123,6 +124,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             throw new SimpleAdapterException("user \"" + userIDAuth.getUserID().getValue() + "\" already exists");
         }
         customlyBuiltDatasafeServices.userProfile().registerUsingDefaults(userIDAuth);
+    }
+
+    @Override
+    public void changeKeystorePassword(UserIDAuth userIDAuth, ReadKeyPassword newPassword) {
+        customlyBuiltDatasafeServices.userProfile().updateReadKeyPassword(userIDAuth, newPassword);
     }
 
     @Override

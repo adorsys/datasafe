@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -20,8 +23,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserControllerTest extends BaseTokenDatasafeEndpointTest {
@@ -63,6 +65,28 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
                 .andExpect(status().isOk())
                 .andDo(document);
         verify(userProfile).registerUsingDefaults(any());
+    }
+
+    @SneakyThrows
+    @Test
+    void changePasswordTest() {
+        String newPassword = "NEW!";
+
+        mvc.perform(post("/user/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content("{\"newPassword\": \"" + newPassword + "\"}")
+                .header("user", TEST_USER)
+                .header("password", TEST_PASS)
+                .header("token", token)
+        )
+                .andExpect(status().isOk());
+
+        verify(userProfile).updateReadKeyPassword(
+                eq(new UserIDAuth(TEST_USER, TEST_PASS)),
+                eq(new ReadKeyPassword(newPassword))
+        );
     }
 
     @SneakyThrows

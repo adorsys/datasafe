@@ -3,6 +3,7 @@ package de.adorsys.datasafe.directory.api.profile.operations;
 import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 
 /**
  * Registers user in system.
@@ -16,6 +17,15 @@ public interface ProfileRegistrationService {
      * @param profile Public profile part
      */
     void registerPublic(CreateUserPublicProfile profile);
+
+    /**
+     * Updates user's keystore password.
+     * @param forUser user, whose keystore to update
+     * @param newPassword new ReadKeyPassword for a user
+     * NOTE: (For S3-like storage) Due to S3 eventual consistency some requests using old passwords will succeed,
+     * some requests using new password will fail until storage propagates data.
+     */
+    void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword);
 
     /**
      * Registers private part of user profile - his keystore location, private folder location, etc.
