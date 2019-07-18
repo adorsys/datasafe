@@ -5,12 +5,17 @@ import de.adorsys.datasafe.rest.impl.security.SecurityConstants;
 import de.adorsys.datasafe.rest.impl.security.SecurityProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 
+@AutoConfigureRestDocs(uriHost = "example.com/datasafe", uriPort = 80)
 public abstract class BaseTokenDatasafeEndpointTest extends BaseDatasafeEndpointTest {
+    static final String TOKEN_DESCRIPTION = "Bearer authentication token is required";
+    static final String USER_DESCRIPTION = "datasafe username";
+    static final String PASSWORD_DESCRIPTION = "datasafe user's password";
 
-    protected static final String TEST_USER = "test";
-    protected static final String TEST_PASS = "test";
-    protected String token;
+    static final String TEST_USER = "test";
+    static final String TEST_PASS = "test";
+    String token;
 
     private SecurityProperties securityProperties;
 

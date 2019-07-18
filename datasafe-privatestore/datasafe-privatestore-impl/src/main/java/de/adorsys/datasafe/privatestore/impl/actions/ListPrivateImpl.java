@@ -32,6 +32,7 @@ public class ListPrivateImpl implements ListPrivate {
 
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+        // Access check is implicit - on keystore access in EncryptedResourceResolver
         AbsoluteLocation<PrivateResource> listDir =
                 resolver.encryptAndResolvePath(request.getOwner(), request.getLocation());
 

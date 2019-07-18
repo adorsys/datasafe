@@ -31,6 +31,7 @@ public class ReadFromInboxImpl implements ReadFromInbox {
 
     @Override
     public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
+        // Access check is implicit - on keystore access in EncryptedDocumentReadService
         return reader.read(ReadRequest.<UserIDAuth, AbsoluteLocation<PrivateResource>>builder()
                 .location(resolver.resolveRelativeToPrivateInbox(request.getOwner(), request.getLocation()))
                 .owner(request.getOwner())
