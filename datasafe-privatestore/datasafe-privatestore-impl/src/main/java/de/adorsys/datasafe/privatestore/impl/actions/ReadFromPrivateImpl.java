@@ -30,6 +30,7 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
 
     @Override
     public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
+        // Access check is implicit - on keystore access in EncryptedResourceResolver
         return reader.read(resolveRelative(request));
     }
 

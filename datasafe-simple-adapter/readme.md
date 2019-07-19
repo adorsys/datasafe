@@ -119,3 +119,9 @@ If spring is not used the only module to be included now is
             <version>${project.version}</version>
         </dependency>
 ```
+
+### 1.3.3 known dependency collisions
+If you are using datasafe with the local filesystem as the dfs and you get a 
+<code>ClassNotFoundException</code> for <code>
+com.google.common.io.MoreFiles
+</code> it is highly propable that you have an old guava dependecy. You should exclude this dependency so that the new guava version can be included from the datasafe.jar.

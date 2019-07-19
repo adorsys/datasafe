@@ -2,33 +2,30 @@ package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
+import de.adorsys.datasafe.directory.api.profile.keys.KeyStoreOperations;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
-import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
-import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.OutputStream;
-import java.security.KeyStore;
 import java.util.List;
 
 @Slf4j
 @RuntimeDelegate
 public class ProfileRegistrationServiceImpl implements ProfileRegistrationService {
 
-    private final KeyStoreService keyStoreService;
+    private final KeyStoreOperations keyStoreOper;
     private final BucketAccessService access;
     private final StorageCheckService checkService;
     private final StorageWriteService writeService;
@@ -36,10 +33,10 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     private final DFSConfig dfsConfig;
 
     @Inject
-    ProfileRegistrationServiceImpl(KeyStoreService keyStoreService, BucketAccessService access,
+    public ProfileRegistrationServiceImpl(KeyStoreOperations keyStoreOper, BucketAccessService access,
                                           StorageCheckService checkService, StorageWriteService writeService,
                                           GsonSerde serde, DFSConfig dfsConfig) {
-        this.keyStoreService = keyStoreService;
+        this.keyStoreOper = keyStoreOper;
         this.access = access;
         this.checkService = checkService;
         this.writeService = writeService;
@@ -85,13 +82,15 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
             return;
         }
 
-        List<PublicKeyIDWithPublicKey> publicKeys = createKeyStore(
-                profile.getId().getUserID(),
-                dfsConfig.privateKeyStoreAuth(profile.getId()),
-                profile.getKeystore()
+        publishPublicKeysIfNeeded(
+                profile.getPublishPubKeysTo(),
+                keyStoreOper.createAndWriteKeyStore(profile.getId())
         );
+    }
 
-        publishPublicKeysIfNeeded(profile.getPublishPubKeysTo(), publicKeys);
+    @Override
+    public void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword) {
+        keyStoreOper.updateReadKeyPassword(forUser, newPassword);
     }
 
     /**
@@ -105,22 +104,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
         registerPrivate(dfsConfig.defaultPrivateTemplate(user));
     }
 
-    @SneakyThrows
-    private <T extends ResourceLocation<T>> List<PublicKeyIDWithPublicKey> createKeyStore(
-            UserID forUser, KeyStoreAuth auth, AbsoluteLocation<T> keystore) {
-        KeyStore keystoreBlob = keyStoreService.createKeyStore(
-                auth,
-                KeyStoreType.DEFAULT,
-                new KeyStoreCreationConfig(1, 1)
-        );
 
-        try (OutputStream os = writeService.write(WithCallback.noCallback(access.withSystemAccess(keystore)))) {
-            os.write(keyStoreService.serialize(keystoreBlob, forUser.getValue(), auth.getReadStorePassword()));
-        }
-        log.debug("Keystore created for user {} in path {}", forUser, keystore);
-
-        return keyStoreService.getPublicKeys(new KeyStoreAccess(keystoreBlob, auth));
-    }
 
     @SneakyThrows
     private void publishPublicKeysIfNeeded(AbsoluteLocation publishTo,

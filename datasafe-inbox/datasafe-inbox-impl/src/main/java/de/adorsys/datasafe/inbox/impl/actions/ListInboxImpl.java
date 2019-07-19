@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.inbox.impl.actions;
 
 
+import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -20,13 +21,15 @@ import java.util.stream.Stream;
 @RuntimeDelegate
 public class ListInboxImpl implements ListInbox {
 
+    private final PrivateKeyService keyService;
     private final ProfileRetrievalService profileRetrievalService;
     private final ResourceResolver resolver;
     private final StorageListService listService;
 
     @Inject
-    public ListInboxImpl(ProfileRetrievalService profileRetrievalService, ResourceResolver resolver,
-                         StorageListService listService) {
+    public ListInboxImpl(PrivateKeyService keyService, ProfileRetrievalService profileRetrievalService,
+                         ResourceResolver resolver, StorageListService listService) {
+        this.keyService = keyService;
         this.profileRetrievalService = profileRetrievalService;
         this.resolver = resolver;
         this.listService = listService;
@@ -34,6 +37,7 @@ public class ListInboxImpl implements ListInbox {
 
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+        keyService.documentEncryptionSecretKey(request.getOwner()); // Just checking user has access
         return listService.list(resolveRelative(request))
                 .map(it -> fillEncryptedDecryptedSegments(request, it));
     }

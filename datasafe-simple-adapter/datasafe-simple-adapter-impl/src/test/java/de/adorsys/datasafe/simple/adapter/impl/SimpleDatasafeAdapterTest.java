@@ -144,6 +144,32 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
+    void writeAndReadFileWithPasswordChange(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
+        mystart();
+        String content = "content of document";
+        String path = "a/b/c.txt";
+        DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
+        simpleDatasafeService.storeDocument(userIDAuth, document);
+        ReadKeyPassword newPassword = new ReadKeyPassword("AAAAAAHHH!");
+
+        simpleDatasafeService.changeKeystorePassword(userIDAuth, newPassword);
+        assertThrows(
+                UnrecoverableKeyException.class,
+                () -> simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path))
+        );
+
+        userIDAuth = new UserIDAuth(userIDAuth.getUserID(), newPassword);
+        DSDocument dsDocument = simpleDatasafeService.readDocument(userIDAuth, new DocumentFQN(path));
+        assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
+        assertFalse(simpleDatasafeService.documentExists(userIDAuth, new DocumentFQN("doesnotexist.txt")));
+
+        assertArrayEquals(content.getBytes(), dsDocument.getDocumentContent().getValue());
+        log.info("the content read is ok");
+    }
+
+    @ParameterizedTest
+    @MethodSource("storages")
     public void writeAndReadFileWithSlash(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();

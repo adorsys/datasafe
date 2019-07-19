@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.inbox.api.actions;
 
+import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
@@ -20,6 +21,7 @@ import java.time.Instant;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ListInboxImplTest extends BaseMockitoTest {
@@ -28,6 +30,9 @@ class ListInboxImplTest extends BaseMockitoTest {
     private static final URI ABSOLUTE_PATH = URI.create("s3://absolute");
 
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
+
+    @Mock
+    private PrivateKeyService privateKeyService;
 
     @Mock
     private ResolvedResource resolvedResource;
@@ -65,5 +70,6 @@ class ListInboxImplTest extends BaseMockitoTest {
         when(listService.list(resource)).thenReturn(Stream.of(absoluteResolvedResource));
 
         assertThat(inbox.list(request)).hasSize(1);
+        verify(privateKeyService).documentEncryptionSecretKey(auth);
     }
 }

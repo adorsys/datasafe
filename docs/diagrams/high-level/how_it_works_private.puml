@@ -10,7 +10,7 @@ together {
 rectangle "Read document" as r.rl
 rectangle "Get path encryption secret key" as r.gpe
 rectangle "Encrypt location with secret key" as r.elw
-rectangle "Get credentials to read" as r.gc
+rectangle "Get storage credentials to\nread document at\n`Encrypted document path`" as r.gc
 rectangle "Read from storage" as r.rfs
 rectangle "Get document encryption secret key" as r.gde
 rectangle "Decrypt document" as r.dd
@@ -21,7 +21,7 @@ rectangle "Write document" as w.wl
 rectangle "Get document encryption secret key" as w.gde
 rectangle "Get path encryption secret key" as w.gpe
 rectangle "Encrypt location with secret key" as w.elw
-rectangle "Get credentials to write" as w.gc
+rectangle "Get storage credentials to\nwrite document at\n`Encrypted document path`" as w.gc
 rectangle "Encrypt document" as w.dd
 rectangle "Write to storage" as w.wfs
 }

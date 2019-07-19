@@ -1,0 +1,44 @@
+<div id="login-form" class="main-div">
+  <mat-card class="example-card" layout-align="center center">
+    <mat-card-header>
+
+      <div>
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Welcome">
+            <mat-icon>settings</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item class="noevents" (click)="setupApiUrlAndCreds()">
+              <mat-icon>settings_remote</mat-icon>
+              Configure API endpoint
+            </button>
+          </mat-menu>
+      </div>
+
+      <mat-card-title>Welcome to Datasafe!</mat-card-title>
+      <mat-card-subtitle class="align-center">Client-side encrypted storage</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field>
+        <input name="username" matInput placeholder="Enter your username" type="text" [formControl]="userNameControl" [errorStateMatcher]="fieldMatcher">
+        <mat-error *ngIf="userNameControl.hasError('required')">
+          Username is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <br/>
+      <mat-form-field>
+        <input name="password" matInput placeholder="Enter your password" [type]="hide ? 'password' : 'text'" [formControl]="passwordControl" [errorStateMatcher]="fieldMatcher">
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="passwordControl.hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="handleLoginClick()">Login</button>
+      <button mat-button class="align-right" (click)="handleRegisterClick()">Register</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+

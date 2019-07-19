@@ -7,6 +7,10 @@ import de.adorsys.datasafe.rest.impl.security.SecurityProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,12 +30,18 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Api(description = "Initial authentication operations")
 public class AuthenticateController {
 
     private final SecurityProperties securityProperties;
     private final AuthenticationManager authenticationManager;
 
     @PostMapping(SecurityConstants.AUTH_LOGIN_URL)
+    @ApiOperation("Get token for given username and password")
+    @ApiResponses(value={
+            @ApiResponse(code=200, message="Successfully logged in"),
+            @ApiResponse(code=401, message="Bad credentials")
+    })
     public void authenticate(@RequestBody UserDTO credentialsDTO, HttpServletResponse response)  {
         String username = credentialsDTO.getUserName();
         String password = credentialsDTO.getPassword();

@@ -2,6 +2,25 @@ import { Component, OnInit } from '@angular/core';
 import {ErrorStateMatcher} from "@angular/material";
 import {FormControl, FormGroupDirective, NgForm} from "@angular/forms";
 
+export class Env {
+
+    // Read environment variables from browser window
+    private static browserWindow = window || {};
+    private static browserWindowEnv = Env.browserWindow['__env'] || {};
+
+    static get(key): string {
+        if (this.browserWindowEnv.hasOwnProperty(key)) {
+            return window['__env'][key];
+        }
+
+        return null;
+    }
+
+    static apiUrl = Env.get('apiUrl');
+    static apiUsername = Env.get('apiUsername');
+    static apiPassword = Env.get('apiPassword');
+}
+
 export class FieldErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
         const isSubmitted = form && form.submitted;
