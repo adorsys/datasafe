@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.privatestore.impl.actions;
 
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
-import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -14,7 +13,7 @@ import lombok.Data;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 /**
  * Default encrypted resource resolver that delegates the task of encrypting/decrypting path to
@@ -46,20 +45,22 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
     }
 
     @Override
-    public Stream<AbsoluteLocation<PrivateResource>> decryptAndResolvePath(
-            UserIDAuth auth, Stream<PrivateResource> resources, PrivateResource root) {
-        Stream<Uri> decryptedPaths = pathEncryption.decrypt(auth, resources.map(it -> computeEncryptedPart(root, it)));
+    public Function<PrivateResource, AbsoluteLocation<PrivateResource>> decryptingResolver(
+            UserIDAuth auth, PrivateResource root) {
+        Function<Uri, Uri> decryptor = pathEncryption.decryptor(auth);
 
-        return decryptedPaths.map(decryptedPath ->
-            new AbsoluteLocation<>(
-                    resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(encryptedPath, decryptedPath)
-            )
-        );
+        return resource -> {
+            Uri encryptedPart = computeEncryptedPart(root, resource);
+            Uri decryptedPart = decryptor.apply(encryptedPart);
+            return new AbsoluteLocation<>(
+                    resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(encryptedPart, decryptedPart)
+            );
+        };
     }
 
     private Uri computeEncryptedPart(PrivateResource root, PrivateResource resource) {
         Uri relative = relativize(root.location(), resource.location());
-        Uri encryptedPath = computeEncryptedPath(root, relative);
+        return computeEncryptedPath(root, relative);
     }
 
     private PrivateResource encrypt(UserIDAuth auth, PrivateResource resource) {
