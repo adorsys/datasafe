@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.privatestore.impl.actions;
 
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
+import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -9,9 +10,11 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import lombok.Data;
 
 import javax.inject.Inject;
 import java.net.URI;
+import java.util.stream.Stream;
 
 /**
  * Default encrypted resource resolver that delegates the task of encrypting/decrypting path to
@@ -43,15 +46,20 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
     }
 
     @Override
-    public AbsoluteLocation<PrivateResource> decryptAndResolvePath(
-        UserIDAuth auth, PrivateResource resource, PrivateResource root) {
+    public Stream<AbsoluteLocation<PrivateResource>> decryptAndResolvePath(
+            UserIDAuth auth, Stream<PrivateResource> resources, PrivateResource root) {
+        Stream<Uri> decryptedPaths = pathEncryption.decrypt(auth, resources.map(it -> computeEncryptedPart(root, it)));
+
+        return decryptedPaths.map(decryptedPath ->
+            new AbsoluteLocation<>(
+                    resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(encryptedPath, decryptedPath)
+            )
+        );
+    }
+
+    private Uri computeEncryptedPart(PrivateResource root, PrivateResource resource) {
         Uri relative = relativize(root.location(), resource.location());
         Uri encryptedPath = computeEncryptedPath(root, relative);
-        Uri decryptedPath = pathEncryption.decrypt(auth, encryptedPath);
-
-        return new AbsoluteLocation<>(
-            resolver.resolveRelativeToPrivate(auth, resource).getResource().resolve(encryptedPath, decryptedPath)
-        );
     }
 
     private PrivateResource encrypt(UserIDAuth auth, PrivateResource resource) {
@@ -95,5 +103,10 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
 
         String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
         return new Uri(URI.create(relative));
+    }
+
+    @Data
+    private static class ResourceWith {
+        private final PrivateResource root;
     }
 }

@@ -4,6 +4,8 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
+import java.util.stream.Stream;
+
 /**
  * Resolves logical resource location into encrypted absolute location and vice-versa. For example, when
  * user requests some/path/to/file this resolver will provide physical location of this resource by
@@ -27,10 +29,10 @@ public interface EncryptedResourceResolver {
      * s3://bucket/user/privatespace/encryptedSome/encryptedPath/encryptedTo/encryptedFile transforms to some/path/to/file
      * encryptedSome/encryptedPath/encryptedTo/encryptedFile transforms to some/path/to/file
      * @param auth User authorization
-     * @param resource Relative or absolute resource location
+     * @param resources Relative or absolute resource location list within root
      * @return Encrypted relative resource location
      */
-    AbsoluteLocation<PrivateResource> decryptAndResolvePath(
-            UserIDAuth auth, PrivateResource resource, PrivateResource root
+    Stream<AbsoluteLocation<PrivateResource>> decryptAndResolvePath(
+            UserIDAuth auth, Stream<PrivateResource> resources, PrivateResource root
     );
 }
