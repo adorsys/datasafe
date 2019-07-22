@@ -162,6 +162,36 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
     @Override
+    @SneakyThrows
+    public void storeDocumentStream(UserIDAuth userIDAuth, DSDocumentStream dsDocumentStream) {
+        try (OutputStream os = customlyBuiltDatasafeServices
+                .privateService()
+                .write(WriteRequest.forDefaultPrivate(
+                        userIDAuth,
+                        dsDocumentStream.getDocumentFQN().getDatasafePath()))) {
+            ByteStreams.copy(dsDocumentStream.getDocumentStream(), os);
+        }
+    }
+
+    @Override
+    public OutputStream storeDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
+        return customlyBuiltDatasafeServices
+                .privateService()
+                .write(WriteRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()));
+    }
+
+    @Override
+    @SneakyThrows
+    public DSDocumentStream readDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
+        return new DSDocumentStream(
+                documentFQN,
+                customlyBuiltDatasafeServices
+                        .privateService()
+                        .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()))
+        );
+    }
+
+    @Override
     public void deleteDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
         PrivateResource resource = BasePrivateResource.forPrivate(documentFQN.getDatasafePath());
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
