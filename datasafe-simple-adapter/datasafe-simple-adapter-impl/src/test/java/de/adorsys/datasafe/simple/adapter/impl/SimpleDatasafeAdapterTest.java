@@ -5,7 +5,6 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
-import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
@@ -29,11 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class SimpleDatasafeAdapterTest extends WithStorageProvider {
@@ -41,42 +36,8 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     UserIDAuth userIDAuth;
     DFSCredentials dfsCredentials;
 
-
-    private void myinit(WithStorageProvider.StorageDescriptor descriptor) {
-        if (descriptor == null) {
-            dfsCredentials = null;
-            return;
-        }
-
-        switch (descriptor.getName()) {
-            case FILESYSTEM: {
-                log.info("uri:" + descriptor.getRootBucket());
-                dfsCredentials = FilesystemDFSCredentials.builder().root(descriptor.getRootBucket()).build();
-                break;
-
-            }
-            case MINIO:
-            case CEPH:
-            case AMAZON: {
-                descriptor.getStorageService().get();
-                log.info("uri       :" + descriptor.getLocation());
-                log.info("accesskey :" + descriptor.getAccessKey());
-                log.info("secretkey :" + descriptor.getSecretKey());
-                log.info("region    :" + descriptor.getRegion());
-                log.info("rootbucket:" + descriptor.getRootBucket());
-                log.info("mapped uri:" + descriptor.getMappedUrl());
-                dfsCredentials = AmazonS3DFSCredentials.builder()
-                        .accessKey(descriptor.getAccessKey())
-                        .secretKey(descriptor.getSecretKey())
-                        .region(descriptor.getRegion())
-                        .rootBucket(descriptor.getRootBucket())
-                        .url(descriptor.getMappedUrl())
-                        .build();
-                break;
-            }
-            default:
-                throw new SimpleAdapterException("missing switch for " + descriptor.getName());
-        }
+    void myinit(StorageDescriptor descriptor) {
+        dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
     }
 
     @ValueSource
@@ -272,10 +233,10 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         simpleDatasafeService.storeDocument(userIDAuth2, document);
 
         // tiny checks, that the password is important
-        UserIDAuth wrongPasswordUser1 = new UserIDAuth(userIDAuth.getUserID(),new ReadKeyPassword(UUID.randomUUID().toString()));
+        UserIDAuth wrongPasswordUser1 = new UserIDAuth(userIDAuth.getUserID(), new ReadKeyPassword(UUID.randomUUID().toString()));
         assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser1, new DocumentFQN(path)));
 
-        UserIDAuth wrongPasswordUser2 = new UserIDAuth(userIDAuth2.getUserID(),new ReadKeyPassword(UUID.randomUUID().toString()));
+        UserIDAuth wrongPasswordUser2 = new UserIDAuth(userIDAuth2.getUserID(), new ReadKeyPassword(UUID.randomUUID().toString()));
         assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser2, new DocumentFQN(path)));
 
         // now read the docs with the correct password
@@ -291,13 +252,13 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         // because access to keystore throws exception
         if (descriptor.getStorageService().get() instanceof FileSystemStorageService) {
             assertThrows(
-                NoSuchFileException.class,
-                () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
+                    NoSuchFileException.class,
+                    () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
             );
         } else {
             assertThrows(
-                AmazonS3Exception.class,
-                () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
+                    AmazonS3Exception.class,
+                    () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
             );
         }
 
