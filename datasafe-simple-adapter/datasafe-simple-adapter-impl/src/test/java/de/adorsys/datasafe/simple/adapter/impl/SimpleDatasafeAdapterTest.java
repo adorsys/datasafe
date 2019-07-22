@@ -6,25 +6,21 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
-import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
-import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
-import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
-import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
-import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
-import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
-import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
-import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
+import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.nio.file.NoSuchFileException;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
@@ -232,6 +228,32 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
         listFound = simpleDatasafeService.list(userIDAuth, root, ListRecursiveFlag.TRUE);
         show("full list recursive after delete one file", listFound);
         assertEquals(14, listFound.size());
+    }
+
+    @SneakyThrows
+    @ParameterizedTest
+    @MethodSource("storages")
+    public void writeAndReadFilesAsStream(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
+        mystart();
+
+        DocumentFQN path = new DocumentFQN("file.txt");
+        byte[] bytes = "Bytes".getBytes();
+        simpleDatasafeService.storeDocumentStream(
+                userIDAuth,
+                new DSDocumentStream(path, new ByteArrayInputStream(bytes))
+        );
+
+        DSDocumentStream ds = simpleDatasafeService.readDocumentStream(userIDAuth, path);
+        assertArrayEquals(Streams.readAll(ds.getDocumentStream()), bytes);
+
+        byte[] otherBytes = "otherBytes".getBytes();
+        try (OutputStream os = simpleDatasafeService.storeDocumentStream(userIDAuth, path)) {
+            os.write(otherBytes);
+        }
+
+        DSDocumentStream otherDs = simpleDatasafeService.readDocumentStream(userIDAuth, path);
+        assertArrayEquals(Streams.readAll(otherDs.getDocumentStream()), otherBytes);
     }
 
     @ParameterizedTest

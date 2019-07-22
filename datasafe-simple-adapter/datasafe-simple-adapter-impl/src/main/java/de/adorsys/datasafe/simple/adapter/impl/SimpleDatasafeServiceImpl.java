@@ -153,7 +153,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     @SneakyThrows
     @Override
     public DSDocument readDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        DocumentContent documentContent = null;
+        DocumentContent documentContent;
         try (InputStream is = customlyBuiltDatasafeServices.privateService()
                 .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()))) {
             documentContent = new DocumentContent(ByteStreams.toByteArray(is));
