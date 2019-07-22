@@ -41,5 +41,8 @@ public interface SimpleDatasafeService {
     void deleteFolder(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN);
 
     List<DocumentFQN> list(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN, ListRecursiveFlag recursiveFlag);
+
+    // deletes all users and their files from storage
+    void cleanupDb();
 }
 
