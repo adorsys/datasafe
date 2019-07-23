@@ -5,6 +5,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 
+import java.io.OutputStream;
 import java.util.List;
 
 public interface SimpleDatasafeService {
@@ -25,6 +26,14 @@ public interface SimpleDatasafeService {
 
     DSDocument readDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN);
 
+    // Preferred version of store document
+    OutputStream storeDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN);
+
+    DSDocumentStream readDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN);
+
+    // Old interface compatible store document
+    void storeDocumentStream(UserIDAuth userIDAuth, DSDocumentStream dsDocumentStream);
+
     void deleteDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN);
 
     boolean documentExists(UserIDAuth userIDAuth, DocumentFQN documentFQN);
@@ -32,5 +41,8 @@ public interface SimpleDatasafeService {
     void deleteFolder(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN);
 
     List<DocumentFQN> list(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN, ListRecursiveFlag recursiveFlag);
+
+    // deletes all users and their files from storage
+    void cleanupDb();
 }
 

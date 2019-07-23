@@ -343,7 +343,7 @@ assertThat(savedOnPC).isAfter(savedOnMobile);
 ## Datasafe on versioned storage
 If you have storage for user files on **versioned S3 bucket** and want to get object version when you write
 object or to read some older version encrypted object, you can follow this example of how to do that:
-[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L135-L169)
+[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L137-L171)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -381,7 +381,7 @@ assertThat(defaultDatasafeServices.privateService().read(
 ```
 Removing old file version can be done by [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#non-current-days-calculations)
 or manually, using this snippet:
-[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L185-L212)
+[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L187-L214)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -425,7 +425,7 @@ and it works by putting the custom implementation of a class to be overridden in
 During runtime, when accessing desired functionality, the library will look into OverridesRegistry for
 custom class implementation and use it if present. This one has the advantage of not requiring recompilation of
 Datasafe library, but has a limitation of working on static dependency graph - you can't rebuild it.
-[Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L28-L50)
+[Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L29-L51)
 ```groovy
 // This shows how to override path encryption service, in particular we are going to disable it
 OverridesRegistry registry = new BaseOverridesRegistry();
