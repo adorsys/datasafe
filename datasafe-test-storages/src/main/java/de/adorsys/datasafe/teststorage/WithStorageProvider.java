@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
+import com.sun.tools.corba.se.idl.StringGen;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
@@ -31,8 +32,7 @@ import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -65,11 +65,15 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String cephUrl = "http://0.0.0.0"; // not localhost!
     private static String cephMappedUrl;
 
-    private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
-    private static String amazonSecretAccessKey = readPropOrEnv("AWS_SECRET_KEY");
+    private static String amazonAccessKeyIDName = "AWS_ACCESS_KEY_ID";
+    private static String amazonSecretAccessKeyName = "AWS_SECRET_ACCESS_KEY";
+    private static String amazonAccessKeyID = readPropOrEnv(amazonAccessKeyIDName);
+    private static String amazonSecretAccessKey = readPropOrEnv(amazonSecretAccessKeyName);
     private static String amazonRegion = readPropOrEnv("AWS_REGION", "eu-central-1");
     private static String amazonBucket = readPropOrEnv("AWS_BUCKET", "adorsys-docusafe");
     private static String amazonMappedUrl;
+
+    private static String amazons3BucketCount = readPropOrEnv("AWS_S3_BUCKET_COUNT");
 
     private static GenericContainer minioContainer;
     private static GenericContainer cephContainer;
@@ -254,6 +258,43 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 amazonBucket + "/" + bucketPath
         );
     }
+
+    protected static List<StorageDescriptor> getS3Bucket() {
+        if(amazons3BucketCount == null){
+            return null;
+        }
+        List<StorageDescriptor> storageDescriptorList = new ArrayList<>();
+        Integer s3BucketCount = Integer.parseInt(amazons3BucketCount);
+
+        if(s3BucketCount > 1){
+            for(int i=1; i <= s3BucketCount; i++){
+                storageDescriptorList.add(i == 1? getStorageDescriptor(""): getStorageDescriptor(""+(i-1)));
+            }
+        }else{
+            storageDescriptorList.add(getStorageDescriptor(""));
+        }
+        return storageDescriptorList;
+    }
+
+    private static StorageDescriptor getStorageDescriptor(String bucketNo) {
+        if(null == readPropOrEnv(amazonAccessKeyIDName+bucketNo)){
+            return null;
+        }
+
+        return new StorageDescriptor(
+                StorageDescriptorName.AMAZON,
+                () -> {
+                    amazonSotrage.get();
+                    return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
+                },
+                new Uri("s3://" + amazonBucket + "/" + bucketPath + "/"),
+                readPropOrEnv(amazonAccessKeyIDName+bucketNo),
+                readPropOrEnv(amazonSecretAccessKeyName+bucketNo),
+                amazonRegion,
+                amazonBucket + "/" + bucketPath
+        );
+    }
+
 
     private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
         amazonS3.listObjects(bucket, prefix)

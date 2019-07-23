@@ -78,9 +78,18 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     @ValueSource
     protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
-                Collections.singleton(minio()),
+                Collections.singleton(s3()),
             THREAD_COUNT,
             FILE_SIZE_M_BYTES
+        ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
+    }
+
+    @ValueSource
+    protected static Stream<Arguments> multipleActionsOnSoragesAndThreadsAndFilesizes() {
+        return Sets.cartesianProduct(
+                Collections.singleton(getS3Bucket()),
+                THREAD_COUNT,
+                FILE_SIZE_M_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
     }
 
