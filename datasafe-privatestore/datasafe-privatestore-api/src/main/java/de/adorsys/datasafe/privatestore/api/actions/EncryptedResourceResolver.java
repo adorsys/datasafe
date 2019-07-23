@@ -30,6 +30,7 @@ public interface EncryptedResourceResolver {
      * encryptedSome/encryptedPath/encryptedTo/encryptedFile transforms to some/path/to/file
      * @param auth User authorization
      * @return Function that allows to decrypt and resolve resource path against {@code root}
+     * Function: Resource within private space (unencrypted) -> Absolute encrypted resource location
      */
     Function<PrivateResource, AbsoluteLocation<PrivateResource>> decryptingResolver(
             UserIDAuth auth, PrivateResource root

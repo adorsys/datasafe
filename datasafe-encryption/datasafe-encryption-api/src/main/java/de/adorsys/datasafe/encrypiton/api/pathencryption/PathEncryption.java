@@ -21,8 +21,9 @@ public interface PathEncryption {
     /**
      * Decrypts relative URL using path encryption key.
      * @param forUser Credentials to access path encryption key
-     * @return Function to decrypt path with cached (locally) encryption key, that when applied on encrypted
-     * path returns decrypted path.
+     * @return Function to decrypt path with cached (locally as lambda capture) encryption key,
+     * that when applied on encrypted path returns decrypted path.
+     * Function: Encrypted URI -> Decrypted URI
      */
     Function<Uri, Uri> decryptor(UserIDAuth forUser);
 }
