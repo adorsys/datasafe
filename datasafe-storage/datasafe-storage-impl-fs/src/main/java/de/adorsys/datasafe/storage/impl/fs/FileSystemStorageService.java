@@ -47,9 +47,10 @@ public class FileSystemStorageService implements StorageService {
             return Stream.empty();
         }
 
+        boolean shouldReturnDir = shouldReturnDir(path);
         return Files.walk(filePath)
-                .filter(it -> !it.startsWith("."))
-                .filter(it -> !it.toFile().isDirectory())
+                // filter directories out based on setting
+                .filter(it -> (shouldReturnDir && allowableDir(it)) || !it.toFile().isDirectory())
                 .map(it -> new AbsoluteLocation<>(
                         new BaseResolvedResource(
                                 // We store path in uri-encoded form, so toUri calls will fail
@@ -59,6 +60,19 @@ public class FileSystemStorageService implements StorageService {
                                 Instant.ofEpochMilli(it.toFile().lastModified()))
                         )
                 );
+    }
+
+    private boolean allowableDir(Path it) {
+        String name = it.getFileName().toString();
+        return !".".equals(name)
+                && !"..".equals(name)
+                // prevents root folder to appear
+                && !(it.toString() + "/").equals(dir.getRawPath());
+    }
+
+    private boolean shouldReturnDir(AbsoluteLocation path) {
+        return path instanceof AbsoluteLocationWithCapability
+                && ((AbsoluteLocationWithCapability) path).getCapability().equals(StorageCapability.LIST_RETURNS_DIR);
     }
 
     @SneakyThrows
