@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.function.Function;
 
 /**
  * Default latest link service that stores latest resource links within
@@ -64,21 +65,24 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
     }
 
     @Override
-    public AbsoluteLocation<PrivateResource> readLinkAndDecrypt(
-            UserIDAuth owner,
-            AbsoluteLocation<PrivateResource> latestLink) {
+    public Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptingReader(
+            UserIDAuth owner) {
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
-
-        String relativeToPrivateUri = readLink(owner, latestLink);
-
         PrivateResource userPrivate = privateProfile.getPrivateStorage().getResource();
 
-        PrivateResource resource = privateProfile.getPrivateStorage().getResource().resolve(
-                new Uri(URI.create(relativeToPrivateUri)),
-                new Uri("")
-        );
+        Function<PrivateResource, AbsoluteLocation<PrivateResource>> decryptingResolver =
+                resolver.decryptingResolver(owner, userPrivate);
 
-        return resolver.decryptAndResolvePath(owner, resource, userPrivate);
+        return latestLink -> {
+            String relativeToPrivateUri = readLink(owner, latestLink);
+
+            PrivateResource resource = privateProfile.getPrivateStorage().getResource().resolve(
+                    new Uri(URI.create(relativeToPrivateUri)),
+                    new Uri("")
+            );
+
+            return decryptingResolver.apply(resource);
+        };
     }
 
     @SneakyThrows

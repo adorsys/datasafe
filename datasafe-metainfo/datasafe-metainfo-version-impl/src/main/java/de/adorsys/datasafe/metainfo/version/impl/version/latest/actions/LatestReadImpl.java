@@ -48,9 +48,10 @@ public class LatestReadImpl<V extends LatestDFSVersion> implements VersionedRead
                 );
 
         return readFromPrivate.read(request.toBuilder()
-                .location(latestVersionLinkLocator.readLinkAndDecrypt(
-                        request.getOwner(),
-                        latestSnapshotLink).getResource()
+                .location(
+                        latestVersionLinkLocator
+                                .linkDecryptingReader(request.getOwner())
+                                .apply(latestSnapshotLink).getResource()
                 )
                 .build()
         );
