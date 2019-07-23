@@ -54,8 +54,8 @@ class ListPrivateImplTest extends BaseMockitoTest {
         when(resolvedResource.withResource(resource.getResource())).thenReturn(resolvedResource);
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.forDefaultPrivate(auth, PATH);
         when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
-        when(resolver.decryptAndResolvePath(request.getOwner(), resource.getResource(), resource.getResource()))
-                .thenReturn(resource);
+        when(resolver.decryptingResolver(request.getOwner(), resource.getResource()))
+                .thenReturn(path -> resource);
         when(listService.list(resource)).thenReturn(Stream.of(absoluteResolvedResource));
 
         assertThat(privateService.list(request)).hasSize(1);

@@ -10,6 +10,7 @@ import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.util.function.Function;
 
 /**
  * Default path encryption service that uses {@link PrivateKeyService#pathEncryptionSecretKey(UserIDAuth)} as
@@ -44,10 +45,12 @@ public class PathEncryptionImpl implements PathEncryption {
      * Simply pipes {@link SymmetricPathEncryptionService} and {@link PrivateKeyService} to decrypt URI
      */
     @Override
-    public Uri decrypt(UserIDAuth forUser, Uri path) {
+    public Function<Uri, Uri> decryptor(UserIDAuth forUser) {
         SecretKeyIDWithKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);
-        Uri decrypt = bucketPathEncryptionService.decrypt(keySpec.getSecretKey(), path);
-        log.debug("decrypted path {} for user {} path {}", decrypt, forUser.getUserID(), path);
-        return decrypt;
+        return encryptedPath -> {
+            Uri decrypt = bucketPathEncryptionService.decrypt(keySpec.getSecretKey(), encryptedPath);
+            log.debug("decrypted path {} for user {} path {}", decrypt, forUser.getUserID(), encryptedPath);
+            return decrypt;
+        };
     }
 }

@@ -11,6 +11,7 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 
 import javax.inject.Inject;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -36,20 +37,13 @@ public class ListPrivateImpl implements ListPrivate {
         AbsoluteLocation<PrivateResource> listDir =
                 resolver.encryptAndResolvePath(request.getOwner(), request.getLocation());
 
-        return listService
-                .list(listDir)
-                .map(it -> decryptPath(request.getOwner(), it, listDir.getResource()));
-    }
-
-    private AbsoluteLocation<ResolvedResource> decryptPath(
-            UserIDAuth owner, AbsoluteLocation<ResolvedResource> resource, PrivateResource root) {
-
-        AbsoluteLocation<PrivateResource> decrypted = resolver.decryptAndResolvePath(
-                owner,
-                resource.getResource().asPrivate(),
-                root
+        Function<PrivateResource, AbsoluteLocation<PrivateResource>> decryptingResolver = resolver.decryptingResolver(
+                request.getOwner(), listDir.getResource()
         );
 
-        return new AbsoluteLocation<>(resource.getResource().withResource(decrypted.getResource()));
+        return listService.list(listDir).map(it -> {
+            AbsoluteLocation<PrivateResource> decrypted = decryptingResolver.apply(it.getResource().asPrivate());
+            return new AbsoluteLocation<>(it.getResource().withResource(decrypted.getResource()));
+        });
     }
 }

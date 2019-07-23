@@ -6,6 +6,8 @@ import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.resource.Uri;
 
+import java.util.function.Function;
+
 /**
  * This module is responsible for providing noop pathencryption of document.
  */
@@ -29,8 +31,8 @@ abstract class CustomPathEncryptionModule {
 
             // no path decryption
             @Override
-            public Uri decrypt(UserIDAuth forUser, Uri path) {
-                return path;
+            public Function<Uri, Uri> decryptor(UserIDAuth forUser) {
+                return Function.identity();
             }
         };
     }
