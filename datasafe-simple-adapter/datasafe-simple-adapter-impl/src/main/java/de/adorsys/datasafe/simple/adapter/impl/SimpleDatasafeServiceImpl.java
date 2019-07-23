@@ -26,8 +26,10 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocationWithCapability;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.StorageCapability;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +47,7 @@ import java.util.stream.Collectors;
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private static final String AMAZON_URL = "https://s3.amazonaws.com";
 
+    private URI systemRoot;
     private StorageService storageService;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
@@ -67,7 +70,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
             log.info(lsf.toString());
-            URI systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
+            this.systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
             storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
@@ -104,7 +107,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                 amazons3.createBucket(amazonS3DFSCredentials.getContainer());
             }
             storageService = new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE);
-            String systemRoot = S3_PREFIX + amazonS3DFSCredentials.getRootBucket();
+            this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .storage(getStorageService())
@@ -153,12 +156,42 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     @SneakyThrows
     @Override
     public DSDocument readDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        DocumentContent documentContent = null;
+        DocumentContent documentContent;
         try (InputStream is = customlyBuiltDatasafeServices.privateService()
                 .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()))) {
             documentContent = new DocumentContent(ByteStreams.toByteArray(is));
         }
         return new DSDocument(documentFQN, documentContent);
+    }
+
+    @Override
+    @SneakyThrows
+    public void storeDocumentStream(UserIDAuth userIDAuth, DSDocumentStream dsDocumentStream) {
+        try (OutputStream os = customlyBuiltDatasafeServices
+                .privateService()
+                .write(WriteRequest.forDefaultPrivate(
+                        userIDAuth,
+                        dsDocumentStream.getDocumentFQN().getDatasafePath()))) {
+            ByteStreams.copy(dsDocumentStream.getDocumentStream(), os);
+        }
+    }
+
+    @Override
+    public OutputStream storeDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
+        return customlyBuiltDatasafeServices
+                .privateService()
+                .write(WriteRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()));
+    }
+
+    @Override
+    @SneakyThrows
+    public DSDocumentStream readDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
+        return new DSDocumentStream(
+                documentFQN,
+                customlyBuiltDatasafeServices
+                        .privateService()
+                        .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()))
+        );
     }
 
     @Override
@@ -195,4 +228,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         return l.stream().filter(el -> StringUtils.countMatches(el.getDatasafePath(), "/") == numberOfSlashesExpected).collect(Collectors.toList());
     }
 
+    @Override
+    public void cleanupDb() {
+        storageService
+                .list(new AbsoluteLocationWithCapability<>(
+                        BasePrivateResource.forPrivate(systemRoot), StorageCapability.LIST_RETURNS_DIR)
+                ).forEach(storageService::remove);
+    }
 }
