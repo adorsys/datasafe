@@ -9,7 +9,6 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
-import lombok.Data;
 
 import javax.inject.Inject;
 import java.net.URI;
@@ -104,10 +103,5 @@ public class EncryptedResourceResolverImpl implements EncryptedResourceResolver 
 
         String relative = resourceString.substring(resourceString.indexOf(rootString) + rootString.length());
         return new Uri(URI.create(relative));
-    }
-
-    @Data
-    private static class ResourceWith {
-        private final PrivateResource root;
     }
 }
