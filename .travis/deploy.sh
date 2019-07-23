@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-echo ${env.GPG_SECRET_KEY} | base64 --decode | ${env.GPG_EXECUTABLE} --import
-echo ${env.GPG_OWNERTRUST} | base64 --decode | ${env.GPG_EXECUTABLE} --import-ownertrust
+echo "$GPG_SECRET_KEY" | base64 --decode | "$GPG_EXECUTABLE" --import
+echo "$GPG_OWNERTRUST" | base64 --decode | "$GPG_EXECUTABLE" --import-ownertrust
 
 set -e
 
