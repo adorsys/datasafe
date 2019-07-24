@@ -412,7 +412,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
      * @param name Property/environment variable name
      * @return Property value
      */
-    private static String readPropOrEnv(String name) {
+    protected static String readPropOrEnv(String name) {
         return readPropOrEnv(name, null);
     }
 

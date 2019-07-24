@@ -4,14 +4,14 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
-import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.Fixture;
-import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.Operation;
-import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.OperationResult;
-import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.OperationType;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.*;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.OperationExecutor;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.OperationQueue;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.StatisticService;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
+import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
@@ -93,6 +93,80 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
     }
 
+    protected void executeTest(Fixture fixture, List<StorageDescriptor> listDescriptor, int filesizeInMb, int threadCount) {
+        List<Operation> createUsersOperation = fixture.getUserPrivateSpace().keySet().stream()
+                .map(it -> Operation.builder().type(OperationType.CREATE_USER).userId(it).build())
+                .collect(Collectors.toList());
+
+        String fromEnv = System.getProperty("AWS_S3_BUCKET_COUNT", System.getenv("AWS_S3_BUCKET_COUNT"));
+        String amazons3BucketCount = null != fromEnv ? fromEnv : null;
+
+        if(amazons3BucketCount != null){
+            Integer s3BucketCount = Integer.parseInt(amazons3BucketCount);
+
+            for(Operation operation : createUsersOperation){
+                String[] userName = operation.getUserId().split("-");
+                int userId = Integer.parseInt(userName[1]);
+                int s3BucketPosition = 0;
+                if(userId < s3BucketCount){
+                    s3BucketPosition = userId;
+                }else{
+                    s3BucketPosition = getS3BucketPosition(userId, s3BucketCount);
+                }
+
+                StorageDescriptor descriptor = listDescriptor.get(s3BucketPosition);
+                DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
+                        .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
+                        .storage(descriptor.getStorageService().get())
+                        .build();
+                StatisticService statisticService = new StatisticService();
+
+                OperationQueue queue = new OperationQueue(fixture);
+                OperationExecutor executor = new OperationExecutor(
+                        filesizeInMb * MEGABYTE_TO_BYTE,
+                        datasafeServices.userProfile(),
+                        datasafeServices.privateService(),
+                        datasafeServices.inboxService(),
+                        new ConcurrentHashMap<>(),
+                        statisticService
+                );
+                executor.execute(operation);
+
+                List<Throwable> exceptions = new CopyOnWriteArrayList<>();
+
+                //boolean terminatedOk = runFixtureInMultipleExecutions(fixture, threadCount, queue, executor, exceptions);
+
+                String userId_ = operation.getUserId();
+                Map<String, Map<String, ContentId>> userPrivateSpace = new HashMap<>();
+                Map<String, ContentId> userPrivateSpaceMap = fixture.getUserPrivateSpace().get(userId_);
+                userPrivateSpace.put(userId_, userPrivateSpaceMap);
+
+                Map<String, Map<String, ContentId>> userPublicSpace = new HashMap<>();
+                Map<String, ContentId> userPublicSpaceMap = fixture.getUserPublicSpace().get(userId_);
+                userPublicSpace.put(userId_, userPublicSpaceMap);
+
+                List<Operation> operations = new ArrayList<>();
+                operations.add(operation);
+                Fixture fixture1 = new Fixture(operations, userPrivateSpace, userPublicSpace);
+                queue = new OperationQueue(fixture1);
+                boolean executedOk = runMultipleExecutions(userPrivateSpace, userPublicSpace, threadCount, queue, executor, exceptions);
+
+                assertThat(exceptions).isEmpty();
+                assertThat(executedOk).isTrue();
+
+                log.info("==== Statistics for {} with {} threads and {} Mb filesize: ====",
+                        descriptor.getName(),
+                        threadCount,
+                        filesizeInMb
+                );
+
+                statisticService.generateReport().forEach((name, percentiles) ->
+                        log.info("{} : {}", name, percentiles)
+                );
+            }
+        }
+    }
+
     protected void executeTest(
             Fixture fixture,
             StorageDescriptorName storageName,
@@ -134,6 +208,39 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     @SneakyThrows
+    private boolean runMultipleExecutions(
+            Map<String, Map<String, ContentId>> userPrivateSpace,
+            Map<String, Map<String, ContentId>> userPublicSpace,
+            int threadCount,
+            OperationQueue queue,
+            OperationExecutor executor,
+            List<Throwable> exceptions) {
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        List<String> executionIds = IntStream.range(0, threadCount).boxed()
+                .map(it -> UUID.randomUUID().toString())
+                .collect(Collectors.toList());
+        Set<String> blockedExecutionIds = Collections.synchronizedSet(new HashSet<>());
+
+        do {
+            executeNextAction(queue, executor, executorService, executionIds, blockedExecutionIds, exceptions);
+        } while (!executionIds.isEmpty() && exceptions.isEmpty());
+
+        executorService.shutdown();
+        boolean status = executorService.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
+        if (!status) {
+            return false;
+        }
+
+        executionIds.forEach(it -> executor.validateUsersStorageContent(
+                it,
+                userPrivateSpace,
+                userPublicSpace)
+        );
+
+        return true;
+    }
+
+    @SneakyThrows
     private boolean runFixtureInMultipleExecutions(
             Fixture fixture,
             int threadCount,
@@ -163,6 +270,14 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         );
 
         return true;
+    }
+
+    private int getS3BucketPosition(int userId, Integer s3BucketCount) {
+        do{
+            userId -= s3BucketCount;
+        }while (s3BucketCount <= userId);
+
+        return userId;
     }
 
     private void createUsers(Fixture fixture, OperationExecutor executor) {
