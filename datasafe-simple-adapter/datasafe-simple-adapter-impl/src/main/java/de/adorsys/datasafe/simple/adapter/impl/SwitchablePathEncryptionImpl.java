@@ -8,6 +8,7 @@ import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.util.function.Function;
 
 @Slf4j
 public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
@@ -30,11 +31,11 @@ public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
     }
 
     @Override
-    public Uri decrypt(UserIDAuth forUser, Uri path) {
+    public Function<Uri, Uri> decryptor(UserIDAuth forUser) {
         if (withPathEncryption) {
-            return super.decrypt(forUser, path);
+            return super.decryptor(forUser);
         }
-        return path;
+        return Function.identity();
     }
 
     public static boolean checkIsPathEncryptionToUse() {

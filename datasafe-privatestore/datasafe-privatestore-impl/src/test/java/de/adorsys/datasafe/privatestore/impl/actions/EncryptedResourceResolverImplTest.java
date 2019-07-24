@@ -84,12 +84,14 @@ class EncryptedResourceResolverImplTest extends BaseMockitoTest {
 
     @Test
     void decryptAndResolvePathAbsolute() {
-        when(pathEncryption.decrypt(auth, new Uri(ENCRYPTED))).thenReturn(new Uri(DECRYPTED));
+        when(pathEncryption.decryptor(auth)).thenReturn(
+                path -> path.asString().equals(ENCRYPTED) ? new Uri(DECRYPTED) : null
+        );
         when(resourceResolver.resolveRelativeToPrivate(auth, absoluteEncrypted))
                 .thenReturn(new AbsoluteLocation<>(absolute));
 
         AbsoluteLocation<PrivateResource> resource =
-                resolver.decryptAndResolvePath(auth, absoluteEncrypted, root);
+                resolver.decryptingResolver(auth, root).apply(absoluteEncrypted);
 
         assertThat(resource.location()).extracting(Uri::toASCIIString).isEqualTo("s3://root/bucket/" + ENCRYPTED);
         assertThat(resource.getResource().decryptedPath()).extracting(Uri::toASCIIString).isEqualTo(DECRYPTED);
@@ -98,12 +100,14 @@ class EncryptedResourceResolverImplTest extends BaseMockitoTest {
 
     @Test
     void decryptAndResolvePathRelative() {
-        when(pathEncryption.decrypt(auth, new Uri("path/" + ENCRYPTED))).thenReturn(new Uri(DECRYPTED));
+        when(pathEncryption.decryptor(auth)).thenReturn(
+                path -> path.asString().equals("path/" + ENCRYPTED) ? new Uri(DECRYPTED) : null
+        );
         when(resourceResolver.resolveRelativeToPrivate(auth, relativeEncrypted))
                 .thenReturn(new AbsoluteLocation<>(absolute));
 
         AbsoluteLocation<PrivateResource> resource =
-                resolver.decryptAndResolvePath(auth, relativeEncrypted, root);
+                resolver.decryptingResolver(auth, root).apply(relativeEncrypted);
 
         assertThat(resource.location()).extracting(Uri::toASCIIString).isEqualTo("s3://root/bucket/path/" + ENCRYPTED);
         assertThat(resource.getResource().decryptedPath()).extracting(Uri::toASCIIString).isEqualTo(DECRYPTED);
