@@ -3,8 +3,6 @@ package de.adorsys.datasafe.storage.impl.db;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -23,7 +21,6 @@ import java.sql.Connection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 
 /**
  * This class acts as higher-level DataSource cache.
@@ -121,14 +118,14 @@ public class DatabaseConnectionRegistry {
         }
 
         return providedCredentials.entrySet().stream()
-                .filter(compareDatabaseURI(uri))
+                .filter(it -> uri.toASCIIString().startsWith(it.getKey()))
                 .findFirst()
                 .orElseThrow(
                         () -> new IllegalArgumentException("There is no associated database for this credentials")
                 ).getValue();
     }
 
-    private Predicate<Map.Entry<String, DatabaseCredentials>> compareDatabaseURI(URI uri) {
+   /* private Predicate<Map.Entry<String, DatabaseCredentials>> compareDatabaseURI(URI uri) {
         return it -> {
             AbsoluteLocation<PrivateResource> location = BasePrivateResource.forAbsolutePrivate(URI.create(it.getKey()));
 
@@ -140,7 +137,7 @@ public class DatabaseConnectionRegistry {
             return uri.toASCIIString().startsWith(scheme + "://" + host + ":" + port + path);
         };
     }
-
+*/
     // includes credentials if they are present in URI
     private String connectionKey(AbsoluteLocation location) {
         URI target = location.location().asURI();

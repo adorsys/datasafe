@@ -23,7 +23,6 @@ public class DatasafeProperties {
      */
     private String keystorePassword;
 
-    private String fsDevPath;
     private String s3Path;
     private String dbProfilePath;
 

@@ -13,6 +13,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
+import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.db.DatabaseConnectionRegistry;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.security.Security;
 import java.util.Set;
@@ -52,8 +54,16 @@ public class DatasafeConfig {
     }
 
     @Bean
-    DFSConfig dfsConfig(DatasafeProperties properties) {
+    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
+    DFSConfig singleDfsConfig(DatasafeProperties properties) {
         return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DFSConfig.class)
+    DFSConfig multiDfsConfig(DatasafeProperties properties) {
+        return new MultiDFSConfig(URI.create(properties.getS3Path()), URI.create(properties.getDbProfilePath()),
+                properties.getKeystorePassword());
     }
 
     /**
@@ -97,7 +107,7 @@ public class DatasafeConfig {
      */
     @Bean
     @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
-    StorageService storageService(AmazonS3 s3, DatasafeProperties properties) {
+    StorageService singleStorageService(AmazonS3 s3, DatasafeProperties properties) {
         return new S3StorageService(
                 s3,
                 properties.getBucketName(),
@@ -125,7 +135,7 @@ public class DatasafeConfig {
         StorageService multiDfs = new SchemeDelegatingStorage(
                 ImmutableMap.of(
                         "s3", s3StorageService,
-                        "jdbc", db
+                        "jdbc-mysql", db
                 )
         );
 
