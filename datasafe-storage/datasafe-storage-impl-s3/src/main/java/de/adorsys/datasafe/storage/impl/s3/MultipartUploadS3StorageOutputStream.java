@@ -86,14 +86,12 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
         do {
             int availableCapacity = BUFFER_SIZE - currentOutputStream.size();
-            int bytesToWrite = Math.min(availableCapacity, len);
+            int bytesToWrite = Math.min(availableCapacity, remainingSizeToWrite);
             currentOutputStream.write(b, inputPosition, bytesToWrite);
             inputPosition += bytesToWrite;
             remainingSizeToWrite -= bytesToWrite;
 
-            if (currentOutputStream.size() == BUFFER_SIZE) {
-                commitMultipartChunk();
-            }
+            initiateAndCommitChunkOfMultipartUploadIfNeeded();
         } while (remainingSizeToWrite > 0);
     }
 
@@ -101,10 +99,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     @Synchronized
     public void write(int b) {
         currentOutputStream.write(b);
-
-        if (currentOutputStream.size() == BUFFER_SIZE) {
-            commitMultipartChunk();
-        }
+        initiateAndCommitChunkOfMultipartUploadIfNeeded();
     }
 
     @Override
@@ -121,7 +116,11 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         }
     }
 
-    private void commitMultipartChunk() {
+    private void initiateAndCommitChunkOfMultipartUploadIfNeeded() {
+        if (currentOutputStream.size() != BUFFER_SIZE) {
+            return;
+        }
+
         initiateMultiPartIfNeeded();
         completionService.submit(new UploadChunkResultCallable(
                 ChunkUploadRequest
