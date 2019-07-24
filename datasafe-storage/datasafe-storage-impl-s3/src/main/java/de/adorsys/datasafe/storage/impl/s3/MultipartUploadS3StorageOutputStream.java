@@ -54,7 +54,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     private AmazonS3 amazonS3;
 
     // The minimum size for a multi part request is 5 MB, hence the buffer size of 5 MB
-    private static final int BUFFER_SIZE = 1024 * 1024 * 5;
+    static final int BUFFER_SIZE = 1024 * 1024 * 5;
 
     private final CompletionService<UploadPartResult> completionService;
 
@@ -91,7 +91,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
             inputPosition += bytesToWrite;
             remainingSizeToWrite -= bytesToWrite;
 
-            initiateAndCommitChunkOfMultipartUploadIfNeeded();
+            initiateMultipartRequestAndCommitPartIfNeeded();
         } while (remainingSizeToWrite > 0);
     }
 
@@ -99,7 +99,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     @Synchronized
     public void write(int b) {
         currentOutputStream.write(b);
-        initiateAndCommitChunkOfMultipartUploadIfNeeded();
+        initiateMultipartRequestAndCommitPartIfNeeded();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         }
     }
 
-    private void initiateAndCommitChunkOfMultipartUploadIfNeeded() {
+    private void initiateMultipartRequestAndCommitPartIfNeeded() {
         if (currentOutputStream.size() != BUFFER_SIZE) {
             return;
         }
