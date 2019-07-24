@@ -125,19 +125,6 @@ public class DatabaseConnectionRegistry {
                 ).getValue();
     }
 
-   /* private Predicate<Map.Entry<String, DatabaseCredentials>> compareDatabaseURI(URI uri) {
-        return it -> {
-            AbsoluteLocation<PrivateResource> location = BasePrivateResource.forAbsolutePrivate(URI.create(it.getKey()));
-
-            String scheme = location.location().getWrapped().getScheme();
-            String host = location.location().getWrapped().getHost();
-            String path = location.location().getWrapped().getPath();
-            int port = location.location().getWrapped().getPort();
-
-            return uri.toASCIIString().startsWith(scheme + "://" + host + ":" + port + path);
-        };
-    }
-*/
     // includes credentials if they are present in URI
     private String connectionKey(AbsoluteLocation location) {
         URI target = location.location().asURI();
