@@ -58,7 +58,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private final CompletionService<UploadPartResult> completionService;
 
-    private ByteArrayOutputStream currentOutputStream = new ByteArrayOutputStream(BUFFER_SIZE);
+    private ByteArrayOutputStream currentOutputStream = new ByteArrayOutputStream();
 
     private InitiateMultipartUploadResult multiPartUploadResult;
 
