@@ -40,7 +40,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @Api(description = "Operations with private documents")
 public class DocumentController {
 
-    private final DefaultDatasafeServices dataSafeService;
+    private final DefaultDatasafeServices datasafeService;
 
     /**
      * Reads user's private file.
@@ -62,10 +62,10 @@ public class DocumentController {
         // this is needed for swagger, produces is just a directive:
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
 
-        try (InputStream is = dataSafeService.privateService().read(request);
-             OutputStream os = response.getOutputStream()) {
-            StreamUtils.copy(is, os);
-        }
+        try (InputStream is = datasafeService.privateService().read(request);
+            OutputStream os = response.getOutputStream()) {
+                StreamUtils.copy(is, os);
+            }
         log.debug("User: {}, read private file from: {}", user, resource);
     }
 
@@ -84,7 +84,7 @@ public class DocumentController {
                               @RequestParam("file") MultipartFile file) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(userIDAuth, path);
-        try (OutputStream os = dataSafeService.privateService().write(request);
+        try (OutputStream os = datasafeService.privateService().write(request);
              InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
         }
@@ -109,7 +109,7 @@ public class DocumentController {
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");
         try {
-            List<String> documentList = dataSafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
+            List<String> documentList = datasafeService.privateService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                     .map(e -> e.getResource().asPrivate().decryptedPath().asString())
                     .collect(Collectors.toList());
             log.debug("List for path {} returned {} items", path, documentList.size());
@@ -133,7 +133,7 @@ public class DocumentController {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
-        dataSafeService.privateService().remove(request);
+        datasafeService.privateService().remove(request);
         log.debug("User: {}, delete private file: {}", user, resource);
     }
 }

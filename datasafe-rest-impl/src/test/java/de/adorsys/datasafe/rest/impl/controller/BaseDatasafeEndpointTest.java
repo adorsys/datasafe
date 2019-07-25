@@ -57,4 +57,5 @@ public abstract class BaseDatasafeEndpointTest extends BaseMockitoTest {
                 .andDo(print()).andExpect(statusMatcher)
                 .andReturn();
     }
+
 }

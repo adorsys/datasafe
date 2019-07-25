@@ -5,11 +5,11 @@
     <parent>
         <artifactId>datasafe</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.4.2</version>
+        <version>0.4.3</version>
     </parent>
 
     <artifactId>datasafe-rest-impl</artifactId>
-    <version>0.4.2</version>
+    <version>0.4.3</version>
     <name>datasafe-rest-impl</name>
     <description>Spring Boot DataSafe Application</description>
 
@@ -118,6 +118,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
             <version>${spring-boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-db</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
         </dependency>
 
         <!-- TEST -->
