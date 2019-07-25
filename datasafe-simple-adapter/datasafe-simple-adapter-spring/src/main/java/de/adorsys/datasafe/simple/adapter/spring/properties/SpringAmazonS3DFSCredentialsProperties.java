@@ -3,8 +3,6 @@ package de.adorsys.datasafe.simple.adapter.spring.properties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
@@ -28,8 +26,9 @@ public class SpringAmazonS3DFSCredentialsProperties {
             "      accesskey: (mandatory)\n" +
             "      secretkey: (mandatory)\n" +
             "      region: (optional)\n" +
-            "      rootbucket: (optional)\n"
-            ;
+            "      rootbucket: (optional)\n" +
+            "      nohttps: (optional, default false - use https to reach s3 endpoint)\n" +
+            "      threadpoolsize: (optional, default 5, how many workers should send chunk requests)\n";
 
     private String url;
     private String accesskey;
@@ -40,4 +39,7 @@ public class SpringAmazonS3DFSCredentialsProperties {
 
     @Nullable
     private String rootbucket = DEFAULT_ROOT;
+
+    private boolean nohttps = false;
+    private int threadpoolsize = 5;
 }

@@ -60,6 +60,11 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
         private final List<InputStream> streamsToClose;
 
         @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            return streamToRead.read(b, off, len);
+        }
+
+        @Override
         public int read() throws IOException {
             return streamToRead.read();
         }

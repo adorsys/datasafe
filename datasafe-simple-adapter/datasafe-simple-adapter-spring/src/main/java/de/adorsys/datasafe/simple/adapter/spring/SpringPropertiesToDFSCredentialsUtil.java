@@ -21,6 +21,8 @@ public class SpringPropertiesToDFSCredentialsUtil {
                     .secretKey(props.getSecretkey())
                     .region(props.getRegion())
                     .url(props.getUrl())
+                    .noHttps(props.isNohttps())
+                    .threadPoolSize(props.getThreadpoolsize())
                     .build();
         }
         if (properties.getFilesystem() != null) {
