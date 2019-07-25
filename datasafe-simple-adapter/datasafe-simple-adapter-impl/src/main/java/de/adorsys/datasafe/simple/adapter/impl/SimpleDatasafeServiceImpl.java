@@ -116,6 +116,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                 ClientConfiguration clientConfig = new ClientConfiguration();
                 clientConfig.setProtocol(Protocol.HTTP);
                 clientConfig.disableSocketProxy();
+                amazonS3ClientBuilder.withClientConfiguration(clientConfig);
             }
 
             AmazonS3 amazons3 = amazonS3ClientBuilder.build();
