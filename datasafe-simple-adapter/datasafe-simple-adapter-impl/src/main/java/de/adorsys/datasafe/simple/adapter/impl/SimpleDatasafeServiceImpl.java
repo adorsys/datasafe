@@ -1,5 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -39,7 +41,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private StorageService storageService;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
-    private final static ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
     private final static String S3_PREFIX = "s3://";
 
 
@@ -88,17 +88,34 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("url             : " + amazonS3DFSCredentials.getUrl());
             lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+            lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
+            lsf.add("no https        : " + amazonS3DFSCredentials.isNoHttps());
+            lsf.add("threadpool size : " + amazonS3DFSCredentials.getThreadPoolSize());
             log.info(lsf.toString());
             AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(amazonS3DFSCredentials.getAccessKey(), amazonS3DFSCredentials.getSecretKey())))
+                    .withCredentials(
+                            new AWSStaticCredentialsProvider(
+                                    new BasicAWSCredentials(
+                                            amazonS3DFSCredentials.getAccessKey(),
+                                            amazonS3DFSCredentials.getSecretKey()))
+                    )
                     .enablePathStyleAccess();
 
             boolean useEndpoint = (!amazonS3DFSCredentials.getUrl().equals(AMAZON_URL));
             if (useEndpoint) {
-                AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(amazonS3DFSCredentials.getUrl(), amazonS3DFSCredentials.getRegion());
+                AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
+                        amazonS3DFSCredentials.getUrl(),
+                        amazonS3DFSCredentials.getRegion()
+                );
                 amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
             } else {
                 amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
+            }
+
+            if (amazonS3DFSCredentials.isNoHttps()) {
+                ClientConfiguration clientConfig = new ClientConfiguration();
+                clientConfig.setProtocol(Protocol.HTTP);
+                clientConfig.disableSocketProxy();
             }
 
             AmazonS3 amazons3 = amazonS3ClientBuilder.build();
@@ -106,7 +123,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
                 amazons3.createBucket(amazonS3DFSCredentials.getContainer());
             }
-            storageService = new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE);
+            storageService = new S3StorageService(
+                    amazons3,
+                    amazonS3DFSCredentials.getContainer(),
+                    Executors.newFixedThreadPool(amazonS3DFSCredentials.getThreadPoolSize())
+            );
             this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
