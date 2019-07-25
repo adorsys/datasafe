@@ -131,10 +131,11 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                         .bucketName(bucketName)
                         .objectName(objectName)
                         .uploadId(multiPartUploadResult.getUploadId())
-                        .chunkNumberCounter(partCounter++)
+                        .chunkNumberCounter(partCounter)
                         .lastChunk(false)
                         .build()
         ));
+        ++partCounter;
         currentOutputStream.reset();
     }
 
@@ -168,19 +169,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     }
 
     private void finishMultiPartUpload() throws IOException {
-        completionService.submit(
-                new UploadChunkResultCallable(ChunkUploadRequest.builder()
-                        .amazonS3(amazonS3)
-                        .content(currentOutputStream.toByteArray())
-                        .contentSize(currentOutputStream.size())
-                        .bucketName(bucketName)
-                        .objectName(objectName)
-                        .uploadId(multiPartUploadResult.getUploadId())
-                        .chunkNumberCounter(partCounter)
-                        .lastChunk(true)
-                        .build()
-                )
-        );
+        sendLastChunkOfMultipartIfNeeded();
 
         try {
             List<PartETag> partETags = getMultiPartsUploadResults();
@@ -210,6 +199,28 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         } finally {
             currentOutputStream = null;
         }
+    }
+
+    private void sendLastChunkOfMultipartIfNeeded() {
+        // empty file can be created only using simple upload:
+        if (currentOutputStream.size() == 0) {
+            partCounter--;
+            return;
+        }
+
+        completionService.submit(
+                new UploadChunkResultCallable(ChunkUploadRequest.builder()
+                        .amazonS3(amazonS3)
+                        .content(currentOutputStream.toByteArray())
+                        .contentSize(currentOutputStream.size())
+                        .bucketName(bucketName)
+                        .objectName(objectName)
+                        .uploadId(multiPartUploadResult.getUploadId())
+                        .chunkNumberCounter(partCounter)
+                        .lastChunk(true)
+                        .build()
+                )
+        );
     }
 
     private void notifyCommittedVersionIfPresent(String version) {

@@ -97,9 +97,7 @@ class MultipartUploadS3StorageOutputStreamTest extends BaseMockitoTest {
         tested.close();
 
         assertThat(bytesSentDirectly.getAllValues()).isEmpty();
-        assertThat(uploadChunk.getAllValues()).hasSize(2);
-        assertThat(uploadChunk.getAllValues().get(0).getInputStream()).hasContent(new String(exactOneMultipartChunk));
-        assertThat(uploadChunk.getAllValues().get(1).getInputStream()).hasContent("");
+        assertThat(uploadChunk.getAllValues()).hasSize(1);
     }
 
     @Test
@@ -168,9 +166,8 @@ class MultipartUploadS3StorageOutputStreamTest extends BaseMockitoTest {
         tested.close();
 
         assertThat(bytesSentDirectly.getAllValues()).isEmpty();
-        assertThat(uploadChunk.getAllValues()).hasSize(2);
+        assertThat(uploadChunk.getAllValues()).hasSize(1);
         assertThat(uploadChunk.getAllValues().get(0).getInputStream()).hasContent(new String(exactOneMultipartChunk));
-        assertThat(uploadChunk.getAllValues().get(1).getInputStream()).hasContent("");
     }
 
     @Test
@@ -189,6 +186,15 @@ class MultipartUploadS3StorageOutputStreamTest extends BaseMockitoTest {
                         multipartChunkWithTail, BUFFER_SIZE, multipartChunkWithTail.length)
                 )
         );
+    }
+
+    @Test
+    @SneakyThrows
+    void writeZeroSized() {
+        tested.close();
+
+        verify(executorService, never()).submit(any(UploadChunkResultCallable.class));
+        assertThat(bytesSentDirectly.getValue()).hasContent("");
     }
 
 
