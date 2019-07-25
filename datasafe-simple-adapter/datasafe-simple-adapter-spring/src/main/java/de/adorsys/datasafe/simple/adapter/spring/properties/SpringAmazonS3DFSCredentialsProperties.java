@@ -41,6 +41,6 @@ public class SpringAmazonS3DFSCredentialsProperties {
     @Nullable
     private String rootbucket = DEFAULT_ROOT;
 
-    private boolean noHttps = false;
-    private int threadPoolSize = 5;
+    private boolean nohttps = false;
+    private int threadpoolsize = 5;
 }
