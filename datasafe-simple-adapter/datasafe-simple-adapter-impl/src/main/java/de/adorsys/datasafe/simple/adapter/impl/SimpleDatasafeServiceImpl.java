@@ -113,6 +113,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             }
 
             if (amazonS3DFSCredentials.isNoHttps()) {
+                log.info("Creating S3 client without https");
                 ClientConfiguration clientConfig = new ClientConfiguration();
                 clientConfig.setProtocol(Protocol.HTTP);
                 clientConfig.disableSocketProxy();
