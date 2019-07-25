@@ -1,0 +1,690 @@
+{
+  "info": {
+    "_postman_id": "54d63510-b402-4a2c-b518-50e79a04d569",
+    "name": "Datasafe",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "authenticate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "name": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"userName\":\"username\",\"password\":\"password\"}"
+        },
+        "url": {
+          "raw": "{{host}}/api/authenticate",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "api",
+            "authenticate"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "create user",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "name": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"userName\":\"ver\",\n\t\"password\":\"ver\"\n}"
+        },
+        "url": {
+          "raw": "{{host}}/user",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "user"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "delete user",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "name": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "user",
+            "value": "Max",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "123",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/user/",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "user",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "store document",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/octet-stream",
+            "type": "text"
+          },
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "file",
+          "file": {
+            "src": "/Users/maxim/tx/store/a.txt"
+          }
+        },
+        "url": {
+          "raw": "{{host}}/document/test11.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "document",
+            "test11.txt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "list documents",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "user",
+            "value": "vvv",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "vvv",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/documents/",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "documents",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "read document",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/octet-stream",
+            "type": "text"
+          },
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/document/test11.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "document",
+            "test11.txt"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "read document",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/octet-stream",
+                "type": "text"
+              },
+              {
+                "key": "user",
+                "value": "ddd",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "ddd",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/document/deep/path/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "document",
+                "deep",
+                "path",
+                "test.txt"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "plain",
+          "header": [
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 24 May 2019 11:50:22 GMT"
+            }
+          ],
+          "cookie": [],
+          "body": "test"
+        }
+      ]
+    },
+    {
+      "name": "delete document",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "user",
+            "value": "iii",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "iii",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/document/deep/path/test2.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "document",
+            "deep",
+            "path",
+            "test2.txt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "send to inbox",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/octet-stream",
+            "type": "text"
+          },
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "file",
+          "file": {
+            "src": "/Users/maxim/test.txt"
+          }
+        },
+        "url": {
+          "raw": "{{host}}/inbox/test2.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "inbox",
+            "test2.txt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "inbox read",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/octet-stream",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/inbox/test2.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "inbox",
+            "test2.txt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "inbox delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "user",
+            "value": "iii",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "iii",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/inbox/test2.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "inbox",
+            "test2.txt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "inbox list",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/inbox/",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "inbox",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "version list",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "user",
+            "type": "text",
+            "value": "ver"
+          },
+          {
+            "key": "password",
+            "type": "text",
+            "value": "ver"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/versions/list/",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "versions",
+            "list",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "versioned read",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/octet-stream",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/versioned/test10.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "versioned",
+            "test10.txt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "versioned delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/versioned/test4.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "versioned",
+            "test4.txt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "versioned write",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/octet-stream",
+            "type": "text"
+          },
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "file",
+          "file": {
+            "src": "/Users/maxim/parallel_transactions_merge_logic_fix.patch"
+          }
+        },
+        "url": {
+          "raw": "{{host}}/versioned/test10.txt",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "versioned",
+            "test10.txt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "versioned list",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "user",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "password",
+            "value": "ver",
+            "type": "text"
+          },
+          {
+            "key": "token",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{host}}/versioned/",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "versioned",
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
