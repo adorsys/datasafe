@@ -31,47 +31,12 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
 class RandomActionsOnDatasafeMultiS3Test extends BaseRandomActions {
 
     @ParameterizedTest
-    @MethodSource("multipleActionsOnSoragesAndThreadsAndFilesizes")
-    void testRandomActionsParallelThreads(List<StorageDescriptor> listDescriptor, int threadCount, int filesizeInMb) {
-        executeNewway(listDescriptor, threadCount, filesizeInMb);
-        /*for(StorageDescriptor descriptor : listDescriptor){
-            DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
-            StatisticService statisticService = new StatisticService();
-            execute(datasafeServices, statisticService, descriptor, threadCount, filesizeInMb);
-            *//*ExecutorService executorService = Executors.newFixedThreadPool(threadCount * listDescriptor.size());
-            //ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount * listDescriptor.size());
-            ExecuteTest executeTest = new ExecuteTest(datasafeServices, statisticService, descriptor, threadCount, filesizeInMb);
-            executorService.execute(executeTest);*//*
-        }*/
-    }
-
-    private void executeNewway(List<StorageDescriptor> listDescriptor, int threadCount, int filesizeInMb) {
+    @MethodSource("testMultiStorageParallelThreads")
+    void testMultiStorageParallelThreads(List<StorageDescriptor> listDescriptor, int threadCount, int filesizeInMb) {
         executeTest(smallFixture(),
                 listDescriptor,
                 filesizeInMb,
                 threadCount
-                );
-    }
-
-    public void execute(DefaultDatasafeServices datasafeServices, StatisticService statisticService, StorageDescriptor descriptor, int threadCount, int filesizeInMb) {
-        executeTest(
-                smallFixture(),
-                descriptor.getName(),
-                filesizeInMb,
-                threadCount,
-                datasafeServices.userProfile(),
-                datasafeServices.privateService(),
-                datasafeServices.inboxService(),
-                statisticService
         );
-    }
-
-
-
-    private DefaultDatasafeServices datasafeServices(StorageDescriptor descriptor) {
-        return DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
-                .storage(descriptor.getStorageService().get())
-                .build();
     }
 }
