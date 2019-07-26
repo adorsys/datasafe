@@ -7,7 +7,7 @@
         <artifactId>datasafe-examples</artifactId>
         <version>0.4.4-SNAPSHOT</version>
     </parent>
-    <artifactId>datasafe-examples-customize-dagger</artifactId>
+    <artifactId>datasafe-examples-multidfs</artifactId>
     <dependencies>
         <!-- These are necessary dependencies to be used in production code -->
         <dependency>
@@ -17,17 +17,16 @@
         </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-storage-impl-fs</artifactId>
+            <artifactId>datasafe-storage-impl-s3</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Dagger to customize library: -->
-        <dependency>
-            <groupId>com.google.dagger</groupId>
-            <artifactId>dagger</artifactId>
-        </dependency>
-
         <!-- These are for test support only - not needed in production code -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -55,24 +54,9 @@
         </dependency>
     </dependencies>
 
+    <!-- Disable maven-dependency-plugin - that's ok to have undeclared transitive dependencies here-->
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
-                <configuration>
-                    <!-- Dagger to customize library: -->
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>com.google.dagger</groupId>
-                            <artifactId>dagger-compiler</artifactId>
-                            <version>${dagger.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-            <!-- Disable maven-dependency-plugin - that's ok to have undeclared transitive dependencies here-->
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>

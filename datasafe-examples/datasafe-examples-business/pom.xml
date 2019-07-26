@@ -9,6 +9,7 @@
     </parent>
     <artifactId>datasafe-examples-business</artifactId>
     <dependencies>
+        <!-- These are necessary dependencies to be used in production code -->
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-business</artifactId>
@@ -20,6 +21,7 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- These are for test support only - not needed in production code -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
