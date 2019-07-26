@@ -116,7 +116,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
             int s3BucketCount = Integer.parseInt(amazons3BucketCount);
             if(s3BucketCount > 1){
                 for(Operation user : noOfUsers) {
-                    UserFixture userFixture = getUserFixture(user, fixture, Integer.parseInt(amazons3BucketCount), getS3Bucket(), filesizeInMb, threadCount);
+                    UserFixture userFixture = getUserFixture(user, fixture, Integer.parseInt(amazons3BucketCount), listDescriptor, filesizeInMb, threadCount);
                     executeTest(userFixture.getFixturebyUser(),
                             userFixture.getDescriptor().getName(),
                             filesizeInMb,
@@ -127,7 +127,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                             userFixture.getStatisticService());
                 }
             }else{
-                StorageDescriptor descriptor = s3();
+                StorageDescriptor descriptor = listDescriptor.get(0);
                 DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
                 StatisticService statisticService = new StatisticService();
 
