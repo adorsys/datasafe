@@ -1,16 +1,8 @@
 package de.adorsys.datasafe.examples.business.s3;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
-import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
-import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
-import de.adorsys.datasafe.storage.impl.s3.HostBasedBucketRouter;
-import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
-import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import lombok.Getter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -20,8 +12,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * This test shows how client can register storage system and securely store its access details.
@@ -31,25 +21,29 @@ import java.util.concurrent.Executors;
  */
 class MultiDfsWithCredentialsExampleTest {
 
-    private static final ExecutorService executor = Executors.newFixedThreadPool(4);
-
-    private DefaultDatasafeServices fileStorageDatasafe;
-    private DefaultDatasafeServices credentialStorageDatasafe;
-
-    private static Map<CONTAINER_ID, GenericContainer> minios = new EnumMap<>(CONTAINER_ID.class);
+    private static Map<MinioContainer, GenericContainer> minios = new EnumMap<>(MinioContainer.class);
     private static AmazonS3 credentialClient;
+    private static String s3CredentialsEndpoint;
 
     @BeforeAll
     static void startup() {
-        Arrays.stream(CONTAINER_ID.values()).forEach(it -> {
-            GenericContainer minio = createAndStartMinio(it.toString(), it.toString());
+        Arrays.stream(MinioContainer.values()).forEach(it -> {
+            GenericContainer minio = createAndStartMinio(it.getAccessKey(), it.getSecretKey());
             minios.put(it, minio);
 
-            AmazonS3 client = buildS3ForLocalMinio(minio.getFirstMappedPort(), it.toString(), it.toString());
-            client.createBucket(it.toString());
+            String endpoint = "http://127.0.0.1:" + minio.getFirstMappedPort();
 
-            if (it.equals(CONTAINER_ID.CREDENTIALS_BUCKET)) {
+            AmazonS3 client = S3ClientFactory.getClient(
+                    endpoint,
+                    it.getAccessKey(),
+                    it.getSecretKey()
+            );
+
+            client.createBucket(it.getBucketName());
+
+            if (it.equals(MinioContainer.CREDENTIALS_BUCKET)) {
                 credentialClient = client;
+                s3CredentialsEndpoint = endpoint;
             }
         });
     }
@@ -61,32 +55,20 @@ class MultiDfsWithCredentialsExampleTest {
 
     @Test
     void testMultiUserStorageUserSetup() {
-        credentialStorageDatasafe = DaggerDefaultDatasafeServices
-                .builder()
-                .config(new DefaultDFSConfig("s3://bucket/", "PAZZWORT"))
-                .storage(new S3StorageService(
-                        credentialClient,
-                        CONTAINER_ID.CREDENTIALS_BUCKET.toString(),
-                        executor)
-                ).build();
+        MultiDfsDatasafe multiDfsDatasafe =
+                new MultiDfsDatasafe(credentialClient, MinioContainer.CREDENTIALS_BUCKET.getBucketName());
 
-        fileStorageDatasafe = DaggerDefaultDatasafeServices
-                .builder()
-                .config(new DefaultDFSConfig("s3://bucket/", "PAZZWORT"))
-                .storage(new UriBasedAuthStorageService(
-                        id -> {
-                            String bucketName = id.getWithoutCreds().getHost();
-                            return new S3StorageService(
-                                    buildS3ForLocalMinio(
-                                            minios.get(CONTAINER_ID.fromString(bucketName)).getFirstMappedPort(),
-                                            id.getAccessKey(),
-                                            id.getSecretKey()
-                                    ),
-                                    new HostBasedBucketRouter(),
-                                    executor
-                            );
-                        }
-                )).build();
+        UserIDAuth john = new UserIDAuth("john", "secret");
+        multiDfsDatasafe.userProfile().registerUsingDefaults(john);
+        multiDfsDatasafe.registerDfs(
+                john,
+                MinioContainer.FILES_BUCKET_ONE.toString(),
+                new MultiDfsDatasafe.StorageCredentials(
+                        s3CredentialsEndpoint,
+                        MinioContainer.CREDENTIALS_BUCKET.getAccessKey(),
+                        MinioContainer.CREDENTIALS_BUCKET.getSecretKey()
+                )
+        );
     }
 
     private static GenericContainer createAndStartMinio(String accessKey, String secretKey) {
@@ -101,36 +83,25 @@ class MultiDfsWithCredentialsExampleTest {
         return minioContainer;
     }
 
-    private static AmazonS3 buildS3ForLocalMinio(int port, String accessKey, String secretKey) {
-        return AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration("http://127.0.0.1:" + port, "eu-central-1")
-                )
-                .withCredentials(
-                        new AWSStaticCredentialsProvider(
-                                new BasicAWSCredentials(accessKey, secretKey)
-                        )
-                )
-                .enablePathStyleAccess()
-                .build();
-    }
-
-    private enum CONTAINER_ID {
+    @Getter
+    private enum MinioContainer {
         FILES_BUCKET_ONE,
         FILES_BUCKET_TWO,
         CREDENTIALS_BUCKET;
 
+        private final String accessKey;
+        private final String secretKey;
+        private final String bucketName;
+
+        MinioContainer() {
+            this.accessKey = "access-" + toString();
+            this.secretKey = "secret-" + toString();
+            this.bucketName = toString();
+        }
 
         @Override
         public String toString() {
             return super.toString().toLowerCase().replaceAll("_", "");
-        }
-
-        static CONTAINER_ID fromString(String value) {
-            return Arrays.stream(CONTAINER_ID.values())
-                    .filter(it -> it.toString().equals(value))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("No mapping: " + value));
         }
     }
 }
