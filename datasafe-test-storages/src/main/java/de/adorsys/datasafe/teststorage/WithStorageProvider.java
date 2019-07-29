@@ -270,6 +270,20 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         );
     }
 
+    protected static Map<String, StorageDescriptor> getMultiS3Bucket(List<String> users){
+        if(amazons3BucketCount == null){
+            return null;
+        }
+        Map<String, StorageDescriptor>  storageDescriptorHashMap = new HashMap<>();
+        List<StorageDescriptor> storageDescriptorList = getS3Bucket();
+        int s3Count = Integer.parseInt(amazons3BucketCount);
+        for(String user : users){
+            int userId = Integer.parseInt(user.split("-")[1]);
+            storageDescriptorHashMap.put(user, storageDescriptorList.get(userId % s3Count));
+        }
+        return storageDescriptorHashMap;
+    }
+
     protected static List<StorageDescriptor> getS3Bucket() {
         if(amazons3BucketCount == null){
             return null;

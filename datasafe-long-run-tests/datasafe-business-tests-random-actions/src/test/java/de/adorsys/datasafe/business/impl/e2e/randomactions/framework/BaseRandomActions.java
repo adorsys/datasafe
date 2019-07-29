@@ -85,7 +85,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     @ValueSource
-    protected static Stream<Arguments> multipleActionsOnSoragesAndThreadsAndFilesizes() {
+    protected static Stream<Arguments> testMultiStorageParallelThreads() {
         return Sets.cartesianProduct(
                 Collections.singleton(getS3Bucket()),
                 THREAD_COUNT,
@@ -94,12 +94,49 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     @ValueSource
-    protected static Stream<Arguments> testMultiStorageParallelThreads() {
+    protected static Stream<Arguments> test() {
+        List<String> users = new ArrayList<>();
+        smallFixture().getOperations().stream().forEach((i)->users.add(i.getUserId()));
+
         return Sets.cartesianProduct(
-                Collections.singleton(getS3Bucket()),
+                Collections.singleton(getMultiS3Bucket(users)),
                 THREAD_COUNT,
                 FILE_SIZE_M_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
+    }
+
+    protected void executeTest(Fixture fixture, Map<String, StorageDescriptor> map, int filesizeInMb, int threadCount) {
+
+        DefaultDatasafeServices datasafeServices = datasafeServices(map.get("user-1"));
+        OperationQueue queue = new OperationQueue(fixture);
+        OperationExecutor executor = new OperationExecutor(
+                filesizeInMb * MEGABYTE_TO_BYTE,
+                datasafeServices.userProfile(),
+                datasafeServices.privateService(),
+                datasafeServices.inboxService(),
+                new ConcurrentHashMap<>(),
+                new StatisticService(),
+                map
+        );
+
+        createUsersNew(fixture, executor);
+
+        List<Throwable> exceptions = new CopyOnWriteArrayList<>();
+
+        boolean terminatedOk = runFixtureInMultipleExecutionsNew(fixture, threadCount, queue, executor, exceptions);
+
+        assertThat(exceptions).isEmpty();
+        assertThat(terminatedOk).isTrue();
+
+        log.info("==== Statistics for {} with {} threads and {} Mb filesize: ====",
+                map.get("user-1").getName(),
+                threadCount,
+                filesizeInMb
+        );
+
+        new StatisticService().generateReport().forEach((name, percentiles) ->
+                log.info("{} : {}", name, percentiles)
+        );
     }
 
     protected void executeTest(Fixture fixture, List<StorageDescriptor> listDescriptor, int filesizeInMb, int threadCount) {
@@ -126,6 +163,18 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                             userFixture.getDatasafeServices().inboxService(),
                             userFixture.getStatisticService());
                 }
+                //ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+                /*for(StorageDescriptor descriptor : listDescriptor){
+                    DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
+                    executeTest(fixture,
+                            descriptor.getName(),
+                            filesizeInMb,
+                            threadCount,
+                            datasafeServices.userProfile(),
+                            datasafeServices.privateService(),
+                            datasafeServices.inboxService(),
+                            new StatisticService());
+                }*/
             }else{
                 StorageDescriptor descriptor = listDescriptor.get(0);
                 DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
@@ -225,7 +274,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                         datasafeServices.privateService(),
                         datasafeServices.inboxService(),
                         new ConcurrentHashMap<>(),
-                        statisticService
+                        statisticService, null
                 );
 
                 //create users
@@ -290,7 +339,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                 privateSpaceService,
                 inboxService,
                 new ConcurrentHashMap<>(),
-                statisticService
+                statisticService, null
         );
 
         createUsers(fixture, executor);
@@ -345,6 +394,38 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         return true;
     }
 
+    @SneakyThrows
+    private boolean runFixtureInMultipleExecutionsNew(
+            Fixture fixture,
+            int threadCount,
+            OperationQueue queue,
+            OperationExecutor executor,
+            List<Throwable> exceptions) {
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        List<String> executionIds = IntStream.range(0, threadCount).boxed()
+                .map(it -> UUID.randomUUID().toString())
+                .collect(Collectors.toList());
+        Set<String> blockedExecutionIds = Collections.synchronizedSet(new HashSet<>());
+
+        do {
+            executeNextActionNew(queue, executor, executorService, executionIds, blockedExecutionIds, exceptions);
+        } while (!executionIds.isEmpty() && exceptions.isEmpty());
+
+        executorService.shutdown();
+        boolean status = executorService.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
+        if (!status) {
+            return false;
+        }
+
+        executionIds.forEach(it -> executor.validateUsersStorageContent(
+                it,
+                fixture.getUserPrivateSpace(),
+                fixture.getUserPublicSpace())
+        );
+
+        return true;
+    }
+
     private int getS3BucketPosition(int userId, Integer s3BucketCount) {
         do{
             userId -= s3BucketCount;
@@ -359,6 +440,14 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                 .collect(Collectors.toList());
 
         createUsers.forEach(executor::execute);
+    }
+
+    private void createUsersNew(Fixture fixture, OperationExecutor executor) {
+        List<Operation> createUsers = fixture.getUserPrivateSpace().keySet().stream()
+                .map(it -> Operation.builder().type(OperationType.CREATE_USER).userId(it).build())
+                .collect(Collectors.toList());
+
+        createUsers.forEach(executor::executeNew);
     }
 
     private void executeNextAction(
@@ -385,6 +474,30 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         execIds.remove(threadId);
     }
 
+    private void executeNextActionNew(
+            OperationQueue queue,
+            OperationExecutor executor,
+            ExecutorService executorService,
+            List<String> execIds,
+            Set<String> blockedExecIds,
+            List<Throwable> exceptions) throws Exception{
+
+        String threadId = execIds.get(ThreadLocalRandom.current().nextInt(execIds.size()));
+        if (!blockedExecIds.add(threadId)) {
+            return;
+        }
+
+        Operation operation = queue.get(threadId);
+
+        if (null != operation) {
+            executeOperationNew(executor, executorService, blockedExecIds, exceptions, threadId, operation);
+            log.info(operation.toString());
+            return;
+        }
+
+        execIds.remove(threadId);
+    }
+
     private void executeOperation(OperationExecutor executor,
                                   ExecutorService executorService,
                                   Set<String> blockedExecIds,
@@ -398,6 +511,22 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                 blockedExecIds,
                 exceptions,
                 () -> executor.execute(executionTaggedOperation(execId, operation))
+        );
+    }
+
+    private void executeOperationNew(OperationExecutor executor,
+                                  ExecutorService executorService,
+                                  Set<String> blockedExecIds,
+                                  List<Throwable> exceptions,
+                                  String execId,
+                                  Operation operation) {
+        executeWithThreadName(
+                execId,
+                execUserId(execId, operation.getUserId()),
+                executorService,
+                blockedExecIds,
+                exceptions,
+                () -> executor.executeNew(executionTaggedOperation(execId, operation))
         );
     }
 

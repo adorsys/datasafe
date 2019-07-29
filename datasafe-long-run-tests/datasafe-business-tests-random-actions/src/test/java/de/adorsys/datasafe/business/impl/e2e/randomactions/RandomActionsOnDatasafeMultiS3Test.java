@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,11 +31,20 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
 @DisabledIfSystemProperty(named = DISABLE_RANDOM_ACTIONS_TEST, matches = "true")
 class RandomActionsOnDatasafeMultiS3Test extends BaseRandomActions {
 
-    @ParameterizedTest
+    /*@ParameterizedTest
     @MethodSource("testMultiStorageParallelThreads")
     void testMultiStorageParallelThreads(List<StorageDescriptor> listDescriptor, int threadCount, int filesizeInMb) {
         executeTest(smallFixture(),
                 listDescriptor,
+                filesizeInMb,
+                threadCount
+        );
+    }*/
+
+    @ParameterizedTest
+    @MethodSource("test")
+    void test(Map<String, StorageDescriptor> map, int threadCount, int filesizeInMb) {
+        executeTest(smallFixture(), map,
                 filesizeInMb,
                 threadCount
         );
