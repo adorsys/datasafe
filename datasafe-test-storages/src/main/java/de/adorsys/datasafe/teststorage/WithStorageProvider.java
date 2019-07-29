@@ -111,7 +111,6 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
         amazonSotrage = Suppliers.memoize(() -> {
             initS3();
-            initMultiS3();
             return null;
         });
 
