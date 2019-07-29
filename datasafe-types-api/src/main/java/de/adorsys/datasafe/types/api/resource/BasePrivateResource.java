@@ -106,6 +106,11 @@ public class BasePrivateResource implements PrivateResource {
     }
 
     @Override
+    public PrivateResource withAuthority(String username, String password) {
+        return new BasePrivateResource(container.withAuthority(username, password), encryptedPath, decryptedPath);
+    }
+
+    @Override
     public String toString() {
         return "BasePrivateResource{" +
                 "container=" + container +

@@ -1,0 +1,34 @@
+@startuml
+skinparam nodesep 80
+skinparam linetype ortho
+left to right direction
+
+actor user as u
+
+rectangle "Directory Datasafe service" as dd {
+    node "Profile retrieval service" as ddp
+    node "Bucket access service" as ddb
+}
+
+database "system\nbucket" as sb
+
+rectangle "Datasafe service" as ds {
+
+    node "Profile" as dsp
+    node "Encryption" as dse
+    node "Bucket access" as dsb
+    node "Storage" as dss
+}
+
+database "bucket\n#1" as b1
+
+u --> ds : write file
+dsp --> ddp : Retrieve users' profile\nfor private files location
+ddp --> sb : Read profile
+ddp --> dse : Encrypt path and data
+dse -> dsb : Retrieve data storage access credentials
+ddb --> sb : Read access credentials
+dsb --> ddb : Get storage access credentials
+ddb --> dss : Write encrypted stream to storage
+dss --> b1 : Store blob
+@enduml

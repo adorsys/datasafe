@@ -149,6 +149,19 @@ public class Uri {
         return UriEncoderDecoder.decodeAndDropAuthority(wrapped);
     }
 
+    public Uri withAuthority(String username, String password) {
+        if (!wrapped.isAbsolute()) {
+            throw new IllegalStateException("Absolute resource is required to embed credentials");
+        }
+
+        String result = wrapped.getScheme();
+        result += "://" + username + ":" + password + "@";
+        result += wrapped.getHost();
+        result += ":" + wrapped.getPort();
+        result += "/" + wrapped.getPath();
+        return new Uri(result);
+    }
+
     @Override
     public String toString() {
         return "Uri{" +

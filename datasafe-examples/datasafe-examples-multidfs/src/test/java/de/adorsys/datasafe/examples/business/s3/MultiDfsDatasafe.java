@@ -4,63 +4,58 @@ import com.amazonaws.services.s3.AmazonS3;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
-import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
-import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
-import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
-import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
-import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
-import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
 import de.adorsys.datasafe.storage.impl.s3.HostBasedBucketRouter;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
-import de.adorsys.datasafe.types.api.actions.ReadRequest;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.PrivateResource;
-import de.adorsys.datasafe.types.api.resource.PublicResource;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.bouncycastle.util.io.Streams;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * This class delegates work to 2 instances of Datasafe. First one is Directory Datasafe that stores user profile -
+ * where are users' private files and users' access credentials to different storage in encrypted form. Second one
+ * is actually storing users' private files and INBOX data.
+ */
 public class MultiDfsDatasafe implements DefaultDatasafeServices {
 
     private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(4);
 
     private final DatasafeBasedCredentialsManager credentialsManager;
-    private final DefaultDatasafeServices storageCredentialsDatasafe;
-    private final DefaultDatasafeServices fileStorageDatasafe;
-    private final ProfileOperationsChain profileOperationsChain;
+    private final DefaultDatasafeServices directoryDatasafe;
+    private final DefaultDatasafeServices datasafe;
 
     public MultiDfsDatasafe(
             AmazonS3 credentialsStorage,
             String credentialsBucketName) {
-        this.storageCredentialsDatasafe = DaggerDefaultDatasafeServices
-                .builder()
-                .config(new DefaultDFSConfig(credentialsBucketName, "PAZZWORT"))
-                .storage(new S3StorageService(
-                        credentialsStorage,
-                        credentialsBucketName,
-                        EXECUTOR)
-                ).build();
-
+        this.directoryDatasafe = createDirectoryDatasafe(credentialsStorage, credentialsBucketName);
         OverridesRegistry overridesRegistry = new BaseOverridesRegistry();
-        this.fileStorageDatasafe = DaggerDefaultDatasafeServices
+        this.datasafe = createUsersDatasafe(overridesRegistry);
+
+        DatasafeBasedCredentialsManager manager = new DatasafeBasedCredentialsManager(this.directoryDatasafe);
+        // storage access credentials are read from Directory Datasafe service:
+        BucketAccessServiceImplRuntimeDelegatable.overrideWith(overridesRegistry, args -> manager);
+        // user profile is read from Directory Datasafe service:
+        ProfileRetrievalServiceImplRuntimeDelegatable.overrideWith(
+                overridesRegistry,
+                args -> new DatasafeBasedProfileManager(directoryDatasafe)
+        );
+
+        this.credentialsManager = new DatasafeBasedCredentialsManager(directoryDatasafe);
+    }
+
+    // Creates Datasafe that stores users' private files, this instance will query Directory datasafe
+    // to get users' profile and access credentials
+    private DefaultDatasafeServices createUsersDatasafe(OverridesRegistry overridesRegistry) {
+        return DaggerDefaultDatasafeServices
                 .builder()
                 .config(new DefaultDFSConfig("s3://bucket/", "PAZZWORT"))
                 .overridesRegistry(overridesRegistry)
@@ -73,14 +68,19 @@ public class MultiDfsDatasafe implements DefaultDatasafeServices {
                                 EXECUTOR
                         ))
                 ).build();
+    }
 
-        DatasafeBasedCredentialsManager manager = new DatasafeBasedCredentialsManager(this.storageCredentialsDatasafe);
-        BucketAccessServiceImplRuntimeDelegatable.overrideWith(overridesRegistry, args -> manager);
-
-
-
-        this.credentialsManager = new DatasafeBasedCredentialsManager(storageCredentialsDatasafe);
-        this.profileOperationsChain = new ProfileOperationsChain();
+    // Creates Datasafe that stores user profiles and storage access credentials.
+    private static DefaultDatasafeServices createDirectoryDatasafe(AmazonS3 credentialsStorage,
+                                                                   String credentialsBucketName) {
+        return DaggerDefaultDatasafeServices
+                .builder()
+                .config(new DefaultDFSConfig("s3://" + credentialsBucketName + "/", "PAZZWORT"))
+                .storage(new S3StorageService(
+                        credentialsStorage,
+                        credentialsBucketName,
+                        EXECUTOR)
+                ).build();
     }
 
     @SneakyThrows
@@ -90,125 +90,16 @@ public class MultiDfsDatasafe implements DefaultDatasafeServices {
 
     @Override
     public PrivateSpaceService privateService() {
-        return fileStorageDatasafe.privateService();
+        return datasafe.privateService();
     }
 
     @Override
     public InboxService inboxService() {
-        return fileStorageDatasafe.inboxService();
+        return datasafe.inboxService();
     }
 
     @Override
     public ProfileOperations userProfile() {
-        return profileOperationsChain;
-    }
-
-    private class ProfileOperationsChain implements ProfileOperations {
-
-        @Override
-        public void registerPublic(CreateUserPublicProfile profile) {
-            // NOP
-        }
-
-        @Override
-        public void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword) {
-            storageCredentialsDatasafe.userProfile().updateReadKeyPassword(forUser, newPassword);
-            fileStorageDatasafe.userProfile().updateReadKeyPassword(forUser, newPassword);
-        }
-
-        @Override
-        public void registerPrivate(CreateUserPrivateProfile profile) {
-            // NOP
-        }
-
-        @Override
-        public void registerUsingDefaults(UserIDAuth user) {
-            storageCredentialsDatasafe.userProfile().registerUsingDefaults(user);
-            fileStorageDatasafe.userProfile().registerUsingDefaults(user);
-        }
-
-        @Override
-        public void deregister(UserIDAuth userID) {
-            fileStorageDatasafe.userProfile().deregister(userID);
-            storageCredentialsDatasafe.userProfile().deregister(userID);
-        }
-
-        @Override
-        public UserPublicProfile publicProfile(UserID ofUser) {
-            return storageCredentialsDatasafe.userProfile().publicProfile(ofUser);
-        }
-
-        @Override
-        public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
-            return storageCredentialsDatasafe.userProfile().privateProfile(ofUser);
-        }
-
-        @Override
-        public boolean userExists(UserID ofUser) {
-            return storageCredentialsDatasafe.userProfile().userExists(ofUser);
-        }
-    }
-
-    @RequiredArgsConstructor
-    private static class DatasafeBasedCredentialsManager extends BucketAccessServiceImpl {
-
-        private final DefaultDatasafeServices credentialStorageDatasafe;
-
-        @SneakyThrows
-        void registerDfs(UserIDAuth forUser, String bucketName, StorageCredentials credentials) {
-            if (credentialStorageDatasafe.userProfile().userExists(forUser.getUserID())) {
-                credentialStorageDatasafe.userProfile().registerUsingDefaults(forUser);
-            }
-
-            try (OutputStream os = credentialStorageDatasafe
-                    .privateService()
-                    .write(WriteRequest.forDefaultPrivate(forUser, bucketName))) {
-                os.write(credentials.serialize().getBytes(StandardCharsets.UTF_8));
-            }
-        }
-
-        @Override
-        public AbsoluteLocation<PrivateResource> privateAccessFor(UserIDAuth user, PrivateResource resource) {
-            return super.privateAccessFor(user, resource);
-        }
-
-        @Override
-        public AbsoluteLocation<PublicResource> publicAccessFor(UserID user, PublicResource resource) {
-            return super.publicAccessFor(user, resource);
-        }
-
-        @Override
-        public AbsoluteLocation withSystemAccess(AbsoluteLocation resource) {
-            return super.withSystemAccess(resource);
-        }
-
-        @SneakyThrows
-        StorageCredentials readCredentials(UserIDAuth forUser, String bucketName) {
-            try (InputStream is = credentialStorageDatasafe
-                    .privateService()
-                    .read(ReadRequest.forDefaultPrivate(forUser, bucketName))) {
-                return new StorageCredentials(new String(Streams.readAll(is)));
-            }
-        }
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class StorageCredentials {
-
-        private final String endpointUri;
-        private final String username;
-        private final String password;
-
-        StorageCredentials(String credentialStr) {
-            String[] hostUsernamePassword = credentialStr.split("\0");
-            this.endpointUri = hostUsernamePassword[0];
-            this.username = hostUsernamePassword[1];
-            this.password = hostUsernamePassword[2];
-        }
-
-        String serialize() {
-            return endpointUri + "\0" + username + "\0" + password;
-        }
+        return directoryDatasafe.userProfile();
     }
 }
