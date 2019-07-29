@@ -125,15 +125,6 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                             userFixture.getDatasafeServices().privateService(),
                             userFixture.getDatasafeServices().inboxService(),
                             userFixture.getStatisticService());
-
-                    executeTest(fixture,
-                            userFixture.getDescriptor().getName(),
-                            filesizeInMb,
-                            threadCount,
-                            userFixture.getDatasafeServices().userProfile(),
-                            userFixture.getDatasafeServices().privateService(),
-                            userFixture.getDatasafeServices().inboxService(),
-                            userFixture.getStatisticService());
                 }
             }else{
                 StorageDescriptor descriptor = listDescriptor.get(0);
