@@ -125,6 +125,15 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                             userFixture.getDatasafeServices().privateService(),
                             userFixture.getDatasafeServices().inboxService(),
                             userFixture.getStatisticService());
+
+                    executeTest(fixture,
+                            userFixture.getDescriptor().getName(),
+                            filesizeInMb,
+                            threadCount,
+                            userFixture.getDatasafeServices().userProfile(),
+                            userFixture.getDatasafeServices().privateService(),
+                            userFixture.getDatasafeServices().inboxService(),
+                            userFixture.getStatisticService());
                 }
             }else{
                 StorageDescriptor descriptor = listDescriptor.get(0);
@@ -177,6 +186,8 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         List<Operation> userOperations = allUserOperations.stream()
                 .filter(opr->opr.getUserId().equalsIgnoreCase(userId_))
                 .collect(Collectors.toList());
+
+        //userOperations.sort((o1, o2) -> o1.getType().compareTo(o2.getType()));
 
         Fixture fixturebyUser = new Fixture(userOperations, userPrivateSpace, userPublicSpace);
 
@@ -365,7 +376,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
             ExecutorService executorService,
             List<String> execIds,
             Set<String> blockedExecIds,
-            List<Throwable> exceptions) {
+            List<Throwable> exceptions) throws Exception{
 
         String threadId = execIds.get(ThreadLocalRandom.current().nextInt(execIds.size()));
         if (!blockedExecIds.add(threadId)) {
@@ -376,6 +387,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
 
         if (null != operation) {
             executeOperation(executor, executorService, blockedExecIds, exceptions, threadId, operation);
+            log.info(operation.toString());
             return;
         }
 

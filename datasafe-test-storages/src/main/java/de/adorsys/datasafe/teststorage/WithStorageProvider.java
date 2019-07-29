@@ -67,11 +67,14 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static String amazonAccessKeyIDName = "AWS_ACCESS_KEY_ID";
     private static String amazonSecretAccessKeyName = "AWS_SECRET_ACCESS_KEY";
-    private static String amazonAccessKeyID = readPropOrEnv(amazonAccessKeyIDName);
-    private static String amazonSecretAccessKey = readPropOrEnv(amazonSecretAccessKeyName);
-    private static String amazonRegion = readPropOrEnv("AWS_REGION", "eu-central-1");
-    private static String amazonBucket = readPropOrEnv("AWS_BUCKET", "adorsys-docusafe");
+    private static String amazonBucketName = "AWS_BUCKET";
+    private static String amazonRegionName = "AWS_REGION";
+    private static String amazonAccessKeyID = getAmazonAccessKeyID("");
+    private static String amazonSecretAccessKey = getAmazonSecretAccessKey("");
+    private static String amazonRegion = readPropOrEnv(amazonRegionName, "eu-central-1");
+    private static String amazonBucket = readPropOrEnv(amazonBucketName, "adorsys-docusafe");
     private static String amazonMappedUrl;
+    private static String[] amazonMappedUrlList;
 
     private static String amazons3BucketCount = readPropOrEnv("AWS_S3_BUCKET_COUNT");
 
@@ -82,10 +85,12 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static AmazonS3 minio;
     private static AmazonS3 ceph;
     private static AmazonS3 amazonS3;
+    private static List<AmazonS3> amazonS3List;
 
     private static Supplier<Void> cephStorage;
     private static Supplier<Void> minioStorage;
     private static Supplier<Void> amazonSotrage;
+    private static Supplier<Void> amazonMultiSotrage;
 
     @BeforeAll
     static void init(@TempDir Path tempDir) {
@@ -106,6 +111,12 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
         amazonSotrage = Suppliers.memoize(() -> {
             initS3();
+            initMultiS3();
+            return null;
+        });
+
+        amazonMultiSotrage = Suppliers.memoize(() -> {
+            initMultiS3();
             return null;
         });
     }
@@ -147,6 +158,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         amazonS3 = null;
+        amazonS3List = new ArrayList<>();
     }
 
     @ValueSource
@@ -277,19 +289,19 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     private static StorageDescriptor getStorageDescriptor(String bucketNo) {
-        if(null == readPropOrEnv(amazonAccessKeyIDName+bucketNo)){
+        if(null == getAmazonAccessKeyID(bucketNo)){
             return null;
         }
 
         return new StorageDescriptor(
-                StorageDescriptorName.AMAZON,
+                StorageDescriptorName.AMAZON_MULTI_BUCKET,
                 () -> {
-                    amazonSotrage.get();
-                    return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
+                    amazonMultiSotrage.get();
+                    return new S3StorageService(amazonS3List != null ?amazonS3List.get(bucketNo.isEmpty() ? 0 : Integer.parseInt(bucketNo)): amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + amazonBucket + "/" + bucketPath + "/"),
-                readPropOrEnv(amazonAccessKeyIDName+bucketNo),
-                readPropOrEnv(amazonSecretAccessKeyName+bucketNo),
+                getAmazonAccessKeyID(bucketNo),
+                getAmazonSecretAccessKey(bucketNo),
                 amazonRegion,
                 amazonBucket + "/" + bucketPath
         );
@@ -320,6 +332,37 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
         amazonMappedUrl = "s3://" + amazonBucket + "/" + bucketPath + "/";
         log.info("Amazon napped URL:" + amazonMappedUrl);
+    }
+
+    private static void initMultiS3(){
+        if(amazons3BucketCount == null){
+            amazonMappedUrlList = new String[0];
+            amazonMappedUrlList[0] = amazonMappedUrl;
+        }
+        amazonS3List = new ArrayList<>();
+        Integer s3BucketCount = Integer.parseInt(amazons3BucketCount);
+        amazonMappedUrlList = new String[s3BucketCount];
+
+        for(int i=1; i <= s3BucketCount; i++){
+            String position = "";
+            position = i==1 ? "": ""+(i-1);
+            amazonS3List.add(AmazonS3ClientBuilder.standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(
+                            new BasicAWSCredentials(getAmazonAccessKeyID(position), getAmazonSecretAccessKey(position)))
+                    )
+                    .withRegion(amazonRegion)
+                    .build());
+
+            amazonMappedUrlList[i-1] = "s3://" + amazonBucket + "/" + bucketPath + "/";
+        }
+    }
+
+    private static String getAmazonAccessKeyID(String bucketNo) {
+        return readPropOrEnv(amazonAccessKeyIDName+bucketNo);
+    }
+
+    private static String getAmazonSecretAccessKey(String bucketNo) {
+        return readPropOrEnv(amazonSecretAccessKeyName+bucketNo);
     }
 
     private static void startMinio() {
@@ -434,6 +477,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 case MINIO: return minioMappedUrl;
                 case CEPH: return cephMappedUrl;
                 case AMAZON: return amazonMappedUrl;
+                case AMAZON_MULTI_BUCKET: return amazonMappedUrlList.toString();
                 case FILESYSTEM: return null;
                 default: throw new RuntimeException("missing switch for " + name);
             }
@@ -444,6 +488,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         FILESYSTEM,
         MINIO,
         CEPH,
-        AMAZON
+        AMAZON,
+        AMAZON_MULTI_BUCKET
     }
 }
