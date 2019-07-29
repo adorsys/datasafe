@@ -117,7 +117,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
             if(s3BucketCount > 1){
                 for(Operation user : noOfUsers) {
                     UserFixture userFixture = getUserFixture(user, fixture, Integer.parseInt(amazons3BucketCount), listDescriptor, filesizeInMb, threadCount);
-                    executeTest(userFixture.getFixturebyUser(),
+                    executeTest(fixture,
                             userFixture.getDescriptor().getName(),
                             filesizeInMb,
                             threadCount,
