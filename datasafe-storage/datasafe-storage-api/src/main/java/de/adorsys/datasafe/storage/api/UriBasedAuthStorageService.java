@@ -26,7 +26,7 @@ public class UriBasedAuthStorageService implements StorageService {
 
     private final Map<AccessId, StorageService> clientByItsAccessKey = new ConcurrentHashMap<>();
 
-    // Builder to create S3 Storage service
+    // Builder to create S3 or other kind of Storage service
     private final Function<AccessId, StorageService> storageServiceBuilder;
 
     @Override

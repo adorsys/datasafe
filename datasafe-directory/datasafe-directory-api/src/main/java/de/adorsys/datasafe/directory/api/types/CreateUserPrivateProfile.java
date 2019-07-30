@@ -43,8 +43,15 @@ public class CreateUserPrivateProfile {
 
     /**
      * Where to store users' links to latest documents if software versioning is enabled.
+     * Optional field used for software-versioning.
      */
     private final AbsoluteLocation<PrivateResource> documentVersionStorage;
+
+    /**
+     * Keystore that contains keys to access storage systems (i.e. s3 access key/secret key)
+     * Optional field used for getting storage credentials.
+     */
+    private final AbsoluteLocation<PrivateResource> storageCredentialsKeystore;
 
     /**
      * If all files reside within some specific folder, one can simply remove it when deregistering user,

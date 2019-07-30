@@ -6,7 +6,7 @@ import lombok.Getter;
 enum MinioContainerId {
     FILES_BUCKET_ONE,
     FILES_BUCKET_TWO,
-    CREDENTIALS_BUCKET;
+    DIRECTORY_BUCKET;
 
     private final String accessKey;
     private final String secretKey;

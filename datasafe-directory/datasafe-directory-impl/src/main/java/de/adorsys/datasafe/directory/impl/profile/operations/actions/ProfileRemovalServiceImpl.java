@@ -65,9 +65,8 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
 
         // TODO test
         profileCache.getPrivateProfile().remove(userID.getUserID());
-        keyStoreCache.getKeystore().remove(userID.getUserID());
         profileCache.getPublicProfile().remove(userID.getUserID());
-        keyStoreCache.getPublicKeys().remove(userID.getUserID());
+        keyStoreCache.remove(userID.getUserID());
 
         UserPublicProfile publicProfile = retrievalService.publicProfile(userID.getUserID());
         UserPrivateProfile privateProfile = retrievalService.privateProfile(userID);

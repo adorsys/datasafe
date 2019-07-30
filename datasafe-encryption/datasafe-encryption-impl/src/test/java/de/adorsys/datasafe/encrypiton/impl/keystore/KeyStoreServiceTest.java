@@ -25,7 +25,7 @@ import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreation
 
 class KeyStoreServiceTest extends BaseMockitoTest {
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl();
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
     private KeyStoreAuth keyStoreAuth;
 
     @BeforeEach

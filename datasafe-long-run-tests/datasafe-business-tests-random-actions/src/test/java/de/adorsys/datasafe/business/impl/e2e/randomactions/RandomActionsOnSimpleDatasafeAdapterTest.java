@@ -4,10 +4,7 @@ import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.BaseRandomA
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.StatisticService;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
-import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
-import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
-import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
-import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
+import de.adorsys.datasafe.directory.api.types.*;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
@@ -166,6 +163,12 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                     @Override
                     public void registerUsingDefaults(UserIDAuth user) {
                         datasafeService.createUser(user);
+                    }
+
+                    @Override
+                    public void registerStorageCredentials(
+                            UserIDAuth user, StorageIdentifier storageId, StorageCredentials credentials) {
+                        throw new IllegalStateException("Not implemented");
                     }
 
                     @Override

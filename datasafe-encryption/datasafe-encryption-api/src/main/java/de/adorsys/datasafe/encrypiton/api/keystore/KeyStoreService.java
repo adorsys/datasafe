@@ -76,6 +76,8 @@ public interface KeyStoreService {
      */
     SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID);
 
+    void addPasswordBasedSecretKey(KeyStoreAccess keyStoreAccess, String alias, char[] secretToStore);
+
     /**
      * Converts keystore into bytes, they are safe to be store/transferred because of encryption using
      * {@link KeyStoreAuth#getReadStorePassword()}

@@ -2,17 +2,19 @@ package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
-import de.adorsys.datasafe.directory.api.profile.keys.KeyStoreOperations;
+import de.adorsys.datasafe.directory.api.profile.keys.DocumentKeyStoreOperations;
+import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
-import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
-import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
+import de.adorsys.datasafe.directory.api.types.*;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.PublicResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,8 @@ import java.util.List;
 @RuntimeDelegate
 public class ProfileRegistrationServiceImpl implements ProfileRegistrationService {
 
-    private final KeyStoreOperations keyStoreOper;
+    private final StorageKeyStoreOperations storageKeyStoreOper;
+    private final DocumentKeyStoreOperations keyStoreOper;
     private final BucketAccessService access;
     private final StorageCheckService checkService;
     private final StorageWriteService writeService;
@@ -33,9 +36,11 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     private final DFSConfig dfsConfig;
 
     @Inject
-    public ProfileRegistrationServiceImpl(KeyStoreOperations keyStoreOper, BucketAccessService access,
+    public ProfileRegistrationServiceImpl(StorageKeyStoreOperations storageKeyStoreOper,
+                                          DocumentKeyStoreOperations keyStoreOper, BucketAccessService access,
                                           StorageCheckService checkService, StorageWriteService writeService,
                                           GsonSerde serde, DFSConfig dfsConfig) {
+        this.storageKeyStoreOper = storageKeyStoreOper;
         this.keyStoreOper = keyStoreOper;
         this.access = access;
         this.checkService = checkService;
@@ -75,22 +80,27 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
         ) {
             os.write(serde.toJson(profile.removeAccess()).getBytes());
         }
-
-        if (checkService.objectExists(access.withSystemAccess(profile.getKeystore()))) {
-            log.warn("Keystore already exists for {} at {}, will not create new",
-                    profile.getId().getUserID(), profile.getKeystore().location());
-            return;
-        }
-
-        publishPublicKeysIfNeeded(
-                profile.getPublishPubKeysTo(),
-                keyStoreOper.createAndWriteKeyStore(profile.getId())
-        );
     }
 
     @Override
     public void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword) {
         keyStoreOper.updateReadKeyPassword(forUser, newPassword);
+        storageKeyStoreOper.updateReadKeyPassword(forUser, newPassword);
+    }
+
+    @Override
+    public void createKeystore(UserIDAuth user, UserPrivateProfile profile,
+                               AbsoluteLocation<PublicResource> publishPubKeysTo) {
+        if (checkService.objectExists(access.withSystemAccess(profile.getKeystore()))) {
+            log.warn("Keystore already exists for {} at {}, will not create new",
+                    profile.getPrivateStorage(), profile.getKeystore().location());
+            return;
+        }
+
+        publishPublicKeysIfNeeded(
+                publishPubKeysTo,
+                keyStoreOper.createAndWriteKeyStore(user)
+        );
     }
 
     /**
@@ -101,10 +111,17 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @Override
     public void registerUsingDefaults(UserIDAuth user) {
         registerPublic(dfsConfig.defaultPublicTemplate(user));
-        registerPrivate(dfsConfig.defaultPrivateTemplate(user));
+        CreateUserPrivateProfile privateProfile = dfsConfig.defaultPrivateTemplate(user);
+        registerPrivate(privateProfile);
+        createKeystore(user, privateProfile.removeAccess(), privateProfile.getPublishPubKeysTo());
     }
 
 
+    @Override
+    public void registerStorageCredentials(
+            UserIDAuth user, StorageIdentifier storageId, StorageCredentials credentials) {
+        storageKeyStoreOper.addStorageCredentials(user, storageId, credentials);
+    }
 
     @SneakyThrows
     private void publishPublicKeysIfNeeded(AbsoluteLocation publishTo,
