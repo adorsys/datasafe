@@ -106,7 +106,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         MultiStorageOperationExecutor executor = new MultiStorageOperationExecutor(
                 filesizeInMb * MEGABYTE_TO_BYTE,
                 new ConcurrentHashMap<>(),
-                new StatisticService(),
+                statisticService,
                 usersSelectedStorage
         );
 
@@ -128,13 +128,6 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         statisticService.generateReport().forEach((name, percentiles) ->
                 log.info("{} : {}", name, percentiles)
         );
-    }
-
-    private DefaultDatasafeServices datasafeServices(StorageDescriptor descriptor) {
-        return DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
-                .storage(descriptor.getStorageService().get())
-                .build();
     }
 
     protected void executeTest(
