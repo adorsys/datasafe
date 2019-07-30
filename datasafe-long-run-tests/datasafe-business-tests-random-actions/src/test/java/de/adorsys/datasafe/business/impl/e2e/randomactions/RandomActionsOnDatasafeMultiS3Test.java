@@ -31,20 +31,11 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
 @DisabledIfSystemProperty(named = DISABLE_RANDOM_ACTIONS_TEST, matches = "true")
 class RandomActionsOnDatasafeMultiS3Test extends BaseRandomActions {
 
-    /*@ParameterizedTest
-    @MethodSource("testMultiStorageParallelThreads")
-    void testMultiStorageParallelThreads(List<StorageDescriptor> listDescriptor, int threadCount, int filesizeInMb) {
-        executeTest(smallFixture(),
-                listDescriptor,
-                filesizeInMb,
-                threadCount
-        );
-    }*/
-
     @ParameterizedTest
-    @MethodSource("test")
-    void test(Map<String, StorageDescriptor> map, int threadCount, int filesizeInMb) {
-        executeTest(smallFixture(), map,
+    @MethodSource("actionsOnMultiStorageParallelThreads")
+    void actionsOnMultiStorageParallelThreads(Map<String, StorageDescriptor> usersSeletedStorage, int threadCount, int filesizeInMb) {
+        executeMultiStorageTest(smallFixture(),
+                usersSeletedStorage,
                 filesizeInMb,
                 threadCount
         );

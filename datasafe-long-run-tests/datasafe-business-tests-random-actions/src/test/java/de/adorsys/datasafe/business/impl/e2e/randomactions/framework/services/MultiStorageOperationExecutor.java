@@ -42,7 +42,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class OperationExecutor {
+public class MultiStorageOperationExecutor {
 
     private final Map<OperationType, Consumer<Operation>> handlers = ImmutableMap.<OperationType, Consumer<Operation>>builder()
             .put(OperationType.CREATE_USER, this::doCreate)
@@ -56,11 +56,9 @@ public class OperationExecutor {
     private final AtomicLong counter = new AtomicLong();
 
     private final int fileContentSize;
-    private final ProfileRegistrationService registrationService;
-    private final PrivateSpaceService privateSpace;
-    private final InboxService inboxService;
     private final Map<String, UserSpec> users;
     private final StatisticService statisticService;
+    private final Map<String, WithStorageProvider.StorageDescriptor> usersStorage;
 
     public void execute(Operation oper) {
         long cnt = counter.incrementAndGet();
@@ -135,8 +133,12 @@ public class OperationExecutor {
     @SneakyThrows
     private void doCreate(Operation oper) {
         UserIDAuth auth = new UserIDAuth(oper.getUserId(), oper.getUserId());
-        registrationService.registerUsingDefaults(auth);
-        users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
+        if (usersStorage != null) {
+            WithStorageProvider.StorageDescriptor descriptor = usersStorage.get(oper.getUserId());
+            DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
+            datasafeServices.userProfile().registerUsingDefaults(auth);
+            users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
+        }
     }
 
     private DefaultDatasafeServices datasafeServices(WithStorageProvider.StorageDescriptor descriptor) {
@@ -149,9 +151,12 @@ public class OperationExecutor {
     @SneakyThrows
     private void doWrite(Operation oper) {
         UserSpec user = requireUser(oper);
-
-        try (OutputStream os = openWriteStream(user, oper)) {
-            ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), os);
+        if (usersStorage != null) {
+            WithStorageProvider.StorageDescriptor descriptor = usersStorage.get(oper.getUserId());
+            DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
+            try (OutputStream os = openWriteStreamNew(user, oper, datasafeServices)) {
+                ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), os);
+            }
         }
     }
 
@@ -159,18 +164,23 @@ public class OperationExecutor {
     private void doRead(Operation oper) {
         UserSpec user = requireUser(oper);
 
-        try (InputStream is = openReadStream(user, oper)) {
-            byte[] users = digest(is);
-            byte[] expected = digest(user.getGenerator().generate(oper.getResult().getContent().getId()));
+        if (usersStorage != null) {
+            WithStorageProvider.StorageDescriptor descriptor = usersStorage.get(oper.getUserId());
+            DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
 
-            if (!Arrays.equals(users, expected)) {
-                log.error("Checksum mismatch for {} - found {} / expected {}",
-                        oper,
-                        Base64.getEncoder().encodeToString(users),
-                        Base64.getEncoder().encodeToString(expected)
-                );
+            try (InputStream is = openReadStreamNew(user, oper, datasafeServices)) {
+                byte[] users = digest(is);
+                byte[] expected = digest(user.getGenerator().generate(oper.getResult().getContent().getId()));
 
-                throw new IllegalArgumentException("Failed reading - checksum mismatch");
+                if (!Arrays.equals(users, expected)) {
+                    log.error("Checksum mismatch for {} - found {} / expected {}",
+                            oper,
+                            Base64.getEncoder().encodeToString(users),
+                            Base64.getEncoder().encodeToString(expected)
+                    );
+
+                    throw new IllegalArgumentException("Failed reading - checksum mismatch");
+                }
             }
         }
     }
@@ -178,17 +188,22 @@ public class OperationExecutor {
     private void doList(Operation oper) {
         UserSpec user = requireUser(oper);
 
-        List<AbsoluteLocation<ResolvedResource>> resources = listResources(user, oper).collect(Collectors.toList());
-        Set<String> paths = resources.stream()
-                .map(it -> it.getResource().asPrivate().decryptedPath().getPath())
-                .collect(Collectors.toSet());
-        if (!paths.equals(oper.getResult().getDirContent())) {
-            log.error("Directory content mismatch for {} - found {} / expected {}",
-                    oper,
-                    paths,
-                    oper.getResult().getDirContent()
-            );
-            throw new IllegalArgumentException("Directory content mismatch");
+        if (usersStorage != null) {
+            WithStorageProvider.StorageDescriptor descriptor = usersStorage.get(oper.getUserId());
+            DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
+
+            List<AbsoluteLocation<ResolvedResource>> resources = listResourcesNew(user, oper, datasafeServices).collect(Collectors.toList());
+            Set<String> paths = resources.stream()
+                    .map(it -> it.getResource().asPrivate().decryptedPath().getPath())
+                    .collect(Collectors.toSet());
+            if (!paths.equals(oper.getResult().getDirContent())) {
+                log.error("Directory content mismatch for {} - found {} / expected {}",
+                        oper,
+                        paths,
+                        oper.getResult().getDirContent()
+                );
+                throw new IllegalArgumentException("Directory content mismatch");
+            }
         }
     }
 
@@ -197,19 +212,22 @@ public class OperationExecutor {
 
         RemoveRequest<UserIDAuth, PrivateResource> request =
                 RemoveRequest.forDefaultPrivate(user.getAuth(), new Uri(oper.getLocation()));
+        if (usersStorage != null) {
+            WithStorageProvider.StorageDescriptor descriptor = usersStorage.get(oper.getUserId());
+            DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
+            if (StorageType.INBOX.equals(oper.getStorageType())) {
+                datasafeServices.inboxService().remove(request);
+                return;
+            }
 
-        if (StorageType.INBOX.equals(oper.getStorageType())) {
-            inboxService.remove(request);
-            return;
+            datasafeServices.privateService().remove(request);
         }
-
-        privateSpace.remove(request);
     }
 
-    private OutputStream openWriteStream(UserSpec user, Operation oper) {
+    private OutputStream openWriteStreamNew(UserSpec user, Operation oper, DefaultDatasafeServices datasafeServices) {
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return inboxService.write(WriteRequest.forDefaultPublic(
+            return datasafeServices.inboxService().write(WriteRequest.forDefaultPublic(
                     oper.getRecipients().stream()
                             .map(it -> requireUser(it).getAuth().getUserID())
                             .collect(Collectors.toSet()),
@@ -217,31 +235,31 @@ public class OperationExecutor {
             );
         }
 
-        return privateSpace.write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+        return datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
     }
 
-    private InputStream openReadStream(UserSpec user, Operation oper) {
+    private InputStream openReadStreamNew(UserSpec user, Operation oper, DefaultDatasafeServices datasafeServices) {
         ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forDefaultPrivate(
                 user.getAuth(), oper.getLocation()
         );
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return inboxService.read(request);
+            return datasafeServices.inboxService().read(request);
         }
 
-        return privateSpace.read(ReadRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+        return datasafeServices.privateService().read(ReadRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
     }
 
-    private Stream<AbsoluteLocation<ResolvedResource>> listResources(UserSpec user, Operation oper) {
+    private Stream<AbsoluteLocation<ResolvedResource>> listResourcesNew(UserSpec user, Operation oper, DefaultDatasafeServices datasafeServices) {
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.forDefaultPrivate(
                 user.getAuth(), oper.getLocation()
         );
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return inboxService.list(request);
+            return datasafeServices.inboxService().list(request);
         }
 
-        return privateSpace.list(request);
+        return datasafeServices.privateService().list(request);
     }
 
     @SneakyThrows
