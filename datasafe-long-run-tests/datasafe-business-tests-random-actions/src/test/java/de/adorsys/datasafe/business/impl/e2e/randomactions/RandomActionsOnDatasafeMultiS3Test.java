@@ -37,7 +37,8 @@ class RandomActionsOnDatasafeMultiS3Test extends BaseRandomActions {
         executeMultiStorageTest(smallFixture(),
                 usersSeletedStorage,
                 filesizeInMb,
-                threadCount
+                threadCount,
+                new StatisticService()
         );
     }
 }

@@ -71,8 +71,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String amazonRegionName = "AWS_REGION";
     private static String amazonAccessKeyID = getAmazonAccessKeyID("");
     private static String amazonSecretAccessKey = getAmazonSecretAccessKey("");
-    private static String amazonRegion = readPropOrEnv(amazonRegionName, "eu-central-1");
-    private static String amazonBucket = readPropOrEnv(amazonBucketName, "adorsys-docusafe");
+    private static String amazonRegion = getAmazonRegion("");
+    private static String amazonBucket = getAmazonBucket("");
     private static String amazonMappedUrl;
     private static String[] amazonMappedUrlList;
 
@@ -312,11 +312,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     amazonMultiSotrage.get();
                     return new S3StorageService(amazonS3List != null ?amazonS3List.get(bucketNo.isEmpty() ? 0 : Integer.parseInt(bucketNo)): amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + amazonBucket + "/" + bucketPath + "/"),
+                new Uri("s3://" + getAmazonBucket(bucketNo)+ "/" + bucketPath + "/"),
                 getAmazonAccessKeyID(bucketNo),
                 getAmazonSecretAccessKey(bucketNo),
-                amazonRegion,
-                amazonBucket + "/" + bucketPath
+                getAmazonRegion(bucketNo),
+                getAmazonBucket(bucketNo) + "/" + bucketPath
         );
     }
 
@@ -363,11 +363,19 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     .withCredentials(new AWSStaticCredentialsProvider(
                             new BasicAWSCredentials(getAmazonAccessKeyID(position), getAmazonSecretAccessKey(position)))
                     )
-                    .withRegion(amazonRegion)
+                    .withRegion(getAmazonRegion(position))
                     .build());
 
-            amazonMappedUrlList[i-1] = "s3://" + amazonBucket + "/" + bucketPath + "/";
+            amazonMappedUrlList[i-1] = "s3://" + getAmazonBucket(position) + "/" + bucketPath + "/";
         }
+    }
+
+    private static String getAmazonBucket(String bucketNo) {
+        return readPropOrEnv(amazonBucketName+bucketNo, "adorsys-docusafe");
+    }
+
+    private static String getAmazonRegion(String bucketNo) {
+        return readPropOrEnv(amazonRegionName+bucketNo, "eu-central-1");
     }
 
     private static String getAmazonAccessKeyID(String bucketNo) {

@@ -97,9 +97,11 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
     }
 
-    protected void executeMultiStorageTest(Fixture fixture, Map<String, StorageDescriptor> usersSelectedStorage, int filesizeInMb, int threadCount) {
+    protected void executeMultiStorageTest(Fixture fixture,
+                                           Map<String, StorageDescriptor> usersSelectedStorage,
+                                           int filesizeInMb, int threadCount,
+                                           StatisticService statisticService) {
 
-        DefaultDatasafeServices datasafeServices = datasafeServices(usersSelectedStorage.get("user-1"));
         OperationQueue queue = new OperationQueue(fixture);
         MultiStorageOperationExecutor executor = new MultiStorageOperationExecutor(
                 filesizeInMb * MEGABYTE_TO_BYTE,
@@ -117,13 +119,15 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         assertThat(exceptions).isEmpty();
         assertThat(terminatedOk).isTrue();
 
+        //usersSelectedStorage.entrySet().stream().forEach(i-> i.getValue().getName());
+
         log.info("==== Statistics for {} with {} threads and {} Mb filesize: ====",
                 usersSelectedStorage.get("user-1").getName(),
                 threadCount,
                 filesizeInMb
         );
 
-        new StatisticService().generateReport().forEach((name, percentiles) ->
+        statisticService.generateReport().forEach((name, percentiles) ->
                 log.info("{} : {}", name, percentiles)
         );
     }
@@ -282,7 +286,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         });
     }
 
-    //Multi storage user creation
+    //Multi storage user creation user-1 storage-1, user-2 storage - 2
     private void createUsersMultiStorage(Fixture fixture, MultiStorageOperationExecutor executor) {
         List<Operation> createUsers = fixture.getUserPrivateSpace().keySet().stream()
                 .map(it -> Operation.builder().type(OperationType.CREATE_USER).userId(it).build())
@@ -305,7 +309,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         Set<String> blockedExecutionIds = Collections.synchronizedSet(new HashSet<>());
 
         do {
-            executeNextActionNew(queue, executor, executorService, executionIds, blockedExecutionIds, exceptions);
+            executeMultiStorageNextAction(queue, executor, executorService, executionIds, blockedExecutionIds, exceptions);
         } while (!executionIds.isEmpty() && exceptions.isEmpty());
 
         executorService.shutdown();
@@ -323,7 +327,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         return true;
     }
 
-    private void executeNextActionNew(
+    private void executeMultiStorageNextAction(
             OperationQueue queue,
             MultiStorageOperationExecutor executor,
             ExecutorService executorService,
@@ -339,7 +343,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         Operation operation = queue.get(threadId);
 
         if (null != operation) {
-            executeOperationNew(executor, executorService, blockedExecIds, exceptions, threadId, operation);
+            executeMultiStorageOperation(executor, executorService, blockedExecIds, exceptions, threadId, operation);
             log.info(operation.toString());
             return;
         }
@@ -347,7 +351,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         execIds.remove(threadId);
     }
 
-    private void executeOperationNew(MultiStorageOperationExecutor executor,
+    private void executeMultiStorageOperation(MultiStorageOperationExecutor executor,
                                      ExecutorService executorService,
                                      Set<String> blockedExecIds,
                                      List<Throwable> exceptions,
@@ -361,14 +365,6 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                 exceptions,
                 () -> executor.execute(executionTaggedOperation(execId, operation))
         );
-    }
-
-    private int getS3BucketPosition(int userId, Integer s3BucketCount) {
-        do{
-            userId -= s3BucketCount;
-        }while (s3BucketCount <= userId);
-
-        return userId;
     }
 
     // translates fixture based operation to unique operation using user id + execution id as key
