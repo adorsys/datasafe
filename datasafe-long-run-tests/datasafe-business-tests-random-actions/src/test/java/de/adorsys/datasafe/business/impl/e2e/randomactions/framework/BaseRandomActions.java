@@ -119,8 +119,6 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         assertThat(exceptions).isEmpty();
         assertThat(terminatedOk).isTrue();
 
-        //usersSelectedStorage.entrySet().stream().forEach(i-> i.getValue().getName());
-
         log.info("==== Statistics for {} with {} threads and {} Mb filesize: ====",
                 usersSelectedStorage.get("user-1").getName(),
                 threadCount,
