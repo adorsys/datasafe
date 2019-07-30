@@ -3,6 +3,7 @@ package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.ge
 import com.google.gson.GsonBuilder;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.StatelessKieSession;
 import org.kie.internal.io.ResourceFactory;
 
+import java.io.FileOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -70,6 +72,7 @@ class FixtureGenerator extends BaseMockitoTest {
         printResult();
     }
 
+    @SneakyThrows
     private void printResult() {
         Fixture fixture = new Fixture(
                 historyList.getOperations(),
@@ -85,8 +88,11 @@ class FixtureGenerator extends BaseMockitoTest {
                         )
         );
 
-        System.out.println("------------------------- Fixture: -----------------------------------");
-        System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(fixture));
+        String path = "./src/test/resources/fixture/result.json";
+        System.out.println("Fixture has been written to: " + path);
+        FileOutputStream os = new FileOutputStream(path);
+        os.write(new GsonBuilder().setPrettyPrinting().create().toJson(fixture).getBytes());
+        os.close();
     }
 
     /**

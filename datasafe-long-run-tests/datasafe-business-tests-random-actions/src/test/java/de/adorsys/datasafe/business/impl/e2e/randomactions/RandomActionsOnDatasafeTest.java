@@ -26,14 +26,14 @@ class RandomActionsOnDatasafeTest extends BaseRandomActions {
 
     @ParameterizedTest
     @MethodSource("actionsOnSoragesAndThreadsAndFilesizes")
-    void testRandomActionsParallelThreads(StorageDescriptor descriptor, int threadCount, int filesizeInMb) {
+    void testRandomActionsParallelThreads(StorageDescriptor descriptor, int threadCount, int filesizeInKb) {
         DefaultDatasafeServices datasafeServices = datasafeServices(descriptor);
         StatisticService statisticService = new StatisticService();
 
         executeTest(
-                smallFixture(),
+                mediumFixture(),
                 descriptor.getName(),
-                filesizeInMb,
+                filesizeInKb,
                 threadCount,
                 datasafeServices.userProfile(),
                 datasafeServices.privateService(),

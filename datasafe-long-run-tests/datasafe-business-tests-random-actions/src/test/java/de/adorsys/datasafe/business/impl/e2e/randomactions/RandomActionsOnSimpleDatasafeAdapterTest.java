@@ -45,14 +45,14 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
 
     @ParameterizedTest
     @MethodSource("actionsOnSoragesAndThreadsAndFilesizes")
-    void testRandomActionsParallelThreads(StorageDescriptor descriptor, int threadCount, int filesizeInMb) {
+    void testRandomActionsParallelThreads(StorageDescriptor descriptor, int threadCount, int filesizeInKb) {
         DefaultDatasafeServices datasafeServices = datasafeServicesFromSimpleDatasafeAdapter(descriptor);
         StatisticService statisticService = new StatisticService();
 
         executeTest(
                 smallSimpleDocusafeAdapterFixture(),
                 descriptor.getName(),
-                filesizeInMb,
+                filesizeInKb,
                 threadCount,
                 datasafeServices.userProfile(),
                 datasafeServices.privateService(),

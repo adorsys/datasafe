@@ -45,11 +45,11 @@ public abstract class BaseRandomActions extends WithStorageProvider {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final int MEGABYTE_TO_BYTE = 1024 * 1024;
+    private static final int KILOBYTE_TO_BYTE = 1024;
     private static final long TIMEOUT = 30L;
 
-    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(2, 4);
-    private static final Set<Integer> FILE_SIZE_M_BYTES = ImmutableSet.of(1, 10);
+    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(2, 4, 8);
+    private static final Set<Integer> FILE_SIZE_K_BYTES = ImmutableSet.of(100, 1024, 10240); // 100KB, 1MB, 10MB
 
     @BeforeEach
     void prepare() {
@@ -66,6 +66,14 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         return fixture("fixture/fixture_200_ops.json");
     }
 
+    protected Fixture mediumFixture() {
+        return fixture("fixture/fixture_1000_ops.json");
+    }
+
+    protected Fixture bigFixture() {
+        return fixture("fixture/fixture_10000_ops.json");
+    }
+
     @SneakyThrows
     protected Fixture fixture(String path) {
         try (Reader reader = Resources.asCharSource(
@@ -78,16 +86,16 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     @ValueSource
     protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
-                Collections.singleton(minio()),
-            THREAD_COUNT,
-            FILE_SIZE_M_BYTES
+                Collections.singleton(s3()),
+                THREAD_COUNT,
+                FILE_SIZE_K_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
     }
 
     protected void executeTest(
             Fixture fixture,
             StorageDescriptorName storageName,
-            int filesizeInMb,
+            int filesizeInKb,
             int threads,
             ProfileRegistrationService profileRegistrationService,
             PrivateSpaceService privateSpaceService,
@@ -96,7 +104,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     ) {
         OperationQueue queue = new OperationQueue(fixture);
         OperationExecutor executor = new OperationExecutor(
-                filesizeInMb * MEGABYTE_TO_BYTE,
+                filesizeInKb * KILOBYTE_TO_BYTE,
                 profileRegistrationService,
                 privateSpaceService,
                 inboxService,
@@ -113,10 +121,10 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         assertThat(exceptions).isEmpty();
         assertThat(terminatedOk).isTrue();
 
-        log.info("==== Statistics for {} with {} threads and {} Mb filesize: ====",
+        log.info("==== Statistics for {} with {} threads and {} Kb filesize: ====",
                 storageName,
                 threads,
-                filesizeInMb
+                filesizeInKb
         );
 
         statisticService.generateReport().forEach((name, percentiles) ->
