@@ -9,7 +9,6 @@ import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
-import com.sun.tools.corba.se.idl.StringGen;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
@@ -23,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.containers.GenericContainer;
@@ -69,10 +67,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String amazonSecretAccessKeyName = "AWS_SECRET_ACCESS_KEY";
     private static String amazonBucketName = "AWS_BUCKET";
     private static String amazonRegionName = "AWS_REGION";
-    private static String amazonAccessKeyID = getAmazonAccessKeyID("");
-    private static String amazonSecretAccessKey = getAmazonSecretAccessKey("");
-    private static String amazonRegion = getAmazonRegion("");
-    private static String amazonBucket = getAmazonBucket("");
+    private static String amazonAccessKeyID = getAmazonAccessKeyID(0);
+    private static String amazonSecretAccessKey = getAmazonSecretAccessKey(0);
+    private static String amazonRegion = getAmazonRegion(0);
+    private static String amazonBucket = getAmazonBucket(0);
     private static String amazonMappedUrl;
     private static String[] amazonMappedUrlList;
 
@@ -138,6 +136,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
         if (null != amazonS3) {
             removeObjectFromS3(amazonS3, amazonBucket, bucketPath);
+        }
+
+        if (null != amazonMultiSotrage) {
+            removeObjectFromMultiS3(amazonS3List, amazonBucket, bucketPath);
         }
     }
 
@@ -270,47 +272,40 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         );
     }
 
-    protected static Map<String, StorageDescriptor> getMultiS3Bucket(List<String> users){
-        if(amazons3BucketCount == null){
-            return null;
+    protected static Map<String, StorageDescriptor> getMultiS3Bucket(List<String> users) {
+        if (null == amazons3BucketCount) {
+            throw new RuntimeException("There is no defined variable as \"AWS_S3_BUCKET_COUNT\" in environment/system variables");
         }
-        Map<String, StorageDescriptor>  storageDescriptorHashMap = new HashMap<>();
-        List<StorageDescriptor> storageDescriptorList = getS3Bucket();
-        int s3Count = Integer.parseInt(amazons3BucketCount);
-        for(String user : users){
+
+        Map<String, StorageDescriptor> storageDescriptorHashMap = new HashMap<>();
+        int s3BucketCount = Integer.parseInt(amazons3BucketCount);
+        List<StorageDescriptor> storageDescriptorList = getStorageDescriptors(s3BucketCount);
+        for (String user : users) {
             int userId = Integer.parseInt(user.split("-")[1]);
-            storageDescriptorHashMap.put(user, storageDescriptorList.get(userId % s3Count));
+            storageDescriptorHashMap.put(user, storageDescriptorList.get(userId % s3BucketCount));
         }
         return storageDescriptorHashMap;
     }
 
-    protected static List<StorageDescriptor> getS3Bucket() {
-        if(amazons3BucketCount == null){
-            return null;
-        }
+    protected static List<StorageDescriptor> getStorageDescriptors(int s3BucketCount) {
         List<StorageDescriptor> storageDescriptorList = new ArrayList<>();
-        Integer s3BucketCount = Integer.parseInt(amazons3BucketCount);
 
-        if(s3BucketCount > 1){
-            for(int i=1; i <= s3BucketCount; i++){
-                storageDescriptorList.add(i == 1? getStorageDescriptor(""): getStorageDescriptor(""+(i-1)));
-            }
-        }else{
-            storageDescriptorList.add(getStorageDescriptor(""));
+        for (int i = 0; i < s3BucketCount; i++) {
+            storageDescriptorList.add(getStorageDescriptor(i));
         }
         return storageDescriptorList;
     }
 
-    private static StorageDescriptor getStorageDescriptor(String bucketNo) {
+    private static StorageDescriptor getStorageDescriptor(int bucketNo) {
         if(null == getAmazonAccessKeyID(bucketNo)){
-            return null;
+            throw new RuntimeException("There is no defined variable as \""+amazonAccessKeyIDName+bucketNo+"\" in environment/system variables");
         }
 
         return new StorageDescriptor(
                 StorageDescriptorName.AMAZON_MULTI_BUCKET,
                 () -> {
                     amazonMultiSotrage.get();
-                    return new S3StorageService(amazonS3List != null ?amazonS3List.get(bucketNo.isEmpty() ? 0 : Integer.parseInt(bucketNo)): amazonS3, amazonBucket, EXECUTOR_SERVICE);
+                    return new S3StorageService(amazonS3List != null ?amazonS3List.get(bucketNo): amazonS3, amazonBucket, EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + getAmazonBucket(bucketNo)+ "/" + bucketPath + "/"),
                 getAmazonAccessKeyID(bucketNo),
@@ -320,7 +315,6 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         );
     }
 
-
     private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
         amazonS3.listObjects(bucket, prefix)
                 .getObjectSummaries()
@@ -328,6 +322,17 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                     log.debug("Remove {}", it.getKey());
                     amazonS3.deleteObject(bucket, it.getKey());
                 });
+    }
+
+    private void removeObjectFromMultiS3(List<AmazonS3> amazonS3List, String bucket, String prefix) {
+        for (AmazonS3 amazonS3 : amazonS3List) {
+            amazonS3.listObjects(bucket, prefix)
+                    .getObjectSummaries()
+                    .forEach(it -> {
+                        log.debug("Remove {}", it.getKey());
+                        amazonS3.deleteObject(bucket, it.getKey());
+                    });
+        }
     }
 
     private static void initS3() {
@@ -348,41 +353,40 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     private static void initMultiS3(){
-        if(amazons3BucketCount == null){
+        amazonS3List = new ArrayList<>();
+        if(null == amazons3BucketCount){
             amazonMappedUrlList = new String[0];
             amazonMappedUrlList[0] = amazonMappedUrl;
         }
-        amazonS3List = new ArrayList<>();
+
         Integer s3BucketCount = Integer.parseInt(amazons3BucketCount);
         amazonMappedUrlList = new String[s3BucketCount];
 
-        for(int i=1; i <= s3BucketCount; i++){
-            String position = "";
-            position = i==1 ? "": ""+(i-1);
+        for(int i=0; i<s3BucketCount; i++){
             amazonS3List.add(AmazonS3ClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(
-                            new BasicAWSCredentials(getAmazonAccessKeyID(position), getAmazonSecretAccessKey(position)))
+                            new BasicAWSCredentials(getAmazonAccessKeyID(i), getAmazonSecretAccessKey(i)))
                     )
-                    .withRegion(getAmazonRegion(position))
+                    .withRegion(getAmazonRegion(i))
                     .build());
 
-            amazonMappedUrlList[i-1] = "s3://" + getAmazonBucket(position) + "/" + bucketPath + "/";
+            amazonMappedUrlList[i-1] = "s3://" + getAmazonBucket(i) + "/" + bucketPath + "/";
         }
     }
 
-    private static String getAmazonBucket(String bucketNo) {
+    private static String getAmazonBucket(int bucketNo) {
         return readPropOrEnv(amazonBucketName+bucketNo, "adorsys-docusafe");
     }
 
-    private static String getAmazonRegion(String bucketNo) {
+    private static String getAmazonRegion(int bucketNo) {
         return readPropOrEnv(amazonRegionName+bucketNo, "eu-central-1");
     }
 
-    private static String getAmazonAccessKeyID(String bucketNo) {
+    private static String getAmazonAccessKeyID(int bucketNo) {
         return readPropOrEnv(amazonAccessKeyIDName+bucketNo);
     }
 
-    private static String getAmazonSecretAccessKey(String bucketNo) {
+    private static String getAmazonSecretAccessKey(int bucketNo) {
         return readPropOrEnv(amazonSecretAccessKeyName+bucketNo);
     }
 

@@ -88,7 +88,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     @ValueSource
     protected static Stream<Arguments> actionsOnMultiStorageParallelThreads() {
         List<String> users = new ArrayList<>();
-        smallFixture().getOperations().stream().forEach((i)->users.add(i.getUserId()));
+        smallFixture().getOperations().stream().forEach((it)->users.add(it.getUserId()));
 
         return Sets.cartesianProduct(
                 Collections.singleton(getMultiS3Bucket(users)),
@@ -120,7 +120,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         assertThat(terminatedOk).isTrue();
 
         log.info("==== Statistics for {} with {} threads and {} Mb filesize: ====",
-                usersSelectedStorage.get("user-1").getName(),
+                usersSelectedStorage.get(0).getName(),
                 threadCount,
                 filesizeInMb
         );
@@ -227,7 +227,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
 
         if (null != operation) {
             executeOperation(executor, executorService, blockedExecIds, exceptions, threadId, operation);
-            log.info(operation.toString());
+            log.info("Operation: {}", operation);
             return;
         }
 
