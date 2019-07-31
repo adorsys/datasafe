@@ -183,7 +183,7 @@
                 <version>2.22.2</version>
                 <configuration>
                     <forkMode>once</forkMode>
-                    <argLine>-Xmx${ram}m</argLine>
+                    <argLine>${testArgs}</argLine>
                 </configuration>
             </plugin>
         </plugins>
