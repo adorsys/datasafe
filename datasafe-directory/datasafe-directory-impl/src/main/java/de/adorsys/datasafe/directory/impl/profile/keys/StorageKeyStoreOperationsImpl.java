@@ -20,6 +20,7 @@ import javax.crypto.interfaces.PBEKey;
 import javax.inject.Inject;
 import java.security.KeyStore;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -83,17 +84,41 @@ public class StorageKeyStoreOperationsImpl implements StorageKeyStoreOperations 
 
     @Override
     public void addStorageCredentials(UserIDAuth forUser, StorageIdentifier storageId, StorageCredentials credentials) {
+        modifyAndStoreKeystore(
+                forUser,
+                keyStoreAccess -> keyStoreService.addPasswordBasedSecretKey(
+                        keyStoreAccess,
+                        storageId.getId(),
+                        serialize(credentials)
+                )
+        );
+    }
+
+    @Override
+    public void removeStorageCredentials(UserIDAuth forUser, StorageIdentifier storageId) {
+        modifyAndStoreKeystore(
+                forUser,
+                keyStoreAccess -> keyStoreService.removeKey(
+                        keyStoreAccess,
+                        storageId.getId()
+                )
+        );
+    }
+
+    @Override
+    public void invalidateCache(UserIDAuth forUser) {
+        keystoreCache.getStorageAccess().remove(forUser.getUserID());
+    }
+
+    private void modifyAndStoreKeystore(UserIDAuth forUser, Consumer<KeyStoreAccess> keystoreModifier) {
+        log.debug("Modifying users' '{}' keystore", forUser.getUserID());
         AbsoluteLocation<PrivateResource> location = keystoreLocationWithAccess(forUser);
-        KeyStoreAccess keystoreWithCreds =  new KeyStoreAccess(
+        KeyStoreAccess keystoreWithCreds = new KeyStoreAccess(
                 genericOper.readKeyStore(forUser, location),
                 genericOper.keystoreAuth(forUser)
         );
 
-        keyStoreService.addPasswordBasedSecretKey(
-                keystoreWithCreds,
-                storageId.getId(),
-                serialize(credentials)
-        );
+        keystoreModifier.accept(keystoreWithCreds);
 
         genericOper.writeKeystore(
                 forUser.getUserID(),

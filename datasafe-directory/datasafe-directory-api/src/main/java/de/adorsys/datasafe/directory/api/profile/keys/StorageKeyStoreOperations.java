@@ -20,12 +20,25 @@ public interface StorageKeyStoreOperations {
     void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword);
 
     /**
-     * Stores storage access key in keystore.
+     * Stores storage access keys in keystore.
      * @param forUser Owner of this key
      * @param storageId Storage identifier
      * @param credentials Key to store in keystore
      */
     void addStorageCredentials(UserIDAuth forUser, StorageIdentifier storageId, StorageCredentials credentials);
+
+    /**
+     * Removes storage access keys from keystore.
+     * @param forUser Owner of this key
+     * @param storageId Storage identifier
+     */
+    void removeStorageCredentials(UserIDAuth forUser, StorageIdentifier storageId);
+
+    /**
+     * Attempts to invalidate keystore cache to re-read keystore directly from storage
+     * @param forUser Keystore owner
+     */
+    void invalidateCache(UserIDAuth forUser);
 
     /**
      * Read key from the keystore associated with user.

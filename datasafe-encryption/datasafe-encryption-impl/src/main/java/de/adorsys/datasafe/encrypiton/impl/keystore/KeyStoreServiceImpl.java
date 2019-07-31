@@ -154,6 +154,12 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     }
 
     @Override
+    @SneakyThrows
+    public void removeKey(KeyStoreAccess keyStoreAccess, String alias) {
+        keyStoreAccess.getKeyStore().deleteEntry(alias);
+    }
+
+    @Override
     public byte[] serialize(KeyStore store, String storeId, ReadStorePassword readStorePassword) {
         return KeyStoreServiceImplBaseFunctions.toByteArray(
                 store,

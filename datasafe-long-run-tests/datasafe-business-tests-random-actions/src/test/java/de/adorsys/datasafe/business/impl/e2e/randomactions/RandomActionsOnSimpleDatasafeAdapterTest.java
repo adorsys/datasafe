@@ -177,6 +177,12 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                     }
 
                     @Override
+                    public void createKeystore(UserIDAuth user, UserPrivateProfile profile,
+                                               AbsoluteLocation<PublicResource> publishPubKeysTo) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
                     public UserPublicProfile publicProfile(UserID ofUser) {
                         throw new IllegalStateException("Not implemented");
                     }

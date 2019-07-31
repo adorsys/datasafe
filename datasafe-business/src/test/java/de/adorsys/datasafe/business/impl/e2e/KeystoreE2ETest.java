@@ -3,6 +3,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -49,7 +50,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
         URI keystorePath = datasafeServices.userProfile().privateProfile(auth)
                 .getKeystore().location().asURI();
 
-        KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl();
+        KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
         KeyStore keyStore = keyStoreService.deserialize(
                 Files.readAllBytes(Paths.get(keystorePath)),
                 "ID",

@@ -37,14 +37,16 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
     @Override
     public AbsoluteLocation<PrivateResource> privateAccessFor(UserIDAuth user, PrivateResource resource) {
         log.debug("get private access for user {} and bucket {}", user, resource);
-        String uri = resource.location().asString();
-        Optional<StorageIdentifier> storageAccess = storageKeyStoreOperations.readAliases(user)
-                .stream()
-                .filter(it -> uri.matches(it.getId()))
-                .findFirst();
+        Optional<StorageIdentifier> storageAccess = getStorageAccessCredentials(user, resource);
 
         if (!storageAccess.isPresent()) {
-            return new AbsoluteLocation<>(resource);
+            // attempt to re-read storages keystore, maybe cache is expired:
+            storageKeyStoreOperations.invalidateCache(user);
+            storageAccess = getStorageAccessCredentials(user, resource);
+            // looks like there is really no storage credentials for this resource, either it can be public:
+            if (!storageAccess.isPresent()) {
+                return new AbsoluteLocation<>(resource);
+            }
         }
 
         StorageCredentials credentials = storageKeyStoreOperations.getStorageCredentials(user, storageAccess.get());
@@ -67,5 +69,13 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
     public AbsoluteLocation withSystemAccess(AbsoluteLocation resource) {
         log.debug("get system access for {}", resource.location());
         return new AbsoluteLocation<>(resource);
+    }
+
+    private Optional<StorageIdentifier> getStorageAccessCredentials(UserIDAuth user, PrivateResource resource) {
+        String uri = resource.location().asString();
+        return storageKeyStoreOperations.readAliases(user)
+                .stream()
+                .filter(it -> uri.matches(it.getId()))
+                .findFirst();
     }
 }

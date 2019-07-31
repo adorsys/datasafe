@@ -24,6 +24,7 @@ import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This module is responsible for providing user profiles - his inbox, private storage, etc. locations.
@@ -39,9 +40,12 @@ public abstract class DefaultProfileModule {
     static UserProfileCache userProfileCache(@Nullable OverridesRegistry registry) {
         Cache<UserID, UserPublicProfile> publicProfileCache = CacheBuilder.newBuilder()
                 .initialCapacity(1000)
+                .expireAfterWrite(15, TimeUnit.MINUTES)
                 .build();
+
         Cache<UserID, UserPrivateProfile> privateProfileCache = CacheBuilder.newBuilder()
                 .initialCapacity(1000)
+                .expireAfterWrite(15, TimeUnit.MINUTES)
                 .build();
 
         return new DefaultUserProfileCacheRuntimeDelegatable(

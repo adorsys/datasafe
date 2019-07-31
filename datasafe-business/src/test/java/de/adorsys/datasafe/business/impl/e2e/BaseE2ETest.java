@@ -195,10 +195,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     protected UserIDAuth registerUser(String userName) {
         UserIDAuth auth = new UserIDAuth(new UserID(userName), new ReadKeyPassword("secure-password " + userName));
-
-        profileRegistrationService.registerPublic(dfsConfig.defaultPublicTemplate(auth));
-        profileRegistrationService.registerPrivate(dfsConfig.defaultPrivateTemplate(auth));
-
+        profileRegistrationService.registerUsingDefaults(auth);
         log.info("Created user: {}", Obfuscate.secure(userName));
         return auth;
     }
