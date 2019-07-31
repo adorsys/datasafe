@@ -15,6 +15,7 @@ import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

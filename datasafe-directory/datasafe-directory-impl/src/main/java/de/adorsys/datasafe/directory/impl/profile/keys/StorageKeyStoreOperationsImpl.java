@@ -4,7 +4,7 @@ import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.types.StorageCredentials;
-import de.adorsys.datasafe.directory.api.types.StorageIdentifier;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;

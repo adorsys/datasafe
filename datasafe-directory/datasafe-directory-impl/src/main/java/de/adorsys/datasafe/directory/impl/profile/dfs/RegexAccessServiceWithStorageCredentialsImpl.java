@@ -3,7 +3,7 @@ package de.adorsys.datasafe.directory.impl.profile.dfs;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
 import de.adorsys.datasafe.directory.api.types.StorageCredentials;
-import de.adorsys.datasafe.directory.api.types.StorageIdentifier;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;

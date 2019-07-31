@@ -5,6 +5,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 
 /**
  * Registers user in system.

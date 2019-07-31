@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.types.StorageCredentials;
-import de.adorsys.datasafe.directory.api.types.StorageIdentifier;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;

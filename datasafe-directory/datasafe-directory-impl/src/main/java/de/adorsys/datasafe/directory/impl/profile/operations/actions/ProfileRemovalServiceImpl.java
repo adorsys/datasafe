@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 
+import com.google.common.collect.Streams;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
@@ -71,16 +72,19 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         UserPublicProfile publicProfile = retrievalService.publicProfile(userID.getUserID());
         UserPrivateProfile privateProfile = retrievalService.privateProfile(userID);
 
-        removeAllIn(userID, privateProfile.getPrivateStorage());
+        privateProfile.getPrivateStorage().forEach((id, path) -> removeAllIn(userID, path));
         removeAllIn(userID, privateProfile.getInboxWithFullAccess());
         removeAllIn(userID, privateProfile.getDocumentVersionStorage());
 
-        Stream.of(
-                privateProfile.getKeystore().getResource(),
-                privateProfile.getPrivateStorage().getResource(),
-                privateProfile.getInboxWithFullAccess().getResource(),
-                privateProfile.getDocumentVersionStorage().getResource()
-        ).map(it -> access.privateAccessFor(userID, it)).forEach(removeService::remove);
+        Streams.concat(
+                Stream.of(
+                        privateProfile.getKeystore().getResource(),
+                        privateProfile.getInboxWithFullAccess().getResource(),
+                        privateProfile.getDocumentVersionStorage().getResource()
+                ),
+                privateProfile.getPrivateStorage().values().stream().map(AbsoluteLocation::getResource)
+        )
+        .map(it -> access.privateAccessFor(userID, it)).forEach(removeService::remove);
 
         removeService.remove(access.withSystemAccess(publicProfile.getPublicKeys()));
 

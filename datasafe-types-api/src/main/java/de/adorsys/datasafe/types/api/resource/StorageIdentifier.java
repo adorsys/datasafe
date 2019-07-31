@@ -1,12 +1,14 @@
-package de.adorsys.datasafe.directory.api.types;
+package de.adorsys.datasafe.types.api.resource;
 
 import lombok.Data;
 
 /**
- * Acts as an identifier for {@link StorageCredentials}.
+ * Acts as an identifier of client resource.
  */
 @Data
 public class StorageIdentifier {
+
+    public static final StorageIdentifier DEFAULT = new StorageIdentifier("DEFAULT");
 
     /**
      * By default, it is prefix that will be used to match credentials to URI.
