@@ -2,11 +2,13 @@ package de.adorsys.datasafe.directory.api.types;
 
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Users' private profile - typically should be seen only by owner.
@@ -25,7 +27,7 @@ public class UserPrivateProfile {
      * Users' privatespace location (where his private files are stored)
      */
     @NonNull
-    private final AbsoluteLocation<PrivateResource> privateStorage;
+    private final Map<StorageIdentifier, AbsoluteLocation<PrivateResource>> privateStorage;
 
     /**
      * Users' INBOX as privatespace location (INBOX folder with full control)

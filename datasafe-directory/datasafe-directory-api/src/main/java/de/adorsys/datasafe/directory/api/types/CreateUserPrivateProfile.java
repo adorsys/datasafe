@@ -4,10 +4,13 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -70,7 +73,7 @@ public class CreateUserPrivateProfile {
         return UserPrivateProfile.builder()
             // FIXME - remove access ?
             .keystore(keystore)
-            .privateStorage(privateStorage)
+            .privateStorage(new HashMap<>(Collections.singletonMap(StorageIdentifier.DEFAULT, privateStorage)))
             .inboxWithFullAccess(inboxWithWriteAccess)
             .documentVersionStorage(documentVersionStorage)
             .associatedResources(associatedResources)

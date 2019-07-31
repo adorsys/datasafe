@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.types.api.actions;
 
 import de.adorsys.datasafe.types.api.resource.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -13,6 +14,7 @@ import java.net.URI;
  * @param <L> Resource location
  */
 @Value
+@AllArgsConstructor
 @Builder(toBuilder = true)
 public class ReadRequest<T, L extends ResourceLocation> {
 
@@ -21,6 +23,15 @@ public class ReadRequest<T, L extends ResourceLocation> {
 
     @NonNull
     private final L location;
+
+    @NonNull
+    private final StorageIdentifier storageIdentifier;
+
+    private ReadRequest(@NonNull T owner, @NonNull L location) {
+        this.owner = owner;
+        this.location = location;
+        this.storageIdentifier = StorageIdentifier.DEFAULT;
+    }
 
     public static <T> ReadRequest<T, PrivateResource> forPrivate(T owner, PrivateResource path) {
         return new ReadRequest<>(owner, path);
