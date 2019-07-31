@@ -127,7 +127,7 @@ public class StorageKeyStoreOperationsImpl implements StorageKeyStoreOperations 
                 keystoreWithCreds.getKeyStore()
         );
 
-        keystoreCache.getStorageAccess().remove(forUser.getUserID());
+        invalidateCache(forUser);
     }
 
     private StorageCredentials deserialize(char[] data) {
