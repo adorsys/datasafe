@@ -157,8 +157,16 @@ public class Uri {
         String result = wrapped.getScheme();
         result += "://" + username + ":" + password + "@";
         result += wrapped.getHost();
-        result += ":" + wrapped.getPort();
-        result += "/" + wrapped.getPath();
+        if (wrapped.getPort() != -1) {
+            result += ":" + wrapped.getPort();
+        }
+
+        result += "/";
+
+        if (!"/".equals(wrapped.getPath())) {
+            result += wrapped.getPath();
+        }
+
         return new Uri(result);
     }
 

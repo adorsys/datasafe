@@ -60,4 +60,16 @@ public class WriteRequest<T, L extends ResourceLocation> {
     public static <T> WriteRequest<T, PublicResource> forDefaultPublic(T owner, Uri path) {
         return new WriteRequest<>(owner, new BasePublicResource(path), new ArrayList<>());
     }
+
+    public static <T> WriteRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, String path) {
+        return new WriteRequest<>(owner, BasePrivateResource.forPrivate(new Uri(path)), storage, new ArrayList<>());
+    }
+
+    public static <T> WriteRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, URI path) {
+        return forPrivate(owner, storage, new Uri(path));
+    }
+
+    public static <T> WriteRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, Uri path) {
+        return new WriteRequest<>(owner, BasePrivateResource.forPrivate(path), storage, new ArrayList<>());
+    }
 }

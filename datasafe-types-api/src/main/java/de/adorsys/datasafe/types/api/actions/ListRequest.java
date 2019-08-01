@@ -45,4 +45,16 @@ public class ListRequest<T, L extends ResourceLocation> {
     public static <T> ListRequest<T, PrivateResource> forDefaultPrivate(T owner, String path) {
         return new ListRequest<>(owner, BasePrivateResource.forPrivate(new Uri(path)));
     }
+
+    public static <T> ListRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, String path) {
+        return new ListRequest<>(owner, BasePrivateResource.forPrivate(new Uri(path)), storage);
+    }
+
+    public static <T> ListRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, URI path) {
+        return forPrivate(owner, storage, new Uri(path));
+    }
+
+    public static <T> ListRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, Uri path) {
+        return new ListRequest<>(owner, BasePrivateResource.forPrivate(path), storage);
+    }
 }

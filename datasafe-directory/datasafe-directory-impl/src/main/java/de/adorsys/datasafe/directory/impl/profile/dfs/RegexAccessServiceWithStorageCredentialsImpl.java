@@ -1,15 +1,16 @@
 package de.adorsys.datasafe.directory.impl.profile.dfs;
 
+import dagger.Lazy;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
 import de.adorsys.datasafe.directory.api.types.StorageCredentials;
-import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -24,10 +25,10 @@ import java.util.Optional;
 @RuntimeDelegate
 public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAccessService {
 
-    private final StorageKeyStoreOperations storageKeyStoreOperations;
+    private final Lazy<StorageKeyStoreOperations> storageKeyStoreOperations;
 
     @Inject
-    public RegexAccessServiceWithStorageCredentialsImpl(StorageKeyStoreOperations storageKeyStoreOperations) {
+    public RegexAccessServiceWithStorageCredentialsImpl(Lazy<StorageKeyStoreOperations> storageKeyStoreOperations) {
         this.storageKeyStoreOperations = storageKeyStoreOperations;
     }
 
@@ -41,7 +42,7 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
 
         if (!storageAccess.isPresent()) {
             // attempt to re-read storages keystore, maybe cache is expired:
-            storageKeyStoreOperations.invalidateCache(user);
+            storageKeyStoreOperations.get().invalidateCache(user);
             storageAccess = getStorageAccessCredentials(user, resource);
             // looks like there is really no storage credentials for this resource, either it can be public:
             if (!storageAccess.isPresent()) {
@@ -49,8 +50,8 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
             }
         }
 
-        StorageCredentials credentials = storageKeyStoreOperations.getStorageCredentials(user, storageAccess.get());
-        return new AbsoluteLocation<>(resource.withAuthority(credentials.getUsername(), credentials.getPassword()));
+        StorageCredentials creds = storageKeyStoreOperations.get().getStorageCredentials(user, storageAccess.get());
+        return new AbsoluteLocation<>(resource.withAuthority(creds.getUsername(), creds.getPassword()));
     }
 
     /**
@@ -73,7 +74,7 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
 
     private Optional<StorageIdentifier> getStorageAccessCredentials(UserIDAuth user, PrivateResource resource) {
         String uri = resource.location().asString();
-        return storageKeyStoreOperations.readAliases(user)
+        return storageKeyStoreOperations.get().readAliases(user)
                 .stream()
                 .filter(it -> uri.matches(it.getId()))
                 .findFirst();

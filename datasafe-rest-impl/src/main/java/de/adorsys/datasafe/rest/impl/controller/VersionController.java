@@ -148,12 +148,8 @@ public class VersionController {
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");
-        PrivateResource resource = BasePrivateResource.forPrivate(path);
 
-        ListRequest<UserIDAuth, PrivateResource> request = ListRequest.<UserIDAuth, PrivateResource>builder()
-                .location(resource)
-                .owner(userIDAuth)
-                .build();
+        ListRequest<UserIDAuth, PrivateResource> request = ListRequest.forDefaultPrivate(userIDAuth, path);
 
         List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> versionList =
                 versionedDatasafeServices.versionInfo()

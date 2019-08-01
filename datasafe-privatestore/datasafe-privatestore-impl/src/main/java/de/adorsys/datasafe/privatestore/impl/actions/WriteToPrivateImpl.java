@@ -43,9 +43,12 @@ public class WriteToPrivateImpl implements WriteToPrivate {
 
         return writer.write(
                 WithCallback.<AbsoluteLocation<PrivateResource>, ResourceWriteCallback>builder()
-                        .wrapped(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation()))
-                        .callbacks(request.getCallbacks())
-                        .build(),
+                        .wrapped(
+                            resolver.encryptAndResolvePath(
+                                request.getOwner(),
+                                request.getLocation(),
+                                request.getStorageIdentifier())
+                        ).callbacks(request.getCallbacks()).build(),
                 keySpec
         );
     }

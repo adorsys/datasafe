@@ -30,7 +30,7 @@ class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
     private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
 
     private UserPrivateProfile privateProfile = UserPrivateProfile.builder()
-            .privateStorage(PRIVATE)
+            .privateStorage(ImmutableMap.of(StorageIdentifier.DEFAULT, PRIVATE))
             .inboxWithFullAccess(PRIVATE)
             .keystore(PRIVATE)
             .documentVersionStorage(PRIVATE)

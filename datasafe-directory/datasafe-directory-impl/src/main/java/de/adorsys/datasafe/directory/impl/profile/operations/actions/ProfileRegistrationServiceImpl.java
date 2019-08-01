@@ -3,6 +3,7 @@ package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.DocumentKeyStoreOperations;
+import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
@@ -27,6 +28,8 @@ import java.util.List;
 @RuntimeDelegate
 public class ProfileRegistrationServiceImpl implements ProfileRegistrationService {
 
+    private final ProfileStoreService storeProfile;
+    private final StorageKeyStoreOperations storageKeyStoreOper;
     private final DocumentKeyStoreOperations keyStoreOper;
     private final BucketAccessService access;
     private final StorageCheckService checkService;
@@ -35,9 +38,13 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     private final DFSConfig dfsConfig;
 
     @Inject
-    public ProfileRegistrationServiceImpl(DocumentKeyStoreOperations keyStoreOper, BucketAccessService access,
-                                          StorageCheckService checkService, StorageWriteService writeService,
-                                          GsonSerde serde, DFSConfig dfsConfig) {
+    public ProfileRegistrationServiceImpl(ProfileStoreService storeProfile,
+                                          StorageKeyStoreOperations storageKeyStoreOper,
+                                          DocumentKeyStoreOperations keyStoreOper,
+                                          BucketAccessService access, StorageCheckService checkService,
+                                          StorageWriteService writeService, GsonSerde serde, DFSConfig dfsConfig) {
+        this.storeProfile = storeProfile;
+        this.storageKeyStoreOper = storageKeyStoreOper;
         this.keyStoreOper = keyStoreOper;
         this.access = access;
         this.checkService = checkService;
@@ -55,11 +62,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @SneakyThrows
     public void registerPublic(CreateUserPublicProfile profile) {
         log.debug("Register public {}", profile);
-        try (OutputStream os = writeService.write(
-                WithCallback.noCallback(access.withSystemAccess(dfsConfig.publicProfile(profile.getId()))))
-        ) {
-            os.write(serde.toJson(profile.removeAccess()).getBytes());
-        }
+        storeProfile.registerPublic(profile.getId(), profile.removeAccess());
     }
 
     /**
@@ -72,11 +75,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @SneakyThrows
     public void registerPrivate(CreateUserPrivateProfile profile) {
         log.debug("Register private {}", profile);
-        try (OutputStream os = writeService.write(
-                WithCallback.noCallback(access.withSystemAccess(dfsConfig.privateProfile(profile.getId().getUserID()))))
-        ) {
-            os.write(serde.toJson(profile.removeAccess()).getBytes());
-        }
+        storeProfile.registerPrivate(profile.getId().getUserID(), profile.removeAccess());
     }
 
     @Override
@@ -86,6 +85,10 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
             log.warn("Keystore already exists for {} at {}, will not create new",
                     profile.getPrivateStorage(), profile.getKeystore().location());
             return;
+        }
+
+        if (null != profile.getStorageCredentialsKeystore()) {
+            storageKeyStoreOper.createAndWriteKeystore(user);
         }
 
         publishPublicKeysIfNeeded(

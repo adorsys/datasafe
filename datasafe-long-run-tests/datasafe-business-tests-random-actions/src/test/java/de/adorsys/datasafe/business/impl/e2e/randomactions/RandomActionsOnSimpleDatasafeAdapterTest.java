@@ -193,6 +193,21 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                     }
 
                     @Override
+                    public void updatePublicProfile(UserIDAuth forUser, UserPublicProfile profile) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
+                    public void updatePrivateProfile(UserIDAuth forUser, UserPrivateProfile profile) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
+                    public void deregisterStorageCredentials(UserIDAuth user, StorageIdentifier storageId) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
                     public boolean userExists(UserID ofUser) {
                         throw new IllegalStateException("Not implemented");
                     }

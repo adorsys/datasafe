@@ -14,7 +14,6 @@ import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.actions.StorageListService;
 import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
-import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -101,7 +100,7 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
 
     private void removeAllIn(UserIDAuth userID, AbsoluteLocation<PrivateResource> location) {
         listService.list(
-                new ListRequest<>(userID, access.privateAccessFor(userID, location.getResource())).getLocation()
+                access.privateAccessFor(userID, location.getResource())
         ).forEach(removeService::remove);
     }
 }

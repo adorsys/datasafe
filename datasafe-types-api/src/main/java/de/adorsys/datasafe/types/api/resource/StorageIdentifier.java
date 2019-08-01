@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class StorageIdentifier {
 
+    // Default users' private storage
     public static final StorageIdentifier DEFAULT = new StorageIdentifier("DEFAULT");
 
     /**

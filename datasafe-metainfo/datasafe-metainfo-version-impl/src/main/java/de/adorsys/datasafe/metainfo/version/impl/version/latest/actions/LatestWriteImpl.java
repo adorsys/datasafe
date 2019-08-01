@@ -54,7 +54,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
     public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
         AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(
-                        request.getOwner(), request.getLocation()
+                        request.getOwner(), request.getLocation(), request.getStorageIdentifier()
                 );
 
         VersionedUri decryptedPathWithVersion = encoder.newVersion(request.getLocation().location());
@@ -63,7 +63,8 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
         PrivateResource resourceRelativeToPrivate = encryptPath(
                 request.getOwner(),
                 decryptedPath,
-                request.getLocation()
+                request.getLocation(),
+                request.getStorageIdentifier()
         );
 
         return new VersionCommittingStream(
@@ -77,10 +78,11 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
         );
     }
 
-    private PrivateResource encryptPath(UserIDAuth auth, Uri uri, PrivateResource base) {
+    private PrivateResource encryptPath(UserIDAuth auth, Uri uri, PrivateResource base, StorageIdentifier identifier) {
         AbsoluteLocation<PrivateResource> resource = encryptedResourceResolver.encryptAndResolvePath(
                 auth,
-                base.resolve(uri, new Uri(""))
+                base.resolve(uri, new Uri("")),
+                identifier
         );
 
         return BasePrivateResource.forPrivate(resource.getResource().encryptedPath());

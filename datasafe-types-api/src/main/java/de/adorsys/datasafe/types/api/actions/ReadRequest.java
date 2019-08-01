@@ -58,4 +58,16 @@ public class ReadRequest<T, L extends ResourceLocation> {
     public static <T> ReadRequest<T, PrivateResource> forDefaultPrivate(T owner, Uri path) {
         return new ReadRequest<>(owner, BasePrivateResource.forPrivate(path));
     }
+
+    public static <T> ReadRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, String path) {
+        return new ReadRequest<>(owner, BasePrivateResource.forPrivate(new Uri(path)), storage);
+    }
+
+    public static <T> ReadRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, URI path) {
+        return forPrivate(owner, storage, new Uri(path));
+    }
+
+    public static <T> ReadRequest<T, PrivateResource> forPrivate(T owner, StorageIdentifier storage, Uri path) {
+        return new ReadRequest<>(owner, BasePrivateResource.forPrivate(path), storage);
+    }
 }

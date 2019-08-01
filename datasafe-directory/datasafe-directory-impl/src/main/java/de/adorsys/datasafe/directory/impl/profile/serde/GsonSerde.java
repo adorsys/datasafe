@@ -58,6 +58,6 @@ public class GsonSerde {
                 (JsonSerializer<PublicKey>) (elem, type, ctx) -> new JsonPrimitive(pubSerde.writePubKey(elem))
         );
 
-        this.gson = gsonBuilder.create();
+        this.gson = gsonBuilder.enableComplexMapKeySerialization().create();
     }
 }

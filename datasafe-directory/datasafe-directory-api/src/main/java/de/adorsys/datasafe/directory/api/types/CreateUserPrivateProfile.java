@@ -74,6 +74,7 @@ public class CreateUserPrivateProfile {
             // FIXME - remove access ?
             .keystore(keystore)
             .privateStorage(new HashMap<>(Collections.singletonMap(StorageIdentifier.DEFAULT, privateStorage)))
+            .storageCredentialsKeystore(storageCredentialsKeystore)
             .inboxWithFullAccess(inboxWithWriteAccess)
             .documentVersionStorage(documentVersionStorage)
             .associatedResources(associatedResources)

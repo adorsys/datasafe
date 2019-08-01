@@ -58,11 +58,14 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
 
         ListRequest<UserIDAuth, PrivateResource> forLatestSnapshotDir = request.toBuilder().location(
                 latestVersionLinkLocator.resolveLatestLinkLocation(
-                        request.getOwner(), request.getLocation()).getResource()
+                        request.getOwner(), request.getLocation(), request.getStorageIdentifier()).getResource()
         ).build();
 
         Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptor =
-                latestVersionLinkLocator.linkDecryptingReader(request.getOwner());
+                latestVersionLinkLocator.linkDecryptingReader(
+                    request.getOwner(),
+                    request.getStorageIdentifier()
+                );
 
         return listPrivate
                 .list(forLatestSnapshotDir)

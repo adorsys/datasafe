@@ -20,6 +20,12 @@ public interface StorageKeyStoreOperations {
     void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword);
 
     /**
+     * Creates storage that stores access keys in keystore.
+     * @param forUser Owner of this key
+     */
+    void createAndWriteKeystore(UserIDAuth forUser);
+
+    /**
      * Stores storage access keys in keystore.
      * @param forUser Owner of this key
      * @param storageId Storage identifier

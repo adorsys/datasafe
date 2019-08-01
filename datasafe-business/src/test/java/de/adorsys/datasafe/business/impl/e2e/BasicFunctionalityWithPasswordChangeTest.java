@@ -197,7 +197,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
     private UserIDAuth checkUpdatedCredsWorkAndOldDont(UserIDAuth auth,
                                                        ReadKeyPassword newPassword,
                                                        Consumer<UserIDAuth> withAuth) {
-        profileRegistrationService.updateReadKeyPassword(auth, newPassword);
+        profileUpdatingService.updateReadKeyPassword(auth, newPassword);
         assertThrows(UnrecoverableKeyException.class, () -> withAuth.accept(auth));
         UserIDAuth newAuth = new UserIDAuth(auth.getUserID(), newPassword);
         withAuth.accept(newAuth);
