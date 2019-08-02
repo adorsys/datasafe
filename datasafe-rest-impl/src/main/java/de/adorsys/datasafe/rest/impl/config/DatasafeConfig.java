@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.inject.Inject;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.security.Security;
@@ -52,16 +51,15 @@ public class DatasafeConfig {
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("private_profiles", "public_profiles");
 
-    private DatasafeProperties datasafeProperties;
-
-    @Inject
-    DatasafeConfig(DatasafeProperties datasafeProperties) {
-        this.datasafeProperties = datasafeProperties;
+    @Bean
+    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue = "true")
+    DFSConfig singleDfsConfig(DatasafeProperties properties) {
+        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
-    DFSConfig singleDfsConfig(DatasafeProperties properties) {
+    @ConditionalOnProperty(name = CLIENT_CREDENTIALS, havingValue = "true")
+    DFSConfig withClientCredentials(DatasafeProperties properties) {
         return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
     }
 
@@ -121,7 +119,7 @@ public class DatasafeConfig {
 
         return new RegexDelegatingStorage(
             ImmutableMap.<Pattern, StorageService>builder()
-                .put(Pattern.compile(properties.getAmazonUrl() + ".+"), basicStorage)
+                .put(Pattern.compile(properties.getSystemRoot() + ".+"), basicStorage)
                 // here order is important, immutable map preserves key order, so properties.getAmazonUrl()
                 // will be tried first
                 .put(
