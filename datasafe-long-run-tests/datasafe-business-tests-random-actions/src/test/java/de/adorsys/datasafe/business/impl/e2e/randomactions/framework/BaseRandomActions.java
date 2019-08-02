@@ -87,7 +87,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
 
     @ValueSource
     protected static Stream<Arguments> actionsOnMultiStorageParallelThreads() {
-        List<String> users = new ArrayList<>();
+        Set<String> users = new HashSet<>();
         smallFixture().getOperations().stream().forEach((it)->users.add(it.getUserId()));
 
         return Sets.cartesianProduct(
