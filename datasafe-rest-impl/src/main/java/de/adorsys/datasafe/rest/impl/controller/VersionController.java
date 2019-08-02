@@ -49,11 +49,13 @@ public class VersionController {
     })
     public List<String> listVersionedDocuments(@RequestHeader String user,
                                                @RequestHeader String password,
+                                               @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                                @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
         path = Optional.ofNullable(path).orElse("./");
         try {
-            List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(ListRequest.forDefaultPrivate(userIDAuth, path))
+            List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(
+                ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
                     .map(e -> e.absolute().getResource().decryptedPath().asString())
                     .collect(Collectors.toList());
             log.debug("List for path {} returned {} items", path, documentList.size());
@@ -76,11 +78,12 @@ public class VersionController {
     })
     public void readVersionedDocument(@RequestHeader String user,
                                       @RequestHeader String password,
+                                      @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                       @PathVariable String path,
                                       HttpServletResponse response) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate(path);
-        ReadRequest<UserIDAuth, PrivateResource> request = ReadRequest.forPrivate(userIDAuth, resource);
+        ReadRequest<UserIDAuth, PrivateResource> request =
+                ReadRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         // this is needed for swagger, produces is just a directive:
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
 
@@ -88,7 +91,7 @@ public class VersionController {
              OutputStream os = response.getOutputStream()) {
             StreamUtils.copy(is, os);
         }
-        log.debug("User: {}, read private file from: {}", user, resource);
+        log.debug("User: {}, read private file from: {}", user, path);
     }
 
     /**
@@ -101,11 +104,13 @@ public class VersionController {
             @ApiResponse(code = 200, message = "Document was successfully written")
     })
     public void writeVersionedDocument(@RequestHeader String user,
-                              @RequestHeader String password,
-                              @PathVariable String path,
-                              @RequestParam("file") MultipartFile file) {
+                                       @RequestHeader String password,
+                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
+                                       @PathVariable String path,
+                                       @RequestParam("file") MultipartFile file) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(userIDAuth, path);
+        WriteRequest<UserIDAuth, PrivateResource> request =
+                WriteRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         try (OutputStream os = versionedDatasafeServices.latestPrivate().write(request);
              InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
@@ -123,12 +128,13 @@ public class VersionController {
     })
     public void deleteVersionedDocument(@RequestHeader String user,
                                         @RequestHeader String password,
+                                        @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                         @PathVariable String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
-        PrivateResource resource = BasePrivateResource.forPrivate(path);
-        RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
+        RemoveRequest<UserIDAuth, PrivateResource> request =
+                RemoveRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         versionedDatasafeServices.latestPrivate().remove(request);
-        log.debug("User: {}, delete private file: {}", user, resource);
+        log.debug("User: {}, delete private file: {}", user, path);
     }
 
     /**
@@ -142,6 +148,7 @@ public class VersionController {
     })
     public List<String> versionsOf(@RequestHeader String user,
                                    @RequestHeader String password,
+                                   @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                    @ApiParam(defaultValue = ".")
                                    @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
@@ -149,7 +156,8 @@ public class VersionController {
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");
 
-        ListRequest<UserIDAuth, PrivateResource> request = ListRequest.forDefaultPrivate(userIDAuth, path);
+        ListRequest<UserIDAuth, PrivateResource> request =
+                ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
 
         List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> versionList =
                 versionedDatasafeServices.versionInfo()

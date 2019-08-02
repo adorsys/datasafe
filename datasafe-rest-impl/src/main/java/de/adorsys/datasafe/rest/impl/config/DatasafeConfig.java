@@ -14,12 +14,15 @@ import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
+import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
 import de.adorsys.datasafe.storage.impl.db.DatabaseConnectionRegistry;
 import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -33,7 +36,9 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.security.Security;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 /**
  * Configures default (non-versioned) Datasafe service that uses S3 client as storage provider.
@@ -43,6 +48,7 @@ import java.util.concurrent.Executors;
 @Configuration
 public class DatasafeConfig {
     public static final String FILESYSTEM_ENV = "USE_FILESYSTEM";
+    public static final String CLIENT_CREDENTIALS = "ALLOW_CLIENT_S3_CREDENTIALS";
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("private_profiles", "public_profiles");
 
@@ -102,16 +108,49 @@ public class DatasafeConfig {
         properties.setSystemRoot(root);
         return new FileSystemStorageService(Paths.get(root));
     }
+
+    @Bean
+    @ConditionalOnProperty(CLIENT_CREDENTIALS)
+    StorageService clientCredentials(DatasafeProperties properties) {
+        String root = System.getenv(FILESYSTEM_ENV);
+        log.info("==================== FILESYSTEM");
+        log.info("build DFS to FILESYSTEM with root " + root);
+        properties.setSystemRoot(root);
+        return new FileSystemStorageService(Paths.get(root));
+    }
+
     /**
      * @return S3 based storage service
      */
     @Bean
     @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
     StorageService singleStorageService(AmazonS3 s3, DatasafeProperties properties) {
-        return new S3StorageService(
-                s3,
-                properties.getBucketName(),
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        S3StorageService basicStorage = new S3StorageService(
+            s3,
+            properties.getBucketName(),
+            executorService
+        );
+
+        return new RegexDelegatingStorage(
+            ImmutableMap.<Pattern, StorageService>builder()
+                .put(Pattern.compile(properties.getAmazonUrl() + ".+"), basicStorage)
+                // here order is important, immutable map preserves key order, so properties.getAmazonUrl()
+                // will be tried first
+                .put(
+                    Pattern.compile(".+"),
+                    new UriBasedAuthStorageService(
+                        acc -> new S3StorageService(
+                            S3ClientFactory.getClient(
+                                acc.getOnlyHostPart().toString(),
+                                acc.getAccessKey(),
+                                acc.getSecretKey()
+                            ),
+                            acc.getBucketName(),
+                            executorService
+                        )
+                    )
+                ).build()
         );
     }
 

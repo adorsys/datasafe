@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.api.types;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public class StorageCredentials {
 
     private final String username;
