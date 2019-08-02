@@ -14,7 +14,10 @@ import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.crypto.BadPaddingException;
 import javax.inject.Inject;
+import java.security.KeyStoreException;
+import java.security.UnrecoverableKeyException;
 
 @Slf4j
 @RuntimeDelegate
@@ -38,20 +41,21 @@ public class ProfileUpdatingServiceImpl implements ProfileUpdatingService {
     @Override
     @SneakyThrows
     public void updatePublicProfile(UserIDAuth forUser, UserPublicProfile profile) {
-        privateKeyService.documentEncryptionSecretKey(forUser); // for access check
+        validateKeystoreAccess(forUser);
         log.debug("Update public profile {}", profile);
         storeService.registerPublic(forUser.getUserID(), profile);
     }
 
     @Override
     public void updatePrivateProfile(UserIDAuth forUser, UserPrivateProfile profile) {
-        privateKeyService.documentEncryptionSecretKey(forUser); // for access check
+        validateKeystoreAccess(forUser);
         log.debug("Update private profile {}", profile);
         storeService.registerPrivate(forUser.getUserID(), profile);
     }
 
     @Override
     public void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword) {
+        log.debug("Update read key for profile {}", forUser.getUserID());
         // access check is implicit
         keyStoreOper.updateReadKeyPassword(forUser, newPassword);
         storageKeyStoreOper.updateReadKeyPassword(forUser, newPassword);
@@ -60,13 +64,28 @@ public class ProfileUpdatingServiceImpl implements ProfileUpdatingService {
     @Override
     public void registerStorageCredentials(
             UserIDAuth user, StorageIdentifier storageId, StorageCredentials credentials) {
-        privateKeyService.documentEncryptionSecretKey(user); // for access check
+        validateKeystoreAccess(user);
         storageKeyStoreOper.addStorageCredentials(user, storageId, credentials);
     }
 
     @Override
     public void deregisterStorageCredentials(UserIDAuth user, StorageIdentifier storageId) {
-        privateKeyService.documentEncryptionSecretKey(user); // for access check
+        validateKeystoreAccess(user);
         storageKeyStoreOper.removeStorageCredentials(user, storageId);
+    }
+
+    @SneakyThrows
+    private void validateKeystoreAccess(UserIDAuth user) {
+        // avoid only unauthorized access
+        try {
+            privateKeyService.documentEncryptionSecretKey(user); // for access check
+        } catch (RuntimeException ex) {
+            // lombok @SneakyThrows handling
+            if (ex.getCause() instanceof KeyStoreException
+                || ex.getCause() instanceof UnrecoverableKeyException
+                || ex.getCause() instanceof BadPaddingException) {
+                throw ex.getCause();
+            }
+        }
     }
 }

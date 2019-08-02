@@ -29,19 +29,16 @@ public class CreateUserPrivateProfile {
     /**
      * Users' keystore location
      */
-    @NonNull
     private final AbsoluteLocation<PrivateResource> keystore;
 
     /**
      * Users' privatespace location (where his private files are stored)
      */
-    @NonNull
     private final AbsoluteLocation<PrivateResource> privateStorage;
 
     /**
      * Users' INBOX as privatespace location (INBOX folder with full control)
      */
-    @NonNull
     private final AbsoluteLocation<PrivateResource> inboxWithWriteAccess;
 
     /**
@@ -61,7 +58,6 @@ public class CreateUserPrivateProfile {
      * instead of removing files one-by-one - this is the list of such folders, or if we need to remove extra
      * associated resources with user.
      */
-    @NonNull
     private final List<AbsoluteLocation<PrivateResource>> associatedResources;
 
     /**
@@ -78,6 +74,7 @@ public class CreateUserPrivateProfile {
             .inboxWithFullAccess(inboxWithWriteAccess)
             .documentVersionStorage(documentVersionStorage)
             .associatedResources(associatedResources)
+            .publishPublicKeysTo(publishPubKeysTo)
             .build();
     }
 }

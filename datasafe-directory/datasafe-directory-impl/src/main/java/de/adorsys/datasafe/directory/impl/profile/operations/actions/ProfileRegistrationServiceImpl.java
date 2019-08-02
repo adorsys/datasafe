@@ -15,7 +15,6 @@ import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.PublicResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -79,8 +78,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     }
 
     @Override
-    public void createKeystore(UserIDAuth user, UserPrivateProfile profile,
-                               AbsoluteLocation<PublicResource> publishPubKeysTo) {
+    public void createAllAllowableKeystores(UserIDAuth user, UserPrivateProfile profile) {
         if (checkService.objectExists(access.withSystemAccess(profile.getKeystore()))) {
             log.warn("Keystore already exists for {} at {}, will not create new",
                     profile.getPrivateStorage(), profile.getKeystore().location());
@@ -91,10 +89,20 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
             storageKeyStoreOper.createAndWriteKeystore(user);
         }
 
+        createDocumentKeystore(user, profile);
+    }
+
+    @Override
+    public void createDocumentKeystore(UserIDAuth user, UserPrivateProfile profile) {
         publishPublicKeysIfNeeded(
-                publishPubKeysTo,
-                keyStoreOper.createAndWriteKeyStore(user)
+            profile.getPublishPublicKeysTo(),
+            keyStoreOper.createAndWriteKeyStore(user)
         );
+    }
+
+    @Override
+    public void createStorageKeystore(UserIDAuth user) {
+        storageKeyStoreOper.createAndWriteKeystore(user);
     }
 
     /**
@@ -107,7 +115,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
         registerPublic(dfsConfig.defaultPublicTemplate(user));
         CreateUserPrivateProfile privateProfile = dfsConfig.defaultPrivateTemplate(user);
         registerPrivate(privateProfile);
-        createKeystore(user, privateProfile.removeAccess(), privateProfile.getPublishPubKeysTo());
+        createAllAllowableKeystores(user, privateProfile.removeAccess());
     }
 
     @SneakyThrows

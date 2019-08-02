@@ -20,6 +20,7 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -63,11 +64,6 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         // NOP just check that user has access
         privateKeyService.documentEncryptionSecretKey(userID);
 
-        // TODO test
-        profileCache.getPrivateProfile().remove(userID.getUserID());
-        profileCache.getPublicProfile().remove(userID.getUserID());
-        keyStoreCache.remove(userID.getUserID());
-
         UserPublicProfile publicProfile = retrievalService.publicProfile(userID.getUserID());
         UserPrivateProfile privateProfile = retrievalService.privateProfile(userID);
 
@@ -77,12 +73,15 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
 
         Streams.concat(
                 Stream.of(
-                        privateProfile.getKeystore().getResource(),
-                        privateProfile.getInboxWithFullAccess().getResource(),
-                        privateProfile.getDocumentVersionStorage().getResource()
+                        privateProfile.getKeystore(),
+                        privateProfile.getInboxWithFullAccess(),
+                        privateProfile.getDocumentVersionStorage(),
+                        privateProfile.getStorageCredentialsKeystore()
                 ),
-                privateProfile.getPrivateStorage().values().stream().map(AbsoluteLocation::getResource)
+                privateProfile.getPrivateStorage().values().stream()
         )
+        .filter(Objects::nonNull)
+        .map(AbsoluteLocation::getResource)
         .map(it -> access.privateAccessFor(userID, it)).forEach(removeService::remove);
 
         removeService.remove(access.withSystemAccess(publicProfile.getPublicKeys()));
@@ -95,10 +94,19 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         privateProfile.getAssociatedResources().stream()
                 .map(it -> access.privateAccessFor(userID, it.getResource()))
                 .forEach(removeService::remove);
+
+        profileCache.getPrivateProfile().remove(userID.getUserID());
+        profileCache.getPublicProfile().remove(userID.getUserID());
+        keyStoreCache.remove(userID.getUserID());
+
         log.debug("Deregistered user {}", userID);
     }
 
     private void removeAllIn(UserIDAuth userID, AbsoluteLocation<PrivateResource> location) {
+        if (null == location) {
+            return;
+        }
+
         listService.list(
                 access.privateAccessFor(userID, location.getResource())
         ).forEach(removeService::remove);

@@ -2,6 +2,7 @@ package de.adorsys.datasafe.directory.api.types;
 
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.PublicResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.Builder;
 import lombok.Data;
@@ -36,6 +37,20 @@ public class UserPrivateProfile {
     private final AbsoluteLocation<PrivateResource> inboxWithFullAccess;
 
     /**
+     * Where one should publish public keys.
+     */
+    @NonNull
+    private final AbsoluteLocation<PublicResource> publishPublicKeysTo;
+
+    /**
+     * If all files reside within some specific folder, one can simply remove it when deregistering user,
+     * instead of removing files one-by-one - this is the list of such folders, or if we need to remove extra
+     * associated resources with user.
+     */
+    @NonNull
+    private final List<AbsoluteLocation<PrivateResource>> associatedResources;
+
+    /**
      * Where to store users' links to latest documents if software versioning is enabled.
      * Optional field used for software-versioning.
      */
@@ -46,12 +61,4 @@ public class UserPrivateProfile {
      * Optional field used for getting storage credentials using default flow.
      */
     private final AbsoluteLocation<PrivateResource> storageCredentialsKeystore;
-
-    /**
-     * If all files reside within some specific folder, one can simply remove it when deregistering user,
-     * instead of removing files one-by-one - this is the list of such folders, or if we need to remove extra
-     * associated resources with user.
-     */
-    @NonNull
-    private final List<AbsoluteLocation<PrivateResource>> associatedResources;
 }

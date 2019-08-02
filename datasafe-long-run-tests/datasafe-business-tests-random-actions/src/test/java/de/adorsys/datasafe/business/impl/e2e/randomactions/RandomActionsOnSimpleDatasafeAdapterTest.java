@@ -145,6 +145,12 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
             @Override
             public ProfileOperations userProfile() {
                 return new ProfileOperations() {
+
+                    @Override
+                    public void createDocumentKeystore(UserIDAuth user, UserPrivateProfile profile) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
                     @Override
                     public void registerPublic(CreateUserPublicProfile profile) {
                         throw new IllegalStateException("Not implemented");
@@ -177,8 +183,12 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                     }
 
                     @Override
-                    public void createKeystore(UserIDAuth user, UserPrivateProfile profile,
-                                               AbsoluteLocation<PublicResource> publishPubKeysTo) {
+                    public void createAllAllowableKeystores(UserIDAuth user, UserPrivateProfile profile) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
+                    public void createStorageKeystore(UserIDAuth user) {
                         throw new IllegalStateException("Not implemented");
                     }
 

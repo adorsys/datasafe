@@ -4,8 +4,6 @@ import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.PublicResource;
 
 /**
  * Registers user in system.
@@ -29,13 +27,26 @@ public interface ProfileRegistrationService {
     void registerPrivate(CreateUserPrivateProfile profile);
 
     /**
-     * Creates keystore and publishes his public keys according to his
+     * Creates document and optionally storage keystore and publishes his public keys according to his
      * {@link de.adorsys.datasafe.directory.api.types.UserPrivateProfile}
      * @param user Keystore owner
      * @param profile Associate profile with this keystore
-     * @param publishPubKeysTo Where to publish public keys associated with private keys in keystore
      */
-    void createKeystore(UserIDAuth user, UserPrivateProfile profile, AbsoluteLocation<PublicResource> publishPubKeysTo);
+    void createAllAllowableKeystores(UserIDAuth user, UserPrivateProfile profile);
+
+    /**
+     * Creates document keystore according to his
+     * {@link de.adorsys.datasafe.directory.api.types.UserPrivateProfile}
+     * @param user Keystore owner
+     */
+    void createDocumentKeystore(UserIDAuth user, UserPrivateProfile profile);
+
+    /**
+     * Creates storage keystore according to his
+     * {@link de.adorsys.datasafe.directory.api.types.UserPrivateProfile}
+     * @param user Keystore owner
+     */
+    void createStorageKeystore(UserIDAuth user);
 
     /**
      * Register user using all-default values.

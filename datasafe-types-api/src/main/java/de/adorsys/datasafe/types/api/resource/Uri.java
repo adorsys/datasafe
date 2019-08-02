@@ -164,7 +164,7 @@ public class Uri {
         result += "/";
 
         if (!"/".equals(wrapped.getPath())) {
-            result += wrapped.getPath();
+            result += wrapped.getPath().replaceAll("^/", "");
         }
 
         return new Uri(result);
