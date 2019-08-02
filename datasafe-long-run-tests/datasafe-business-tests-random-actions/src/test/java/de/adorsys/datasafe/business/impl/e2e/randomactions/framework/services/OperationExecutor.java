@@ -139,13 +139,6 @@ public class OperationExecutor {
         users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
     }
 
-    private DefaultDatasafeServices datasafeServices(WithStorageProvider.StorageDescriptor descriptor) {
-        return DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
-                .storage(descriptor.getStorageService().get())
-                .build();
-    }
-
     @SneakyThrows
     private void doWrite(Operation oper) {
         UserSpec user = requireUser(oper);
