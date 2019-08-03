@@ -3,8 +3,11 @@ package de.adorsys.datasafe.storage.impl.s3;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Removes bucket name from resource key.
+ */
 @RequiredArgsConstructor
-public class StaticBucketRouter implements BucketRouter {
+public class BucketNameRemovingRouter implements BucketRouter {
 
     private final String bucketName;
 
@@ -15,6 +18,8 @@ public class StaticBucketRouter implements BucketRouter {
 
     @Override
     public String resourceKey(AbsoluteLocation resource) {
-        return resource.location().getRawPath().replaceFirst("^/", "");
+        String path = resource.location().getRawPath();
+        int start = path.indexOf(bucketName);
+        return path.substring(start + bucketName.length(), path.length()).replaceFirst("^/", "");
     }
 }

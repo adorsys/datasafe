@@ -54,7 +54,7 @@ public class S3StorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         log.debug("List at {}", location.location());
-        String prefix = location.location().getRawPath().replaceFirst("^/", "");
+        String prefix = router.resourceKey(location);
 
         S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, router.bucketName(location), prefix);
         Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);
@@ -95,7 +95,7 @@ public class S3StorageService implements StorageService {
         String bucketName = router.bucketName(locationWithCallback.getWrapped());
         return new MultipartUploadS3StorageOutputStream(
                 bucketName,
-                locationWithCallback.getWrapped().getResource(),
+                router.resourceKey(locationWithCallback.getWrapped()),
                 s3,
                 executorService,
                 locationWithCallback.getCallbacks()
@@ -128,10 +128,10 @@ public class S3StorageService implements StorageService {
 
         boolean pathExists = executeAndReturn(
                 location,
-                path -> s3.doesObjectExist(bucketName, path),
-                (path, version) ->
+                key -> s3.doesObjectExist(bucketName, key),
+                (key, version) ->
                         StreamSupport.stream(
-                                S3Versions.withPrefix(s3, bucketName, path).spliterator(), false)
+                                S3Versions.withPrefix(s3, bucketName, key).spliterator(), false)
                                 .anyMatch(it -> it.getVersionId().equals(version.getVersionId()))
         );
 
@@ -177,10 +177,7 @@ public class S3StorageService implements StorageService {
                          Function<String, T> ifNoVersion,
                          BiFunction<String, StorageVersion, T> ifVersion) {
 
-        String key = location.getResource().location()
-                .getRawPath()
-                .replaceFirst("^/", "");
-
+        String key = router.resourceKey(location);
         Optional<StorageVersion> version = extractVersion(location);
 
         if (!version.isPresent()) {

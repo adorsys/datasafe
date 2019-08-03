@@ -22,11 +22,18 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.AbortMultipartUploadRequest;
+import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
+import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
+import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
+import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PartETag;
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.UploadPartResult;
 import com.amazonaws.util.BinaryUtils;
-import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
-import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
@@ -66,11 +73,11 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private final List<? extends ResourceWriteCallback> callbacks;
 
-    MultipartUploadS3StorageOutputStream(String bucketName, ResourceLocation resource, AmazonS3 amazonS3,
+    MultipartUploadS3StorageOutputStream(String bucketName, String objectKey, AmazonS3 amazonS3,
                                          ExecutorService executorService,
                                          List<? extends ResourceWriteCallback> callbacks) {
         this.bucketName = bucketName;
-        this.objectName = resource.location().getRawPath().replaceFirst("^/", "");
+        this.objectName = objectKey;
         this.amazonS3 = amazonS3;
         this.completionService = new ExecutorCompletionService<>(executorService);
         this.callbacks = callbacks;

@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.types.StorageCredentials;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -40,7 +40,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(description = "Create and delete users")
 public class UserController {
 
-    private final VersionedDatasafeServices dataSafeService;
+    private final DefaultDatasafeServices dataSafeService;
 
     /**
      * Registers user profile using default Datasafe convention - user profile, user private and inbox space

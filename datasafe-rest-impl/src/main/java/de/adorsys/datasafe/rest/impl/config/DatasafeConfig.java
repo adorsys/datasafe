@@ -14,6 +14,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
+import de.adorsys.datasafe.directory.impl.profile.config.DFSConfigWithStorageCreds;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
@@ -27,6 +28,7 @@ import de.adorsys.datasafe.storage.impl.db.DatabaseConnectionRegistry;
 import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.storage.impl.s3.BucketNameRemovingRouter;
 import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
@@ -69,7 +71,7 @@ public class DatasafeConfig {
     @Bean
     @ConditionalOnProperty(name = CLIENT_CREDENTIALS, havingValue = "true")
     DFSConfig withClientCredentials(DatasafeProperties properties) {
-        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
+        return new DFSConfigWithStorageCreds(properties.getSystemRoot(), properties.getKeystorePassword());
     }
 
     @Bean
@@ -153,7 +155,7 @@ public class DatasafeConfig {
                                 acc.getAccessKey(),
                                 acc.getSecretKey()
                             ),
-                            acc.getBucketName(),
+                            new BucketNameRemovingRouter(acc.getBucketName()),
                             executorService
                         )
                     )
