@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
 import com.google.gson.Gson;
-import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.types.StorageCredentials;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
@@ -28,14 +28,17 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     private Gson gson;
 
     @MockBean
-    protected VersionedDatasafeServices dataSafeService;
+    protected DefaultDatasafeServices dataSafeService;
 
     @MockBean
     private DFSBasedProfileStorageImpl userProfile;
