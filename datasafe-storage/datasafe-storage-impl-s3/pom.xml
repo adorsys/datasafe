@@ -39,10 +39,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.dagger</groupId>
-            <artifactId>dagger</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>de.adorsys</groupId>

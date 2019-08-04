@@ -115,6 +115,12 @@
         </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-s3</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
             <artifactId>datasafe-storage-impl-db</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

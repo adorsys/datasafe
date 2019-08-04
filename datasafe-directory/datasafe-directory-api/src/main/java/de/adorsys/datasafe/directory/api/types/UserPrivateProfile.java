@@ -2,11 +2,14 @@ package de.adorsys.datasafe.directory.api.types;
 
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Users' private profile - typically should be seen only by owner.
@@ -25,7 +28,7 @@ public class UserPrivateProfile {
      * Users' privatespace location (where his private files are stored)
      */
     @NonNull
-    private final AbsoluteLocation<PrivateResource> privateStorage;
+    private final Map<StorageIdentifier, AbsoluteLocation<PrivateResource>> privateStorage;
 
     /**
      * Users' INBOX as privatespace location (INBOX folder with full control)
@@ -34,9 +37,10 @@ public class UserPrivateProfile {
     private final AbsoluteLocation<PrivateResource> inboxWithFullAccess;
 
     /**
-     * Where to store users' links to latest documents if software versioning is enabled.
+     * Where one should publish public keys.
      */
-    private final AbsoluteLocation<PrivateResource> documentVersionStorage;
+    @NonNull
+    private final AbsoluteLocation<PublicResource> publishPublicKeysTo;
 
     /**
      * If all files reside within some specific folder, one can simply remove it when deregistering user,
@@ -45,4 +49,16 @@ public class UserPrivateProfile {
      */
     @NonNull
     private final List<AbsoluteLocation<PrivateResource>> associatedResources;
+
+    /**
+     * Where to store users' links to latest documents if software versioning is enabled.
+     * Optional field used for software-versioning.
+     */
+    private final AbsoluteLocation<PrivateResource> documentVersionStorage;
+
+    /**
+     * Keystore that contains keys to access storage systems (i.e. s3 access key/secret key).
+     * Optional field used for getting storage credentials using default flow.
+     */
+    private final AbsoluteLocation<PrivateResource> storageCredentialsKeystore;
 }

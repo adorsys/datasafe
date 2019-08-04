@@ -69,7 +69,8 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
         AbsoluteLocation<PrivateResource> resource = BasePrivateResource.forAbsolutePrivate(ABSOLUTE_PATH);
         WriteRequest<UserIDAuth, PrivateResource> request = WriteRequest.forDefaultPrivate(auth, ABSOLUTE_PATH);
         when(privateKeyService.documentEncryptionSecretKey(auth)).thenReturn(secretKeyIDWithKey);
-        when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
+        when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation(), request.getStorageIdentifier()))
+            .thenReturn(resource);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         when(writeService.write(captor.capture(), eq(secretKeyIDWithKey))).thenReturn(outputStream);
 

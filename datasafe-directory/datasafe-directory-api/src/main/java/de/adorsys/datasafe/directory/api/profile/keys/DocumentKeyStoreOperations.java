@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class is responsible for accessing/updating/creating users' keystore on higher level.
+ * This class is responsible for accessing/updating/creating users' keystore that contains keys for
+ * DOCUMENT access on higher level.
  */
-public interface KeyStoreOperations {
+public interface DocumentKeyStoreOperations {
 
     /**
      * Creates keystore and returns public keys from it.
@@ -21,7 +22,7 @@ public interface KeyStoreOperations {
     List<PublicKeyIDWithPublicKey> createAndWriteKeyStore(UserIDAuth forUser);
 
     /**
-     * Updates ReadKeyPassword for users' keystore. Clears cached keystores.
+     * Updates ReadKeyPassword for users' keystore. Clears ALL cached keystores.
      * @param forUser Keystore owner.
      * @param newPassword New ReadKeyStore password.
      */

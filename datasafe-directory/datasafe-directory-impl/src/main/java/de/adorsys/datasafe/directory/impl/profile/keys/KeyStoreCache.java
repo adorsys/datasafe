@@ -21,4 +21,11 @@ public interface KeyStoreCache {
      * Cache for users' private/secret keys
      */
     Map<UserID, KeyStore> getKeystore();
+
+    /**
+     * Cache for users' storage access
+     */
+    Map<UserID, KeyStore> getStorageAccess();
+
+    void remove(UserID forUser);
 }

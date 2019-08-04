@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 
+import com.google.common.collect.Streams;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
@@ -13,13 +14,13 @@ import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.actions.StorageListService;
 import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
-import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -63,25 +64,25 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         // NOP just check that user has access
         privateKeyService.documentEncryptionSecretKey(userID);
 
-        // TODO test
-        profileCache.getPrivateProfile().remove(userID.getUserID());
-        keyStoreCache.getKeystore().remove(userID.getUserID());
-        profileCache.getPublicProfile().remove(userID.getUserID());
-        keyStoreCache.getPublicKeys().remove(userID.getUserID());
-
         UserPublicProfile publicProfile = retrievalService.publicProfile(userID.getUserID());
         UserPrivateProfile privateProfile = retrievalService.privateProfile(userID);
 
-        removeAllIn(userID, privateProfile.getPrivateStorage());
+        privateProfile.getPrivateStorage().forEach((id, path) -> removeAllIn(userID, path));
         removeAllIn(userID, privateProfile.getInboxWithFullAccess());
         removeAllIn(userID, privateProfile.getDocumentVersionStorage());
 
-        Stream.of(
-                privateProfile.getKeystore().getResource(),
-                privateProfile.getPrivateStorage().getResource(),
-                privateProfile.getInboxWithFullAccess().getResource(),
-                privateProfile.getDocumentVersionStorage().getResource()
-        ).map(it -> access.privateAccessFor(userID, it)).forEach(removeService::remove);
+        Streams.concat(
+                Stream.of(
+                        privateProfile.getKeystore(),
+                        privateProfile.getInboxWithFullAccess(),
+                        privateProfile.getDocumentVersionStorage(),
+                        privateProfile.getStorageCredentialsKeystore()
+                ),
+                privateProfile.getPrivateStorage().values().stream()
+        )
+        .filter(Objects::nonNull)
+        .map(AbsoluteLocation::getResource)
+        .map(it -> access.privateAccessFor(userID, it)).forEach(removeService::remove);
 
         removeService.remove(access.withSystemAccess(publicProfile.getPublicKeys()));
 
@@ -93,12 +94,21 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         privateProfile.getAssociatedResources().stream()
                 .map(it -> access.privateAccessFor(userID, it.getResource()))
                 .forEach(removeService::remove);
+
+        profileCache.getPrivateProfile().remove(userID.getUserID());
+        profileCache.getPublicProfile().remove(userID.getUserID());
+        keyStoreCache.remove(userID.getUserID());
+
         log.debug("Deregistered user {}", userID);
     }
 
     private void removeAllIn(UserIDAuth userID, AbsoluteLocation<PrivateResource> location) {
+        if (null == location) {
+            return;
+        }
+
         listService.list(
-                new ListRequest<>(userID, access.privateAccessFor(userID, location.getResource())).getLocation()
+                access.privateAccessFor(userID, location.getResource())
         ).forEach(removeService::remove);
     }
 }

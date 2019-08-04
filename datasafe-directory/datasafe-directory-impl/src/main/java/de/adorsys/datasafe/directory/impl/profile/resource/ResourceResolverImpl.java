@@ -10,6 +10,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 
 import javax.inject.Inject;
 import java.util.function.Supplier;
@@ -35,11 +36,11 @@ public class ResourceResolverImpl implements ResourceResolver {
      */
     @Override
     public AbsoluteLocation<PublicResource> resolveRelativeToPublicInbox(
-            UserID userID, PublicResource resource) {
+        UserID userID, PublicResource resource) {
 
         return bucketAccessService.publicAccessFor(
-                userID,
-                resolveRelative(resource, () -> profile.publicProfile(userID).getInbox())
+            userID,
+            resolveRelative(resource, () -> profile.publicProfile(userID).getInbox())
         );
     }
 
@@ -50,11 +51,11 @@ public class ResourceResolverImpl implements ResourceResolver {
      */
     @Override
     public AbsoluteLocation<PrivateResource> resolveRelativeToPrivateInbox(
-            UserIDAuth userID, PrivateResource resource) {
+        UserIDAuth userID, PrivateResource resource) {
 
         return bucketAccessService.privateAccessFor(
-                userID,
-                resolveRelative(resource, () -> profile.privateProfile(userID).getInboxWithFullAccess())
+            userID,
+            resolveRelative(resource, () -> profile.privateProfile(userID).getInboxWithFullAccess())
         );
     }
 
@@ -63,11 +64,11 @@ public class ResourceResolverImpl implements ResourceResolver {
      */
     @Override
     public AbsoluteLocation<PrivateResource> resolveRelativeToPrivate(
-            UserIDAuth userID, PrivateResource resource) {
+        UserIDAuth userID, PrivateResource resource, StorageIdentifier identifier) {
 
         return bucketAccessService.privateAccessFor(
-                userID,
-                resolveRelative(resource, () -> profile.privateProfile(userID).getPrivateStorage())
+            userID,
+            resolveRelative(resource, () -> profile.privateProfile(userID).getPrivateStorage().get(identifier))
         );
     }
 
@@ -75,12 +76,12 @@ public class ResourceResolverImpl implements ResourceResolver {
      * Simply calls absolute check on location.
      */
     @Override
-    public  <T extends ResourceLocation<T>> boolean isAbsolute(T resource) {
+    public <T extends ResourceLocation<T>> boolean isAbsolute(T resource) {
         return resource.location().isAbsolute();
     }
 
-    private  <T extends ResourceLocation<T>> T resolveRelative(
-            T resource, Supplier<ResourceLocation<T>> resolveTo) {
+    private <T extends ResourceLocation<T>> T resolveRelative(
+        T resource, Supplier<ResourceLocation<T>> resolveTo) {
         if (isAbsolute(resource)) {
             return resource;
         }

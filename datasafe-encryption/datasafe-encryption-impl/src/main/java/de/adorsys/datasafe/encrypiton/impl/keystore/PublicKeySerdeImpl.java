@@ -19,7 +19,7 @@ import java.util.Base64;
 public class PublicKeySerdeImpl implements PublicKeySerde {
 
     @Inject
-    PublicKeySerdeImpl() {
+    public PublicKeySerdeImpl() {
     }
 
     @Override

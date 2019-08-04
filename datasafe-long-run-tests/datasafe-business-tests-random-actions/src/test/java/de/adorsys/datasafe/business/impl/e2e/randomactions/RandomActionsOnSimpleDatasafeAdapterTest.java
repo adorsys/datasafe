@@ -4,10 +4,7 @@ import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.BaseRandomA
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.StatisticService;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
-import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
-import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
-import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
-import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
+import de.adorsys.datasafe.directory.api.types.*;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
@@ -148,6 +145,12 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
             @Override
             public ProfileOperations userProfile() {
                 return new ProfileOperations() {
+
+                    @Override
+                    public void createDocumentKeystore(UserIDAuth user, UserPrivateProfile profile) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
                     @Override
                     public void registerPublic(CreateUserPublicProfile profile) {
                         throw new IllegalStateException("Not implemented");
@@ -169,7 +172,23 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                     }
 
                     @Override
+                    public void registerStorageCredentials(
+                            UserIDAuth user, StorageIdentifier storageId, StorageCredentials credentials) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
                     public void deregister(UserIDAuth userID) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
+                    public void createAllAllowableKeystores(UserIDAuth user, UserPrivateProfile profile) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
+                    public void createStorageKeystore(UserIDAuth user) {
                         throw new IllegalStateException("Not implemented");
                     }
 
@@ -180,6 +199,21 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
 
                     @Override
                     public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
+                    public void updatePublicProfile(UserIDAuth forUser, UserPublicProfile profile) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
+                    public void updatePrivateProfile(UserIDAuth forUser, UserPrivateProfile profile) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
+                    public void deregisterStorageCredentials(UserIDAuth user, StorageIdentifier storageId) {
                         throw new IllegalStateException("Not implemented");
                     }
 

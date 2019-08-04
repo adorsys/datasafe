@@ -77,6 +77,21 @@ public interface KeyStoreService {
     SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID);
 
     /**
+     * Adds password-like secret key to keystore.
+     * @param keyStoreAccess Keystore with its access details
+     * @param alias Key alias to add
+     * @param secretToStore Key value to store in keystore (in {@code keyStoreAccess})
+     */
+    void addPasswordBasedSecretKey(KeyStoreAccess keyStoreAccess, String alias, char[] secretToStore);
+
+    /**
+     * Removes key that is identified by {@code alias} from keystore.
+     * @param keyStoreAccess Keystore with its access details
+     * @param alias Key alias to remove
+     */
+    void removeKey(KeyStoreAccess keyStoreAccess, String alias);
+
+    /**
      * Converts keystore into bytes, they are safe to be store/transferred because of encryption using
      * {@link KeyStoreAuth#getReadStorePassword()}
      * @param store Keystore that will be serialized

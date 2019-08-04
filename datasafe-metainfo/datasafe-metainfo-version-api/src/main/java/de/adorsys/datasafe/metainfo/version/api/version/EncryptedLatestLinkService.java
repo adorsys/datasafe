@@ -3,6 +3,7 @@ package de.adorsys.datasafe.metainfo.version.api.version;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 
 import java.util.function.Function;
 
@@ -19,7 +20,7 @@ public interface EncryptedLatestLinkService {
      * @return Absolute resource location of file with link
      */
     AbsoluteLocation<PrivateResource> resolveLatestLinkLocation(
-            UserIDAuth owner, PrivateResource resource);
+            UserIDAuth owner, PrivateResource resource, StorageIdentifier identifier);
 
     /**
      * Reads content of latest link file by decrypting its content.
@@ -28,6 +29,6 @@ public interface EncryptedLatestLinkService {
      * Function: resource location of latest file -> its latest version blob
      */
     Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptingReader(
-            UserIDAuth owner
+            UserIDAuth owner, StorageIdentifier identifier
     );
 }

@@ -46,7 +46,11 @@ public class DefaultVersionInfoServiceImpl implements VersionInfoService<DFSVers
     public Stream<Versioned<AbsoluteLocation<ResolvedResource>, ResolvedResource, DFSVersion>> listJoinedWithLatest(
             ListRequest<UserIDAuth, PrivateResource> request) {
         Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptor =
-                latestVersionLinkLocator.linkDecryptingReader(request.getOwner());
+                latestVersionLinkLocator.linkDecryptingReader(
+                    request.getOwner(),
+                    request.getStorageIdentifier()
+                );
+
         return versionsOf(request).map(it -> resolveLatest(request, it, linkDecryptor));
     }
 
@@ -55,7 +59,11 @@ public class DefaultVersionInfoServiceImpl implements VersionInfoService<DFSVers
             Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion> versioned,
             Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptor) {
         AbsoluteLocation<PrivateResource> latestLink = latestVersionLinkLocator
-                .resolveLatestLinkLocation(request.getOwner(), versioned.stripVersion());
+                .resolveLatestLinkLocation(
+                        request.getOwner(),
+                        versioned.stripVersion(),
+                        request.getStorageIdentifier()
+                );
 
         // TODO: This can be cached - latest links for resource version.
         AbsoluteLocation<ResolvedResource> resolved = listPrivate

@@ -7,6 +7,7 @@ import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileUpdatingService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
@@ -65,6 +66,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     protected WriteToInbox writeToInbox;
     protected RemoveFromInbox removeFromInbox;
     protected ProfileRegistrationService profileRegistrationService;
+    protected ProfileUpdatingService profileUpdatingService;
     protected ProfileRemovalService profileRemovalService;
     protected ProfileRetrievalService profileRetrievalService;
 
@@ -84,6 +86,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
         this.profileRegistrationService = datasafeServices.userProfile();
         this.profileRemovalService = datasafeServices.userProfile();
         this.profileRetrievalService = datasafeServices.userProfile();
+        this.profileUpdatingService = datasafeServices.userProfile();
     }
 
     protected void initialize(DFSConfig dfsConfig, VersionedDatasafeServices datasafeServices) {
@@ -99,6 +102,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
         this.profileRegistrationService = datasafeServices.userProfile();
         this.profileRemovalService = datasafeServices.userProfile();
         this.profileRetrievalService = datasafeServices.userProfile();
+        this.profileUpdatingService = datasafeServices.userProfile();
     }
 
     @SneakyThrows
@@ -195,10 +199,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     protected UserIDAuth registerUser(String userName) {
         UserIDAuth auth = new UserIDAuth(new UserID(userName), new ReadKeyPassword("secure-password " + userName));
-
-        profileRegistrationService.registerPublic(dfsConfig.defaultPublicTemplate(auth));
-        profileRegistrationService.registerPrivate(dfsConfig.defaultPrivateTemplate(auth));
-
+        profileRegistrationService.registerUsingDefaults(auth);
         log.info("Created user: {}", Obfuscate.secure(userName));
         return auth;
     }
