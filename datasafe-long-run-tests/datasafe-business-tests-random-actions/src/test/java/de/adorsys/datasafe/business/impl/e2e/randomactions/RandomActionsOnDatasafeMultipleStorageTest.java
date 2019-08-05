@@ -66,6 +66,7 @@ class RandomActionsOnDatasafeMultipleStorageTest extends BaseRandomActions {
                 .build();
 
         OverridesRegistry registry = new BaseOverridesRegistry();
+
         DefaultDatasafeServices multiDfsDatasafe = DaggerDefaultDatasafeServices
                 .builder()
                 // This storage service will route requests to proper bucket based on URI content:
@@ -108,9 +109,9 @@ class RandomActionsOnDatasafeMultipleStorageTest extends BaseRandomActions {
                 descriptor.getName(),
                 filesizeInMb,
                 threadCount,
-                datasafeServices.userProfile(),
-                datasafeServices.privateService(),
-                datasafeServices.inboxService(),
+                multiDfsDatasafe.userProfile(),
+                multiDfsDatasafe.privateService(),
+                multiDfsDatasafe.inboxService(),
                 statisticService
         );
     }
