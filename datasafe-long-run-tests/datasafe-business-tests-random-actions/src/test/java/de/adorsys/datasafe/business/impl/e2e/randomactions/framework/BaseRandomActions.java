@@ -62,12 +62,12 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         return fixture("fixture/fixture_simple_datasafe_200_ops.json");
     }
 
-    protected Fixture smallFixture() {
+    protected static Fixture smallFixture() {
         return fixture("fixture/fixture_200_ops.json");
     }
 
     @SneakyThrows
-    protected Fixture fixture(String path) {
+    protected static Fixture fixture(String path) {
         try (Reader reader = Resources.asCharSource(
                 Resources.getResource(path),
                 StandardCharsets.UTF_8).openStream()) {
@@ -86,11 +86,15 @@ public abstract class BaseRandomActions extends WithStorageProvider {
 
     @ValueSource
     protected static Stream<Arguments> actionsOnMultiStorageAndThreadsAndFilesizes() {
+        Set<String> users = new HashSet<>();
+        smallFixture().getOperations().stream().forEach((it)->users.add(it.getUserId()));
+
         return Sets.cartesianProduct(
                 Collections.singleton(multiS3()),
+                users,
                 THREAD_COUNT,
                 FILE_SIZE_M_BYTES
-        ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
+        ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2), it.get(3)));
     }
 
     protected void executeTest(

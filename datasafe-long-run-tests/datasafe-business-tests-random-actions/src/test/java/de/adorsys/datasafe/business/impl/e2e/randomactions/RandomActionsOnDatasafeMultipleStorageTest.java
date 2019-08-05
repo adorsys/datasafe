@@ -29,6 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
@@ -52,7 +53,7 @@ class RandomActionsOnDatasafeMultipleStorageTest extends BaseRandomActions {
 
     @ParameterizedTest
     @MethodSource("actionsOnMultiStorageAndThreadsAndFilesizes")
-    void testRandomActionsMultiStorageParallelThreads(List<StorageDescriptor> descriptors, int threadCount, int filesizeInMb) {
+    void testRandomActionsMultiStorageParallelThreads(Set<String> users, List<StorageDescriptor> descriptors, int threadCount, int filesizeInMb) {
 
         descriptor = descriptors.get(0);
         DefaultDatasafeServices datasafeServices = datasafeServices(descriptors.get(0));
