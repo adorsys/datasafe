@@ -84,6 +84,15 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
     }
 
+    @ValueSource
+    protected static Stream<Arguments> actionsOnMultiStorageAndThreadsAndFilesizes() {
+        return Sets.cartesianProduct(
+                Collections.singleton(multiS3()),
+                THREAD_COUNT,
+                FILE_SIZE_M_BYTES
+        ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
+    }
+
     protected void executeTest(
             Fixture fixture,
             StorageDescriptorName storageName,
