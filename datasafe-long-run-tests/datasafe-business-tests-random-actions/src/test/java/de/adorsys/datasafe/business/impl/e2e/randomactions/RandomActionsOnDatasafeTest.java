@@ -38,7 +38,8 @@ class RandomActionsOnDatasafeTest extends BaseRandomActions {
                 datasafeServices.userProfile(),
                 datasafeServices.privateService(),
                 datasafeServices.inboxService(),
-                statisticService
+                statisticService,
+                null
         );
     }
 

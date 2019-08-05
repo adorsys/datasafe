@@ -4,11 +4,15 @@ import com.google.common.collect.Streams;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.dto.UserSpec;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.*;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
+import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
+import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
+import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -28,6 +32,7 @@ import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -57,8 +62,10 @@ public class OperationExecutor {
     private final InboxService inboxService;
     private final Map<String, UserSpec> users;
     private final StatisticService statisticService;
+    private final List<WithStorageProvider.StorageDescriptor> descriptors;
 
     public void execute(Operation oper) {
+        initUserSelectedStorage(oper.getUserId());
         long cnt = counter.incrementAndGet();
 
         log.trace("[{}] [{} {}/{}/{}] Executing {}",
@@ -71,6 +78,25 @@ public class OperationExecutor {
 
         if (0 == cnt % 100) {
             log.info("[{}] Done operations", cnt);
+        }
+    }
+
+    private void initUserSelectedStorage(String userId) {
+        if(null != descriptors){
+            WithStorageProvider.StorageDescriptor descriptor = descriptors.get(Integer.parseInt(userId.split("-")[1]) % descriptors.size());
+            DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
+                    .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
+                    .storage(descriptor.getStorageService().get())
+                    .build();
+            new OperationExecutor(
+                    fileContentSize,
+                    datasafeServices.userProfile(),
+                    datasafeServices.privateService(),
+                    datasafeServices.inboxService(),
+                    new ConcurrentHashMap<>(),
+                    statisticService,
+                    descriptors
+            );
         }
     }
 

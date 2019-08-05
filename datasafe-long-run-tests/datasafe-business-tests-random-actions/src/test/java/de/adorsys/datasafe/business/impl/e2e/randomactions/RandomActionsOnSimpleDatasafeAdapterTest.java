@@ -57,7 +57,8 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                 datasafeServices.userProfile(),
                 datasafeServices.privateService(),
                 datasafeServices.inboxService(),
-                statisticService
+                statisticService,
+                null
         );
     }
 

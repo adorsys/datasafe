@@ -86,15 +86,11 @@ public abstract class BaseRandomActions extends WithStorageProvider {
 
     @ValueSource
     protected static Stream<Arguments> actionsOnMultiStorageAndThreadsAndFilesizes() {
-        Set<String> users = new HashSet<>();
-        smallFixture().getOperations().stream().forEach((it)->users.add(it.getUserId()));
-
         return Sets.cartesianProduct(
                 Collections.singleton(multiS3()),
-                users,
                 THREAD_COUNT,
                 FILE_SIZE_M_BYTES
-        ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2), it.get(3)));
+        ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
     }
 
     protected void executeTest(
@@ -105,7 +101,8 @@ public abstract class BaseRandomActions extends WithStorageProvider {
             ProfileRegistrationService profileRegistrationService,
             PrivateSpaceService privateSpaceService,
             InboxService inboxService,
-            StatisticService statisticService
+            StatisticService statisticService,
+            List<StorageDescriptor> descriptors
     ) {
         OperationQueue queue = new OperationQueue(fixture);
         OperationExecutor executor = new OperationExecutor(
@@ -114,7 +111,8 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                 privateSpaceService,
                 inboxService,
                 new ConcurrentHashMap<>(),
-                statisticService
+                statisticService,
+                descriptors
         );
 
         createUsers(fixture, executor);
@@ -193,6 +191,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         Operation operation = queue.get(threadId);
 
         if (null != operation) {
+            log.info("Operation: {}", operation);
             executeOperation(executor, executorService, blockedExecIds, exceptions, threadId, operation);
             return;
         }

@@ -274,21 +274,6 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         );
     }
 
-    protected static Map<String, StorageDescriptor> getMultiS3Bucket(Set<String> users) {
-        if (null == amazons3BucketCount) {
-            throw new RuntimeException("There is no defined variable as \"AWS_S3_BUCKET_COUNT\" in environment/system variables");
-        }
-
-        Map<String, StorageDescriptor> storageDescriptorHashMap = new HashMap<>();
-        int s3BucketCount = getAmazons3BucketCount();
-        List<StorageDescriptor> storageDescriptorList = multiS3();
-        for (String user : users) {
-            int userId = Integer.parseInt(user.split("-")[1]);
-            storageDescriptorHashMap.put(user, storageDescriptorList.get(userId % s3BucketCount));
-        }
-        return storageDescriptorHashMap;
-    }
-
     protected static List<StorageDescriptor> multiS3() {
         List<StorageDescriptor> storageDescriptorList = new ArrayList<>();
 
