@@ -29,4 +29,6 @@ public interface PrivateResource extends ResourceLocation<PrivateResource> {
      * When calling "s3://bucket/".resolve(file/root, aaa/bbb) result will be located at s3://bucket/aaa/bbb
      */
     PrivateResource resolve(Uri encryptedPath, Uri decryptedPath);
+
+    PrivateResource withAuthority(String username, String password);
 }

@@ -1,6 +1,8 @@
 package de.adorsys.datasafe.directory.impl.profile.dfs;
 
+import dagger.Lazy;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
+import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -24,7 +26,9 @@ import javax.inject.Inject;
 public class BucketAccessServiceImpl implements BucketAccessService {
 
     @Inject
-    public BucketAccessServiceImpl() {
+    // Just declaring dependency, so no-op operations can user runtime-delegations, lazy
+    // because there is circular construction time dependency for `withSystemAccess`
+    public BucketAccessServiceImpl(Lazy<StorageKeyStoreOperations> storageKeyStoreOperations) {
     }
 
     /**

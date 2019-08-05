@@ -44,13 +44,17 @@ public class LatestReadImpl<V extends LatestDFSVersion> implements VersionedRead
         AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(
                         request.getOwner(),
-                        request.getLocation()
+                        request.getLocation(),
+                        request.getStorageIdentifier()
                 );
 
         return readFromPrivate.read(request.toBuilder()
-                .location(latestVersionLinkLocator.readLinkAndDecrypt(
-                        request.getOwner(),
-                        latestSnapshotLink).getResource()
+                .location(
+                        latestVersionLinkLocator
+                                .linkDecryptingReader(
+                                    request.getOwner(),
+                                    request.getStorageIdentifier()
+                                ).apply(latestSnapshotLink).getResource()
                 )
                 .build()
         );

@@ -9,6 +9,7 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileUpdatingService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
@@ -18,12 +19,14 @@ import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRegistrationServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRemovalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImplRuntimeDelegatable;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileUpdatingServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.resource.ResourceResolverImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This module is responsible for providing user profiles - his inbox, private storage, etc. locations.
@@ -39,9 +42,12 @@ public abstract class DefaultProfileModule {
     static UserProfileCache userProfileCache(@Nullable OverridesRegistry registry) {
         Cache<UserID, UserPublicProfile> publicProfileCache = CacheBuilder.newBuilder()
                 .initialCapacity(1000)
+                .expireAfterWrite(15, TimeUnit.MINUTES)
                 .build();
+
         Cache<UserID, UserPrivateProfile> privateProfileCache = CacheBuilder.newBuilder()
                 .initialCapacity(1000)
+                .expireAfterWrite(15, TimeUnit.MINUTES)
                 .build();
 
         return new DefaultUserProfileCacheRuntimeDelegatable(
@@ -62,6 +68,12 @@ public abstract class DefaultProfileModule {
      */
     @Binds
     abstract ProfileRegistrationService creationService(ProfileRegistrationServiceImplRuntimeDelegatable impl);
+
+    /**
+     * Default profile removal service.
+     */
+    @Binds
+    abstract ProfileUpdatingService updatingService(ProfileUpdatingServiceImplRuntimeDelegatable impl);
 
     /**
      * Default profile removal service.

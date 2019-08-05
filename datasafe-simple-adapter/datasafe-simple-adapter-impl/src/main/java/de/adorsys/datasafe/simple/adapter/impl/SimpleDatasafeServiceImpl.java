@@ -1,5 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -26,8 +28,10 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocationWithCapability;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.StorageCapability;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +41,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -45,10 +48,10 @@ import java.util.stream.Collectors;
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private static final String AMAZON_URL = "https://s3.amazonaws.com";
 
+    private URI systemRoot;
     private StorageService storageService;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
     private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
-    private final static ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
     private final static String S3_PREFIX = "s3://";
 
 
@@ -67,7 +70,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
             log.info(lsf.toString());
-            URI systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
+            this.systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
             storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
@@ -85,17 +88,36 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("url             : " + amazonS3DFSCredentials.getUrl());
             lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+            lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
+            lsf.add("no https        : " + amazonS3DFSCredentials.isNoHttps());
+            lsf.add("threadpool size : " + amazonS3DFSCredentials.getThreadPoolSize());
             log.info(lsf.toString());
             AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(amazonS3DFSCredentials.getAccessKey(), amazonS3DFSCredentials.getSecretKey())))
+                    .withCredentials(
+                            new AWSStaticCredentialsProvider(
+                                    new BasicAWSCredentials(
+                                            amazonS3DFSCredentials.getAccessKey(),
+                                            amazonS3DFSCredentials.getSecretKey()))
+                    )
                     .enablePathStyleAccess();
 
             boolean useEndpoint = (!amazonS3DFSCredentials.getUrl().equals(AMAZON_URL));
             if (useEndpoint) {
-                AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(amazonS3DFSCredentials.getUrl(), amazonS3DFSCredentials.getRegion());
+                AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
+                        amazonS3DFSCredentials.getUrl(),
+                        amazonS3DFSCredentials.getRegion()
+                );
                 amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
             } else {
                 amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
+            }
+
+            if (amazonS3DFSCredentials.isNoHttps()) {
+                log.info("Creating S3 client without https");
+                ClientConfiguration clientConfig = new ClientConfiguration();
+                clientConfig.setProtocol(Protocol.HTTP);
+                clientConfig.disableSocketProxy();
+                amazonS3ClientBuilder.withClientConfiguration(clientConfig);
             }
 
             AmazonS3 amazons3 = amazonS3ClientBuilder.build();
@@ -103,8 +125,12 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
                 amazons3.createBucket(amazonS3DFSCredentials.getContainer());
             }
-            storageService = new S3StorageService(amazons3, amazonS3DFSCredentials.getContainer(), EXECUTOR_SERVICE);
-            String systemRoot = S3_PREFIX + amazonS3DFSCredentials.getRootBucket();
+            storageService = new S3StorageService(
+                    amazons3,
+                    amazonS3DFSCredentials.getContainer(),
+                    Executors.newFixedThreadPool(amazonS3DFSCredentials.getThreadPoolSize())
+            );
+            this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .storage(getStorageService())
@@ -153,12 +179,42 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     @SneakyThrows
     @Override
     public DSDocument readDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-        DocumentContent documentContent = null;
+        DocumentContent documentContent;
         try (InputStream is = customlyBuiltDatasafeServices.privateService()
                 .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()))) {
             documentContent = new DocumentContent(ByteStreams.toByteArray(is));
         }
         return new DSDocument(documentFQN, documentContent);
+    }
+
+    @Override
+    @SneakyThrows
+    public void storeDocumentStream(UserIDAuth userIDAuth, DSDocumentStream dsDocumentStream) {
+        try (OutputStream os = customlyBuiltDatasafeServices
+                .privateService()
+                .write(WriteRequest.forDefaultPrivate(
+                        userIDAuth,
+                        dsDocumentStream.getDocumentFQN().getDatasafePath()))) {
+            ByteStreams.copy(dsDocumentStream.getDocumentStream(), os);
+        }
+    }
+
+    @Override
+    public OutputStream storeDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
+        return customlyBuiltDatasafeServices
+                .privateService()
+                .write(WriteRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()));
+    }
+
+    @Override
+    @SneakyThrows
+    public DSDocumentStream readDocumentStream(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
+        return new DSDocumentStream(
+                documentFQN,
+                customlyBuiltDatasafeServices
+                        .privateService()
+                        .read(ReadRequest.forDefaultPrivate(userIDAuth, documentFQN.getDatasafePath()))
+        );
     }
 
     @Override
@@ -195,4 +251,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         return l.stream().filter(el -> StringUtils.countMatches(el.getDatasafePath(), "/") == numberOfSlashesExpected).collect(Collectors.toList());
     }
 
+    @Override
+    public void cleanupDb() {
+        storageService
+                .list(new AbsoluteLocationWithCapability<>(
+                        BasePrivateResource.forPrivate(systemRoot), StorageCapability.LIST_RETURNS_DIR)
+                ).forEach(storageService::remove);
+    }
 }

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>datasafe</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.4.1-SNAPSHOT</version>
+        <version>0.4.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -110,6 +110,12 @@
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-storage-impl-fs</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-s3</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

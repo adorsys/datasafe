@@ -5,10 +5,11 @@
     <parent>
         <groupId>de.adorsys</groupId>
         <artifactId>datasafe-examples</artifactId>
-        <version>0.4.1-SNAPSHOT</version>
+        <version>0.4.4-SNAPSHOT</version>
     </parent>
     <artifactId>datasafe-examples-versioned-s3</artifactId>
     <dependencies>
+        <!-- These are necessary dependencies to be used in production code -->
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-business</artifactId>
@@ -20,6 +21,7 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- These are for test support only - not needed in production code -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>

@@ -35,6 +35,8 @@ public class ReadFromInboxImpl implements ReadFromInbox {
         return reader.read(ReadRequest.<UserIDAuth, AbsoluteLocation<PrivateResource>>builder()
                 .location(resolver.resolveRelativeToPrivateInbox(request.getOwner(), request.getLocation()))
                 .owner(request.getOwner())
-                .build());
+                .storageIdentifier(request.getStorageIdentifier())
+                .build()
+        );
     }
 }

@@ -22,11 +22,18 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.AbortMultipartUploadRequest;
+import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
+import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
+import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
+import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PartETag;
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.UploadPartResult;
 import com.amazonaws.util.BinaryUtils;
-import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
-import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
@@ -54,11 +61,11 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     private AmazonS3 amazonS3;
 
     // The minimum size for a multi part request is 5 MB, hence the buffer size of 5 MB
-    private static final int BUFFER_SIZE = 1024 * 1024 * 5;
+    static final int BUFFER_SIZE = 1024 * 1024 * 5;
 
     private final CompletionService<UploadPartResult> completionService;
 
-    private ByteArrayOutputStream currentOutputStream = new ByteArrayOutputStream(BUFFER_SIZE);
+    private ByteArrayOutputStream currentOutputStream = new ByteArrayOutputStream();
 
     private InitiateMultipartUploadResult multiPartUploadResult;
 
@@ -66,11 +73,11 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private final List<? extends ResourceWriteCallback> callbacks;
 
-    MultipartUploadS3StorageOutputStream(String bucketName, ResourceLocation resource, AmazonS3 amazonS3,
+    MultipartUploadS3StorageOutputStream(String bucketName, String objectKey, AmazonS3 amazonS3,
                                          ExecutorService executorService,
                                          List<? extends ResourceWriteCallback> callbacks) {
         this.bucketName = bucketName;
-        this.objectName = resource.location().getRawPath().replaceFirst("^/", "");
+        this.objectName = objectKey;
         this.amazonS3 = amazonS3;
         this.completionService = new ExecutorCompletionService<>(executorService);
         this.callbacks = callbacks;
@@ -80,26 +87,26 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     @Override
     @Synchronized
+    public void write(byte[] b, int off, int len) {
+        int remainingSizeToWrite = len;
+        int inputPosition = off;
+
+        do {
+            int availableCapacity = BUFFER_SIZE - currentOutputStream.size();
+            int bytesToWrite = Math.min(availableCapacity, remainingSizeToWrite);
+            currentOutputStream.write(b, inputPosition, bytesToWrite);
+            inputPosition += bytesToWrite;
+            remainingSizeToWrite -= bytesToWrite;
+
+            initiateMultipartRequestAndCommitPartIfNeeded();
+        } while (remainingSizeToWrite > 0);
+    }
+
+    @Override
+    @Synchronized
     public void write(int b) {
         currentOutputStream.write(b);
-
-        if (currentOutputStream.size() == BUFFER_SIZE) {
-            initiateMultiPartIfNeeded();
-            completionService.submit(new UploadChunkResultCallable(
-                    ChunkUploadRequest
-                            .builder()
-                            .amazonS3(amazonS3)
-                            .content(currentOutputStream.toByteArray())
-                            .contentSize(currentOutputStream.size())
-                            .bucketName(bucketName)
-                            .objectName(objectName)
-                            .uploadId(multiPartUploadResult.getUploadId())
-                            .chunkNumberCounter(partCounter++)
-                            .lastChunk(false)
-                            .build()
-            ));
-            currentOutputStream.reset();
-        }
+        initiateMultipartRequestAndCommitPartIfNeeded();
     }
 
     @Override
@@ -114,6 +121,29 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         } else {
             finishSimpleUpload();
         }
+    }
+
+    private void initiateMultipartRequestAndCommitPartIfNeeded() {
+        if (currentOutputStream.size() != BUFFER_SIZE) {
+            return;
+        }
+
+        initiateMultiPartIfNeeded();
+        completionService.submit(new UploadChunkResultCallable(
+                ChunkUploadRequest
+                        .builder()
+                        .amazonS3(amazonS3)
+                        .content(currentOutputStream.toByteArray())
+                        .contentSize(currentOutputStream.size())
+                        .bucketName(bucketName)
+                        .objectName(objectName)
+                        .uploadId(multiPartUploadResult.getUploadId())
+                        .chunkNumberCounter(partCounter)
+                        .lastChunk(false)
+                        .build()
+        ));
+        ++partCounter;
+        currentOutputStream.reset();
     }
 
     private boolean isMultiPartUpload() {
@@ -146,19 +176,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     }
 
     private void finishMultiPartUpload() throws IOException {
-        completionService.submit(
-                new UploadChunkResultCallable(ChunkUploadRequest.builder()
-                        .amazonS3(amazonS3)
-                        .content(currentOutputStream.toByteArray())
-                        .contentSize(currentOutputStream.size())
-                        .bucketName(bucketName)
-                        .objectName(objectName)
-                        .uploadId(multiPartUploadResult.getUploadId())
-                        .chunkNumberCounter(partCounter)
-                        .lastChunk(true)
-                        .build()
-                )
-        );
+        sendLastChunkOfMultipartIfNeeded();
 
         try {
             List<PartETag> partETags = getMultiPartsUploadResults();
@@ -188,6 +206,28 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         } finally {
             currentOutputStream = null;
         }
+    }
+
+    private void sendLastChunkOfMultipartIfNeeded() {
+        // empty file can be created only using simple upload:
+        if (currentOutputStream.size() == 0) {
+            partCounter--;
+            return;
+        }
+
+        completionService.submit(
+                new UploadChunkResultCallable(ChunkUploadRequest.builder()
+                        .amazonS3(amazonS3)
+                        .content(currentOutputStream.toByteArray())
+                        .contentSize(currentOutputStream.size())
+                        .bucketName(bucketName)
+                        .objectName(objectName)
+                        .uploadId(multiPartUploadResult.getUploadId())
+                        .chunkNumberCounter(partCounter)
+                        .lastChunk(true)
+                        .build()
+                )
+        );
     }
 
     private void notifyCommittedVersionIfPresent(String version) {

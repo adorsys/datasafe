@@ -15,6 +15,7 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Versioned;
 import lombok.SneakyThrows;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.security.Security;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +44,9 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
      */
     @BeforeEach
     void createServices(@TempDir Path root) {
+        Security.addProvider(new BouncyCastleProvider());
         // BEGIN_SNIPPET:Create versioned Datasafe services
+        Security.addProvider(new BouncyCastleProvider());
         // this will create all Datasafe files and user documents under <temp dir path>
         versionedServices = DaggerVersionedDatasafeServices.builder()
                 .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))

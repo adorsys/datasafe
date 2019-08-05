@@ -41,7 +41,8 @@ public class LatestRemoveImpl<V extends LatestDFSVersion> implements VersionedRe
         AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(
                         request.getOwner(),
-                        request.getLocation()
+                        request.getLocation(),
+                        request.getStorageIdentifier()
                 );
 
         removeFromPrivate.remove(request.toBuilder()

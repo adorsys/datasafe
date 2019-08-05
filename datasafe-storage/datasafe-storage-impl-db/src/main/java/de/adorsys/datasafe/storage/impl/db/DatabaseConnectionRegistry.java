@@ -11,6 +11,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
@@ -24,8 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class acts as higher-level DataSource cache.
  */
+@Slf4j
 public class DatabaseConnectionRegistry {
-
     private final DbUriExtractor uriExtractor;
     private final Map<String, JdbcDaoSupport> dataSourceCache;
     private final Map<String, DatabaseCredentials> providedCredentials;
@@ -34,6 +35,12 @@ public class DatabaseConnectionRegistry {
         this.uriExtractor = new DefaultDbUriExtractor();
         this.dataSourceCache = new ConcurrentHashMap<>();
         this.providedCredentials = Collections.emptyMap();
+    }
+
+    public DatabaseConnectionRegistry(Map<String, DatabaseCredentials> providedCredentials) {
+        this.uriExtractor = new DefaultDbUriExtractor();
+        this.dataSourceCache = new ConcurrentHashMap<>();
+        this.providedCredentials = providedCredentials;
     }
 
     /**
@@ -106,7 +113,7 @@ public class DatabaseConnectionRegistry {
         URI uri = location.location().asURI();
         String userInfo = uri.getUserInfo();
 
-        if (null !=  userInfo && !"".equals(userInfo)) {
+        if (null != userInfo && !"".equals(userInfo)) {
             return new DatabaseCredentials(location);
         }
 
@@ -125,11 +132,14 @@ public class DatabaseConnectionRegistry {
     }
 
     private static HikariDataSource getHikariDataSource(String url, String user, String password) {
+        log.debug("Setup config for DB url: {0}", url);
+
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
-        config.setConnectionTestQuery("VALUES 1");
+        config.setConnectionTestQuery("SELECT 1");
         config.addDataSourceProperty("user", user);
         config.addDataSourceProperty("password", password);
+
         return new HikariDataSource(config);
     }
 }

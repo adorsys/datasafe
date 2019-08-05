@@ -48,7 +48,8 @@ class ReadFromPrivateImplTest extends BaseMockitoTest {
                 auth,
                 BasePrivateResource.forPrivate(ABSOLUTE_PATH)
         );
-        when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation())).thenReturn(resource);
+        when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation(), request.getStorageIdentifier()))
+            .thenReturn(resource);
         when(readService.read(captor.capture())).thenReturn(new ByteArrayInputStream(BYTES.getBytes()));
 
         assertThat(inbox.read(request)).hasContent(BYTES);

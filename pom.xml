@@ -24,7 +24,7 @@
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>0.4.1-SNAPSHOT</version>
+    <version>0.4.4-SNAPSHOT</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -114,6 +114,7 @@
         <spring.jdbc>5.1.8.RELEASE</spring.jdbc>
         <hikari.cp>3.3.1</hikari.cp>
         <h2.database>1.4.199</h2.database>
+        <mysql.version>8.0.16</mysql.version>
         <liquibase>3.6.1</liquibase>
         <spring.framework.version>5.1.7.RELEASE</spring.framework.version>
         <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>

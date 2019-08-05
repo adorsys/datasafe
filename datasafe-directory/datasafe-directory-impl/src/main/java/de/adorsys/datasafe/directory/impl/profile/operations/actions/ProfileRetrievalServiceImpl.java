@@ -32,7 +32,7 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
     private final UserProfileCache userProfileCache;
 
     @Inject
-    ProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageReadService readService,
+    public ProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageReadService readService,
                                        StorageCheckService checkService, BucketAccessService access, GsonSerde serde,
                                        UserProfileCache userProfileCache) {
         this.dfsConfig = dfsConfig;

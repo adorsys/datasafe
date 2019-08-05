@@ -22,16 +22,16 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class DefaultDFSConfig implements DFSConfig {
 
-    private static final String USERS_ROOT = "users/";
-    private static final String PRIVATE_COMPONENT = "private";
-    private static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
-    private static final String PUBLIC_COMPONENT = "public";
-    private static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
-    private static final String VERSION_COMPONENT = "versions";
+    protected static final String USERS_ROOT = "users/";
+    protected static final String PRIVATE_COMPONENT = "private";
+    protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
+    protected static final String PUBLIC_COMPONENT = "public";
+    protected static final String INBOX_COMPONENT = PUBLIC_COMPONENT + "/" + "inbox";
+    protected static final String VERSION_COMPONENT = "versions";
 
-    private final Uri systemRoot;
-    private final ReadStorePassword systemPassword;
-    private final UserProfileLocation userProfileLocation;
+    protected final Uri systemRoot;
+    protected final ReadStorePassword systemPassword;
+    protected final UserProfileLocation userProfileLocation;
 
     /**
      * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
@@ -127,31 +127,31 @@ public class DefaultDFSConfig implements DFSConfig {
     /**
      * Where system files like users' private and public profile are located within DFS.
      */
-    private AbsoluteLocation<PublicResource> dfsRoot() {
+    protected AbsoluteLocation<PublicResource> dfsRoot() {
         return new AbsoluteLocation<>(new BasePublicResource(this.systemRoot));
     }
 
-    private AbsoluteLocation<PrivateResource> locatePrivateProfile(UserID ofUser) {
+    protected AbsoluteLocation<PrivateResource> locatePrivateProfile(UserID ofUser) {
         return userProfileLocation.locatePrivateProfile(ofUser);
     }
 
-    private AbsoluteLocation<PublicResource> locatePublicProfile(UserID ofUser) {
+    protected AbsoluteLocation<PublicResource> locatePublicProfile(UserID ofUser) {
         return userProfileLocation.locatePublicProfile(ofUser);
     }
 
-    private AbsoluteLocation<PublicResource> access(Uri path) {
+    protected AbsoluteLocation<PublicResource> access(Uri path) {
         return new AbsoluteLocation<>(new BasePublicResource(path));
     }
 
-    private AbsoluteLocation<PrivateResource> accessPrivate(Uri path) {
+    protected AbsoluteLocation<PrivateResource> accessPrivate(Uri path) {
         return new AbsoluteLocation<>(new BasePrivateResource(path, new Uri(""), new Uri("")));
     }
 
-    private Uri inbox(Uri rootLocation) {
+    protected Uri inbox(Uri rootLocation) {
         return rootLocation.resolve("./" + INBOX_COMPONENT + "/");
     }
 
-    private Uri publicKeys(Uri rootLocation) {
+    protected Uri publicKeys(Uri rootLocation) {
         return rootLocation.resolve("./" + PUBLIC_COMPONENT + "/" + "pubkeys");
     }
 

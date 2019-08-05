@@ -12,6 +12,7 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.function.Function;
 
 /**
  * Default latest link service that stores latest resource links within
@@ -45,7 +47,7 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
 
     @Override
     public AbsoluteLocation<PrivateResource> resolveLatestLinkLocation(
-            UserIDAuth owner, PrivateResource resource) {
+            UserIDAuth owner, PrivateResource resource, StorageIdentifier identifier) {
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
 
         if (null == privateProfile.getDocumentVersionStorage()) {
@@ -55,7 +57,8 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
 
         AbsoluteLocation<PrivateResource> encryptedPath = resolver.encryptAndResolvePath(
                 owner,
-                resource
+                resource,
+                identifier
         );
 
         return new AbsoluteLocation<>(
@@ -64,21 +67,24 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
     }
 
     @Override
-    public AbsoluteLocation<PrivateResource> readLinkAndDecrypt(
-            UserIDAuth owner,
-            AbsoluteLocation<PrivateResource> latestLink) {
+    public Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptingReader(
+        UserIDAuth owner, StorageIdentifier identifier) {
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
+        PrivateResource userPrivate = privateProfile.getPrivateStorage().get(identifier).getResource();
 
-        String relativeToPrivateUri = readLink(owner, latestLink);
+        Function<PrivateResource, AbsoluteLocation<PrivateResource>> decryptingResolver =
+                resolver.decryptingResolver(owner, userPrivate, identifier);
 
-        PrivateResource userPrivate = privateProfile.getPrivateStorage().getResource();
+        return latestLink -> {
+            String relativeToPrivateUri = readLink(owner, latestLink);
 
-        PrivateResource resource = privateProfile.getPrivateStorage().getResource().resolve(
-                new Uri(URI.create(relativeToPrivateUri)),
-                new Uri("")
-        );
+            PrivateResource resource = userPrivate.resolve(
+                    new Uri(URI.create(relativeToPrivateUri)),
+                    new Uri("")
+            );
 
-        return resolver.decryptAndResolvePath(owner, resource, userPrivate);
+            return decryptingResolver.apply(resource);
+        };
     }
 
     @SneakyThrows

@@ -6,7 +6,7 @@ package de.adorsys.datasafe.types.api.resource;
 public interface ResourceLocation<T> {
 
     /**
-     * @return Resource location without any credentials.
+     * @return Resource location, possibly with access credentials.
      */
     Uri location();
 

@@ -12,6 +12,7 @@ import de.adorsys.datasafe.types.api.resource.*;
 
 import javax.inject.Inject;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -44,14 +45,25 @@ public class DefaultVersionInfoServiceImpl implements VersionInfoService<DFSVers
     @Override
     public Stream<Versioned<AbsoluteLocation<ResolvedResource>, ResolvedResource, DFSVersion>> listJoinedWithLatest(
             ListRequest<UserIDAuth, PrivateResource> request) {
-        return versionsOf(request).map(it -> resolveLatest(request, it));
+        Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptor =
+                latestVersionLinkLocator.linkDecryptingReader(
+                    request.getOwner(),
+                    request.getStorageIdentifier()
+                );
+
+        return versionsOf(request).map(it -> resolveLatest(request, it, linkDecryptor));
     }
 
     private Versioned<AbsoluteLocation<ResolvedResource>, ResolvedResource, DFSVersion> resolveLatest(
             ListRequest<UserIDAuth, PrivateResource> request,
-            Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion> versioned) {
+            Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion> versioned,
+            Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptor) {
         AbsoluteLocation<PrivateResource> latestLink = latestVersionLinkLocator
-                .resolveLatestLinkLocation(request.getOwner(), versioned.stripVersion());
+                .resolveLatestLinkLocation(
+                        request.getOwner(),
+                        versioned.stripVersion(),
+                        request.getStorageIdentifier()
+                );
 
         // TODO: This can be cached - latest links for resource version.
         AbsoluteLocation<ResolvedResource> resolved = listPrivate
@@ -67,8 +79,7 @@ public class DefaultVersionInfoServiceImpl implements VersionInfoService<DFSVers
             );
         }
 
-        AbsoluteLocation<PrivateResource> latestObject =
-                latestVersionLinkLocator.readLinkAndDecrypt(request.getOwner(), latestLink);
+        AbsoluteLocation<PrivateResource> latestObject = linkDecryptor.apply(latestLink);
         return new BaseVersionedPath<>(
                 versioned.getVersion(),
                 versioned.absolute(),

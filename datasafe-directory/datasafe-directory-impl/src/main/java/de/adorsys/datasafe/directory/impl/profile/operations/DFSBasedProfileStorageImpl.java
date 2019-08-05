@@ -4,6 +4,7 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRemovalService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileUpdatingService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,16 @@ public class DFSBasedProfileStorageImpl implements ProfileOperations {
     @Delegate
     private final ProfileRemovalService removalService;
 
+    @Delegate
+    private final ProfileUpdatingService updatingService;
+
     @Inject
     public DFSBasedProfileStorageImpl(ProfileRegistrationService registrationService,
-                                      ProfileRetrievalService retrievalService,
-                                      ProfileRemovalService removalService) {
+                                      ProfileRetrievalService retrievalService, ProfileRemovalService removalService,
+                                      ProfileUpdatingService updatingService) {
         this.registrationService = registrationService;
         this.retrievalService = retrievalService;
         this.removalService = removalService;
+        this.updatingService = updatingService;
     }
 }

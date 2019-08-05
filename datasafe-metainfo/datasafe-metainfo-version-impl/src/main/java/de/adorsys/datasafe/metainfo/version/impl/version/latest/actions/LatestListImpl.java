@@ -14,6 +14,7 @@ import lombok.Getter;
 
 import javax.inject.Inject;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -57,22 +58,27 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
 
         ListRequest<UserIDAuth, PrivateResource> forLatestSnapshotDir = request.toBuilder().location(
                 latestVersionLinkLocator.resolveLatestLinkLocation(
-                        request.getOwner(), request.getLocation()).getResource()
+                        request.getOwner(), request.getLocation(), request.getStorageIdentifier()).getResource()
         ).build();
+
+        Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptor =
+                latestVersionLinkLocator.linkDecryptingReader(
+                    request.getOwner(),
+                    request.getStorageIdentifier()
+                );
 
         return listPrivate
                 .list(forLatestSnapshotDir)
-                .map(it -> parseVersion(request, it))
+                .map(it -> parseVersion(it, linkDecryptor))
                 .filter(Objects::nonNull);
     }
 
     private Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version> parseVersion(
-            ListRequest<UserIDAuth, PrivateResource> request, AbsoluteLocation<ResolvedResource> resource) {
-        AbsoluteLocation<PrivateResource> privateBlob =
-                latestVersionLinkLocator.readLinkAndDecrypt(
-                        request.getOwner(),
-                        new AbsoluteLocation<>(resource.getResource().asPrivate())
-                );
+            AbsoluteLocation<ResolvedResource> resource,
+            Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptor) {
+
+        AbsoluteLocation<PrivateResource> privateBlob = linkDecryptor
+                .apply(new AbsoluteLocation<>(resource.getResource().asPrivate()));
 
         VersionedUri versionedUri = encoder.decodeVersion(privateBlob.getResource().decryptedPath()).orElse(null);
 
