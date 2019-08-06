@@ -281,7 +281,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
         Map<String, StorageDescriptor> storageDescriptorHashMap = new HashMap<>();
         int s3BucketCount = getAmazons3BucketCount();
-        List<StorageDescriptor> storageDescriptorList = getStorageDescriptors();
+        List<StorageDescriptor> storageDescriptorList = multiS3();
         for (String user : users) {
             int userId = Integer.parseInt(user.split("-")[1]);
             storageDescriptorHashMap.put(user, storageDescriptorList.get(userId % s3BucketCount));
@@ -289,7 +289,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         return storageDescriptorHashMap;
     }
 
-    protected static List<StorageDescriptor> getStorageDescriptors() {
+    protected static List<StorageDescriptor> multiS3() {
         List<StorageDescriptor> storageDescriptorList = new ArrayList<>();
 
         for (int i = 0; i < getAmazons3BucketCount(); i++) {

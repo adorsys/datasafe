@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -63,6 +64,7 @@ public class OperationExecutor {
     private final StatisticService statisticService;
 
     public void execute(Operation oper) {
+
         long cnt = counter.incrementAndGet();
 
         log.trace("[{}] [{} {}/{}/{}] Executing {}",
@@ -200,7 +202,6 @@ public class OperationExecutor {
     }
 
     private OutputStream openWriteStream(UserSpec user, Operation oper) {
-
         if (StorageType.INBOX.equals(oper.getStorageType())) {
             return inboxService.write(WriteRequest.forDefaultPublic(
                     oper.getRecipients().stream()

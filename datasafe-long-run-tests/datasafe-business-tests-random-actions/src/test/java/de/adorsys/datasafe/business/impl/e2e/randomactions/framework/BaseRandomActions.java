@@ -91,14 +91,14 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         smallFixture().getOperations().stream().forEach((it)->users.add(it.getUserId()));
 
         return Sets.cartesianProduct(
-                Collections.singleton(getMultiS3Bucket(users)),
+                Collections.singleton(multiS3()),
                 THREAD_COUNT,
                 FILE_SIZE_M_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
     }
 
     protected void executeMultiStorageTest(Fixture fixture,
-                                           Map<String, StorageDescriptor> usersSelectedStorage,
+                                           List<StorageDescriptor> usersSelectedStorage,
                                            int filesizeInMb, int threadCount,
                                            StatisticService statisticService) {
 
