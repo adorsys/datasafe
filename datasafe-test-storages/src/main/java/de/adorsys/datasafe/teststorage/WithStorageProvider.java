@@ -275,6 +275,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     protected static List<StorageDescriptor> multiS3() {
+        initMultiS3();
         List<StorageDescriptor> storageDescriptorList = new ArrayList<>();
 
         for (int i = 0; i < getAmazons3BucketCount(); i++) {
@@ -292,7 +293,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 StorageDescriptorName.AMAZON_MULTI_BUCKET,
                 () -> {
                     amazonMultiSotrage.get();
-                    return new S3StorageService(amazonS3List != null ?amazonS3List.get(bucketNo): amazonS3, amazonBucket, EXECUTOR_SERVICE);
+                    return new S3StorageService(amazonS3List != null ?amazonS3List.get(bucketNo): amazonS3, getAmazonBucket(bucketNo), EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + getAmazonBucket(bucketNo)+ "/" + bucketPath + "/"),
                 getAmazonAccessKeyID(bucketNo),
