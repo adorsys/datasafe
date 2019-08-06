@@ -33,9 +33,9 @@ class RandomActionsOnDatasafeMultiS3Test extends BaseRandomActions {
 
     @ParameterizedTest
     @MethodSource("actionsOnMultiStorageParallelThreads")
-    void actionsOnMultiStorageParallelThreads(Map<String, StorageDescriptor> usersSeletedStorage, int threadCount, int filesizeInMb) {
+    void actionsOnMultiStorageParallelThreads(List<StorageDescriptor> usersSelectedStorage, int threadCount, int filesizeInMb) {
         executeMultiStorageTest(smallFixture(),
-                usersSeletedStorage,
+                usersSelectedStorage,
                 filesizeInMb,
                 threadCount,
                 new StatisticService()
