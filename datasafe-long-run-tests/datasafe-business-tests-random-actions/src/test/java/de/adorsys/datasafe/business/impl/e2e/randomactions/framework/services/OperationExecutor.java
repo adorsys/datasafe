@@ -65,7 +65,7 @@ public class OperationExecutor {
     private final List<WithStorageProvider.StorageDescriptor> descriptors;
 
     public void execute(Operation oper) {
-        initUserSelectedStorage(oper.getUserId());
+       // initUserSelectedStorage(oper.getUserId());
         long cnt = counter.incrementAndGet();
 
         log.trace("[{}] [{} {}/{}/{}] Executing {}",
@@ -157,8 +157,17 @@ public class OperationExecutor {
     @SneakyThrows
     private void doCreate(Operation oper) {
         UserIDAuth auth = new UserIDAuth(oper.getUserId(), oper.getUserId());
-        registrationService.registerUsingDefaults(auth);
+        //registrationService.registerUsingDefaults(auth);
+        getDatasafeService(oper).userProfile().registerUsingDefaults(auth);
         users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
+    }
+
+    private DefaultDatasafeServices getDatasafeService(Operation oper) {
+        WithStorageProvider.StorageDescriptor descriptor = descriptors.get(Integer.parseInt(oper.getUserId().split("-")[1]) % descriptors.size());
+        return DaggerDefaultDatasafeServices.builder()
+                .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
+                .storage(descriptor.getStorageService().get())
+                .build();
     }
 
     @SneakyThrows
@@ -214,16 +223,16 @@ public class OperationExecutor {
                 RemoveRequest.forDefaultPrivate(user.getAuth(), new Uri(oper.getLocation()));
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            inboxService.remove(request);
+            getDatasafeService(oper).inboxService().remove(request);
             return;
         }
 
-        privateSpace.remove(request);
+        getDatasafeService(oper).privateService().remove(request);
     }
 
     private OutputStream openWriteStream(UserSpec user, Operation oper) {
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return inboxService.write(WriteRequest.forDefaultPublic(
+            return getDatasafeService(oper).inboxService().write(WriteRequest.forDefaultPublic(
                     oper.getRecipients().stream()
                             .map(it -> requireUser(it).getAuth().getUserID())
                             .collect(Collectors.toSet()),
@@ -231,7 +240,7 @@ public class OperationExecutor {
             );
         }
 
-        return privateSpace.write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+        return getDatasafeService(oper).privateService().write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
     }
 
     private InputStream openReadStream(UserSpec user, Operation oper) {
@@ -240,10 +249,10 @@ public class OperationExecutor {
         );
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return inboxService.read(request);
+            return getDatasafeService(oper).inboxService().read(request);
         }
 
-        return privateSpace.read(ReadRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+        return getDatasafeService(oper).privateService().read(ReadRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
     }
 
     private Stream<AbsoluteLocation<ResolvedResource>> listResources(UserSpec user, Operation oper) {
@@ -252,10 +261,10 @@ public class OperationExecutor {
         );
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return inboxService.list(request);
+            return getDatasafeService(oper).inboxService().list(request);
         }
 
-        return privateSpace.list(request);
+        return getDatasafeService(oper).privateService().list(request);
     }
 
     @SneakyThrows
