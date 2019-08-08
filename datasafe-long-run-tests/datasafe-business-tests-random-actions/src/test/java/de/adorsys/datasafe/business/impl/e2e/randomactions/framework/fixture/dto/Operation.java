@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dt
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Set;
@@ -10,6 +11,7 @@ import java.util.Set;
  * Represents operation done on DFS.
  */
 @Getter
+@Setter
 @Builder(toBuilder = true)
 @ToString
 public class Operation {

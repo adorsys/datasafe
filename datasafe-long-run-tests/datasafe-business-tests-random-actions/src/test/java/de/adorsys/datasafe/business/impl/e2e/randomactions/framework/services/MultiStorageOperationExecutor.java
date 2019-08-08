@@ -9,6 +9,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
@@ -48,7 +49,7 @@ public class MultiStorageOperationExecutor {
     private final Map<OperationType, Consumer<Operation>> handlers = ImmutableMap.<OperationType, Consumer<Operation>>builder()
             .put(OperationType.CREATE_USER, this::doCreate)
             .put(OperationType.WRITE, this::doWrite)
-            .put(OperationType.SHARE, this::doWrite)
+            .put(OperationType.SHARE, this::doShare)
             .put(OperationType.READ, this::doRead)
             .put(OperationType.LIST, this::doList)
             .put(OperationType.DELETE, this::doDelete)
@@ -162,6 +163,30 @@ public class MultiStorageOperationExecutor {
 
         try (OutputStream os = openWriteStream(user, oper)) {
             ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), os);
+        }
+    }
+
+    @SneakyThrows
+    private void doShare(Operation oper) {
+        UserSpec user = requireUser(oper);
+
+        for (String userId : oper.getRecipients()){
+            if(null != descriptors){
+                UserSpec userNew = requireUser(userId);
+                WithStorageProvider.StorageDescriptor descriptor = descriptors.get(Integer.parseInt(userId.split("-")[1]) % descriptors.size());
+                DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
+                        .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
+                        .storage(descriptor.getStorageService().get())
+                        .build();
+                Set<UserID> userIDS = new HashSet<>();
+                userIDS.add(requireUser(userId).getAuth().getUserID());
+
+                if (StorageType.INBOX.equals(oper.getStorageType())) {
+                    ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), datasafeServices.inboxService().write(WriteRequest.forDefaultPublic(userIDS, oper.getLocation())));
+                }else if(!StorageType.INBOX.equals(oper.getStorageType())){
+                    ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(userNew.getAuth(), oper.getLocation())));
+                }
+            }
         }
     }
 
