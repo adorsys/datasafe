@@ -182,9 +182,13 @@ public class MultiStorageOperationExecutor {
                 userIDS.add(requireUser(userId).getAuth().getUserID());
 
                 if (StorageType.INBOX.equals(oper.getStorageType())) {
-                    ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), datasafeServices.inboxService().write(WriteRequest.forDefaultPublic(userIDS, oper.getLocation())));
+                    try (OutputStream os = datasafeServices.inboxService().write(WriteRequest.forDefaultPublic(userIDS, oper.getLocation()))) {
+                        ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), os);
+                    }
                 }else if(!StorageType.INBOX.equals(oper.getStorageType())){
-                    ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(userNew.getAuth(), oper.getLocation())));
+                    try (OutputStream os = datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(userNew.getAuth(), oper.getLocation()))) {
+                        ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), os);
+                    }
                 }
             }
         }
@@ -242,6 +246,19 @@ public class MultiStorageOperationExecutor {
     }
 
     private OutputStream openWriteStream(UserSpec user, Operation oper) {
+        if (StorageType.INBOX.equals(oper.getStorageType())) {
+            return inboxService.write(WriteRequest.forDefaultPublic(
+                    oper.getRecipients().stream()
+                            .map(it -> requireUser(it).getAuth().getUserID())
+                            .collect(Collectors.toSet()),
+                    oper.getLocation())
+            );
+        }
+
+        return privateSpace.write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+    }
+
+    private OutputStream openShareStream(UserSpec user, Operation oper) {
         if (StorageType.INBOX.equals(oper.getStorageType())) {
             return inboxService.write(WriteRequest.forDefaultPublic(
                     oper.getRecipients().stream()
