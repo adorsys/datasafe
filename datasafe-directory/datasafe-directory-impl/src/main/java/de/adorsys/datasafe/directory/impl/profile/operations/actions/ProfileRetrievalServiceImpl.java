@@ -24,7 +24,7 @@ import java.io.InputStream;
 @RuntimeDelegate
 public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
 
-    private final DFSConfig dfsConfig;
+    protected final DFSConfig dfsConfig;
     private final StorageReadService readService;
     private final StorageCheckService checkService;
     private final BucketAccessService access;

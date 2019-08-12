@@ -11,6 +11,7 @@ import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
@@ -63,6 +64,16 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
         PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args -> new SwitchablePathEncryptionImpl(args.getBucketPathEncryptionService(), args.getPrivateKeyService()));
         CMSEncryptionServiceImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args -> new SwitchableCmsEncryptionImpl(args.getEncryptionConfig()));
+        ProfileRetrievalServiceImplRuntimeDelegatable.overrideWith(
+                baseOverridesRegistry, args -> new DFSRelativeProfileRetrievalServiceImpl(
+                        args.getDfsConfig(),
+                        args.getReadService(),
+                        args.getCheckService(),
+                        args.getAccess(),
+                        args.getSerde(),
+                        args.getUserProfileCache()
+                )
+        );
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
             LogStringFrame lsf = new LogStringFrame();
