@@ -1,5 +1,7 @@
 package de.adorsys.datasafe.teststorage;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -7,6 +9,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
+import com.amazonaws.util.StringUtils;
 import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -68,6 +71,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String amazonSecretAccessKey = readPropOrEnv("AWS_SECRET_KEY");
     private static String amazonRegion = readPropOrEnv("AWS_REGION", "eu-central-1");
     private static String amazonBucket = readPropOrEnv("AWS_BUCKET", "adorsys-docusafe");
+    private static String amazonUrl = readPropOrEnv("AWS_URL");
     private static String amazonMappedUrl;
 
     private static GenericContainer minioContainer;
@@ -269,14 +273,25 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             return;
         }
 
-        amazonS3 = AmazonS3ClientBuilder.standard()
-        .withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
-        )
-        .withRegion(amazonRegion)
-        .build();
+        AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(
+                        new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
+                );
 
-        amazonMappedUrl = "s3://" + amazonBucket + "/" + bucketPath + "/";
+        if (StringUtils.isNullOrEmpty(amazonUrl)) {
+            amazonS3ClientBuilder = amazonS3ClientBuilder.withRegion(amazonRegion);
+            amazonMappedUrl = "s3://" + amazonBucket + "/" + bucketPath + "/";
+        } else {
+            amazonS3ClientBuilder = amazonS3ClientBuilder
+                    .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
+                    .withEndpointConfiguration(
+                            new AwsClientBuilder.EndpointConfiguration(amazonUrl, "US")
+                    )
+                    .enablePathStyleAccess();
+            amazonMappedUrl = "http://" + amazonBucket + "." + amazonUrl;
+        }
+        amazonS3 = amazonS3ClientBuilder.build();
+
         log.info("Amazon napped URL:" + amazonMappedUrl);
     }
 
