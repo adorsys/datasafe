@@ -37,6 +37,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -237,6 +238,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             return false;
         }
         return true;
+    }
+
+    protected static Function<String, StorageService> storageServiceByBucket() {
+         return bucketName -> new S3StorageService(amazonS3, bucketName, EXECUTOR_SERVICE);
     }
 
     protected static StorageDescriptor s3() {
