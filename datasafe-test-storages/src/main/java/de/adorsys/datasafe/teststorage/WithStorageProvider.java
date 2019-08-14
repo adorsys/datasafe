@@ -275,7 +275,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     protected static List<StorageDescriptor> multiS3() {
-        initMultiS3();
+        //initMultiS3();
         List<StorageDescriptor> storageDescriptorList = new ArrayList<>();
 
         for (int i = 0; i < getAmazons3BucketCount(); i++) {

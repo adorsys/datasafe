@@ -157,8 +157,7 @@ public class OperationExecutor {
     @SneakyThrows
     private void doCreate(Operation oper) {
         UserIDAuth auth = new UserIDAuth(oper.getUserId(), oper.getUserId());
-        //registrationService.registerUsingDefaults(auth);
-        getDatasafeService(oper).userProfile().registerUsingDefaults(auth);
+        registrationService.registerUsingDefaults(auth);
         users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
     }
 
@@ -223,16 +222,16 @@ public class OperationExecutor {
                 RemoveRequest.forDefaultPrivate(user.getAuth(), new Uri(oper.getLocation()));
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            getDatasafeService(oper).inboxService().remove(request);
+            inboxService.remove(request);
             return;
         }
 
-        getDatasafeService(oper).privateService().remove(request);
+        privateSpace.remove(request);
     }
 
     private OutputStream openWriteStream(UserSpec user, Operation oper) {
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return getDatasafeService(oper).inboxService().write(WriteRequest.forDefaultPublic(
+            return inboxService.write(WriteRequest.forDefaultPublic(
                     oper.getRecipients().stream()
                             .map(it -> requireUser(it).getAuth().getUserID())
                             .collect(Collectors.toSet()),
@@ -240,7 +239,7 @@ public class OperationExecutor {
             );
         }
 
-        return getDatasafeService(oper).privateService().write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+        return privateSpace.write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
     }
 
     private InputStream openReadStream(UserSpec user, Operation oper) {
@@ -249,10 +248,10 @@ public class OperationExecutor {
         );
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return getDatasafeService(oper).inboxService().read(request);
+            return inboxService.read(request);
         }
 
-        return getDatasafeService(oper).privateService().read(ReadRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
+        return privateSpace.read(ReadRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
     }
 
     private Stream<AbsoluteLocation<ResolvedResource>> listResources(UserSpec user, Operation oper) {
@@ -261,10 +260,10 @@ public class OperationExecutor {
         );
 
         if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return getDatasafeService(oper).inboxService().list(request);
+            return inboxService.list(request);
         }
 
-        return getDatasafeService(oper).privateService().list(request);
+        return privateSpace.list(request);
     }
 
     @SneakyThrows

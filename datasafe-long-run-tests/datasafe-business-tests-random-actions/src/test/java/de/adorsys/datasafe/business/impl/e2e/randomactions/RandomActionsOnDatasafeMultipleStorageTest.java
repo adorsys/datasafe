@@ -1,16 +1,18 @@
 package de.adorsys.datasafe.business.impl.e2e.randomactions;
 
+import com.amazonaws.services.s3.AmazonS3;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.BaseRandomActions;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.MultiStorageDelegation;
 import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.StatisticService;
-import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
-import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.BaseRandomActions.DISABLE_RANDOM_ACTIONS_TEST;
 
@@ -25,12 +27,16 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
 @Slf4j
 @DisabledIfSystemProperty(named = DISABLE_RANDOM_ACTIONS_TEST, matches = "true")
 class RandomActionsOnDatasafeMultipleStorageTest extends BaseRandomActions {
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(4);
+
+    private static AmazonS3 directoryClient = null;
 
     @ParameterizedTest
     @MethodSource("actionsOnMultiStorageAndThreadsAndFilesizes")
     void testRandomActionsMultiStorageParallelThreads(List<StorageDescriptor> descriptors, int threadCount, int filesizeInMb) {
 
-        DefaultDatasafeServices datasafeServices = datasafeServices(descriptors.get(0));
+        MultiStorageDelegation multiStorageDelegation = new MultiStorageDelegation(descriptors, smallFixture());
+        DefaultDatasafeServices datasafeServices = multiStorageDelegation.getDatasafeServices();
 
         executeTest(
                 smallFixture(),
@@ -43,12 +49,5 @@ class RandomActionsOnDatasafeMultipleStorageTest extends BaseRandomActions {
                 new StatisticService(),
                 descriptors
         );
-    }
-
-    private DefaultDatasafeServices datasafeServices(StorageDescriptor descriptor) {
-        return DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
-                .storage(descriptor.getStorageService().get())
-                .build();
     }
 }
