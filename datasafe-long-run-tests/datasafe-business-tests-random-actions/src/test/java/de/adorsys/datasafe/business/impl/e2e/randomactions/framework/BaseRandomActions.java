@@ -48,8 +48,16 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     private static final int KILOBYTE_TO_BYTE = 1024;
     private static final long TIMEOUT = 30L;
 
-    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(2, 4, 8);
-    private static final Set<Integer> FILE_SIZE_K_BYTES = ImmutableSet.of(100, 1024, 10240); // 100KB, 1MB, 10MB
+    private static String THREADS = readPropOrEnv("THREADS", "2, 4, 8");
+    private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "100, 1024, 10240"); // in KB
+
+    private static final Set<Integer> THREAD_COUNT = ImmutableSet.copyOf(
+            Stream.of(THREADS.split(",")).mapToInt(Integer::parseInt).boxed().collect(Collectors.toSet())
+    );
+
+    private static final Set<Integer> FILE_SIZE_K_BYTES = ImmutableSet.copyOf(
+            Stream.of(FILE_SIZES.split(",")).mapToInt(Integer::parseInt).boxed().collect(Collectors.toSet())
+    );
 
     @BeforeEach
     void prepare() {
