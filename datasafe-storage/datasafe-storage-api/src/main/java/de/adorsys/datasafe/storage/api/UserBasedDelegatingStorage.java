@@ -9,9 +9,11 @@ import java.util.function.Function;
 
 public class UserBasedDelegatingStorage extends BaseDelegatingStorage {
     private final Map<String, StorageService> clientByBucket = new ConcurrentHashMap<>();
+    private final String amazonBucket;
 
-    public UserBasedDelegatingStorage(Function<String, StorageService> storageServiceBuilder) {
+    public UserBasedDelegatingStorage(Function<String, StorageService> storageServiceBuilder, String amazonBucket) {
         this.storageServiceBuilder = storageServiceBuilder;
+        this.amazonBucket = amazonBucket;
     }
 
     // Builder to create S3 or other kind of Storage service
@@ -24,7 +26,8 @@ public class UserBasedDelegatingStorage extends BaseDelegatingStorage {
         String userName = "profiles".equals(parts[1]) ? parts[3] : parts[2];
         String userNumber = userName.split("-")[1];
         int userNum = Integer.parseInt(userNumber);
-        String bucketName = "datasafe-test" + (userNum % 3 + 1);
+        String[] buckets = amazonBucket.split(",");
+        String bucketName = buckets[userNum % buckets.length];
         return clientByBucket.computeIfAbsent(bucketName, storageServiceBuilder);
     }
 }

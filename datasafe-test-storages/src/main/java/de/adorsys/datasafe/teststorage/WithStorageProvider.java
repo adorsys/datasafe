@@ -74,7 +74,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
     private static String amazonSecretAccessKey = readPropOrEnv("AWS_SECRET_KEY");
     private static String amazonRegion = readPropOrEnv("AWS_REGION", "eu-central-1");
-    private static String amazonBucket = readPropOrEnv("AWS_BUCKET", "adorsys-docusafe");
+    protected static String amazonBucket = readPropOrEnv("AWS_BUCKET", "adorsys-docusafe");
     private static String amazonUrl = readPropOrEnv("AWS_URL");
     private static String amazonMappedUrl;
 
@@ -132,7 +132,12 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         if (null != amazonS3) {
-            removeObjectFromS3(amazonS3, amazonBucket, bucketPath);
+            String[] buckets = amazonBucket.split(",");
+            if (buckets.length > 1) {
+                Stream.of(buckets).forEach(it -> removeObjectFromS3(amazonS3, it, bucketPath));
+            } else {
+                removeObjectFromS3(amazonS3, amazonBucket, bucketPath);
+            }
         }
     }
 
@@ -288,9 +293,14 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                         new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
                 );
 
+        String[] buckets = amazonBucket.split(",");
+        if (buckets.length > 1) {
+            log.info("Using {} buckets:{}", buckets.length, amazonBucket);
+        }
+
         if (StringUtils.isNullOrEmpty(amazonUrl)) {
             amazonS3ClientBuilder = amazonS3ClientBuilder.withRegion(amazonRegion);
-            amazonMappedUrl = "s3://" + amazonBucket + "/" + bucketPath + "/";
+            amazonMappedUrl = "s3://" + buckets[0] + "/" + bucketPath + "/";
         } else {
             amazonS3ClientBuilder = amazonS3ClientBuilder
                     .withEndpointConfiguration(
@@ -301,7 +311,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
         amazonS3 = amazonS3ClientBuilder.build();
 
-        log.info("Amazon napped URL:" + amazonMappedUrl);
+        log.info("Amazon mapped URL:" + amazonMappedUrl);
     }
 
     private static void startMinio() {

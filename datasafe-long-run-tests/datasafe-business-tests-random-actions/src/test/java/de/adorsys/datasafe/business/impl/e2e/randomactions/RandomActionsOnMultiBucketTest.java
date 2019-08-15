@@ -41,7 +41,7 @@ public class RandomActionsOnMultiBucketTest extends BaseRandomActions {
         return DaggerDefaultDatasafeServices
                 .builder()
                 .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
-                .storage(new UserBasedDelegatingStorage(storageServiceByBucket()))
+                .storage(new UserBasedDelegatingStorage(storageServiceByBucket(), amazonBucket))
                 .build();
     }
 }
