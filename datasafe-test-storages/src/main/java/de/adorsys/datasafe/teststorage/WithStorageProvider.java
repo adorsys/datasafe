@@ -1,7 +1,5 @@
 package de.adorsys.datasafe.teststorage;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -15,6 +13,7 @@ import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
+import de.adorsys.datasafe.teststorage.monitoring.ThreadPoolStatus;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.AllArgsConstructor;
@@ -31,12 +30,16 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -52,7 +55,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static String bucketPath =  UUID.randomUUID().toString();
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
     private static String minioRegion = "eu-central-1";
@@ -108,6 +111,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             initS3();
             return null;
         });
+
+        registerMBean();
     }
 
     @AfterEach
@@ -288,7 +293,6 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             amazonMappedUrl = "s3://" + amazonBucket + "/" + bucketPath + "/";
         } else {
             amazonS3ClientBuilder = amazonS3ClientBuilder
-                    .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
                     .withEndpointConfiguration(
                             new AwsClientBuilder.EndpointConfiguration(amazonUrl, "US")
                     )
@@ -380,7 +384,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
      * @param defaultValue Default value if none are present
      * @return Property value
      */
-    private static String readPropOrEnv(String name, String defaultValue) {
+    protected static String readPropOrEnv(String name, String defaultValue) {
         String fromEnv = System.getProperty(name, System.getenv(name));
         return null != fromEnv ? fromEnv : defaultValue;
     }
@@ -423,5 +427,13 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         MINIO,
         CEPH,
         AMAZON
+    }
+
+    @SneakyThrows
+    private static void registerMBean() {
+        ObjectName objectName = new ObjectName("de.adorsys.datasafe:type=basic,name=threadPoolStatus");
+        ThreadPoolStatus threadPoolStatus = new ThreadPoolStatus((ThreadPoolExecutor) EXECUTOR_SERVICE);
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        server.registerMBean(threadPoolStatus, objectName);
     }
 }
