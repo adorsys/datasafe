@@ -23,7 +23,7 @@ public class RandomActionsOnMultiBucketTest extends BaseRandomActions {
         StatisticService statisticService = new StatisticService();
 
         executeTest(
-                smallFixture(),
+                mediumFixture(),
                 descriptor.getName(),
                 filesizeInMb,
                 threadCount,
