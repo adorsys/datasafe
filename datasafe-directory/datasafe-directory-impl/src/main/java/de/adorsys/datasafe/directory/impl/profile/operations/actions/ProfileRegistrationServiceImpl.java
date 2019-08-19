@@ -112,7 +112,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
      */
     @Override
     public void registerUsingDefaults(UserIDAuth user) {
-        registerPublic(dfsConfig.defaultPublicTemplate(user));
+        registerPublic(dfsConfig.defaultPublicTemplate(user.getUserID()));
         CreateUserPrivateProfile privateProfile = dfsConfig.defaultPrivateTemplate(user);
         registerPrivate(privateProfile);
         createAllAllowableKeystores(user, privateProfile.removeAccess());
