@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.simple.adapter.impl;
+package de.adorsys.datasafe.simple.adapter.impl.profile;
 
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.dfs.BucketAccessService;
@@ -6,28 +6,35 @@ import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
-import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImpl;
-import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
-import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * This service ignores profiles stored at some external location and instead assumes that all files are relative
+ * to system root.
+ */
 @Slf4j
 public class DFSRelativeProfileRetrievalServiceImpl extends ProfileRetrievalServiceImpl {
 
-    DFSRelativeProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageReadService readService,
-                                                  StorageCheckService checkService, BucketAccessService access,
-                                                  GsonSerde serde, UserProfileCache userProfileCache) {
-        super(dfsConfig, readService, checkService, access, serde, userProfileCache);
+    private final DFSConfig dfsConfig;
+    private final StorageCheckService checkService;
+    private final BucketAccessService access;
+
+    public DFSRelativeProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageCheckService checkService,
+                                           BucketAccessService access) {
+        super(null, null, null, null, null, null);
+
+        this.dfsConfig = dfsConfig;
+        this.checkService = checkService;
+        this.access = access;
     }
 
     @Override
     public UserPublicProfile publicProfile(UserID ofUser) {
-        CreateUserPublicProfile createUserPublicProfile = dfsConfig.defaultPublicTemplate(new UserIDAuth(ofUser, new ReadKeyPassword("")));
+        CreateUserPublicProfile createUserPublicProfile = dfsConfig.defaultPublicTemplate(ofUser);
         UserPublicProfile userPublicProfile = createUserPublicProfile.removeAccess();
         log.debug("get public profile {} for user {}", userPublicProfile, ofUser);
         return userPublicProfile;
@@ -45,6 +52,8 @@ public class DFSRelativeProfileRetrievalServiceImpl extends ProfileRetrievalServ
 
     @Override
     public boolean userExists(UserID ofUser) {
-        return super.userExists(ofUser);
+        return checkService.objectExists(
+                access.withSystemAccess(dfsConfig.defaultPublicTemplate(ofUser).getPublicKeys())
+        );
     }
 }

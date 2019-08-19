@@ -11,6 +11,8 @@ import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRegistrationServiceImplRuntimeDelegatable;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRemovalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -21,6 +23,9 @@ import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRunt
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
+import de.adorsys.datasafe.simple.adapter.impl.profile.DFSRelativeProfileRegistrationService;
+import de.adorsys.datasafe.simple.adapter.impl.profile.DFSRelativeProfileRemovalServiceImpl;
+import de.adorsys.datasafe.simple.adapter.impl.profile.DFSRelativeProfileRetrievalServiceImpl;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
@@ -48,13 +53,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private static final String AMAZON_URL = "https://s3.amazonaws.com";
+    private static final ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
+    private static final String S3_PREFIX = "s3://";
 
     private URI systemRoot;
     private StorageService storageService;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
-    private final static ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
-    private final static String S3_PREFIX = "s3://";
-
 
     public SimpleDatasafeServiceImpl() {
         this(DFSCredentialsFactory.getFromEnvironmnet());
@@ -62,18 +66,19 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
         BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
-        PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args -> new SwitchablePathEncryptionImpl(args.getBucketPathEncryptionService(), args.getPrivateKeyService()));
-        CMSEncryptionServiceImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args -> new SwitchableCmsEncryptionImpl(args.getEncryptionConfig()));
-        ProfileRetrievalServiceImplRuntimeDelegatable.overrideWith(
-                baseOverridesRegistry, args -> new DFSRelativeProfileRetrievalServiceImpl(
-                        args.getDfsConfig(),
-                        args.getReadService(),
-                        args.getCheckService(),
-                        args.getAccess(),
-                        args.getSerde(),
-                        args.getUserProfileCache()
-                )
+        PathEncryptionImplRuntimeDelegatable.overrideWith(
+                baseOverridesRegistry,
+                args -> new SwitchablePathEncryptionImpl(
+                        args.getBucketPathEncryptionService(),
+                        args.getPrivateKeyService())
         );
+
+        CMSEncryptionServiceImplRuntimeDelegatable.overrideWith(
+                baseOverridesRegistry, args -> new SwitchableCmsEncryptionImpl(args.getEncryptionConfig())
+        );
+
+        makeUserProfilePathsHardcoded(baseOverridesRegistry);
+
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
             LogStringFrame lsf = new LogStringFrame();
@@ -149,6 +154,42 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                     .build();
             log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
         }
+    }
+
+    private void makeUserProfilePathsHardcoded(BaseOverridesRegistry baseOverridesRegistry) {
+        ProfileRegistrationServiceImplRuntimeDelegatable.overrideWith(
+                baseOverridesRegistry,
+                args -> new DFSRelativeProfileRegistrationService(
+                        args.getStorageKeyStoreOper(),
+                        args.getKeyStoreOper(),
+                        args.getAccess(),
+                        args.getCheckService(),
+                        args.getWriteService(),
+                        args.getSerde(),
+                        args.getDfsConfig()
+                )
+        );
+
+        ProfileRetrievalServiceImplRuntimeDelegatable.overrideWith(
+                baseOverridesRegistry, args -> new DFSRelativeProfileRetrievalServiceImpl(
+                        args.getDfsConfig(),
+                        args.getCheckService(),
+                        args.getAccess()
+                )
+        );
+
+        ProfileRemovalServiceImplRuntimeDelegatable.overrideWith(
+                baseOverridesRegistry,
+                args -> new DFSRelativeProfileRemovalServiceImpl(
+                        args.getPrivateKeyService(),
+                        args.getKeyStoreCache(),
+                        args.getListService(),
+                        args.getAccess(),
+                        args.getDfsConfig(),
+                        args.getRemoveService(),
+                        args.getRetrievalService()
+                )
+        );
     }
 
     public StorageService getStorageService() {

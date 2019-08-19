@@ -37,5 +37,5 @@ public interface DFSConfig {
      * @param id User authentication
      * @return Default template for public user profile
      */
-    CreateUserPublicProfile defaultPublicTemplate(UserIDAuth id);
+    CreateUserPublicProfile defaultPublicTemplate(UserID id);
 }

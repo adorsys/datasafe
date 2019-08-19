@@ -28,21 +28,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-public class SimpleAdapterFeatureTest {
-    UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
-    String content = "content of document";
-    String path = "a/b/c.txt";
-    DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
+class SimpleAdapterFeatureTest {
+    
+    private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
+    private String content = "content of document";
+    private String path = "a/b/c.txt";
+    private DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
 
     @BeforeEach
     @AfterEach
-    public void afterEach() {
+    void afterEach() {
         System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, Boolean.FALSE.toString());
         System.setProperty(SwitchableCmsEncryptionImpl.NO_CMSENCRYPTION_AT_ALL, Boolean.FALSE.toString());
     }
 
     @Test
-    public void testWithEncryption() {
+    void testWithEncryption() {
         SimpleDatasafeServiceImpl simpleDatasafeService = new SimpleDatasafeServiceImpl();
         simpleDatasafeService.createUser(userIDAuth);
         simpleDatasafeService.storeDocument(userIDAuth, document);
@@ -54,7 +55,7 @@ public class SimpleAdapterFeatureTest {
 
     @Test
     @SneakyThrows
-    public void testWitoutPathEncryption() {
+    void testWithoutPathEncryption() {
         System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, Boolean.TRUE.toString());
         SimpleDatasafeServiceImpl simpleDatasafeService = new SimpleDatasafeServiceImpl();
         simpleDatasafeService.createUser(userIDAuth);
@@ -73,7 +74,7 @@ public class SimpleAdapterFeatureTest {
 
     @Test
     @SneakyThrows
-    public void testWitoutEncryption() {
+    void testWithoutEncryption() {
         System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, Boolean.TRUE.toString());
         System.setProperty(SwitchableCmsEncryptionImpl.NO_CMSENCRYPTION_AT_ALL, Boolean.TRUE.toString());
         SimpleDatasafeServiceImpl simpleDatasafeService = new SimpleDatasafeServiceImpl();
