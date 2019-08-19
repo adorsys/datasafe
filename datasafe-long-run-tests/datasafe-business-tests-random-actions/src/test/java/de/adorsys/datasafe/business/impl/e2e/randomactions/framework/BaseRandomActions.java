@@ -14,7 +14,6 @@ import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.St
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,11 +52,13 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "100, 1024, 10240"); // in KB
 
     private static final Set<Integer> THREAD_COUNT = ImmutableSet.copyOf(
-            Stream.of(THREADS.split(",")).mapToInt(Integer::parseInt).boxed().collect(Collectors.toSet())
+            Stream.of(THREADS.split(",")).map(String::trim)
+                    .mapToInt(Integer::parseInt).boxed().collect(Collectors.toList())
     );
 
     private static final Set<Integer> FILE_SIZE_K_BYTES = ImmutableSet.copyOf(
-            Stream.of(FILE_SIZES.split(",")).mapToInt(Integer::parseInt).boxed().collect(Collectors.toSet())
+            Stream.of(FILE_SIZES.split(",")).map(String::trim)
+                    .mapToInt(Integer::parseInt).boxed().collect(Collectors.toList())
     );
 
     @BeforeEach
@@ -148,7 +149,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
             OperationQueue queue,
             OperationExecutor executor,
             List<Throwable> exceptions) {
-        ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(threadCount);
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         List<String> executionIds = IntStream.range(0, threadCount).boxed()
                 .map(it -> UUID.randomUUID().toString())
                 .collect(Collectors.toList());
