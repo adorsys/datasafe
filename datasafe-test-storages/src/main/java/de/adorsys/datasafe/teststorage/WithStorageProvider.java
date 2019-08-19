@@ -12,6 +12,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.teststorage.monitoring.ThreadPoolStatus;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -38,7 +39,6 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -55,7 +55,9 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static String bucketPath =  UUID.randomUUID().toString();
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+    private static final ExecutorService EXECUTOR_SERVICE =
+            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(1);
+
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
     private static String minioRegion = "eu-central-1";

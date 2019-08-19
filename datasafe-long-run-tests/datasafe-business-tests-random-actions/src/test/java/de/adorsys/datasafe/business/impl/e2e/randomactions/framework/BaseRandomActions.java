@@ -14,6 +14,7 @@ import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.St
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -147,7 +148,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
             OperationQueue queue,
             OperationExecutor executor,
             List<Throwable> exceptions) {
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(threadCount);
         List<String> executionIds = IntStream.range(0, threadCount).boxed()
                 .map(it -> UUID.randomUUID().toString())
                 .collect(Collectors.toList());
