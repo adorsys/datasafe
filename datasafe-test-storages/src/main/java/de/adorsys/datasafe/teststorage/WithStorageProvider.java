@@ -1,5 +1,7 @@
 package de.adorsys.datasafe.teststorage;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -305,6 +307,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             amazonMappedUrl = "s3://" + buckets[0] + "/" + bucketPath + "/";
         } else {
             amazonS3ClientBuilder = amazonS3ClientBuilder
+                    .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
                     .withEndpointConfiguration(
                             new AwsClientBuilder.EndpointConfiguration(amazonUrl, "US")
                     )
