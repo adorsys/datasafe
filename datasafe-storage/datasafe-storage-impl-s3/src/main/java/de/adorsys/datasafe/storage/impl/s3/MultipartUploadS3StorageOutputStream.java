@@ -121,7 +121,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
         initiateMultiPartIfNeeded();
 
-        byte[] content = currentOutputStream.getBuffer();
+        byte[] content = currentOutputStream.getBufferOrCopy();
         int size = currentOutputStream.size();
         // Release the memory
         currentOutputStream = newOutputStream();
@@ -152,7 +152,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         int size = currentOutputStream.size();
         objectMetadata.setContentLength(size);
-        byte[] content = currentOutputStream.getBuffer();
+        byte[] content = currentOutputStream.getBufferOrCopy();
 
         // Release the memory
         currentOutputStream = null;
@@ -208,7 +208,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
             return;
         }
 
-        byte[] content = currentOutputStream.getBuffer();
+        byte[] content = currentOutputStream.getBufferOrCopy();
         int size = currentOutputStream.size();
         // Release the memory
         currentOutputStream = null;
@@ -270,7 +270,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     }
 
     private CustomizableByteArrayOutputStream newOutputStream() {
-        return new CustomizableByteArrayOutputStream(32, BUFFER_SIZE);
+        return new CustomizableByteArrayOutputStream(32, BUFFER_SIZE, 0.5);
     }
 
     /**
@@ -279,21 +279,42 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
      */
     private class CustomizableByteArrayOutputStream extends OutputStream {
 
+        private final double fillFactorToCopy;
         private final int maxArraySize;
         private byte[] buffer;
         private int count;
 
-        CustomizableByteArrayOutputStream(int initialCapacity, int maxArraySize) {
+        /**
+         * @param initialCapacity Initial buffer capacity
+         * @param maxArraySize Maximum array(buffer) size
+         * @param fillFactorToCopy If buffer fill factor is less than this value
+         * {@link CustomizableByteArrayOutputStream#getBufferOrCopy()} will return buffer copy,
+         * that contains all data but has smaller size than holding entire buffer.
+         */
+        CustomizableByteArrayOutputStream(int initialCapacity, int maxArraySize, double fillFactorToCopy) {
+            if (initialCapacity <= 0) {
+                throw new IllegalArgumentException("Initial capacity must be > 0: " + initialCapacity);
+            }
+
+            if (maxArraySize <= 0) {
+                throw new IllegalArgumentException("Max array size must be > 0: " + maxArraySize);
+            }
+
+            if (fillFactorToCopy < 0 || fillFactorToCopy > 1.0) {
+                throw new IllegalArgumentException("Fill factor for Array.copy must be in [0, 1]: " + fillFactorToCopy);
+            }
+
             this.buffer = new byte[initialCapacity];
             this.maxArraySize = maxArraySize;
+            this.fillFactorToCopy = fillFactorToCopy;
         }
 
         @Override
         @Synchronized
-        public void write(int b) {
-            ensureCapacity(count + 1);
-            buffer[count] = (byte) b;
-            count += 1;
+        public void write(int byteToWrite) {
+            ensureCapacity(this.count + 1);
+            this.buffer[count] = (byte) byteToWrite;
+            this.count += 1;
         }
 
         @Override
@@ -304,19 +325,31 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                 throw new IndexOutOfBoundsException();
             }
 
-            ensureCapacity(count + len);
-            System.arraycopy(buffer, off, this.buffer, count, len);
-            count += len;
+            ensureCapacity(this.count + len);
+            System.arraycopy(buffer, off, this.buffer, this.count, len);
+            this.count += len;
         }
 
+        /**
+         * Optimized resulting data array that has actual length equal to
+         * {@link CustomizableByteArrayOutputStream#size()}.
+         * Prevents keeping too large objects in memory while upload request finishes.
+         * Copies buffer to allow its cleanup if fill factor is too small.
+         */
         @Synchronized
-        public byte[] getBuffer() {
-            return buffer;
+        public byte[] getBufferOrCopy() {
+            double fillFactor = (double) this.count / this.buffer.length;
+
+            if (fillFactor >= this.fillFactorToCopy) {
+                return this.buffer;
+            }
+
+            return Arrays.copyOf(this.buffer, count);
         }
 
         @Synchronized
         public int size() {
-            return count;
+            return this.count;
         }
 
         @Override
@@ -333,19 +366,19 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         }
 
         private void grow(int minCapacity) {
-            int oldCapacity = buffer.length;
+            int oldCapacity = this.buffer.length;
 
-            int newCapacity = Math.min(oldCapacity << 1, maxArraySize);
+            int newCapacity = Math.min(oldCapacity << 1, this.maxArraySize);
 
             if (newCapacity < minCapacity) {
                 newCapacity = minCapacity;
             }
 
-            if (newCapacity > maxArraySize) {
+            if (newCapacity > this.maxArraySize) {
                 throw new OutOfMemoryError();
             }
 
-            buffer = Arrays.copyOf(buffer, newCapacity);
+            this.buffer = Arrays.copyOf(this.buffer, newCapacity);
         }
     }
 }
