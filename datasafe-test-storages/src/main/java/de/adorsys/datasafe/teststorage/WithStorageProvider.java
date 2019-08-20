@@ -14,11 +14,10 @@ import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
-import de.adorsys.datasafe.teststorage.monitoring.ThreadPoolStatus;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -33,15 +32,11 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -55,9 +50,10 @@ import java.util.stream.Stream;
 public abstract class WithStorageProvider extends BaseMockitoTest {
     public static final String SKIP_CEPH = "SKIP_CEPH";
 
-    private static String bucketPath =  UUID.randomUUID().toString();
+    private static String bucketPath = UUID.randomUUID().toString();
 
-    private static final ExecutorService EXECUTOR_SERVICE =
+    private static final ExecutorService EXECUTOR_SERVICE = "true".equals(readPropOrEnv("USE_EXECUTOR_POOL")) ?
+            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService() :
             ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);
 
     private static String minioAccessKeyID = "admin";
@@ -115,8 +111,6 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             initS3();
             return null;
         });
-
-        registerMBean();
     }
 
     @AfterEach
@@ -239,7 +233,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 cephAccessKeyID,
                 cephSecretAccessKey,
                 cephRegion,
-                cephBucketName  + "/" + bucketPath
+                cephBucketName + "/" + bucketPath
         );
     }
 
@@ -255,7 +249,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     protected static Function<String, StorageService> storageServiceByBucket() {
-         return bucketName -> new S3StorageService(amazonS3, bucketName, EXECUTOR_SERVICE);
+        return bucketName -> new S3StorageService(amazonS3, bucketName, EXECUTOR_SERVICE);
     }
 
     protected static StorageDescriptor s3() {
@@ -395,7 +389,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     /**
      * Reads property by {@code name} and if such property doesn't exist then it reads it from environment variables.
-     * @param name Property/environment variable name
+     *
+     * @param name         Property/environment variable name
      * @param defaultValue Default value if none are present
      * @return Property value
      */
@@ -406,6 +401,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     /**
      * Reads property by {@code name} and if such property doesn't exist then it reads it from environment variables.
+     *
      * @param name Property/environment variable name
      * @return Property value
      */
@@ -427,12 +423,17 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         private final String rootBucket;
 
         public String getMappedUrl() {
-            switch(name) {
-                case MINIO: return minioMappedUrl;
-                case CEPH: return cephMappedUrl;
-                case AMAZON: return amazonMappedUrl;
-                case FILESYSTEM: return null;
-                default: throw new RuntimeException("missing switch for " + name);
+            switch (name) {
+                case MINIO:
+                    return minioMappedUrl;
+                case CEPH:
+                    return cephMappedUrl;
+                case AMAZON:
+                    return amazonMappedUrl;
+                case FILESYSTEM:
+                    return null;
+                default:
+                    throw new RuntimeException("missing switch for " + name);
             }
         }
     }
@@ -442,13 +443,5 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         MINIO,
         CEPH,
         AMAZON
-    }
-
-    @SneakyThrows
-    private static void registerMBean() {
-        ObjectName objectName = new ObjectName("de.adorsys.datasafe:type=basic,name=threadPoolStatus");
-        ThreadPoolStatus threadPoolStatus = new ThreadPoolStatus((ThreadPoolExecutor) EXECUTOR_SERVICE);
-        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-        server.registerMBean(threadPoolStatus, objectName);
     }
 }
