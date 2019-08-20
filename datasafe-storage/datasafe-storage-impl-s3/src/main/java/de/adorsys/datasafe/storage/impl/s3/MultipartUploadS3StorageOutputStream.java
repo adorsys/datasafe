@@ -65,7 +65,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private final CompletionService<UploadPartResult> completionService;
 
-    private ByteArrayOutputStream currentOutputStream = new ByteArrayOutputStream();
+    private ByteArrayOutputStream currentOutputStream = newOutputStream();
 
     private InitiateMultipartUploadResult multiPartUploadResult;
 
@@ -87,14 +87,14 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     @Override
     @Synchronized
-    public void write(byte[] b, int off, int len) {
+    public void write(byte[] bytes, int off, int len) {
         int remainingSizeToWrite = len;
         int inputPosition = off;
 
         do {
             int availableCapacity = BUFFER_SIZE - currentOutputStream.size();
             int bytesToWrite = Math.min(availableCapacity, remainingSizeToWrite);
-            currentOutputStream.write(b, inputPosition, bytesToWrite);
+            currentOutputStream.write(bytes, inputPosition, bytesToWrite);
             inputPosition += bytesToWrite;
             remainingSizeToWrite -= bytesToWrite;
 
@@ -129,12 +129,18 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         }
 
         initiateMultiPartIfNeeded();
+
+        byte[] content = currentOutputStream.toByteArray();
+        int size = currentOutputStream.size();
+        // Release the memory
+        currentOutputStream = newOutputStream();
+
         completionService.submit(new UploadChunkResultCallable(
                 ChunkUploadRequest
                         .builder()
                         .amazonS3(amazonS3)
-                        .content(currentOutputStream.toByteArray())
-                        .contentSize(currentOutputStream.size())
+                        .content(content)
+                        .contentSize(size)
                         .bucketName(bucketName)
                         .objectName(objectName)
                         .uploadId(multiPartUploadResult.getUploadId())
@@ -142,8 +148,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                         .lastChunk(false)
                         .build()
         ));
+
         ++partCounter;
-        currentOutputStream.reset();
     }
 
     private boolean isMultiPartUpload() {
@@ -156,6 +162,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         objectMetadata.setContentLength(currentOutputStream.size());
 
         byte[] content = currentOutputStream.toByteArray();
+        // Release the memory
+        currentOutputStream = null;
 
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
@@ -168,9 +176,6 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                 objectMetadata);
 
         notifyCommittedVersionIfPresent(upload.getVersionId());
-
-        // Release the memory
-        currentOutputStream = null;
 
         log.debug("Finished simple upload");
     }
@@ -271,5 +276,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         return result;
     }
 
+    private ByteArrayOutputStream newOutputStream() {
+        return new ByteArrayOutputStream();
+    }
 }
 
