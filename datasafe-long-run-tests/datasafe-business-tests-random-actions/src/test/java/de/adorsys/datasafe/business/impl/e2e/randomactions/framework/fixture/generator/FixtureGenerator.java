@@ -90,9 +90,9 @@ class FixtureGenerator extends BaseMockitoTest {
 
         String path = "./src/test/resources/fixture/result.json";
         System.out.println("Fixture has been written to: " + path);
-        FileOutputStream os = new FileOutputStream(path);
-        os.write(new GsonBuilder().setPrettyPrinting().create().toJson(fixture).getBytes());
-        os.close();
+        try (FileOutputStream os = new FileOutputStream(path)) {
+            os.write(new GsonBuilder().setPrettyPrinting().create().toJson(fixture).getBytes());
+        }
     }
 
     /**
