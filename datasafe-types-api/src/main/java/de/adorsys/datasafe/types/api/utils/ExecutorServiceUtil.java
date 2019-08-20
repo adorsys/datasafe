@@ -15,10 +15,10 @@ public class ExecutorServiceUtil {
      * @param poolSize executor and queue size
      * @return ExecutorService with limited queue size that executes task using submitter thread on starvation
      */
-    public ExecutorService submitterExecutesOnStarvationExecutingService(int poolSize) {
+    public ExecutorService submitterExecutesOnStarvationExecutingService(int poolSize, int queueSize) {
         return new ThreadPoolExecutor(poolSize, poolSize,
                 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(poolSize),
+                new LinkedBlockingQueue<>(queueSize),
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
@@ -28,6 +28,9 @@ public class ExecutorServiceUtil {
      * thread pool with size equal to processor count
      */
     public ExecutorService submitterExecutesOnStarvationExecutingService() {
-        return submitterExecutesOnStarvationExecutingService(Runtime.getRuntime().availableProcessors());
+        return submitterExecutesOnStarvationExecutingService(
+                Runtime.getRuntime().availableProcessors(),
+                Runtime.getRuntime().availableProcessors()
+        );
     }
 }

@@ -129,7 +129,10 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                     amazons3,
                     amazonS3DFSCredentials.getContainer(),
                     ExecutorServiceUtil
-                            .submitterExecutesOnStarvationExecutingService(amazonS3DFSCredentials.getThreadPoolSize())
+                            .submitterExecutesOnStarvationExecutingService(
+                                    amazonS3DFSCredentials.getThreadPoolSize(),
+                                    amazonS3DFSCredentials.getQueueSize()
+                            )
             );
             this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()

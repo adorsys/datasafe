@@ -72,7 +72,8 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     private static final String FILES_TWO = "filestwobucket";
     private static final String INBOX = "inboxbucket";
 
-    private static final ExecutorService EXECUTOR = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(5);
+    private static final ExecutorService EXECUTOR = ExecutorServiceUtil
+            .submitterExecutesOnStarvationExecutingService(5, 5);
 
     private static Map<String, GenericContainer> minios = new HashMap<>();
     private static Map<String, String> endpointsByHost = new HashMap<>();

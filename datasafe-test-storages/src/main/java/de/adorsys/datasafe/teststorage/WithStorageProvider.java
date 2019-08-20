@@ -58,7 +58,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String bucketPath =  UUID.randomUUID().toString();
 
     private static final ExecutorService EXECUTOR_SERVICE =
-            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(1);
+            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 8);
 
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
