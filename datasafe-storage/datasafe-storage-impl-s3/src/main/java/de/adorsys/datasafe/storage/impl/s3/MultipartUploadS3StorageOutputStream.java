@@ -331,6 +331,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
         @Override
         public void close() {
+            // NOP
         }
 
         private void ensureCapacity(int minCapacity) {
