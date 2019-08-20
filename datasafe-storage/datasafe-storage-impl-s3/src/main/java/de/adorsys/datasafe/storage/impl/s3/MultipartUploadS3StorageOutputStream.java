@@ -22,16 +22,7 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AbortMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PartETag;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.UploadPartResult;
-import com.amazonaws.util.BinaryUtils;
+import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
@@ -39,8 +30,10 @@ import lombok.SneakyThrows;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
-import java.security.MessageDigest;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -157,20 +150,17 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     @SneakyThrows
     private void finishSimpleUpload() {
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(currentOutputStream.size());
-
+        int size = currentOutputStream.size();
+        objectMetadata.setContentLength(size);
         byte[] content = currentOutputStream.getBuffer();
+
         // Release the memory
         currentOutputStream = null;
-
-        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
-        objectMetadata.setContentMD5(md5Digest);
 
         PutObjectResult upload = amazonS3.putObject(
                 bucketName,
                 objectName,
-                new ByteArrayInputStream(content),
+                new ByteArrayInputStream(content, 0, size),
                 objectMetadata);
 
         notifyCommittedVersionIfPresent(upload.getVersionId());
