@@ -110,11 +110,11 @@ public class DefaultDFSConfig implements DFSConfig {
     }
 
     @Override
-    public CreateUserPublicProfile defaultPublicTemplate(UserIDAuth id) {
-        Uri rootLocation = userRoot(id.getUserID());
+    public CreateUserPublicProfile defaultPublicTemplate(UserID id) {
+        Uri rootLocation = userRoot(id);
 
         return CreateUserPublicProfile.builder()
-                .id(id.getUserID())
+                .id(id)
                 .inbox(access(inbox(rootLocation)))
                 .publicKeys(access(publicKeys(rootLocation)))
                 .build();

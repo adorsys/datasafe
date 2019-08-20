@@ -45,7 +45,8 @@ class CleanupDbTest extends WithStorageProvider {
         simpleDatasafeService.storeDocument(user2,  new DSDocument(new DocumentFQN(path),
                 new DocumentContent(content.getBytes())));
 
-        assertEquals(10,
+        // (1 keystore + 1 pub key + 1 file) * 2
+        assertEquals(6,
                 descriptor.getStorageService().get().list(
                         BasePrivateResource.forAbsolutePrivate(descriptor.getLocation())
                 ).count()
