@@ -11,6 +11,7 @@ import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.directory.impl.profile.keys.KeyStoreCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.actions.StorageListService;
 import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
@@ -86,20 +87,27 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
 
         removeService.remove(access.withSystemAccess(publicProfile.getPublicKeys()));
 
-        // remove profiles itself:
-        removeService.remove(access.withSystemAccess(dfsConfig.privateProfile(userID.getUserID())));
-        removeService.remove(access.withSystemAccess(dfsConfig.publicProfile(userID.getUserID())));
+        removeUserProfileFiles(userID.getUserID());
 
-        // remove everything else associated with user
+        // remove everything else associated with user - i.e. parent folder of profile
         privateProfile.getAssociatedResources().stream()
                 .map(it -> access.privateAccessFor(userID, it.getResource()))
                 .forEach(removeService::remove);
 
-        profileCache.getPrivateProfile().remove(userID.getUserID());
-        profileCache.getPublicProfile().remove(userID.getUserID());
+        cleanupProfileCache(userID.getUserID());
         keyStoreCache.remove(userID.getUserID());
 
         log.debug("Deregistered user {}", userID);
+    }
+
+    protected void removeUserProfileFiles(UserID forUser) {
+        removeService.remove(access.withSystemAccess(dfsConfig.privateProfile(forUser)));
+        removeService.remove(access.withSystemAccess(dfsConfig.publicProfile(forUser)));
+    }
+
+    protected void cleanupProfileCache(UserID forUser) {
+        profileCache.getPrivateProfile().remove(forUser);
+        profileCache.getPublicProfile().remove(forUser);
     }
 
     private void removeAllIn(UserIDAuth userID, AbsoluteLocation<PrivateResource> location) {

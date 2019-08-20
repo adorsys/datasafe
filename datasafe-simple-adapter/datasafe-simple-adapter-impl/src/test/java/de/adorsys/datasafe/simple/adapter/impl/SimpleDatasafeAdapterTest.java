@@ -8,6 +8,7 @@ import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
@@ -28,23 +28,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-public class SimpleDatasafeAdapterTest extends WithStorageProvider {
-    SimpleDatasafeService simpleDatasafeService;
-    UserIDAuth userIDAuth;
-    DFSCredentials dfsCredentials;
+class SimpleDatasafeAdapterTest extends WithStorageProvider {
+
+    private SimpleDatasafeService simpleDatasafeService;
+    private UserIDAuth userIDAuth;
+    private DFSCredentials dfsCredentials;
 
     void myinit(StorageDescriptor descriptor) {
         dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
-    }
-
-    @ValueSource
-    protected static Stream<Boolean> withOrWithoutEncryption() {
-        return Stream.of(
-                Boolean.TRUE,
-                Boolean.FALSE);
     }
 
     private static Stream<StorageDescriptor> storages() {
@@ -52,11 +47,11 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @BeforeEach
-    public void mybefore() {
+    void mybefore() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    public void mystart() {
+    void mystart() {
         if (dfsCredentials != null) {
             simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials);
         } else {
@@ -67,7 +62,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @AfterEach
-    public void myafter() {
+    void myafter() {
         log.info("delete user");
         simpleDatasafeService.destroyUser(userIDAuth);
     }
@@ -75,15 +70,25 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @ParameterizedTest
     @MethodSource("storages")
     @SneakyThrows
-    public void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
+    void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
+
+        // SimpleDatasafeAdapter does not use user profile json files, so only keystore and pubkeys should exist:
+        assertThat(descriptor.getStorageService().get().list(
+                BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
+        ).extracting(it -> descriptor.getLocation().relativize(it.location()).asString())
+                .containsExactlyInAnyOrder(
+                        "users/peter/public/pubkeys",
+                        "users/peter/private/keystore"
+                );
+
         log.info("test create user and delete user with " + descriptor.getName());
     }
 
     @ParameterizedTest
     @MethodSource("storages")
-    public void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         String content = "content of document";
@@ -127,7 +132,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    public void writeAndReadFileWithSlash(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFileWithSlash(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         String content = "content of document";
@@ -146,7 +151,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    public void writeAndReadFiles(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFiles(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         DocumentDirectoryFQN root = new DocumentDirectoryFQN("affe");
@@ -194,7 +199,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("storages")
-    public void writeAndReadFilesAsStream(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFilesAsStream(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
 
@@ -219,7 +224,7 @@ public class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    public void testTwoUsers(WithStorageProvider.StorageDescriptor descriptor) {
+    void testTwoUsers(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         UserIDAuth userIDAuth2 = new UserIDAuth(new UserID("peter2"), new ReadKeyPassword("password2"));
