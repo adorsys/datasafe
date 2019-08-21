@@ -1,0 +1,2 @@
+include ':app', ':datasafe-android'
+rootProject.name='DatasafeAndroidSample'
