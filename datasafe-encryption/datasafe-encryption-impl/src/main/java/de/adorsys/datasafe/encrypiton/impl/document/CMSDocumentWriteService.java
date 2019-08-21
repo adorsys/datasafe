@@ -11,11 +11,11 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
+import de.adorsys.datasafe.types.api.utils.CustomizableByteArrayOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -161,35 +161,35 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     private static class ChunkableFanOutStream extends FanOutStream {
 
         private final int chunkSize;
-        private final ByteArrayOutputStream os;
+        private final CustomizableByteArrayOutputStream os;
 
         private ChunkableFanOutStream(List<OutputStream> destinations, int chunkSize) {
             super(destinations);
 
             this.chunkSize = chunkSize;
-            this.os = new ByteArrayOutputStream(chunkSize);
+            this.os = new CustomizableByteArrayOutputStream(32, Integer.MAX_VALUE - 1, 0.5);
         }
 
         @Override
         public void write(int b) throws IOException {
-            if (!needsFlush()) {
+            if (!needsFlush(1)) {
                 os.write(b);
                 return;
             }
 
-            doFlush();
             os.write(b);
+            doFlush();
         }
 
         @Override
         public void write(byte[] bytes, int off, int len) throws IOException {
-            if (!needsFlush()) {
+            if (!needsFlush(len)) {
                 os.write(bytes, off, len);
                 return;
             }
 
-            doFlush();
             os.write(bytes, off, len);
+            doFlush();
         }
 
         @Override
@@ -202,18 +202,20 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
             // when closing stream immediately it is ok not to write in chunks - memory will
             // be retained only for 1 destination
-            byte[] tailChunk = os.toByteArray();
+            byte[] tailChunk = os.getBufferOrCopy();
+            int size = os.size();
             for (OutputStream destination : destinations) {
-                destination.write(tailChunk, 0, tailChunk.length);
+                destination.write(tailChunk, 0, size);
                 destination.close();
             }
         }
 
         private void doFlush() throws IOException {
-            byte[] bytes = os.toByteArray();
+            byte[] bytes = os.getBufferOrCopy();
+            int size = os.size();
 
             // write only in chunks of declared size
-            int chunksToWrite = bytes.length / chunkSize;
+            int chunksToWrite = size / chunkSize;
             int written = 0;
             for (int chunkNum = 0; chunkNum < chunksToWrite; chunkNum++) {
                 super.write(bytes, written, chunkSize);
@@ -222,13 +224,13 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
             // retain tail bytes, non proportional to `chunkSize`:
             os.reset();
-            if (written < bytes.length) {
-                os.write(bytes, written, bytes.length - written);
+            if (written < size) {
+                os.write(bytes, written, size - written);
             }
         }
 
-        private boolean needsFlush() {
-            return os.size() > chunkSize;
+        private boolean needsFlush(int addedBytes) {
+            return os.size() + addedBytes > chunkSize;
         }
     }
 }
