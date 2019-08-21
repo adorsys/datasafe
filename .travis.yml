@@ -26,9 +26,8 @@ branches:
     - gh-pages
 
 stages:
-  - Java
-  - AndroidTest
-  - AndroidDeploy
+  - Build
+  - DeployAndroid
 
 matrix:
   fast_finish: true
@@ -36,7 +35,8 @@ matrix:
   # Java related Travis logic starts here
     - language: java
       sudo: required
-      stage: Java
+      stage: Build
+      name: Java
       services:
         - docker
       before_script: skip
@@ -81,14 +81,17 @@ matrix:
     # Java related Travis logic ends here
     # Android related Travis logic starts here until endof file
     - env: API=21
-      stage: AndroidTest
+      stage: Build
+      name: Android Test
     - env: API=21
-      stage: AndroidTest
+      stage: Build
+      name: Android Test
     - env: API=28
       before_script: skip
       script:
         - bash datasafe-android/.buildscripts/build-and-deploy-snapshot.sh
-      stage: AndroidDeploy
+      stage: DeployAndroid
+      name: Android Deploy
 
 
 android:
