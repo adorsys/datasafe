@@ -15,10 +15,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import javax.inject.Inject;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -40,11 +42,19 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     @Override
     public OutputStream write(Map<PublicKeyIDWithPublicKey, AbsoluteLocation> recipientsWithInbox) {
 
-        FanOutStream dfsSink = new FanOutStream(
-                recipientsWithInbox.values().stream()
-                        .map(it -> writeService.write(WithCallback.noCallback(it)))
-                        .collect(Collectors.toList())
-        );
+        int maxChunkSize = recipientsWithInbox.values().stream()
+                .map(writeService::flushChunkSize)
+                .filter(Optional::isPresent)
+                .mapToInt(Optional::get)
+                .max()
+                .orElse(-1);
+
+        List<OutputStream> recipients = recipientsWithInbox.values().stream()
+                .map(it -> writeService.write(WithCallback.noCallback(it)))
+                .collect(Collectors.toList());
+
+        FanOutStream dfsSink = maxChunkSize > 0 ?
+                new ChunkableFanOutStream(recipients, maxChunkSize) : new FanOutStream(recipients);
 
         OutputStream encryptionSink = cms.buildEncryptionOutputStream(
                 dfsSink,
@@ -115,9 +125,9 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
      * byte to multiple recipients.
      */
     @RequiredArgsConstructor
-    private static final class FanOutStream extends OutputStream {
+    private static class FanOutStream extends OutputStream {
 
-        private final List<OutputStream> destinations;
+        protected final List<OutputStream> destinations;
 
         @Override
         public void write(int b) throws IOException {
@@ -140,6 +150,85 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
             for (OutputStream destination : destinations) {
                 destination.close();
             }
+        }
+    }
+
+    /**
+     * Buffered fan-out stream, so that same data won't get replicated multiple times for chunked consumers.
+     * Such consumers retain buffer that is equal to chunk size, in order to eliminate this extra buffer
+     * this class can be used (assuming all-equal chunk size).
+     */
+    private static class ChunkableFanOutStream extends FanOutStream {
+
+        private final int chunkSize;
+        private final ByteArrayOutputStream os;
+
+        private ChunkableFanOutStream(List<OutputStream> destinations, int chunkSize) {
+            super(destinations);
+
+            this.chunkSize = chunkSize;
+            this.os = new ByteArrayOutputStream(chunkSize);
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            if (!needsFlush()) {
+                os.write(b);
+                return;
+            }
+
+            doFlush();
+            os.write(b);
+        }
+
+        @Override
+        public void write(byte[] bytes, int off, int len) throws IOException {
+            if (!needsFlush()) {
+                os.write(bytes, off, len);
+                return;
+            }
+
+            doFlush();
+            os.write(bytes, off, len);
+        }
+
+        @Override
+        @SneakyThrows
+        public void close() {
+            if (os.size() == 0) {
+                super.close();
+                return;
+            }
+
+            // when closing stream immediately it is ok not to write in chunks - memory will
+            // be retained only for 1 destination
+            byte[] tailChunk = os.toByteArray();
+            for (OutputStream destination : destinations) {
+                destination.write(tailChunk, 0, tailChunk.length);
+                destination.close();
+            }
+        }
+
+        private void doFlush() throws IOException {
+            byte[] bytes = os.toByteArray();
+
+            // write only in chunks of declared size
+            int chunksToWrite = bytes.length / chunkSize;
+            int written = 0;
+            for (int chunkNum = 0; chunkNum < chunksToWrite; chunkNum++) {
+                super.write(bytes, written, chunkSize);
+                written += chunkSize;
+            }
+
+            // retain tail bytes, non proportional to `chunkSize`:
+            os.reset();
+            if (written < bytes.length) {
+                os.write(bytes, written, bytes.length - written);
+            }
+        }
+
+        private boolean needsFlush() {
+            return os.size() > chunkSize;
         }
     }
 }

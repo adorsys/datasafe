@@ -139,6 +139,11 @@ public class S3StorageService implements StorageService {
         return pathExists;
     }
 
+    @Override
+    public Optional<Integer> flushChunkSize(AbsoluteLocation location) {
+        return Optional.of(MultipartUploadS3StorageOutputStream.BUFFER_SIZE);
+    }
+
     private void doRemove(String bucket, String key) {
         if (key.endsWith("/")) {
             S3Objects.withPrefix(s3, bucket, key).forEach(it -> s3.deleteObject(bucket, it.getKey()));
