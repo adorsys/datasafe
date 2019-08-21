@@ -27,7 +27,7 @@ branches:
 
 stages:
   - Build
-  - DeployAndroid
+  - Deploy
 
 matrix:
   fast_finish: true
@@ -36,7 +36,7 @@ matrix:
     - language: java
       sudo: required
       stage: Build
-      name: Java
+      name: Java Build & Deploy
       services:
         - docker
       before_script: skip
@@ -82,15 +82,15 @@ matrix:
     # Android related Travis logic starts here until endof file
     - env: API=21
       stage: Build
-      name: Android Test
-    - env: API=21
+      name: Android UI Test API 21
+    - env: API=25
       stage: Build
-      name: Android Test
+      name: Android UI Test API 25
     - env: API=28
       before_script: skip
       script:
         - bash datasafe-android/.buildscripts/build-and-deploy-snapshot.sh
-      stage: DeployAndroid
+      stage: Deploy
       name: Android Deploy
 
 
