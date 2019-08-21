@@ -88,4 +88,4 @@ matrix:
         - echo y | sdkmanager "platforms;android-28" >/dev/null # We need the API of the current compileSdkVersion from gradle.properties
         - echo y | sdkmanager --channel=4 "emulator" >/dev/null # Use canary channel to get emulator 29.x for x86_64 image support
       script:
-        - bash .buildscripts/build-and-deploy-snapshot.sh
+        - bash datasafe-android/.buildscripts/build-and-deploy-snapshot.sh 
