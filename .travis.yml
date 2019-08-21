@@ -1,3 +1,10 @@
+# Android related travis settings start here
+language: android
+jdk: oraclejdk8
+dist: trusty
+sudo: false
+# Android related travis settings end here
+
 env:
   global:
     # Android related global Environment Variables start here
@@ -28,8 +35,6 @@ matrix:
   include: 
   # Java related Travis logic starts here
     - language: java
-      jdk:
-        - oraclejdk8
       sudo: required
       stage: Java
       services:
