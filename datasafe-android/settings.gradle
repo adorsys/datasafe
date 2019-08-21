@@ -1,2 +1,1 @@
 include ':app', ':datasafe'
-rootProject.name='DatasafeAndroidSample'
