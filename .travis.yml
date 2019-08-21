@@ -60,7 +60,10 @@ matrix:
       dist: trusty
       sudo: false
       notifications:
-      email: false
+        email: false
+      stages:
+        - test
+        - deploy
       before_cache:
         - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
       cache:
@@ -70,6 +73,24 @@ matrix:
       branches:
         except:
           - gh-pages
+      matrix:
+        fast_finish: true
+        include:
+          - env: API=21
+            stage: test
+          - env: API=22
+            stage: test
+          - env: API=23
+            stage: test
+          - env: API=24
+            stage: test
+          - env: API=25
+            stage: test
+          - env: API=28
+            before_script: skip
+            script:
+              - bash datasafe-android/.buildscripts/build-and-deploy-snapshot.sh
+            stage: deploy
       android:
       components:
         # installing tools to start, then use `sdkmanager` below to get the rest
@@ -87,5 +108,17 @@ matrix:
         - echo y | sdkmanager "platforms;android-$API" >/dev/null # We need the API of the emulator we will run
         - echo y | sdkmanager "platforms;android-28" >/dev/null # We need the API of the current compileSdkVersion from gradle.properties
         - echo y | sdkmanager --channel=4 "emulator" >/dev/null # Use canary channel to get emulator 29.x for x86_64 image support
-      script:
-        - bash datasafe-android/.buildscripts/build-and-deploy-snapshot.sh 
+      # Emulator Management: Create, Start and Wait
+      before_script:
+        - echo y | sdkmanager "extras;android;m2repository" >/dev/null
+        - echo y | sdkmanager "system-images;android-$API;$EMU_FLAVOR;$ABI" >/dev/null # install our emulator
+        - echo no | avdmanager create avd --force -n test -k "system-images;android-$API;$EMU_FLAVOR;$ABI" -c 10M
+        - emulator -verbose -avd test -no-accel -no-snapshot -no-window $AUDIO -camera-back none -camera-front none -selinux permissive -qemu -m 2048 &
+        - bash datasafe-android/.buildscripts/android-wait-for-emulator.sh
+        - adb shell settings put global window_animation_scale 0 &
+        - adb shell settings put global transition_animation_scale 0 &
+        - adb shell settings put global animator_duration_scale 0 &
+        - adb shell input keyevent 82 &
+
+      # Called in test stages
+      script: bash datasafe-android/.buildscripts/run-android-tests.sh
