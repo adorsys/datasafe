@@ -1,2 +1,2 @@
-include ':app', ':datasafe-android'
+include ':app', ':datasafe'
 rootProject.name='DatasafeAndroidSample'
