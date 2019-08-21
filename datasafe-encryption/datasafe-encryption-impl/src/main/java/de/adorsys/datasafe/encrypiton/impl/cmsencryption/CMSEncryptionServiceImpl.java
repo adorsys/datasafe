@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -38,9 +37,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RuntimeDelegate
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
-
-    private final Map<Integer, Decryptor> decryptors = new HashMap<>();
-
 
     private CMSEncryptionConfig encryptionConfig;
 
