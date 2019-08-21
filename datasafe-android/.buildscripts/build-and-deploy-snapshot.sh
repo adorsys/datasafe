@@ -3,7 +3,7 @@
 echo -e "\033[0;32m cd datasafe-android \033[0m"
 cd datasafe-android
 
-echo -e "\033[0;32m ./gradlew  :datasafe:clean --stacktrace \033[0m"
+echo -e "\033[0;32m ./gradlew :datasafe:clean --stacktrace \033[0m"
 ./gradlew :datasafe:clean --stacktrace
 
 echo -e "\033[0;32m ./gradlew :datasafe:assembleDebug --stacktrace \033[0m"

@@ -1,9 +1,11 @@
 #!/bin/bash
 
-set +e
+echo $PWD
 
 echo -e "\033[0;32m cd datasafe-android \033[0m"
 cd datasafe-android
+
+echo $PWD
 
 echo -e "\033[0;32m ./gradlew app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=de.adorsys.android.datasafeandroidsample.ExampleInstrumentedTest --stacktrace \033[0m"
 ./gradlew app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=de.adorsys.android.datasafeandroidsample.ExampleInstrumentedTest --stacktrace
