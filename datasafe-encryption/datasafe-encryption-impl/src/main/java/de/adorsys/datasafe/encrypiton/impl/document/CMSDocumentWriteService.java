@@ -18,6 +18,7 @@ import lombok.SneakyThrows;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -147,8 +148,10 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
         @SneakyThrows
         public void close() {
             super.close();
-            for (OutputStream destination : destinations) {
-                destination.close();
+            Iterator<OutputStream> dest = destinations.iterator();
+            while (dest.hasNext()) {
+                dest.next().close();
+                dest.remove();
             }
         }
     }
@@ -204,9 +207,13 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
             // be retained only for 1 destination
             byte[] tailChunk = os.getBufferOrCopy();
             int size = os.size();
-            for (OutputStream destination : destinations) {
+
+            Iterator<OutputStream> dest = destinations.iterator();
+            while (dest.hasNext()) {
+                OutputStream destination = dest.next();
                 destination.write(tailChunk, 0, size);
                 destination.close();
+                dest.remove();
             }
         }
 
