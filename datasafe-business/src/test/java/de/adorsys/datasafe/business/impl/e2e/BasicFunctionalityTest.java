@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class BasicFunctionalityTest extends BaseE2ETest {
 
-
     private StorageService storage;
     private Uri location;
 

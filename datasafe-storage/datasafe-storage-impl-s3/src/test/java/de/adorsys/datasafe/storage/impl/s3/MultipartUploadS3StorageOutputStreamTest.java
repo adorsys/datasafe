@@ -1,9 +1,11 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.Uri;
+import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
+import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.UploadPartRequest;
+import com.amazonaws.services.s3.model.UploadPartResult;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +24,10 @@ import static de.adorsys.datasafe.storage.impl.s3.MultipartUploadS3StorageOutput
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MultipartUploadS3StorageOutputStreamTest extends BaseMockitoTest {
 
@@ -48,7 +53,7 @@ class MultipartUploadS3StorageOutputStreamTest extends BaseMockitoTest {
     void init() {
         tested = new MultipartUploadS3StorageOutputStream(
                 "bucket",
-                BasePrivateResource.forAbsolutePrivate(new Uri("s3://path/to/file.txt")),
+                "s3://path/to/file.txt",
                 amazonS3,
                 executorService,
                 Collections.emptyList()

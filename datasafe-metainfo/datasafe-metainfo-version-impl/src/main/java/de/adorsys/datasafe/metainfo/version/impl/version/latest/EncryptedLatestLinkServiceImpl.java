@@ -12,6 +12,7 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
@@ -46,7 +47,7 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
 
     @Override
     public AbsoluteLocation<PrivateResource> resolveLatestLinkLocation(
-            UserIDAuth owner, PrivateResource resource) {
+            UserIDAuth owner, PrivateResource resource, StorageIdentifier identifier) {
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
 
         if (null == privateProfile.getDocumentVersionStorage()) {
@@ -56,7 +57,8 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
 
         AbsoluteLocation<PrivateResource> encryptedPath = resolver.encryptAndResolvePath(
                 owner,
-                resource
+                resource,
+                identifier
         );
 
         return new AbsoluteLocation<>(
@@ -66,17 +68,17 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
 
     @Override
     public Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptingReader(
-            UserIDAuth owner) {
+        UserIDAuth owner, StorageIdentifier identifier) {
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
-        PrivateResource userPrivate = privateProfile.getPrivateStorage().getResource();
+        PrivateResource userPrivate = privateProfile.getPrivateStorage().get(identifier).getResource();
 
         Function<PrivateResource, AbsoluteLocation<PrivateResource>> decryptingResolver =
-                resolver.decryptingResolver(owner, userPrivate);
+                resolver.decryptingResolver(owner, userPrivate, identifier);
 
         return latestLink -> {
             String relativeToPrivateUri = readLink(owner, latestLink);
 
-            PrivateResource resource = privateProfile.getPrivateStorage().getResource().resolve(
+            PrivateResource resource = userPrivate.resolve(
                     new Uri(URI.create(relativeToPrivateUri)),
                     new Uri("")
             );

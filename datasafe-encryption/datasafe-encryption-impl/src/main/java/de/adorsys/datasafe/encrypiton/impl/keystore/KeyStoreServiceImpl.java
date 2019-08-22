@@ -4,15 +4,20 @@ import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
+import de.adorsys.datasafe.encrypiton.impl.keystore.types.PasswordBasedKeyConfig;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
@@ -23,8 +28,11 @@ import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreation
 @RuntimeDelegate
 public class KeyStoreServiceImpl implements KeyStoreService {
 
+    private final PasswordBasedKeyConfig passwordBasedKeyConfig;
+
     @Inject
-    public KeyStoreServiceImpl() {
+    public KeyStoreServiceImpl(PasswordBasedKeyConfig passwordBasedKeyConfig) {
+        this.passwordBasedKeyConfig = passwordBasedKeyConfig;
     }
 
     @Override
@@ -126,12 +134,30 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     @SneakyThrows
     public SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID) {
         KeyStore keyStore = keyStoreAccess.getKeyStore();
-        SecretKeySpec key = null;
         char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
-        key = (SecretKeySpec) keyStore.getKey(keyID.getValue(), password);
-        return key;
+        return (SecretKeySpec) keyStore.getKey(keyID.getValue(), password);
     }
 
+    @Override
+    @SneakyThrows
+    public void addPasswordBasedSecretKey(KeyStoreAccess keyStoreAccess, String alias, char[] secret) {
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(secret);
+        SecretKeyFactory keyFac = SecretKeyFactory.getInstance(passwordBasedKeyConfig.secretKeyFactoryId());
+        SecretKey key = keyFac.generateSecret(pbeKeySpec);
+        keyStoreAccess.getKeyStore()
+                .setKeyEntry(
+                        alias,
+                        key,
+                        keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray(),
+                        new Certificate[0]
+                );
+    }
+
+    @Override
+    @SneakyThrows
+    public void removeKey(KeyStoreAccess keyStoreAccess, String alias) {
+        keyStoreAccess.getKeyStore().deleteEntry(alias);
+    }
 
     @Override
     public byte[] serialize(KeyStore store, String storeId, ReadStorePassword readStorePassword) {

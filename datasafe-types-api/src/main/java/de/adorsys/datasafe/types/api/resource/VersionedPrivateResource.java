@@ -36,4 +36,9 @@ public class VersionedPrivateResource<V extends Version>
     public VersionedPrivateResource<V> resolve(Uri encryptedPath, Uri decryptedPath) {
         return new VersionedPrivateResource<>(resource.resolve(encryptedPath, decryptedPath), version);
     }
+
+    @Override
+    public VersionedPrivateResource<V> withAuthority(String username, String password) {
+        return new VersionedPrivateResource<>(resource.withAuthority(username, password), version);
+    }
 }

@@ -38,6 +38,7 @@ public class BasePublicResource implements PublicResource {
         return new BasePublicResource(location.location().resolve(uri));
     }
 
+
     @Override
     public String toString() {
         return "BasePublicResource{" +

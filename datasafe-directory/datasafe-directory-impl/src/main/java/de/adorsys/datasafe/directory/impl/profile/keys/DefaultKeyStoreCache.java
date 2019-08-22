@@ -19,11 +19,23 @@ public class DefaultKeyStoreCache implements KeyStoreCache {
 
     private final Map<UserID, List<PublicKeyIDWithPublicKey>> publicKeys;
     private final Map<UserID, KeyStore> keystore;
+    private final Map<UserID, KeyStore> storageAccess;
 
     @Inject
     public DefaultKeyStoreCache(
-            Map<UserID, List<PublicKeyIDWithPublicKey>> publicKeys, Map<UserID, KeyStore> keystore) {
+            Map<UserID, List<PublicKeyIDWithPublicKey>> publicKeys,
+            Map<UserID, KeyStore> keystore,
+            Map<UserID, KeyStore> storageAccess) {
         this.publicKeys = publicKeys;
         this.keystore = keystore;
+        this.storageAccess = storageAccess;
+    }
+
+    @Override
+    public void remove(UserID userID) {
+
+        publicKeys.remove(userID);
+        keystore.remove(userID);
+        storageAccess.remove(userID);
     }
 }

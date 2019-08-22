@@ -6,6 +6,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 
 /**
  * Resolves user internal (logical, relative) resources into absolute (physical) locations then can be directly accessed
@@ -35,7 +36,8 @@ public interface ResourceResolver {
      * @param resource location within privatespace
      * @return physical location of resource within users' privatespace
      */
-    AbsoluteLocation<PrivateResource> resolveRelativeToPrivate(UserIDAuth userID, PrivateResource resource);
+    AbsoluteLocation<PrivateResource> resolveRelativeToPrivate(UserIDAuth userID, PrivateResource resource,
+                                                               StorageIdentifier identifier);
 
     /**
      * Checks if a given resource location is absolute.

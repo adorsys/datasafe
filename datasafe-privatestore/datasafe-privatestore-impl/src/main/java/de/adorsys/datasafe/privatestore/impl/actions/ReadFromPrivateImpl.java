@@ -40,7 +40,10 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
                 .owner(request.getOwner())
                 .location(resolver.encryptAndResolvePath(
                         request.getOwner(),
-                        request.getLocation())
-                ).build();
+                        request.getLocation(),
+                        request.getStorageIdentifier()
+                ))
+                .storageIdentifier(request.getStorageIdentifier())
+                .build();
     }
 }

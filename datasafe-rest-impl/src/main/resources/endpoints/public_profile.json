@@ -1,0 +1,4 @@
+{
+  "publicKeys": "s3://adorsys-docusafe/datasafe/users/qqqq/public/pubkeys",
+  "inbox": "s3://adorsys-docusafe/datasafe/users/qqqq/public/inbox/"
+}

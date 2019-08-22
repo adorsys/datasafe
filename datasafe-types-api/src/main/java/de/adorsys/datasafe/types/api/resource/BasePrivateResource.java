@@ -50,6 +50,10 @@ public class BasePrivateResource implements PrivateResource {
         return new BasePrivateResource().resolve(path, EMPTY_URI);
     }
 
+    public static AbsoluteLocation<PrivateResource> forAbsolutePrivate(String path) {
+        return forAbsolutePrivate(new Uri(path));
+    }
+
     public static AbsoluteLocation<PrivateResource> forAbsolutePrivate(URI path) {
         return forAbsolutePrivate(new Uri(path));
     }
@@ -103,6 +107,11 @@ public class BasePrivateResource implements PrivateResource {
             );
         }
         return new BasePrivateResource(absolute.location(), encryptedPath, decryptedPath);
+    }
+
+    @Override
+    public PrivateResource withAuthority(String username, String password) {
+        return new BasePrivateResource(container.withAuthority(username, password), encryptedPath, decryptedPath);
     }
 
     @Override

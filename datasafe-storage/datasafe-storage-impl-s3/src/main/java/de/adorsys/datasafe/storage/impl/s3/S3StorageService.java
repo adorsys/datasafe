@@ -8,9 +8,9 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -29,21 +29,21 @@ import java.util.stream.StreamSupport;
  * https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
  */
 @Slf4j
+@RequiredArgsConstructor
 public class S3StorageService implements StorageService {
 
     private final AmazonS3 s3;
-    private final String bucketName;
+    private final BucketRouter router;
     private final ExecutorService executorService;
 
     /**
      * @param s3 Connection to S3
      * @param bucketName Bucket to use
-     * @param executorService Multipart sending threadpool (file chunks are sent in parrallel)
+     * @param executorService Multipart sending threadpool (file chunks are sent in parallel)
      */
-    @Inject
     public S3StorageService(AmazonS3 s3, String bucketName, ExecutorService executorService) {
         this.s3 = s3;
-        this.bucketName = bucketName;
+        this.router = new StaticBucketRouter(bucketName);
         this.executorService = executorService;
     }
 
@@ -54,9 +54,9 @@ public class S3StorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         log.debug("List at {}", location.location());
-        String prefix = location.location().getRawPath().replaceFirst("^/", "");
+        String prefix = router.resourceKey(location);
 
-        S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, bucketName, prefix);
+        S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, router.bucketName(location), prefix);
         Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);
         return objectStream
                 .map(os -> new AbsoluteLocation<>(
@@ -74,6 +74,7 @@ public class S3StorageService implements StorageService {
     public InputStream read(AbsoluteLocation location) {
         log.debug("Read from {}", location);
 
+        String bucketName = router.bucketName(location);
         return executeAndReturn(
                 location,
                 key -> s3.getObject(bucketName, key).getObjectContent(),
@@ -91,9 +92,10 @@ public class S3StorageService implements StorageService {
     public OutputStream write(WithCallback<AbsoluteLocation, ? extends ResourceWriteCallback> locationWithCallback) {
         log.debug("Write data by path: {}", locationWithCallback.getWrapped().location());
 
+        String bucketName = router.bucketName(locationWithCallback.getWrapped());
         return new MultipartUploadS3StorageOutputStream(
                 bucketName,
-                locationWithCallback.getWrapped().getResource(),
+                router.resourceKey(locationWithCallback.getWrapped()),
                 s3,
                 executorService,
                 locationWithCallback.getCallbacks()
@@ -108,6 +110,7 @@ public class S3StorageService implements StorageService {
     public void remove(AbsoluteLocation location) {
         log.debug("Remove from {}", location);
 
+        String bucketName = router.bucketName(location);
         execute(
                 location,
                 key -> doRemove(bucketName, key),
@@ -121,12 +124,14 @@ public class S3StorageService implements StorageService {
      */
     @Override
     public boolean objectExists(AbsoluteLocation location) {
+        String bucketName = router.bucketName(location);
+
         boolean pathExists = executeAndReturn(
                 location,
-                path -> s3.doesObjectExist(bucketName, path),
-                (path, version) ->
+                key -> s3.doesObjectExist(bucketName, key),
+                (key, version) ->
                         StreamSupport.stream(
-                                S3Versions.withPrefix(s3, bucketName, path).spliterator(), false)
+                                S3Versions.withPrefix(s3, bucketName, key).spliterator(), false)
                                 .anyMatch(it -> it.getVersionId().equals(version.getVersionId()))
         );
 
@@ -172,10 +177,7 @@ public class S3StorageService implements StorageService {
                          Function<String, T> ifNoVersion,
                          BiFunction<String, StorageVersion, T> ifVersion) {
 
-        String key = location.getResource().location()
-                .getRawPath()
-                .replaceFirst("^/", "");
-
+        String key = router.resourceKey(location);
         Optional<StorageVersion> version = extractVersion(location);
 
         if (!version.isPresent()) {

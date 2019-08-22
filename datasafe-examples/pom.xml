@@ -5,7 +5,7 @@
     <parent>
         <artifactId>datasafe</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.4.3</version>
+        <version>0.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,5 +15,6 @@
         <module>datasafe-examples-business</module>
         <module>datasafe-examples-customize-dagger</module>
         <module>datasafe-examples-versioned-s3</module>
+        <module>datasafe-examples-multidfs</module>
     </modules>
 </project>

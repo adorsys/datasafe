@@ -7,20 +7,33 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DaggerVersionedDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
+import de.adorsys.datasafe.directory.impl.profile.config.DFSConfigWithStorageCreds;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
+import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
+import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
+import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
+import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
+import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
 import de.adorsys.datasafe.storage.impl.db.DatabaseConnectionRegistry;
 import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.storage.impl.s3.BucketNameRemovingRouter;
+import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
+import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
+import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,12 +41,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.inject.Inject;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.security.Security;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 /**
  * Configures default (non-versioned) Datasafe service that uses S3 client as storage provider.
@@ -43,20 +58,29 @@ import java.util.concurrent.Executors;
 @Configuration
 public class DatasafeConfig {
     public static final String FILESYSTEM_ENV = "USE_FILESYSTEM";
+    public static final String CLIENT_CREDENTIALS = "ALLOW_CLIENT_S3_CREDENTIALS";
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("private_profiles", "public_profiles");
 
-    private DatasafeProperties datasafeProperties;
-
-    @Inject
-    DatasafeConfig(DatasafeProperties datasafeProperties) {
-        this.datasafeProperties = datasafeProperties;
+    @Bean
+    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue = "true")
+    DFSConfig singleDfsConfig(DatasafeProperties properties) {
+        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
-    DFSConfig singleDfsConfig(DatasafeProperties properties) {
-        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
+    @ConditionalOnProperty(name = CLIENT_CREDENTIALS, havingValue = "true")
+    DFSConfig withClientCredentials(DatasafeProperties properties) {
+        return new DFSConfigWithStorageCreds(properties.getSystemRoot(), properties.getKeystorePassword());
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = CLIENT_CREDENTIALS, havingValue = "true")
+    OverridesRegistry withClientCredentialsOverrides() {
+        OverridesRegistry registry = new BaseOverridesRegistry();
+        BucketAccessServiceImplRuntimeDelegatable.overrideWith(registry, args ->
+            new WithAccessCredentials(args.getStorageKeyStoreOperations()));
+        return registry;
     }
 
     @Bean
@@ -70,7 +94,8 @@ public class DatasafeConfig {
      * @return Default implementation of Datasafe services.
      */
     @Bean
-    DefaultDatasafeServices datasafeService(StorageService storageService, DFSConfig dfsConfig) {
+    DefaultDatasafeServices datasafeService(StorageService storageService, DFSConfig dfsConfig,
+                                            Optional<OverridesRegistry> registry) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -78,11 +103,13 @@ public class DatasafeConfig {
                 .builder()
                 .config(dfsConfig)
                 .storage(storageService)
+                .overridesRegistry(registry.orElse(null))
                 .build();
     }
 
     @Bean
-    VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig) {
+    VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig,
+                                                        Optional<OverridesRegistry> registry) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -90,6 +117,7 @@ public class DatasafeConfig {
                 .builder()
                 .config(dfsConfig)
                 .storage(storageService)
+                .overridesRegistry(registry.orElse(null))
                 .build();
     }
 
@@ -102,16 +130,49 @@ public class DatasafeConfig {
         properties.setSystemRoot(root);
         return new FileSystemStorageService(Paths.get(root));
     }
+
+    @Bean
+    @ConditionalOnProperty(value = CLIENT_CREDENTIALS, havingValue = "true")
+    StorageService clientCredentials(AmazonS3 s3, DatasafeProperties properties) {
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        S3StorageService basicStorage = new S3StorageService(
+            s3,
+            properties.getBucketName(),
+            executorService
+        );
+
+        return new RegexDelegatingStorage(
+            ImmutableMap.<Pattern, StorageService>builder()
+                .put(Pattern.compile(properties.getSystemRoot() + ".+"), basicStorage)
+                // here order is important, immutable map preserves key order, so properties.getAmazonUrl()
+                // will be tried first
+                .put(
+                    Pattern.compile(".+"),
+                    new UriBasedAuthStorageService(
+                        acc -> new S3StorageService(
+                            S3ClientFactory.getClient(
+                                acc.getOnlyHostPart().toString(),
+                                acc.getAccessKey(),
+                                acc.getSecretKey()
+                            ),
+                            new BucketNameRemovingRouter(acc.getBucketName()),
+                            executorService
+                        )
+                    )
+                ).build()
+        );
+    }
+
     /**
      * @return S3 based storage service
      */
     @Bean
-    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue="true")
+    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue = "true")
     StorageService singleStorageService(AmazonS3 s3, DatasafeProperties properties) {
         return new S3StorageService(
-                s3,
-                properties.getBucketName(),
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+            s3,
+            properties.getBucketName(),
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
         );
     }
 
@@ -175,5 +236,14 @@ public class DatasafeConfig {
         return amazonS3;
     }
 
+    private static class WithAccessCredentials extends BucketAccessServiceImpl {
 
+        @Delegate
+        private final RegexAccessServiceWithStorageCredentialsImpl access;
+
+        private WithAccessCredentials(Lazy<StorageKeyStoreOperations> storageKeyStoreOperations) {
+            super(null);
+            this.access = new RegexAccessServiceWithStorageCredentialsImpl(storageKeyStoreOperations);
+        }
+    }
 }

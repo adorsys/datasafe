@@ -5,10 +5,11 @@
     <parent>
         <groupId>de.adorsys</groupId>
         <artifactId>datasafe-examples</artifactId>
-        <version>0.4.3</version>
+        <version>0.5</version>
     </parent>
     <artifactId>datasafe-examples-customize-dagger</artifactId>
     <dependencies>
+        <!-- These are necessary dependencies to be used in production code -->
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-business</artifactId>
@@ -26,6 +27,7 @@
             <artifactId>dagger</artifactId>
         </dependency>
 
+        <!-- These are for test support only - not needed in production code -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
