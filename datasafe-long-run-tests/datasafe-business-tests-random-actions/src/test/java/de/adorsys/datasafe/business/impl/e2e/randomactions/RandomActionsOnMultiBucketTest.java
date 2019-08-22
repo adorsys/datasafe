@@ -23,7 +23,7 @@ public class RandomActionsOnMultiBucketTest extends BaseRandomActions {
         StatisticService statisticService = new StatisticService();
 
         executeTest(
-                mediumFixture(),
+                getFixture(),
                 descriptor.getName(),
                 filesizeInMb,
                 threadCount,
@@ -41,7 +41,7 @@ public class RandomActionsOnMultiBucketTest extends BaseRandomActions {
         return DaggerDefaultDatasafeServices
                 .builder()
                 .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
-                .storage(new UserBasedDelegatingStorage(storageServiceByBucket(), amazonBucket))
+                .storage(new UserBasedDelegatingStorage(storageServiceByBucket(), amazonBuckets))
                 .build();
     }
 }

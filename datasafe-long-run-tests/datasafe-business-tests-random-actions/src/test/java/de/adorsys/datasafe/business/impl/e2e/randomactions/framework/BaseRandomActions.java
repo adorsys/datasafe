@@ -61,6 +61,11 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                     .mapToInt(Integer::parseInt).boxed().collect(Collectors.toList())
     );
 
+    private static final List<String> STORAGE_PROVIDERS =
+            Arrays.asList(readPropOrEnv("STORAGE_PROVIDERS", "MINIO").split(","));
+
+    private static final String FIXTURE_SIZE = readPropOrEnv("FIXTURE_SIZE", "SMALL");
+
     @BeforeEach
     void prepare() {
         // Enable logging obfuscation
@@ -68,20 +73,16 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         System.setProperty("SECURE_SENSITIVE", "on");
     }
 
+    protected Fixture getFixture() {
+        switch(FIXTURE_SIZE) {
+            case "MEDIUM" : return fixture("fixture/fixture_1000_ops.json");
+            case "BIG" : return fixture("fixture/fixture_10000_ops.json");
+            default : return fixture("fixture/fixture_200_ops.json");
+        }
+    }
+
     protected Fixture smallSimpleDocusafeAdapterFixture() {
         return fixture("fixture/fixture_simple_datasafe_200_ops.json");
-    }
-
-    protected Fixture smallFixture() {
-        return fixture("fixture/fixture_200_ops.json");
-    }
-
-    protected Fixture mediumFixture() {
-        return fixture("fixture/fixture_1000_ops.json");
-    }
-
-    protected Fixture bigFixture() {
-        return fixture("fixture/fixture_10000_ops.json");
     }
 
     @SneakyThrows
@@ -96,10 +97,26 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     @ValueSource
     protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
-                Collections.singleton(s3()),
+                getStorageDescriptors(),
                 THREAD_COUNT,
                 FILE_SIZE_K_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
+    }
+
+    private static Set<StorageDescriptor> getStorageDescriptors() {
+        return STORAGE_PROVIDERS.stream().map(it -> {
+            switch (it) {
+                case "AMAZON":
+                    return s3();
+                case "MINIO":
+                    return minio();
+                case "CEPH":
+                    return cephVersioned();
+                case "FILESYSTEM":
+                    return fs();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     protected void executeTest(

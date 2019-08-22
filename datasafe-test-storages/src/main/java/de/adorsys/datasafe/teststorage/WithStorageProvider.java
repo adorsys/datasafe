@@ -34,6 +34,8 @@ import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -49,6 +51,7 @@ import java.util.stream.Stream;
 @Getter
 public abstract class WithStorageProvider extends BaseMockitoTest {
     public static final String SKIP_CEPH = "SKIP_CEPH";
+    public static final String CEPH_REGION = "US";
 
     private static String bucketPath = UUID.randomUUID().toString();
 
@@ -74,7 +77,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
     private static String amazonSecretAccessKey = readPropOrEnv("AWS_SECRET_KEY");
     private static String amazonRegion = readPropOrEnv("AWS_REGION", "eu-central-1");
-    protected static String amazonBucket = readPropOrEnv("AWS_BUCKET", "adorsys-docusafe");
+    protected static List<String> amazonBuckets =
+            Arrays.asList(readPropOrEnv("AWS_BUCKET", "adorsys-docusafe").split(","));
     private static String amazonUrl = readPropOrEnv("AWS_URL");
     private static String amazonMappedUrl;
 
@@ -130,12 +134,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         if (null != amazonS3) {
-            String[] buckets = amazonBucket.split(",");
-            if (buckets.length > 1) {
-                Stream.of(buckets).forEach(it -> removeObjectFromS3(amazonS3, it, bucketPath));
-            } else {
-                removeObjectFromS3(amazonS3, amazonBucket, bucketPath);
-            }
+            amazonBuckets.forEach(it -> removeObjectFromS3(amazonS3, it, bucketPath));
         }
     }
 
@@ -261,13 +260,13 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 StorageDescriptorName.AMAZON,
                 () -> {
                     amazonSotrage.get();
-                    return new S3StorageService(amazonS3, amazonBucket, EXECUTOR_SERVICE);
+                    return new S3StorageService(amazonS3, amazonBuckets.get(0), EXECUTOR_SERVICE);
                 },
-                new Uri("s3://" + amazonBucket + "/" + bucketPath + "/"),
+                new Uri("s3://" + amazonBuckets.get(0) + "/" + bucketPath + "/"),
                 amazonAccessKeyID,
                 amazonSecretAccessKey,
                 amazonRegion,
-                amazonBucket + "/" + bucketPath
+                amazonBuckets.get(0) + "/" + bucketPath
         );
     }
 
@@ -291,22 +290,21 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                         new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
                 );
 
-        String[] buckets = amazonBucket.split(",");
-        if (buckets.length > 1) {
-            log.info("Using {} buckets:{}", buckets.length, amazonBucket);
+        if (amazonBuckets.size() > 1) {
+            log.info("Using {} buckets:{}", amazonBuckets.size(), amazonBuckets);
         }
 
         if (StringUtils.isNullOrEmpty(amazonUrl)) {
             amazonS3ClientBuilder = amazonS3ClientBuilder.withRegion(amazonRegion);
-            amazonMappedUrl = "s3://" + buckets[0] + "/" + bucketPath + "/";
+            amazonMappedUrl = "s3://" + amazonBuckets.get(0) + "/" + bucketPath + "/";
         } else {
             amazonS3ClientBuilder = amazonS3ClientBuilder
                     .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
                     .withEndpointConfiguration(
-                            new AwsClientBuilder.EndpointConfiguration(amazonUrl, "US")
+                            new AwsClientBuilder.EndpointConfiguration(amazonUrl, CEPH_REGION)
                     )
                     .enablePathStyleAccess();
-            amazonMappedUrl = "http://" + amazonBucket + "." + amazonUrl;
+            amazonMappedUrl = "http://" + amazonBuckets.get(0) + "." + amazonUrl;
         }
         amazonS3 = amazonS3ClientBuilder.build();
 

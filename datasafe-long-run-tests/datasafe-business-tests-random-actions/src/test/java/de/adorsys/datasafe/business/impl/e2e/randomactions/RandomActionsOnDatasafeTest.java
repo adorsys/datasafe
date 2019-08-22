@@ -31,7 +31,7 @@ class RandomActionsOnDatasafeTest extends BaseRandomActions {
         StatisticService statisticService = new StatisticService();
 
         executeTest(
-                mediumFixture(),
+                getFixture(),
                 descriptor.getName(),
                 filesizeInKb,
                 threadCount,
