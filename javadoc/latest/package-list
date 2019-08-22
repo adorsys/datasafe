@@ -63,6 +63,7 @@ de.adorsys.datasafe.simple.adapter.api
 de.adorsys.datasafe.simple.adapter.api.exceptions
 de.adorsys.datasafe.simple.adapter.api.types
 de.adorsys.datasafe.simple.adapter.impl
+de.adorsys.datasafe.simple.adapter.impl.profile
 de.adorsys.datasafe.simple.adapter.spring
 de.adorsys.datasafe.simple.adapter.spring.annotations
 de.adorsys.datasafe.simple.adapter.spring.properties
