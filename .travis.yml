@@ -1,96 +1,10 @@
-# Android related travis settings start here
 language: android
 jdk: oraclejdk8
 dist: trusty
 sudo: false
-# Android related travis settings end here
-
-env:
-  global:
-    # Android related global Environment Variables start here
-    - ADB_INSTALL_TIMEOUT=10
-    - ABI=x86_64
-    - EMU_FLAVOR=default # use google_apis flavor if no default flavor emulator
-    # PATH order is incredibly important. e.g. the 'emulator' script exists in more than one place!
-    - ANDROID_HOME=/usr/local/android-sdk
-    - TOOLS=${ANDROID_HOME}/tools
-    - PATH=${ANDROID_HOME}:${ANDROID_HOME}/emulator:${TOOLS}:${TOOLS}/bin:${ANDROID_HOME}/platform-tools:${PATH}
-    # Android related global Environment Variables end here
 
 notifications:
   email: false
-
-branches:
-  except:
-    - gh-pages
-
-stages:
-  - Build
-  - Deploy
-
-matrix:
-  fast_finish: true
-  include: 
-  # Java related Travis logic starts here
-    - language: java
-      sudo: required
-      stage: Build
-      name: Java Build & Deploy
-      services:
-        - docker
-      before_script: skip
-      script:
-        - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
-        # make frontend available for REST-docker
-        - cd frontend/datasafe-ui && ng build --deploy-url /static/ --base-href /static/ && mv dist ../../datasafe-rest-impl/target/dist && cd ../..
-      deploy:
-        - provider: script
-          skip_cleanup: true
-          script: /bin/bash .travis/deploy.sh
-          on:
-            tags: true
-            condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
-
-        - provider: script
-          skip_cleanup: true
-          script: /bin/bash .travis/deploy_develop_to_openshift.sh
-          on:
-            branch: develop
-
-        - provider: script
-          skip_cleanup: true
-          script: /bin/bash .travis/upload_dockerhub.sh
-          on:
-            all_branches: true
-            tags: true
-            condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
-      before_install:
-        - curl -L https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz > oc-cli.tar.gz
-        - tar -xzf oc-cli.tar.gz
-        - sudo mv ./openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit/oc /usr/local/bin
-
-      # preparations to build frontend
-      install:
-        - nvm install 11.12.0
-        - npm install -g @angular/cli
-        - cd frontend/datasafe-ui && npm install && cd ../..
-
-      after_success:
-        - /bin/bash .travis/codecov_bash.sh
-    # Java related Travis logic ends here
-    # Android related Travis logic starts here until endof file
-    - env: API=21
-      stage: Build
-      name: Android UI Test API 21
-    - env: API=25
-      stage: Build
-      name: Android UI Test API 25
-    - env: API=28
-      before_script: skip
-      script:
-        - bash datasafe-android/.buildscripts/build-and-deploy-snapshot.sh
-      stage: Deploy
-      name: Android Deploy
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -99,6 +13,40 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+branches:
+  except:
+    - gh-pages
+
+stages:
+  - Build
+  - Test
+  - Deploy
+
+matrix:
+  fast_finish: true
+  include:
+    - env: API=28
+      before_script: skip
+      script:
+        - cd datasafe-android
+        - ./gradlew clean assembleDebug --stacktrace
+      stage: Build
+    - env: API=21
+      stage: Test
+    - env: API=22
+      stage: Test
+    - env: API=23
+      stage: Test
+    - env: API=24
+      stage: Test
+    - env: API=25
+      stage: Test
+    - env: API=28
+      before_script: skip
+      script:
+        - bash datasafe-android/.buildscripts/build-and-deploy-snapshot.sh
+      stage: Deploy
 
 android:
   components:
@@ -109,6 +57,16 @@ licenses:
   - 'android-sdk-preview-license-.+'
   - 'android-sdk-license-.+'
   - 'google-gdk-license-.+'
+
+env:
+  global:
+    - ADB_INSTALL_TIMEOUT=10
+    - ABI=x86_64
+    - EMU_FLAVOR=default # use google_apis flavor if no default flavor emulator
+    # PATH order is incredibly important. e.g. the 'emulator' script exists in more than one place!
+    - ANDROID_HOME=/usr/local/android-sdk
+    - TOOLS=${ANDROID_HOME}/tools
+    - PATH=${ANDROID_HOME}:${ANDROID_HOME}/emulator:${TOOLS}:${TOOLS}/bin:${ANDROID_HOME}/platform-tools:${PATH}
 
 # Get everything needed for android processes
 install:
