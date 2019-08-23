@@ -16,8 +16,8 @@ public class CustomizableByteArrayOutputStream extends OutputStream {
     private final int maxArraySize;
     private final int initialCapacity;
 
-    private byte[] buffer;
-    private int count;
+    protected byte[] buffer;
+    protected int count;
 
     /**
      * @param initialCapacity  Initial buffer capacity
