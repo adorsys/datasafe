@@ -19,6 +19,27 @@ wants to share into users' inbox space using the recipients' public key so that 
 - For storage systems that do not support file versioning natively (i.e. minio) this library provides versioning
 capability too.
 
+## Features
+
+- Proprietary software **friendly license**
+- **Flexibility** - you can easily change encryption and configure or customize other aspects of library
+- AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
+- **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
+- **Client side encryption** - you own your data
+- Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
+- File names are encrypted
+- Thorough testing
+
+## Building project
+Without tests:
+```bash
+mvn clean install -DskipTests=true
+```
+Full build:
+```bash
+mvn clean install
+```
+
 # Project overview
 In short, Datasafe [core logic](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/DefaultDatasafeServices.java)
 provides these key services:
