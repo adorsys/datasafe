@@ -37,10 +37,10 @@ public class UserBasedDelegatingStorage extends BaseDelegatingStorage {
     private String getBucketNameFromLocation(AbsoluteLocation location) {
         // example location: s3://datasafe-test1/073047da-dd68-4f70-b9bf-5759d7e30c85/users/user-8/private/files/
         //                  s3://datasafe-test1/073047da-dd68-4f70-b9bf-5759d7e30c85/profiles/private/user-3/
-        Pattern userPattern = Pattern.compile(".+/user-(\\d+)/.+");
+        Pattern userPattern = Pattern.compile(".+/user-(\\d+).*");
         Matcher matcher = userPattern.matcher(location.location().asString());
         matcher.matches();
-        int userNum = Integer.valueOf(matcher.group(1));
+        int userNum = Integer.parseInt(matcher.group(1));
         return amazonBuckets.get(userNum % amazonBuckets.size());
     }
 }

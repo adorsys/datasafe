@@ -95,7 +95,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     @ValueSource
-    protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
+    protected static Stream<Arguments> actionsOnStoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
                 getStorageDescriptors(),
                 THREAD_COUNT,
