@@ -50,8 +50,14 @@ cd datasafe-rest-impl
 ```
 
 Frontend will be available [here](http://localhost:8080/static/index.html)
-There you can:
+
+Using frontend you can:
 -  Create new user
 -  Login as user
 -  Change REST api endpoint
 -  After logging in you will be able to encrypt and store your files.
+
+By viewing requests done in browser or using REST-documentation, you can see how each operation is implemented
+with Datasafe. Endpoint code is [here](src/main/java/de/adorsys/datasafe/rest/impl/controller).
+
+Also you can always check [Datasafe-examples folder](../datasafe-examples) to see how something can be done with Datasafe.
