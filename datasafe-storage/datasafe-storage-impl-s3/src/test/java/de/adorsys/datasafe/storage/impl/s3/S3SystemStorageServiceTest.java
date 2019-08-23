@@ -6,6 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
@@ -16,7 +17,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.OutputStream;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,8 +70,10 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
 
     @BeforeEach
     void init() {
-        this.storageService = new S3StorageService(s3, bucketName, Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors())
+        this.storageService = new S3StorageService(
+                s3,
+                bucketName,
+                ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
     }
 

@@ -22,6 +22,9 @@ public class UriBasedAuthStorageService extends BaseDelegatingStorage {
     private final Function<URI, String> bucketExtractor;
     private final Function<URI, String> endpointExtractor;
 
+    // Builder to create S3 or other kind of Storage service
+    private final Function<AccessId, StorageService> storageServiceBuilder;
+
     /**
      * Expects bucket name to be first part of URI part, and endpoint to host + bucket name.
      */
@@ -32,9 +35,6 @@ public class UriBasedAuthStorageService extends BaseDelegatingStorage {
             location.getScheme() + "://" + location.getHost() + portValue(location) + "/" +
                 this.bucketExtractor.apply(location);
     }
-
-    // Builder to create S3 or other kind of Storage service
-    private final Function<AccessId, StorageService> storageServiceBuilder;
 
     @Override
     protected StorageService service(AbsoluteLocation location) {

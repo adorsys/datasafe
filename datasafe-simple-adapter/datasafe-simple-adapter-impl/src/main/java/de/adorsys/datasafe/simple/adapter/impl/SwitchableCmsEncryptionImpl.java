@@ -54,16 +54,16 @@ public class SwitchableCmsEncryptionImpl extends CMSEncryptionServiceImpl {
         String value = System.getProperty(NO_CMSENCRYPTION_AT_ALL);
         if (value != null) {
             if (value.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                log.info("cms encryption is on");
+                log.debug("cms encryption is on");
                 return true;
             }
             if (value.equalsIgnoreCase(Boolean.TRUE.toString())) {
-                log.info("cms encryption is off");
+                log.debug("cms encryption is off");
                 return false;
             }
             throw new RuntimeException("value " + value + " for " + NO_CMSENCRYPTION_AT_ALL + " is unknown");
         }
-        log.info("cms encryption is on");
+        log.debug("cms encryption is on");
         return true;
     }
 }
