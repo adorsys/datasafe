@@ -43,3 +43,4 @@ hs_err_pid*
 node_modules/
 dist/
 
+.DS_Store
