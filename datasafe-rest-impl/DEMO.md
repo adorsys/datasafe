@@ -31,7 +31,7 @@ cd datasafe-rest-impl
 -  Or pull image from docker registry:
 
 ```bash
-docker pull adorsys/datasafe && docker tag adorsys/datasafe adorsys/datasafe-rest-test
+docker pull adorsys/datasafe && docker tag adorsys/datasafe datasafe-rest-test:latest
 ```
 
 ### Running
