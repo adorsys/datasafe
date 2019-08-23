@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.testcontainers.shaded.com.google.common.io.ByteStreams;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -186,11 +187,16 @@ class MultipartUploadS3StorageOutputStreamTest extends BaseMockitoTest {
         assertThat(uploadChunk.getAllValues()).hasSize(2);
         assertThat(uploadChunk.getAllValues().get(0).getInputStream())
                 .hasContent(new String(Arrays.copyOfRange(multipartChunkWithTail, 0, BUFFER_SIZE)));
-        assertThat(uploadChunk.getAllValues().get(1).getInputStream())
-                .hasContent(new String(Arrays.copyOfRange(
+
+        // we are setting size parameter that limits number of bytes read by s3 client:
+        int partialPartSize = (int) uploadChunk.getAllValues().get(1).getPartSize();
+        byte[] partialChunk = new byte[partialPartSize];
+        ByteStreams.readFully(uploadChunk.getAllValues().get(1).getInputStream(), partialChunk, 0, partialPartSize);
+        assertThat(new String(partialChunk))
+                .isEqualTo(new String(Arrays.copyOfRange(
                         multipartChunkWithTail, BUFFER_SIZE, multipartChunkWithTail.length)
-                )
-        );
+                        )
+                );
     }
 
     @Test

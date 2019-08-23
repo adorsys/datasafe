@@ -28,6 +28,7 @@ import de.adorsys.datasafe.simple.adapter.impl.profile.DFSRelativeProfileRemoval
 import de.adorsys.datasafe.simple.adapter.impl.profile.DFSRelativeProfileRetrievalServiceImpl;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -47,7 +48,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -144,7 +144,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             storageService = new S3StorageService(
                     amazons3,
                     amazonS3DFSCredentials.getContainer(),
-                    Executors.newFixedThreadPool(amazonS3DFSCredentials.getThreadPoolSize())
+                    ExecutorServiceUtil
+                            .submitterExecutesOnStarvationExecutingService(
+                                    amazonS3DFSCredentials.getThreadPoolSize(),
+                                    amazonS3DFSCredentials.getQueueSize()
+                            )
             );
             this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
             customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()

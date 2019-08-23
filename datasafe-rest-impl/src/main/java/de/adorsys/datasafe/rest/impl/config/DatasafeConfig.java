@@ -29,6 +29,7 @@ import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.BucketNameRemovingRouter;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
@@ -47,7 +48,6 @@ import java.security.Security;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 /**
@@ -131,7 +131,7 @@ public class DatasafeConfig {
     @Bean
     @ConditionalOnProperty(value = CLIENT_CREDENTIALS, havingValue = "true")
     StorageService clientCredentials(AmazonS3 s3, DatasafeProperties properties) {
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
         S3StorageService basicStorage = new S3StorageService(
             s3,
             properties.getBucketName(),
@@ -182,7 +182,7 @@ public class DatasafeConfig {
         return new S3StorageService(
             s3,
             properties.getBucketName(),
-            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
     }
 
@@ -200,7 +200,7 @@ public class DatasafeConfig {
         );
 
         S3StorageService s3StorageService = new S3StorageService(s3(properties), properties.getBucketName(),
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+                ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
 
         StorageService multiDfs = new SchemeDelegatingStorage(

@@ -15,6 +15,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -43,12 +44,9 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.DIRECTORY_BUCKET;
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_ONE;
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_TWO;
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -60,7 +58,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class MultiDfsWithCredentialsExampleTest {
 
-    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(4);
+    private static final ExecutorService EXECUTOR = ExecutorServiceUtil
+            .submitterExecutesOnStarvationExecutingService(4, 4);
 
     private static Map<MinioContainerId, GenericContainer> minios = new EnumMap<>(MinioContainerId.class);
     private static AmazonS3 directoryClient = null;

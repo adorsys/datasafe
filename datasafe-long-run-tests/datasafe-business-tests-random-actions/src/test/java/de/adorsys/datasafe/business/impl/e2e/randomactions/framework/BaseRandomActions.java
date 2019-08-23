@@ -42,14 +42,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class BaseRandomActions extends WithStorageProvider {
 
     public static final String DISABLE_RANDOM_ACTIONS_TEST = "DISABLE_RANDOM_ACTIONS_TEST";
+    public static final String ENABLE_MULTI_BUCKET_TEST = "ENABLE_MULTI_BUCKET_TEST";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final int MEGABYTE_TO_BYTE = 1024 * 1024;
+    private static final int KILOBYTE_TO_BYTE = 1024;
     private static final long TIMEOUT = 30L;
 
-    private static final Set<Integer> THREAD_COUNT = ImmutableSet.of(2, 4);
-    private static final Set<Integer> FILE_SIZE_M_BYTES = ImmutableSet.of(1, 10);
+    private static String THREADS = readPropOrEnv("THREADS", "2, 4, 8");
+    private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "100, 1024, 10240"); // in KB
+
+    private static final Set<Integer> THREAD_COUNT = ImmutableSet.copyOf(
+            Stream.of(THREADS.split(",")).map(String::trim)
+                    .mapToInt(Integer::parseInt).boxed().collect(Collectors.toList())
+    );
+
+    private static final Set<Integer> FILE_SIZE_K_BYTES = ImmutableSet.copyOf(
+            Stream.of(FILE_SIZES.split(",")).map(String::trim)
+                    .mapToInt(Integer::parseInt).boxed().collect(Collectors.toList())
+    );
+
+    private static final List<String> STORAGE_PROVIDERS =
+            Arrays.asList(readPropOrEnv("STORAGE_PROVIDERS", "MINIO").split(","));
+
+    private static final String FIXTURE_SIZE = readPropOrEnv("FIXTURE_SIZE", "SMALL");
 
     @BeforeEach
     void prepare() {
@@ -58,12 +74,16 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         System.setProperty("SECURE_SENSITIVE", "on");
     }
 
-    protected Fixture smallSimpleDocusafeAdapterFixture() {
-        return fixture("fixture/fixture_simple_datasafe_200_ops.json");
+    protected Fixture getFixture() {
+        switch(FIXTURE_SIZE) {
+            case "MEDIUM" : return fixture("fixture/fixture_1000_ops.json");
+            case "BIG" : return fixture("fixture/fixture_10000_ops.json");
+            default : return fixture("fixture/fixture_200_ops.json");
+        }
     }
 
-    protected Fixture smallFixture() {
-        return fixture("fixture/fixture_200_ops.json");
+    protected Fixture smallSimpleDocusafeAdapterFixture() {
+        return fixture("fixture/fixture_simple_datasafe_200_ops.json");
     }
 
     @SneakyThrows
@@ -76,18 +96,34 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     @ValueSource
-    protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
+    protected static Stream<Arguments> actionsOnStoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
-                Collections.singleton(minio()),
-            THREAD_COUNT,
-            FILE_SIZE_M_BYTES
+                getStorageDescriptors(),
+                THREAD_COUNT,
+                FILE_SIZE_K_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
+    }
+
+    private static Set<StorageDescriptor> getStorageDescriptors() {
+        return STORAGE_PROVIDERS.stream().map(it -> {
+            switch (it) {
+                case "AMAZON":
+                    return s3();
+                case "MINIO":
+                    return minio();
+                case "CEPH":
+                    return cephVersioned();
+                case "FILESYSTEM":
+                    return fs();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     protected void executeTest(
             Fixture fixture,
             StorageDescriptorName storageName,
-            int filesizeInMb,
+            int filesizeInKb,
             int threads,
             ProfileRegistrationService profileRegistrationService,
             PrivateSpaceService privateSpaceService,
@@ -96,7 +132,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     ) {
         OperationQueue queue = new OperationQueue(fixture);
         OperationExecutor executor = new OperationExecutor(
-                filesizeInMb * MEGABYTE_TO_BYTE,
+                filesizeInKb * KILOBYTE_TO_BYTE,
                 profileRegistrationService,
                 privateSpaceService,
                 inboxService,
@@ -113,10 +149,10 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         assertThat(exceptions).isEmpty();
         assertThat(terminatedOk).isTrue();
 
-        log.info("==== Statistics for {} with {} threads and {} Mb filesize: ====",
+        log.info("==== Statistics for {} with {} threads and {} Kb filesize: ====",
                 storageName,
                 threads,
-                filesizeInMb
+                filesizeInKb
         );
 
         statisticService.generateReport().forEach((name, percentiles) ->

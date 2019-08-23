@@ -19,6 +19,9 @@ public class AmazonS3DFSCredentials extends DFSCredentials {
     @Builder.Default
     private final int threadPoolSize = 5;
 
+    @Builder.Default
+    private final int queueSize = 5;
+
     public String getContainer() {
         return rootBucket.split("/")[0];
     }
