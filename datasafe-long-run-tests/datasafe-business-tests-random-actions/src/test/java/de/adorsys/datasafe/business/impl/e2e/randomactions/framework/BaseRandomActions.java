@@ -42,14 +42,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class BaseRandomActions extends WithStorageProvider {
 
     public static final String DISABLE_RANDOM_ACTIONS_TEST = "DISABLE_RANDOM_ACTIONS_TEST";
+    public static final String ENABLE_MULTI_BUCKET_TEST = "ENABLE_MULTI_BUCKET_TEST";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final int KILOBYTE_TO_BYTE = 1024;
     private static final long TIMEOUT = 30L;
 
-    private static String THREADS = readPropOrEnv("THREADS", "2, 4, 8");
-    private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "100, 1024, 10240"); // in KB
+    private static String THREADS = readPropOrEnv("THREADS", "2");
+    private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "100"); // in KB
 
     private static final Set<Integer> THREAD_COUNT = ImmutableSet.copyOf(
             Stream.of(THREADS.split(",")).map(String::trim)
