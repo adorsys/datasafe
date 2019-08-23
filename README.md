@@ -21,14 +21,14 @@ capability too.
 
 ## Features
 
-- Proprietary software **friendly license**
-- **Flexibility** - you can easily change encryption and configure or customize other aspects of library
-- AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
-- **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
-- **Client side encryption** - you own your data
-- Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
-- File names are encrypted
-- Thorough testing
+-  Proprietary software **friendly license**
+-  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
+-  AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
+-  **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
+-  **Client side encryption** - you own your data
+-  Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
+-  File names are encrypted
+-  Thorough testing
 
 ## Building project
 Without tests:
@@ -39,6 +39,10 @@ Full build:
 ```bash
 mvn clean install
 ```
+
+## Quick demo
+
+[Here](datasafe-rest-impl/DEMO.md) you can find quick demo of project capabilities with instructions how to use it. 
 
 # Project overview
 In short, Datasafe [core logic](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/DefaultDatasafeServices.java)
