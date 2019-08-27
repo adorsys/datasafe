@@ -1,3 +1,5 @@
+[![Github project](images/logo/datasafe.svg)](https://github.com/adorsys/datasafe)
+
 <div class="tocmenu">
 * auto-gen TOC:
 {:toc}
@@ -22,6 +24,16 @@ the entire organization.
 # Solving security issues with Datasafe
 Datasafe is a cross-platform library that allows sharing and storing data and documents securely. 
 To achieve this, Datasafe uses concept of users' _private space_ and _inbox_. 
+
+## Features
+-  Proprietary software **friendly license**
+-  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
+-  AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
+-  **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
+-  **Client side encryption** - you own your data
+-  Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
+-  File names are encrypted
+-  Thorough testing
 
 _Private space_ is the place where users' private files are kept in encrypted form - something like KeePass or
 high-level [eCryptfs](http://ecryptfs.org/) for your files but built with Java in a way that you can customize anything. 
