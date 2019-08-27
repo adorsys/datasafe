@@ -27,6 +27,8 @@ To achieve this, Datasafe uses concept of users' _private space_ and _inbox_.
 -  File names are encrypted
 -  Thorough testing
 
+## Key definitions and functionality overview
+
 _Private space_ is the place where users' private files are kept in encrypted form - something like KeePass or
 high-level [eCryptfs](http://ecryptfs.org/) for your files but built with Java in a way that you can customize anything. 
 
