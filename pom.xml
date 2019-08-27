@@ -19,6 +19,7 @@
         <module>datasafe-simple-adapter</module>
         <module>datasafe-test-storages</module>
         <module>datasafe-long-run-tests</module>
+        <module>datasafe-cli</module>
         <module>last-module-codecoverage-check</module>
     </modules>
 
@@ -78,6 +79,7 @@
         <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
 
         <java.version>1.8</java.version>
+        <graal.version>19.2.0</graal.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
         <lombok.version>1.18.6</lombok.version>

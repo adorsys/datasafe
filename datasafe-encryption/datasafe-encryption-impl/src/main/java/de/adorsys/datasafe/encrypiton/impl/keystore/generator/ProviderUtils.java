@@ -1,18 +1,13 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
 
+import lombok.experimental.UtilityClass;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import javax.crypto.NoSuchPaddingException;
 import java.security.Provider;
 import java.security.Security;
 
-public class ProviderUtils {
+@UtilityClass
+class ProviderUtils {
 
-    public static final Provider bcProvider;
-
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-        bcProvider = Security.getProvider("BC");
-        if (bcProvider == null) throw new IllegalStateException(new NoSuchPaddingException("BC"));
-    }
+    static final Provider bcProvider = Security.getProvider(BouncyCastleProvider.PROVIDER_NAME);
 }
