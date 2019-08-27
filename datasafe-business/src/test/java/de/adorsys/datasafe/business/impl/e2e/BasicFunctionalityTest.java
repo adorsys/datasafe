@@ -17,8 +17,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 
+import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Slf4j
 class BasicFunctionalityTest extends BaseE2ETest {
+
+    private static final int LARGE_SIZE = 10 * 1024 * 1024 + 100;
 
     private StorageService storage;
     private Uri location;
@@ -85,6 +89,34 @@ class BasicFunctionalityTest extends BaseE2ETest {
         assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(john, multiShareFile))).hasContent(MESSAGE_ONE);
         assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(jane, multiShareFile))).hasContent(MESSAGE_ONE);
         assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(jamie, multiShareFile))).hasContent(MESSAGE_ONE);
+    }
+
+    @SneakyThrows
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void testMultipleRecipientsSharingLargeChunk(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+
+        UserIDAuth john = registerUser("john");
+        UserIDAuth jane = registerUser("jane");
+        UserIDAuth jamie = registerUser("jamie");
+
+        String multiShareFile = "multishare.txt";
+        byte[] bytes = new byte[LARGE_SIZE];
+        ThreadLocalRandom.current().nextBytes(bytes);
+        try (OutputStream os = writeToInbox.write(WriteRequest.forDefaultPublic(
+                ImmutableSet.of(john.getUserID(), jane.getUserID(), jamie.getUserID()),
+                multiShareFile))
+        ) {
+            os.write(bytes);
+        }
+
+        assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(john, multiShareFile)))
+                .hasSameContentAs(new ByteArrayInputStream(bytes));
+        assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(jane, multiShareFile)))
+                .hasSameContentAs(new ByteArrayInputStream(bytes));
+        assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(jamie, multiShareFile)))
+                .hasSameContentAs(new ByteArrayInputStream(bytes));
     }
 
     @ParameterizedTest

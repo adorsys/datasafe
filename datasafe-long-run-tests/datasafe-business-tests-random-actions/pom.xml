@@ -5,11 +5,15 @@
     <parent>
         <artifactId>datasafe-long-run-tests</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.5</version>
+        <version>0.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>datasafe-business-tests-random-actions</artifactId>
+
+    <properties>
+        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -175,6 +179,16 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <configuration>
+                    <forkMode>once</forkMode>
+                    <argLine>${testArgs}</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>

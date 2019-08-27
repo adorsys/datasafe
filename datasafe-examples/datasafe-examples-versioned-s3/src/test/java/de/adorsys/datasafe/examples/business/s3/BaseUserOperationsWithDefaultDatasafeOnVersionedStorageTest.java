@@ -12,6 +12,7 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -33,7 +34,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -123,7 +123,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
                 .storage(new S3StorageService(
                         cephS3,
                         VERSIONED_BUCKET_NAME,
-                        Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())))
+                        ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()))
                 .build();
     }
 

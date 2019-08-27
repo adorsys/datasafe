@@ -19,6 +19,61 @@ wants to share into users' inbox space using the recipients' public key so that 
 - For storage systems that do not support file versioning natively (i.e. minio) this library provides versioning
 capability too.
 
+## Features
+
+-  Proprietary software **friendly license**
+-  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
+-  AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
+-  **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
+-  **Client side encryption** - you own your data
+-  Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
+-  File names are encrypted
+-  Thorough testing
+
+## Building project
+Without tests:
+```bash
+mvn clean install -DskipTests=true
+```
+Full build:
+```bash
+mvn clean install
+```
+
+## Quick demo
+
+[Here](datasafe-rest-impl/DEMO.md) you can find quick demo of project capabilities with instructions how to use it.
+
+## Adding to your project
+
+Datasafe is available from maven-central repository, you can add it to your project using:
+```xml
+<dependency>
+    <groupId>de.adorsys</groupId>
+    <artifactId>datasafe-business</artifactId>
+    <version>0.5.0</version>
+</dependency>
+``` 
+
+To add filesystem storage provider:
+```xml
+<dependency>
+    <groupId>de.adorsys</groupId>
+    <artifactId>datasafe-storage-impl-fs</artifactId>
+    <version>0.5.0</version>
+</dependency>
+``` 
+
+To add S3 storage provider:
+```xml
+<dependency>
+    <groupId>de.adorsys</groupId>
+    <artifactId>datasafe-storage-impl-s3</artifactId>
+    <version>0.5.0</version>
+</dependency>
+``` 
+
+
 # Project overview
 In short, Datasafe [core logic](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/DefaultDatasafeServices.java)
 provides these key services:

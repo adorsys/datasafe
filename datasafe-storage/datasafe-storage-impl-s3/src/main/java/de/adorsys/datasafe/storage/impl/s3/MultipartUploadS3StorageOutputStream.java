@@ -22,28 +22,18 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AbortMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PartETag;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.UploadPartResult;
-import com.amazonaws.util.BinaryUtils;
+import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
+import de.adorsys.datasafe.types.api.utils.CustomizableByteArrayOutputStream;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionService;
@@ -65,7 +55,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private final CompletionService<UploadPartResult> completionService;
 
-    private ByteArrayOutputStream currentOutputStream = new ByteArrayOutputStream();
+    private CustomizableByteArrayOutputStream currentOutputStream = newOutputStream();
 
     private InitiateMultipartUploadResult multiPartUploadResult;
 
@@ -87,14 +77,14 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     @Override
     @Synchronized
-    public void write(byte[] b, int off, int len) {
+    public void write(byte[] bytes, int off, int len) {
         int remainingSizeToWrite = len;
         int inputPosition = off;
 
         do {
             int availableCapacity = BUFFER_SIZE - currentOutputStream.size();
             int bytesToWrite = Math.min(availableCapacity, remainingSizeToWrite);
-            currentOutputStream.write(b, inputPosition, bytesToWrite);
+            currentOutputStream.write(bytes, inputPosition, bytesToWrite);
             inputPosition += bytesToWrite;
             remainingSizeToWrite -= bytesToWrite;
 
@@ -129,12 +119,18 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         }
 
         initiateMultiPartIfNeeded();
+
+        byte[] content = currentOutputStream.getBufferOrCopy();
+        int size = currentOutputStream.size();
+        // Release the memory
+        currentOutputStream = newOutputStream();
+
         completionService.submit(new UploadChunkResultCallable(
                 ChunkUploadRequest
                         .builder()
                         .amazonS3(amazonS3)
-                        .content(currentOutputStream.toByteArray())
-                        .contentSize(currentOutputStream.size())
+                        .content(content)
+                        .contentSize(size)
                         .bucketName(bucketName)
                         .objectName(objectName)
                         .uploadId(multiPartUploadResult.getUploadId())
@@ -142,8 +138,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                         .lastChunk(false)
                         .build()
         ));
+
         ++partCounter;
-        currentOutputStream.reset();
     }
 
     private boolean isMultiPartUpload() {
@@ -153,24 +149,20 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     @SneakyThrows
     private void finishSimpleUpload() {
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(currentOutputStream.size());
+        int size = currentOutputStream.size();
+        objectMetadata.setContentLength(size);
+        byte[] content = currentOutputStream.getBufferOrCopy();
 
-        byte[] content = currentOutputStream.toByteArray();
-
-        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        String md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
-        objectMetadata.setContentMD5(md5Digest);
+        // Release the memory
+        currentOutputStream = null;
 
         PutObjectResult upload = amazonS3.putObject(
                 bucketName,
                 objectName,
-                new ByteArrayInputStream(content),
+                new ByteArrayInputStream(content, 0, size),
                 objectMetadata);
 
         notifyCommittedVersionIfPresent(upload.getVersionId());
-
-        // Release the memory
-        currentOutputStream = null;
 
         log.debug("Finished simple upload");
     }
@@ -215,11 +207,16 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
             return;
         }
 
+        byte[] content = currentOutputStream.getBufferOrCopy();
+        int size = currentOutputStream.size();
+        // Release the memory
+        currentOutputStream = null;
+
         completionService.submit(
                 new UploadChunkResultCallable(ChunkUploadRequest.builder()
                         .amazonS3(amazonS3)
-                        .content(currentOutputStream.toByteArray())
-                        .contentSize(currentOutputStream.size())
+                        .content(content)
+                        .contentSize(size)
                         .bucketName(bucketName)
                         .objectName(objectName)
                         .uploadId(multiPartUploadResult.getUploadId())
@@ -271,5 +268,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         return result;
     }
 
+    private CustomizableByteArrayOutputStream newOutputStream() {
+        return new CustomizableByteArrayOutputStream(32, BUFFER_SIZE, 0.5);
+    }
 }
 

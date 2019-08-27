@@ -19,6 +19,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -26,11 +27,7 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.BasePublicResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
-import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
@@ -52,7 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,7 +72,8 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     private static final String FILES_TWO = "filestwobucket";
     private static final String INBOX = "inboxbucket";
 
-    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
+    private static final ExecutorService EXECUTOR = ExecutorServiceUtil
+            .submitterExecutesOnStarvationExecutingService(5, 5);
 
     private static Map<String, GenericContainer> minios = new HashMap<>();
     private static Map<String, String> endpointsByHost = new HashMap<>();
