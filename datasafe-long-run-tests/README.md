@@ -10,12 +10,12 @@ Tests have been run on 6 different aws ec2 instances:
 - c5n.2xlarge (8 CPU, 21GB RAM).
 
 GP on charts stands for General Purpose (m5) instances
-CO - Compute Optimizes (c5n).
-
-For testing multi-bucket performance 6 aws s3 buckets were created.
+CO - Compute Optimized (c5n).
 
 On each instance test has been run 3 days, 3 times per day with 2, 4 and 8 threads and 100kb, 1mb, 10mb file size.
+JVM was launched with -Xmx256m
 
+For testing multi-bucket performance 6 aws s3 buckets were created.
 Multi-bucket performance was tested only on c5n.2xlarge instance with using 2, 4, 6 buckets.
 
 WRITE operation
@@ -48,3 +48,6 @@ Single bucket ALL-IN-ONE Chart
 MULTIBUCKET TEST
 
 ![](.images/Multibucket.png)
+
+All tests were made using AES256_CBC Encryption algorithm. On next chart test results using AES256_GCM comparing to AES256_CBC.
+![](.images/CBCvsGCM.png)
