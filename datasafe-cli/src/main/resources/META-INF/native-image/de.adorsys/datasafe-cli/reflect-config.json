@@ -20,6 +20,7 @@
 },
 {
   "name":"de.adorsys.datasafe.directory.api.types.UserPrivateProfile",
+  "allDeclaredConstructors" : true,
   "allDeclaredFields":true,
   "fields": [
     {"name":"keystore", "allowWrite": true},
@@ -33,6 +34,7 @@
 },
 {
   "name":"de.adorsys.datasafe.directory.api.types.UserPublicProfile",
+  "allDeclaredConstructors" : true,
   "allDeclaredFields":true,
   "fields": [
     {"name":"publicKeys", "allowWrite": true},
