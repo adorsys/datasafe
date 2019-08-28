@@ -23,4 +23,15 @@ public class S3ClientFactory {
                 .enablePathStyleAccess()
                 .build();
     }
+
+    public AmazonS3 getClientByRegion(String region, String accessKey, String secretKey) {
+        return AmazonS3ClientBuilder.standard()
+                .withRegion(region)
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(accessKey, secretKey)
+                        )
+                )
+                .build();
+    }
 }

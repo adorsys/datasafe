@@ -420,8 +420,26 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name": "org.apache.commons.logging.LogFactory"
+},
+{
+  "name": "org.apache.commons.logging.impl.LogFactoryImpl",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name": "org.apache.commons.logging.impl.SimpleLog",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
   "name":"java.security.AlgorithmParameterGeneratorSpi",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name": "java.lang.Thread",
+  "methods":[{"name":"getContextClassLoader","parameterTypes":[] }]
+},
+{
+  "name": "java.lang.String"
 },
 {
   "name":"sun.misc.Unsafe",

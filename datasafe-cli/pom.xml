@@ -27,6 +27,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-storage-impl-s3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -82,9 +87,9 @@
                         --enable-all-security-services
                         --features=de.adorsys.datasafe.cli.hacks.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders
 
-                        --rerun-class-initialization-at-runtime=org.bouncycastle.crypto.prng.SP800SecureRandom
-                        --rerun-class-initialization-at-runtime=org.bouncycastle.jcajce.provider.drbg.DRBG$Default
-                        --rerun-class-initialization-at-runtime=org.bouncycastle.jcajce.provider.drbg.DRBG$NonceAndIV
+                        --initialize-at-run-time=org.bouncycastle.crypto.prng.SP800SecureRandom
+                        --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$Default
+                        --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$NonceAndIV
                     </buildArgs>
                 </configuration>
             </plugin>
