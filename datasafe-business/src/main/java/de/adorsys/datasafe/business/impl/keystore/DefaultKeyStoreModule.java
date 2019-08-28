@@ -16,7 +16,7 @@ import de.adorsys.datasafe.encrypiton.impl.keystore.types.PasswordBasedKeyConfig
 public abstract class DefaultKeyStoreModule {
 
     /**
-     * Default public key serializer using {@link java.io.ObjectInputStream} and Base64 encoding of bytes
+     * Default public key serializer.
      */
     @Binds
     public abstract PublicKeySerde publicKeySerde(PublicKeySerdeImplRuntimeDelegatable impl);

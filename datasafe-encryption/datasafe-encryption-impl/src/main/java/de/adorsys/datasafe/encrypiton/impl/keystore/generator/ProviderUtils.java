@@ -7,7 +7,7 @@ import java.security.Provider;
 import java.security.Security;
 
 @UtilityClass
-class ProviderUtils {
+public class ProviderUtils {
 
-    static final Provider bcProvider = Security.getProvider(BouncyCastleProvider.PROVIDER_NAME);
+    public static final Provider bcProvider = Security.getProvider(BouncyCastleProvider.PROVIDER_NAME);
 }

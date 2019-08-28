@@ -3,12 +3,10 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.jcajce.provider.asymmetric.rsa.KeyFactorySpi;
 
 import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.security.PublicKey;
 import java.util.Base64;
 
@@ -18,6 +16,7 @@ import java.util.Base64;
 @RuntimeDelegate
 public class PublicKeySerdeImpl implements PublicKeySerde {
 
+
     @Inject
     public PublicKeySerdeImpl() {
     }
@@ -25,19 +24,15 @@ public class PublicKeySerdeImpl implements PublicKeySerde {
     @Override
     @SneakyThrows
     public PublicKey readPubKey(String encoded) {
-        try (ObjectInputStream ois =
-                     new ObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(encoded)))) {
-            return (PublicKey) ois.readObject();
-        }
+        // FIXME: Legacy stuff
+        byte[] bytes = Base64.getDecoder().decode(encoded);
+        return new KeyFactorySpi().generatePublic(SubjectPublicKeyInfo.getInstance(bytes));
     }
 
     @Override
     @SneakyThrows
     public String writePubKey(PublicKey publicKey) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try (ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-            oos.writeObject(publicKey);
-            return new String(Base64.getEncoder().encode(bos.toByteArray()));
-        }
+        // FIXME: Legacy stuff
+        return Base64.getEncoder().encodeToString(publicKey.getEncoded());
     }
 }

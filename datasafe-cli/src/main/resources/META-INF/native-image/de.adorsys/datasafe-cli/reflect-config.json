@@ -28,7 +28,7 @@
     {"name":"publishPublicKeysTo", "allowWrite": true},
     {"name":"associatedResources", "allowWrite": true},
     {"name":"documentVersionStorage", "allowWrite": true},
-    {"name":"storageCredentialsKeystore", "allowWrite": true},
+    {"name":"storageCredentialsKeystore", "allowWrite": true}
   ]
 },
 {
@@ -69,7 +69,10 @@
 },
 {
   "name":"de.adorsys.datasafe.types.api.resource.StorageIdentifier",
-  "allDeclaredFields":true
+  "allDeclaredFields":true,
+  "fields": [
+    {"name":"id", "allowWrite": true}
+  ]
 },
 {
   "name":"de.adorsys.datasafe.types.api.resource.Uri",
@@ -405,6 +408,10 @@
 },
 {
   "name":"org.bouncycastle.jcajce.provider.symmetric.XTEA$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"java.security.AlgorithmParameterGeneratorSpi",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
