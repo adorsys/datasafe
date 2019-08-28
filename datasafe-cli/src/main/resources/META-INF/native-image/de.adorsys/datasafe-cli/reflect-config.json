@@ -1,5 +1,83 @@
 [
 {
+  "name":"com.amazonaws.internal.config.Builder",
+  "allDeclaredMethods":true
+},
+{
+  "name":"com.amazonaws.internal.config.HostRegexToRegionMappingJsonHelper",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.internal.config.HttpClientConfigJsonHelper",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.internal.config.InternalConfigJsonHelper",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.internal.config.JsonIndex",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.internal.config.SignerConfigJsonHelper",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.jmx.SdkMBeanRegistrySupport",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.amazonaws.partitions.model.CredentialScope",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.partitions.model.Endpoint",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.partitions.model.Partition",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.partitions.model.Partitions",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.partitions.model.Region",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.partitions.model.Service",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.amazonaws.services.s3.internal.AWSS3V4Signer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"com.google.common.util.concurrent.AbstractFuture",
   "fields":[
     {"name":"listeners", "allowUnsafeAccess":true}, 
@@ -15,8 +93,20 @@
   ]
 },
 {
+  "name":"com.sun.org.apache.xerces.internal.parsers.SAXParser",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"de.adorsys.datasafe.cli.Cli",
   "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
+},
+{
+  "name":"de.adorsys.datasafe.directory.api.types.StorageCredentials",
+  "allDeclaredFields":true,
+  "fields": [
+    {"name":"username", "allowWrite": true},
+    {"name":"password", "allowWrite": true}
+  ]
 },
 {
   "name":"de.adorsys.datasafe.directory.api.types.UserPrivateProfile",
@@ -88,8 +178,30 @@
   "allDeclaredFields":true
 },
 {
+  "name":"java.lang.String"
+},
+{
+  "name":"java.lang.Thread",
+  "methods":[{"name":"getContextClassLoader","parameterTypes":[] }]
+},
+{
+  "name":"java.text.DateFormatSymbols",
+  "methods":[{"name":"getInstance","parameterTypes":["java.util.Locale"] }]
+},
+{
   "name":"java.util.ArrayList",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"java.util.HashSet",
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"java.util.LinkedHashMap",
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
 },
 {
   "name":"javax.crypto.AEADBadTagException",
@@ -102,6 +214,24 @@
     {"name":"getIV","parameterTypes":[] }, 
     {"name":"getTLen","parameterTypes":[] }
   ]
+},
+{
+  "name":"javax.xml.bind.DatatypeConverter"
+},
+{
+  "name":"org.apache.commons.logging.LogFactory"
+},
+{
+  "name":"org.apache.commons.logging.impl.Jdk14Logger",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"org.apache.commons.logging.impl.LogFactoryImpl",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.apache.commons.logging.impl.WeakHashtable",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.bouncycastle.jcajce.provider.asymmetric.DH$Mappings",
@@ -420,26 +550,8 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name": "org.apache.commons.logging.LogFactory"
-},
-{
-  "name": "org.apache.commons.logging.impl.LogFactoryImpl",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name": "org.apache.commons.logging.impl.SimpleLog",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
-},
-{
   "name":"java.security.AlgorithmParameterGeneratorSpi",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name": "java.lang.Thread",
-  "methods":[{"name":"getContextClassLoader","parameterTypes":[] }]
-},
-{
-  "name": "java.lang.String"
 },
 {
   "name":"sun.misc.Unsafe",

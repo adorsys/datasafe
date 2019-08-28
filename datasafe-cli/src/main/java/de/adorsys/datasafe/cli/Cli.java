@@ -174,7 +174,9 @@ public class Cli {
         @Override
         public CreateUserPrivateProfile defaultPrivateTemplate(UserIDAuth id) {
             return super.defaultPrivateTemplate(id).toBuilder()
-                    .privateStorage(BasePrivateResource.forAbsolutePrivate("s3://eu-central-1/adorsys-docusafe/"))
+                    .privateStorage(BasePrivateResource.forAbsolutePrivate(
+                            "s3://eu-central-1/adorsys-docusafe/" + id.getUserID() + "/")
+                    )
                     .build();
         }
     }
