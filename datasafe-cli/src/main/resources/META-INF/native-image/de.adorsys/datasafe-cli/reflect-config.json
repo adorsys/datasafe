@@ -41,7 +41,10 @@
 },
 {
   "name":"de.adorsys.datasafe.encrypiton.api.types.BaseTypeString",
-  "allDeclaredFields":true
+  "allDeclaredFields":true,
+  "fields": [
+    {"name":"value", "allowWrite": true}
+  ]
 },
 {
   "name":"de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID",
@@ -49,7 +52,11 @@
 },
 {
   "name":"de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey",
-  "allDeclaredFields":true
+  "allDeclaredFields":true,
+  "fields": [
+    {"name":"keyID", "allowWrite": true},
+    {"name":"publicKey", "allowWrite": true}
+  ]
 },
 {
   "name":"de.adorsys.datasafe.types.api.resource.AbsoluteLocation",

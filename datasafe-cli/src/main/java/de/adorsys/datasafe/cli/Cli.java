@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.cli;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
@@ -41,7 +42,11 @@ public class Cli {
                 .build();
 
         UserIDAuth user = new UserIDAuth("me", "mememe");
+        UserIDAuth userRecipient = new UserIDAuth("recipient", "RRRE!!");
+
         defaultDatasafeServices.userProfile().registerUsingDefaults(user);
+        defaultDatasafeServices.userProfile().registerUsingDefaults(userRecipient);
+
         try (OutputStream os =
                      defaultDatasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "my-file"))
         ) {
@@ -55,6 +60,22 @@ public class Cli {
         System.out.println(new String(
                 ByteStreams.toByteArray(
                         defaultDatasafeServices.privateService().read(ReadRequest.forDefaultPrivate(user, "my-file"))
+                )
+        ));
+
+        try (OutputStream os =
+                     defaultDatasafeServices.inboxService().write(WriteRequest.forDefaultPublic(
+                             ImmutableSet.of(user.getUserID(), userRecipient.getUserID()), "hello-recipient"))
+        ) {
+            os.write("Hello from INBOX!".getBytes());
+        }
+
+        long szInb = defaultDatasafeServices.inboxService().list(ListRequest.forDefaultPrivate(user, "./")).count();
+        System.out.println("User has " + szInb + " files in INBOX");
+
+        System.out.println(new String(
+                ByteStreams.toByteArray(
+                        defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(user, "hello-recipient"))
                 )
         ));
     }
