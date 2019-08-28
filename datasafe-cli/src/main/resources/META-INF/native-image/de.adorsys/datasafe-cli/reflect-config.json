@@ -20,11 +20,24 @@
 },
 {
   "name":"de.adorsys.datasafe.directory.api.types.UserPrivateProfile",
-  "allDeclaredFields":true
+  "allDeclaredFields":true,
+  "fields": [
+    {"name":"keystore", "allowWrite": true},
+    {"name":"privateStorage", "allowWrite": true},
+    {"name":"inboxWithFullAccess", "allowWrite": true},
+    {"name":"publishPublicKeysTo", "allowWrite": true},
+    {"name":"associatedResources", "allowWrite": true},
+    {"name":"documentVersionStorage", "allowWrite": true},
+    {"name":"storageCredentialsKeystore", "allowWrite": true},
+  ]
 },
 {
   "name":"de.adorsys.datasafe.directory.api.types.UserPublicProfile",
-  "allDeclaredFields":true
+  "allDeclaredFields":true,
+  "fields": [
+    {"name":"publicKeys", "allowWrite": true},
+    {"name":"inbox", "allowWrite": true}
+  ]
 },
 {
   "name":"de.adorsys.datasafe.encrypiton.api.types.BaseTypeString",
@@ -40,7 +53,10 @@
 },
 {
   "name":"de.adorsys.datasafe.types.api.resource.AbsoluteLocation",
-  "allDeclaredFields":true
+  "allDeclaredFields":true,
+  "fields": [
+    {"name":"resource", "allowWrite": true}
+  ]
 },
 {
   "name":"de.adorsys.datasafe.types.api.resource.BasePrivateResource",

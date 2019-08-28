@@ -35,6 +35,13 @@
             <artifactId>slf4j-simple</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.oracle.substratevm</groupId>
+            <artifactId>svm</artifactId>
+            <version>${graal.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- These are for test support only - not needed in production code -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -72,12 +79,12 @@
                     <buildArgs>
                         --no-server
                         --no-fallback
-
+                        --enable-all-security-services
+                        --features=de.adorsys.datasafe.cli.hacks.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders
 
                         --rerun-class-initialization-at-runtime=org.bouncycastle.crypto.prng.SP800SecureRandom
                         --rerun-class-initialization-at-runtime=org.bouncycastle.jcajce.provider.drbg.DRBG$Default
                         --rerun-class-initialization-at-runtime=org.bouncycastle.jcajce.provider.drbg.DRBG$NonceAndIV
-
                     </buildArgs>
                 </configuration>
             </plugin>
@@ -87,6 +94,9 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven.jar.plugin}</version>
                 <configuration>
+                    <excludes>
+                        <exclude>de.adorsys.datasafe.cli.hacks</exclude>
+                    </excludes>
                     <archive>
                         <manifest>
                             <mainClass>${cli.main.class}</mainClass>
