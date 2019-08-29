@@ -21,11 +21,11 @@ import java.util.Map;
 /**
  * This class fixes NPE exception in Graal-compilator - when it tries to get non-existing engines from
  * {@link java.security.Provider}
- *
+ * <p>
  * Additionally can log access to null service types using property PROVIDER_ACCESS_LOGGER,
  * so you can add necessary fields to extra_engines.hack. (This will break build later, so you will need
  * to remove this property when you detected all nulls in Provider).
- *
+ * <p>
  * Override string example:
  * X509Store=false,null
  */
@@ -70,7 +70,7 @@ public class GraalCompileFixNpeOnMissingServiceTypeInKnownProviders implements F
             NoSuchMethodException,
             IllegalAccessException,
             InstantiationException,
-            InvocationTargetException  {
+            InvocationTargetException {
         Field knownEngines = Provider.class.getDeclaredField("knownEngines");
         knownEngines.setAccessible(true);
 

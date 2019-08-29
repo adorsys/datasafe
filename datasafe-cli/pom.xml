@@ -32,6 +32,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -67,40 +71,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.oracle.substratevm</groupId>
-                <artifactId>native-image-maven-plugin</artifactId>
-                <version>${graal.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>native-image</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <imageName>datasafe-cli</imageName>
-                    <buildArgs>
-                        --no-server
-                        --no-fallback
-                        --enable-all-security-services
-                        --features=de.adorsys.datasafe.cli.hacks.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders
-
-                        --initialize-at-build-time=org.apache.http.conn.routing.HttpRoute
-                        --initialize-at-build-time=org.apache.http.conn.HttpClientConnectionManager
-                        --initialize-at-build-time=org.apache.http.HttpClientConnection
-                        --initialize-at-build-time=org.apache.http.conn.ConnectionRequest
-                        --initialize-at-build-time=org.apache.http.protocol.HttpContext
-                        --initialize-at-build-time=org.apache.http.pool.ConnPoolControl
-
-                        --initialize-at-run-time=org.bouncycastle.crypto.prng.SP800SecureRandom
-                        --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$Default
-                        --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$NonceAndIV
-                    </buildArgs>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -142,4 +112,47 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>native-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.oracle.substratevm</groupId>
+                        <artifactId>native-image-maven-plugin</artifactId>
+                        <version>${graal.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>native-image</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>datasafe-cli</imageName>
+                            <buildArgs>
+                                --no-server
+                                --no-fallback
+                                --enable-all-security-services
+                                --features=de.adorsys.datasafe.cli.hacks.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders
+
+                                --initialize-at-build-time=org.apache.http.conn.routing.HttpRoute
+                                --initialize-at-build-time=org.apache.http.conn.HttpClientConnectionManager
+                                --initialize-at-build-time=org.apache.http.HttpClientConnection
+                                --initialize-at-build-time=org.apache.http.conn.ConnectionRequest
+                                --initialize-at-build-time=org.apache.http.protocol.HttpContext
+                                --initialize-at-build-time=org.apache.http.pool.ConnPoolControl
+
+                                --initialize-at-run-time=org.bouncycastle.crypto.prng.SP800SecureRandom
+                                --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$Default
+                                --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$NonceAndIV
+                            </buildArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
