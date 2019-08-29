@@ -14,7 +14,7 @@ public class Delete implements Runnable {
     @CommandLine.ParentCommand
     private Inbox inbox;
 
-    @CommandLine.Parameters(description = "Filename to remove")
+    @CommandLine.Parameters(description = "Filename to remove", arity = "1")
     private String path;
 
     @Override

@@ -24,6 +24,6 @@ public class List implements Runnable {
     public void run() {
         privatespace.getCli().datasafe().privateService()
                 .list(ListRequest.forPrivate(privatespace.getCli().auth(), new StorageIdentifier(storageId), prefix))
-                .forEach(it -> System.out.println(it.location().asString()));
+                .forEach(it -> System.out.println(it.getResource().asPrivate().decryptedPath().asString()));
     }
 }

@@ -10,6 +10,7 @@ import picocli.CommandLine;
                 "Allows user to read encrypted files that are shared with him and to share his files with other users",
         subcommands = {
                 Cat.class,
+                List.class,
                 Share.class,
                 Delete.class,
 })

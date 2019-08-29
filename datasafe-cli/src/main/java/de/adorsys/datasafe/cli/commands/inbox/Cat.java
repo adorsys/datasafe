@@ -16,7 +16,7 @@ public class Cat implements Runnable {
     @CommandLine.ParentCommand
     private Inbox inbox;
 
-    @CommandLine.Parameters(description = "Filename to print")
+    @CommandLine.Parameters(description = "Filename to print", arity = "1")
     private String path;
 
     @Override

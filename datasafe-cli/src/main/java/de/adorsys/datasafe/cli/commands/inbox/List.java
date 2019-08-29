@@ -20,6 +20,6 @@ public class List implements Runnable {
     public void run() {
         inbox.getCli().datasafe().inboxService()
                 .list(ListRequest.forDefaultPrivate(inbox.getCli().auth(), prefix))
-                .forEach(it -> System.out.println(it.location().asString()));
+                .forEach(it -> System.out.println(it.getResource().asPrivate().decryptedPath().asString()));
     }
 }

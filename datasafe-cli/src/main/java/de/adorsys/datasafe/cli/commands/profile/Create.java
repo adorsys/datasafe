@@ -54,6 +54,7 @@ public class Create implements Runnable {
     }
 
     private String atRoot(String name) {
-        return profile.getCli().getProfilesRoot().resolve(name).toAbsolutePath().toUri().toASCIIString();
+        return profile.getCli().getProfilesRoot().resolve(name).toAbsolutePath().toUri().toASCIIString() +
+                (name.endsWith("/") ? "/" : "");
     }
 }

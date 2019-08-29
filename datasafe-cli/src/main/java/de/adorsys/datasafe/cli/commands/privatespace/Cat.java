@@ -20,7 +20,7 @@ public class Cat implements Runnable {
     @CommandLine.Option(names = {"--storage", "-s"}, description = "Storage identifier")
     private String storageId = StorageIdentifier.DEFAULT_ID;
 
-    @CommandLine.Parameters(description = "Filename to decrypt and print")
+    @CommandLine.Parameters(description = "Filename to decrypt and print", arity = "1")
     private String path;
 
     @Override
