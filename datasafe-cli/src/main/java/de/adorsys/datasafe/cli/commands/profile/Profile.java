@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.cli.commands.profile;
 
-import de.adorsys.datasafe.cli.commands.inbox.Delete;
+import de.adorsys.datasafe.cli.Cli;
+import lombok.Getter;
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -14,8 +15,12 @@ import picocli.CommandLine;
         })
 public class Profile implements Runnable {
 
+    @Getter
+    @CommandLine.ParentCommand
+    private Cli cli;
+
     @Override
     public void run() {
-
+        CommandLine.usage(new Profile(), System.out);
     }
 }

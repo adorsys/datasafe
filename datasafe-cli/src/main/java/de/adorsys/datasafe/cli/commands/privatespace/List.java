@@ -1,15 +1,15 @@
 package de.adorsys.datasafe.cli.commands.privatespace;
 
-import de.adorsys.datasafe.types.api.actions.RemoveRequest;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-        name = "remove",
-        aliases = "rm",
-        description = "Removes file from your privatespace"
+        name = "list",
+        aliases = "ls",
+        description = "Lists file in your privatespace"
 )
-public class Delete implements Runnable {
+public class List implements Runnable {
 
     @CommandLine.ParentCommand
     private Privatespace privatespace;
@@ -17,12 +17,13 @@ public class Delete implements Runnable {
     @CommandLine.Option(names = {"--storage", "-s"}, description = "Storage identifier")
     private String storageId = StorageIdentifier.DEFAULT_ID;
 
-    @CommandLine.Parameters(description = "Filename to remove")
-    private String path;
+    @CommandLine.Parameters(arity = "0..1")
+    private String prefix = "";
 
     @Override
     public void run() {
         privatespace.getCli().datasafe().privateService()
-                .remove(RemoveRequest.forPrivate(privatespace.getCli().auth(), new StorageIdentifier(storageId), path));
+                .list(ListRequest.forPrivate(privatespace.getCli().auth(), new StorageIdentifier(storageId), prefix))
+                .forEach(it -> System.out.println(it.location().asString()));
     }
 }

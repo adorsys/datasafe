@@ -49,7 +49,7 @@ public class CliOld {
         Security.addProvider(new BouncyCastleProvider());
         // To register provider you need to:
         /*
-            Copy the JCE provider JAR file to java-home/jre/lib/ext/.
+            Share the JCE provider JAR file to java-home/jre/lib/ext/.
             Stop the Application Server.
             If the Application Server is not stopped and then restarted later in this process, the JCE provider will not be recognized by the Application Server.
             Edit the java-home/jre/lib/security/java.security properties file in any text editor. Add the JCE provider you’ve just downloaded to this file.

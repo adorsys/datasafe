@@ -8,6 +8,9 @@ import picocli.CommandLine;
 )
 public class Create implements Runnable {
 
+    @CommandLine.ParentCommand
+    private Profile profile;
+
     @Override
     public void run() {
 

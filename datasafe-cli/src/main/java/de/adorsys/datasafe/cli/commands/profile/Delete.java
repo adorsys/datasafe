@@ -9,6 +9,9 @@ import picocli.CommandLine;
 )
 public class Delete implements Runnable {
 
+    @CommandLine.ParentCommand
+    private Profile profile;
+
     @Override
     public void run() {
 
