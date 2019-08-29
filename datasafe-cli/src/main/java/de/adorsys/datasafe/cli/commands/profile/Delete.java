@@ -14,6 +14,6 @@ public class Delete implements Runnable {
 
     @Override
     public void run() {
-
+        profile.getCli().datasafe().userProfile().deregister(profile.getCli().auth());
     }
 }

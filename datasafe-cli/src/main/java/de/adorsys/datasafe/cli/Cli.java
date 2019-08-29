@@ -9,6 +9,7 @@ import de.adorsys.datasafe.cli.commands.profile.Profile;
 import de.adorsys.datasafe.cli.config.DatasafeFactory;
 import de.adorsys.datasafe.cli.dto.Credentials;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
@@ -30,6 +31,7 @@ import java.nio.file.Paths;
 @RequiredArgsConstructor
 public class Cli implements Runnable {
 
+    @Getter
     @CommandLine.Option(
             names = {"--root-dir", "-rd"},
             description = "Folder with user profiles, default is current directory"
