@@ -12,6 +12,8 @@ env:
 # Special test-skipping stage to build CLI, using maven-wrapper
 build-cli: &build-cli
   script:
+    # re-export JAVA_HOME
+    - source  ~/.jdk_config
     # Prepare everything
     - ./mvnw --settings .travis/settings.xml clean install -B -V -DskipTests
     # Change security providers of JDK
