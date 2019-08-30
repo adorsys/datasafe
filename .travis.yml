@@ -69,3 +69,18 @@ stages:
   - Test-cli
   - Deploy-core
   - Deploy-cli
+
+jobs:
+  include:
+    - stage: Build-core
+      script: echo "BUILD CORE"
+    - stage: Test-core
+      script: echo "TEST CORE"
+    - stage: Build-cli
+      script: echo "BUILD CLI"
+    - stage: Test-cli
+      script: echo "TEST CLI"
+    - stage: Deploy-core
+      script: echo "DEPLOY CORE"
+    - stage: Deploy-cli
+      script: echo "DEPLOY CLI"
