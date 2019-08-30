@@ -9,14 +9,15 @@ env:
     - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
     - JDK="graalvm@19.2.0"
 
+# Special test-skipping stage to build CLI, using maven-wrapper
 build-cli: &build-cli
   script:
     # Prepare everything
-    - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET} -DskipTests
-    # Change security provides of JDK
+    - ./mvnw --settings .travis/settings.xml clean install -B -V -DskipTests
+    # Change security providers of JDK
     - /bin/bash .travis/enable_bouncycastle_security.sh
-    # Build binaries
-    - mvn --settings .travis/settings.xml -f datasafe-cli/pom.xml -Pnative-image clean package -B -V -DAWS_BUCKET=${AWS_BUCKET} -DskipTests
+    # Build native image
+    - ./mvnw --settings .travis/settings.xml -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
 
 before_install:
   - echo "Before install"
