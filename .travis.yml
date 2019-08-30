@@ -12,6 +12,8 @@ env:
 # Special test-skipping stage to build CLI, using maven-wrapper
 build-cli: &build-cli
   script:
+    # Ensure we use correct Java - one that is set by Jabba
+    - source  ~/.jdk_config
     # Prepare everything
     - ./mvnw --settings .travis/settings.xml clean install -B -V -DskipTests
     # Change security providers of JDK
