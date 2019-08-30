@@ -21,6 +21,8 @@ public class List implements Runnable {
 
         cli.datasafe().userProfile().privateProfile(
                 cli.auth()
-        ).getPrivateStorage().keySet().forEach(it -> System.out.println(it.getId()));
+        ).getPrivateStorage().forEach(
+                (key, value) -> System.out.println(key.getId() + "\t" + value.location().asString())
+        );
     }
 }

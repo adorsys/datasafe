@@ -1,14 +1,20 @@
 package de.adorsys.datasafe.cli.commands.profile.storage;
 
 import de.adorsys.datasafe.cli.Cli;
-import de.adorsys.datasafe.directory.api.types.StorageCredentials;
+import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.Getter;
 import picocli.CommandLine;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @CommandLine.Command(
         name = "add",
-        description = "Adds path mapping and credentials to access user storage"
+        description = "Adds private storage"
 )
 public class Add implements Runnable {
 
@@ -17,31 +23,31 @@ public class Add implements Runnable {
     private Storage storage;
 
     @CommandLine.Option(
-            names = {"--mapping", "-m"},
-            description = "Storage mapping regex (i.e. 's3://.+' will route all requests with s3 protocol to this storage)",
+            names = {"--identifier", "-i"},
+            description = "Storage identifier to be associated with this path",
             required = true)
-    private String mapping;
+    private String identifier;
 
     @CommandLine.Option(
-            names = {"--username", "-u"},
-            description = "Storage username (i.e. AWS_ACCESS_KEY)",
+            names = {"--path", "-p"},
+            description = "Absolute path (with protocol) that is associated with this identifier",
             required = true)
-    private String username;
-
-    @CommandLine.Option(
-            names = {"--password", "-p"},
-            description = "Storage password (i.e. AWS_SECRET_KEY)",
-            interactive = true,
-            required = true)
-    private String password;
+    private String path;
 
     @Override
     public void run() {
         Cli cli = storage.getProfile().getCli();
-        cli.datasafe().userProfile().registerStorageCredentials(
+
+        UserPrivateProfile privateProfile = cli.datasafe().userProfile().privateProfile(cli.auth());
+        Map<StorageIdentifier, AbsoluteLocation<PrivateResource>> pathsMap = new HashMap<>(
+                privateProfile.getPrivateStorage()
+        );
+
+        pathsMap.put(new StorageIdentifier(identifier), BasePrivateResource.forAbsolutePrivate(path));
+
+        cli.datasafe().userProfile().updatePrivateProfile(
                 cli.auth(),
-                new StorageIdentifier(mapping),
-                new StorageCredentials(username, password)
+                privateProfile.toBuilder().privateStorage(pathsMap).build()
         );
     }
 }
