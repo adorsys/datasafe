@@ -22,3 +22,7 @@ curl "https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/${BC_VERSIO
 
 curl "https://repo1.maven.org/maven2/org/bouncycastle/bctls-jdk15on/${BC_VERSION}/bctls-jdk15on-${BC_VERSION}.jar" \
     --output "$JAVA_HOME/jre/lib/ext/bctls-jdk15on-${BC_VERSION}.jar"
+
+echo "$JAVA_HOME"
+java -version
+which java

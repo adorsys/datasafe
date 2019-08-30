@@ -12,9 +12,15 @@ env:
 # Special test-skipping stage to build CLI, using maven-wrapper
 build-cli: &build-cli
   script:
+    - echo "$JAVA_HOME"
+    - java -version
+    - which java
     # Ensure we use correct Java - one that is set by Jabba
     - source  ~/.jdk_config
     - cat ~/.jdk_config
+    - echo "$JAVA_HOME"
+    - java -version
+    - which java
     # Prepare everything
     - ./mvnw --settings .travis/settings.xml clean install -B -V -DskipTests
     # Change security providers of JDK
@@ -42,11 +48,13 @@ after_success:
 
 matrix:
   include:
+    #### ORIGINAL BUILD ####
     # This is original build and deploy, that runs E2E tests and deploys docker images
     - os: linux
       language: java
-      jdk: oraclejdk8
+      jdk: openjdk8
 
+    #### CLI-ORIENTED BUILD ####
     # These are CLI-only builds that produce Datasafe cli executable for each OS:
     # CLI for Linux:
     - os: linux
@@ -67,6 +75,4 @@ matrix:
       language: bash
       before_install:
         - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
-      before_script:
-        - cp mvnw.cmd mvnw
       <<: *build-cli
