@@ -14,6 +14,7 @@ build-cli: &build-cli
   script:
     # Ensure we use correct Java - one that is set by Jabba
     - source  ~/.jdk_config
+    - cat ~/.jdk_config
     # Prepare everything
     - ./mvnw --settings .travis/settings.xml clean install -B -V -DskipTests
     # Change security providers of JDK
@@ -44,6 +45,7 @@ matrix:
     # This is original build and deploy, that runs E2E tests and deploys docker images
     - os: linux
       language: java
+      jdk: oraclejdk8
 
     # These are CLI-only builds that produce Datasafe cli executable for each OS:
     # CLI for Linux:
@@ -65,4 +67,6 @@ matrix:
       language: bash
       before_install:
         - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
+      before_script:
+        - cp mvnw.cmd mvnw
       <<: *build-cli
