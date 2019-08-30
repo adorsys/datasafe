@@ -3,84 +3,51 @@
 branches:
   except:
     - gh-pages
+env:
+  global:
+    # This is a convenience variable for shortening download commands
+    - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
+    - JDK="graalvm@19.2.0"
 
 matrix:
   include:
     # This is original build and deploy, that runs E2E tests and deploys docker images
     - os: linux
       language: java
-      stages:
-        - Build-core
-        - Test-core
-        - Deploy-core
 
-    # These are CLI-only builds:
+    # These are CLI-only builds that produce Datasafe cli executable for each OS:
     # CLI for Linux:
     - os: linux
-      env:
-        # This is a convenience variable for shortening download commands
-        - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
-        - JDK="graalvm@19.2.0"
       language: bash
-      stages:
-        - Build-core
-        - Build-cli
-        - Test-cli
-        - Deploy-cli
       before_install:
         - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
-
     # CLI for MacOS:
     - os: osx
-      env:
-        # This is a convenience variable for shortening download commands
-        - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
-        - JDK="graalvm@19.2.0"
       language: bash
-      stages:
-        - Build-core
-        - Build-cli
-        - Test-cli
-        - Deploy-cli
       before_install:
         - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
-
     # CLI for Windows:
     - os: windows
       env:
-        # This is a convenience variable for shortening download commands
-        - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
-        - JDK="graalvm@19.2.0"
         - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
       language: bash
-      stages:
-        - Build-core
-        - Build-cli
-        - Test-cli
-        - Deploy-cli
       before_install:
         - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
 
 
-stages:
-  - Build-core
-  - Test-core
-  - Build-cli
-  - Test-cli
-  - Deploy-core
-  - Deploy-cli
+before_install:
+  - echo "Before install"
 
-jobs:
-  include:
-    - stage: Build-core
-      script: echo "BUILD CORE"
-    - stage: Test-core
-      script: echo "TEST CORE"
-    - stage: Build-cli
-      script: echo "BUILD CLI"
-    - stage: Test-cli
-      script: echo "TEST CLI"
-    - stage: Deploy-core
-      script: echo "DEPLOY CORE"
-    - stage: Deploy-cli
-      script: echo "DEPLOY CLI"
+install:
+  - echo "Install"
+
+script:
+  - echo "Script"
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: echo "Deploy"
+
+after_success:
+  - echo "Success"
