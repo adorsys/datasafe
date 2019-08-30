@@ -343,7 +343,7 @@
     "name": "org.apache.commons.logging.LogFactory"
   },
   {
-    "name": "org.apache.commons.logging.impl.Jdk14Logger",
+    "name": "org.apache.commons.logging.impl.NoOpLog",
     "methods": [
       {
         "name": "<init>",
@@ -1095,6 +1095,15 @@
         "parameterTypes": [
           "java.lang.Class"
         ]
+      }
+    ]
+  },
+  {
+    "name": "java.security.KeyStoreSpi",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
       }
     ]
   },

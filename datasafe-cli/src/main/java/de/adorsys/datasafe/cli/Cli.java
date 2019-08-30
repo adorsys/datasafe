@@ -43,6 +43,9 @@ public class Cli implements Runnable {
 
     @SneakyThrows
     public static void main(String[] args) {
+        // silencing AWS SDK:
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+
         int exitCode = new CommandLine(new Cli()).execute(args);
         System.exit(exitCode);
     }
