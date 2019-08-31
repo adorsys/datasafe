@@ -153,8 +153,8 @@
                         <configuration>
                             <imageName>datasafe-cli</imageName>
                             <buildArgs>
-                                -XX:+UnlockExperimentalVMOptions
-                                -XX:+UseJVMCICompiler
+                                -J-XX:+UnlockExperimentalVMOptions
+                                -J-XX:+UseJVMCICompiler
                                 --no-server
                                 --no-fallback
                                 --enable-all-security-services
