@@ -216,8 +216,13 @@ else
     else
       jarUrl="https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/0.5.5/maven-wrapper-0.5.5.jar"
     fi
+
+    # FIXME: Fix windows bash:
+    tr -d '\r' "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties" "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties.new" \
+     && mv "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties.new" "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties"
+
     while IFS="=" read key value; do
-      case "$key" in (wrapperUrl) jarUrl="${value/'\r'/}"; break ;;
+      case "$key" in (wrapperUrl) jarUrl="$value"; break ;;
       esac
     done < "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties"
     if [ "$MVNW_VERBOSE" = true ]; then
