@@ -38,6 +38,8 @@ build-cli: &build-cli
     - ./mvnw --settings .travis/settings.xml clean install -B -V -DskipTests
     # Change security providers of JDK
     - /bin/bash .travis/enable_bouncycastle_security.sh
+    - echo $JAVA_HOME
+    - java -version
     # Build native image
     - ./mvnw --settings .travis/settings.xml -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
 
