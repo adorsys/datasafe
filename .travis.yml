@@ -54,7 +54,7 @@ deploy-cli: &deploy-cli
     region: ${AWS_REGION}
     skip_cleanup: true
     local_dir: datasafe-cli/target
-    upload-dir: datasafe-cli/${$TRAVIS_OS_NAME}/${TRAVIS_COMMIT}
+    upload-dir: datasafe-cli/${TRAVIS_OS_NAME}/${TRAVIS_COMMIT}
 
 # Build configuration definition:
 matrix:
