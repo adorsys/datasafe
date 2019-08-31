@@ -218,8 +218,9 @@ else
     fi
 
     # FIXME: Fix windows bash:
-    tr -d '\r' "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties" "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties.new" \
-     && mv "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties.new" "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties"
+    tr -d '\r' < "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties" > \
+      "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties.new" \
+      && mv "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties.new" "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties"
 
     while IFS="=" read key value; do
       case "$key" in (wrapperUrl) jarUrl="$value"; break ;;
