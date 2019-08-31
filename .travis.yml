@@ -44,7 +44,7 @@ build-cli: &build-cli
     - find "$JAVA_HOME/jre/lib/jvmci" -type f ! -name '*.jar' -delete
     - ls $JAVA_HOME/jre/lib/jvmci
     # Build native image
-    - ./mvnw -X --settings .travis/settings.xml -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
+    - ./mvnw --settings .travis/settings.xml -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
 
 # CLI artifacts publishing:
 deploy-cli: &deploy-cli
