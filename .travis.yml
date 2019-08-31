@@ -40,6 +40,7 @@ build-cli: &build-cli
     - /bin/bash .travis/enable_bouncycastle_security.sh
     - echo $JAVA_HOME
     - java -version
+    - ls $JAVA_HOME/jre/lib/jvmci
     # Build native image
     - ./mvnw --settings .travis/settings.xml -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
 
