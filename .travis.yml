@@ -82,10 +82,11 @@ matrix:
       <<: *build-cli
       <<: *deploy-cli
     # CLI for Windows:
-    #- os: windows
-    #  env:
-    #    - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
-    #  language: bash
-    #  before_install:
-    #    - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
-    #  <<: *build-cli
+    - os: windows
+      env:
+        - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
+      language: bash
+      before_install:
+        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
+      <<: *build-cli
+      <<: *deploy-cli

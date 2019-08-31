@@ -23,5 +23,13 @@ curl "https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/${BC_VERSIO
 curl "https://repo1.maven.org/maven2/org/bouncycastle/bctls-jdk15on/${BC_VERSION}/bctls-jdk15on-${BC_VERSION}.jar" \
     --output "$JAVA_HOME/jre/lib/ext/bctls-jdk15on-${BC_VERSION}.jar"
 
-# Install native image builder
-gu install native-image
+# Windows does not have Graal Updater (gu) tool, so we install native-image manually
+if [[ "$OSTYPE" == "windows"* ]]; then
+  # TODO
+  echo "Windows, nothing to do"
+else
+  # Install native image builder
+  gu install native-image
+fi
+
+
