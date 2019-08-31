@@ -54,33 +54,33 @@ deploy-cli: &deploy-cli
     region: ${AWS_REGION}
     skip_cleanup: true
     local_dir: datasafe-cli/target
-    upload-dir: datasafe-cli/${OSTYPE}/${TRAVIS_COMMIT}
+    upload-dir: datasafe-cli/${$TRAVIS_OS_NAME}/${TRAVIS_COMMIT}
 
 # Build configuration definition:
 matrix:
   include:
     #### ORIGINAL BUILD ####
     # This is original build and deploy, that runs E2E tests and deploys docker images
-    - os: linux
-      language: java
-      jdk: openjdk8
-
-    #### CLI-ORIENTED BUILD ####
-    # These are CLI-only builds that produce Datasafe cli executable for each OS:
-    # CLI for Linux:
-    - os: linux
-      language: bash
-      before_install:
-        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
-      <<: *build-cli
-      <<: *deploy-cli
-    # CLI for MacOS:
-    - os: osx
-      language: bash
-      before_install:
-        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
-      <<: *build-cli
-      <<: *deploy-cli
+#    - os: linux
+#      language: java
+#      jdk: openjdk8
+#
+#    #### CLI-ORIENTED BUILD ####
+#    # These are CLI-only builds that produce Datasafe cli executable for each OS:
+#    # CLI for Linux:
+#    - os: linux
+#      language: bash
+#      before_install:
+#        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
+#      <<: *build-cli
+#      <<: *deploy-cli
+#    # CLI for MacOS:
+#    - os: osx
+#      language: bash
+#      before_install:
+#        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
+#      <<: *build-cli
+#      <<: *deploy-cli
     # CLI for Windows:
     - os: windows
       env:
