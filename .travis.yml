@@ -9,6 +9,26 @@ env:
     - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
     - JDK="graalvm@19.2.0"
 
+before_install:
+  - echo "Before install"
+
+install:
+  - echo "Install"
+
+# Original build
+script:
+  - echo "Script"
+  - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET} -DskipTests # FIXME remove skipTests
+
+# Original deploy
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: echo "Deploy"
+
+after_success:
+  - echo "Success"
+
 # Special test-skipping stage to build CLI, using maven-wrapper
 build-cli: &build-cli
   script:
@@ -21,24 +41,19 @@ build-cli: &build-cli
     # Build native image
     - ./mvnw --settings .travis/settings.xml -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
 
-before_install:
-  - echo "Before install"
-
-install:
-  - echo "Install"
-
-script:
-  - echo "Script"
-  - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET} -DskipTests # FIXME remove skipTests
-
-deploy:
-  - provider: script
+# CLI artifacts publishing:
+deploy-cli: &deploy-cli
+  deploy:
+    provider: s3
+    access_key_id: ${AWS_ACCESS_KEY_ID}
+    secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+    bucket: ${AWS_BUCKET}
+    region: eu-central-1
     skip_cleanup: true
-    script: echo "Deploy"
+    local_dir: datasafe-cli/target
+    upload-dir: datasafe-cli/${OSTYPE}/${TRAVIS_COMMIT}
 
-after_success:
-  - echo "Success"
-
+# Build configuration definition:
 matrix:
   include:
     #### ORIGINAL BUILD ####
@@ -55,17 +70,19 @@ matrix:
       before_install:
         - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
       <<: *build-cli
+      <<: *deploy-cli
     # CLI for MacOS:
     - os: osx
       language: bash
       before_install:
         - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
       <<: *build-cli
+      <<: *deploy-cli
     # CLI for Windows:
-    - os: windows
-      env:
-        - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
-      language: bash
-      before_install:
-        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
-      <<: *build-cli
+    #- os: windows
+    #  env:
+    #    - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
+    #  language: bash
+    #  before_install:
+    #    - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
+    #  <<: *build-cli
