@@ -10,6 +10,7 @@ REPO_ROOT=`pwd`
 curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
 source ~/.install-jdk-travis.sh
 
+echo "Installing maven"
 apt-get install maven -y
 
 cd "$REPO_ROOT"
