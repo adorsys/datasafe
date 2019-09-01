@@ -6,9 +6,11 @@
 
 REPO_ROOT=`pwd`
 
-# 1. Custom JDK
+# 1. Custom JDK and standard maven
 curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
 source ~/.install-jdk-travis.sh
+
+apt-get install maven -y
 
 cd "$REPO_ROOT"
 
