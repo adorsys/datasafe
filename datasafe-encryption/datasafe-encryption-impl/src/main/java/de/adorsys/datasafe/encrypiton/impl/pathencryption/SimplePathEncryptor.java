@@ -15,12 +15,21 @@ import java.util.Arrays;
  * encodes resulting bytes using Base64-urlsafe encoding.
  */
 @RuntimeDelegate
+<<<<<<< HEAD:datasafe-encryption/datasafe-encryption-impl/src/main/java/de/adorsys/datasafe/encrypiton/impl/pathencryption/SimplePathEncryptor.java
 public class SimplePathEncryptor implements PathEncryptor {
 
     private final SimplePathDigestConfig digestConfig;
 
     @Inject
     public SimplePathEncryptor(SimplePathDigestConfig config) {
+=======
+public class DatevPathEncryptor implements PathEncryptor {
+
+    private final DatevPathDigestConfig digestConfig;
+
+    @Inject
+    public DatevPathEncryptor(DatevPathDigestConfig config) {
+>>>>>>> a60c9d5a... DOC-239: Using AES in GCM mode. Initial Path encryption impl with SIV:datasafe-encryption/datasafe-encryption-impl/src/main/java/de/adorsys/datasafe/encrypiton/impl/pathencryption/DatevPathEncryptor.java
         this.digestConfig = config;
     }
 
