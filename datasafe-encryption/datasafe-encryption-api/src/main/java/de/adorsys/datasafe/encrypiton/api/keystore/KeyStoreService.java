@@ -56,7 +56,7 @@ public interface KeyStoreService {
      * @param keyStoreAccess Key to open keystore (only {@link KeyStoreAuth#getReadStorePassword()} is used)
      * @return List of public keys within the keystore
      */
-    List<PublicKeyIDWithPublicKey> getPublicKeys(KeyStoreAccess keyStoreAccess);
+    List<PublicKeyEntry> getPublicKeys(KeyStoreAccess keyStoreAccess);
 
     /**
      * Reads private key from the keystore.

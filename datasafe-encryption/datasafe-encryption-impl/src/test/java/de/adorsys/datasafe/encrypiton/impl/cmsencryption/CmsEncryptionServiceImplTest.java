@@ -87,20 +87,20 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
                 inputStream, keyIds -> getKeys(keyIds, keyStoreAccess3)));
     }
 
-    private PublicKeyIDWithPublicKey getPublicKeyIDWithPublicKey(KeyStoreAccess keyStoreAccess) {
+    private PublicKeyEntry getPublicKeyIDWithPublicKey(KeyStoreAccess keyStoreAccess) {
         return keyStoreService.getPublicKeys(keyStoreAccess).stream().findFirst().get();
     }
 
     @Test
     @SneakyThrows
     void cmsStreamEnvelopeEncryptAndDecryptTest() {
-        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        PublicKeyEntry publicKeyEntry = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                Collections.singleton(new PublicKeyIDWithPublicKey(
-                        publicKeyIDWithPublicKey.getKeyID(),
-                        publicKeyIDWithPublicKey.getPublicKey()
+                Collections.singleton(new PublicKeyEntry(
+                        publicKeyEntry.getKeyID(),
+                        publicKeyEntry.getPublicKey()
                 ))
         );
 
@@ -121,7 +121,7 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void cmsStreamEnvelopeZeroKeyPairFailTest() {
-        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        PublicKeyEntry publicKeyEntry = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
@@ -129,9 +129,9 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                Collections.singleton(new PublicKeyIDWithPublicKey(
-                        publicKeyIDWithPublicKey.getKeyID(),
-                        publicKeyIDWithPublicKey.getPublicKey()
+                Collections.singleton(new PublicKeyEntry(
+                        publicKeyEntry.getKeyID(),
+                        publicKeyEntry.getPublicKey()
                 ))
         );
 
@@ -147,11 +147,11 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void cmsStreamEnvelopeTwoKeysPairFailTest() {
-        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        PublicKeyEntry publicKeyEntry = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        RecipientInfoGenerator recipientInfo1 = new JceKeyTransRecipientInfoGenerator("key1".getBytes(), publicKeyIDWithPublicKey.getPublicKey());
-        RecipientInfoGenerator recipientInfo2 = new JceKeyTransRecipientInfoGenerator("key2".getBytes(), publicKeyIDWithPublicKey.getPublicKey());
+        RecipientInfoGenerator recipientInfo1 = new JceKeyTransRecipientInfoGenerator("key1".getBytes(), publicKeyEntry.getPublicKey());
+        RecipientInfoGenerator recipientInfo2 = new JceKeyTransRecipientInfoGenerator("key2".getBytes(), publicKeyEntry.getPublicKey());
 
         CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
         gen.addRecipientInfoGenerator(recipientInfo1);
@@ -160,9 +160,9 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                Collections.singleton(new PublicKeyIDWithPublicKey(
-                        publicKeyIDWithPublicKey.getKeyID(),
-                        publicKeyIDWithPublicKey.getPublicKey()
+                Collections.singleton(new PublicKeyEntry(
+                        publicKeyEntry.getKeyID(),
+                        publicKeyEntry.getPublicKey()
                 ))
         );
 
@@ -180,12 +180,12 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
     void cmsStreamEnvelopeOneKeyPairFailTest() {
         KeyStoreAccess keyStoreAccess = getKeyStoreAccess();
 
-        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        PublicKeyEntry publicKeyEntry = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
-                Collections.singleton(new PublicKeyIDWithPublicKey(
-                        publicKeyIDWithPublicKey.getKeyID(),
-                        publicKeyIDWithPublicKey.getPublicKey()
+                Collections.singleton(new PublicKeyEntry(
+                        publicKeyEntry.getKeyID(),
+                        publicKeyEntry.getPublicKey()
                 ))
         );
 
@@ -237,16 +237,16 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
         generateTestFile(testFilePath, testFileSizeInBytes);
         log.info("Test file with size {}Mb generated: {}", testFileSizeInBytes / _1MbInBytes, testFilePath);
 
-        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        PublicKeyEntry publicKeyEntry = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
 
         File encryptedFile = new File(encryptedFilePath);
         FileOutputStream fosEnFile = new FileOutputStream(encryptedFile);
 
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(
                 fosEnFile,
-                Collections.singleton(new PublicKeyIDWithPublicKey(
-                        publicKeyIDWithPublicKey.getKeyID(),
-                        publicKeyIDWithPublicKey.getPublicKey()
+                Collections.singleton(new PublicKeyEntry(
+                        publicKeyEntry.getKeyID(),
+                        publicKeyEntry.getPublicKey()
                 ))
         );
 
