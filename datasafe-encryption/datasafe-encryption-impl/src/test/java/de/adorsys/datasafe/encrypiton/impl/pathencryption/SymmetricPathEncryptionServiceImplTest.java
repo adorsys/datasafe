@@ -53,8 +53,6 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
     void testSuccessEncryptDecryptPath() {
         String testPath = "path/to/file";
 
-        System.out.println("Test path: {}"+ testPath);
-
         Uri testURI = new Uri(testPath);
 
         SecretKeySpec secretKey = keyStoreService.getSecretKey(
@@ -72,36 +70,6 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         log.debug("Decrypted path: {}"+ decrypted);
 
         assertEquals(testPath, decrypted.toASCIIString());
-    }
-    
-    @Test
-    public void test4() throws UnauthenticCiphertextException, IllegalBlockSizeException {
-        SivMode AES_SIV = new SivMode();
-        SecretKeySpec secretKey = keyStoreService.getSecretKey(
-                keyStoreAccess,
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
-        );
-
-        byte[] ctr = new byte[16];
-        Arrays.fill(ctr,(byte)'a');
-
-//        ThreadLocalRandom.current().nextBytes(ctr);
-
-        byte[] encrypted1 = AES_SIV.encrypt(ctr, secretKey.getEncoded(), "aaa".getBytes());
-
-        byte[] ctr2 = new byte[16];
-        Arrays.fill(ctr2,(byte)'b');
-        byte[] encrypted2 = AES_SIV.encrypt(ctr2, secretKey.getEncoded(), "aaa".getBytes());
-
-        byte[] decrypted = AES_SIV.decrypt(ctr, secretKey.getEncoded(), encrypted1);
-        byte[] decrypted2 = AES_SIV.decrypt(ctr2, secretKey.getEncoded(), encrypted2);
-
-       /* assertArrayEquals(encrypted1, encrypted2);
-        assertArrayEquals(decrypted2, decrypted2);*/
-
-        System.out.println(new String(encrypted1) + " " + new String(decrypted));
-        System.out.println(new String(encrypted2) + " " + new String(decrypted2));
-
     }
 
     @Test

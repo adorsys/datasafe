@@ -118,16 +118,13 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         }
 
         // Resulting value of `path` is URL-safe
-        Uri uri = new Uri(
+        return new Uri(
                 URI.create(
                         Arrays.stream(path.split(PATH_SEPARATOR, -1))
-                                .map(uriPart -> process.apply(new ImmutablePair<>(secretKeyEntry, uriPart.getBytes(UTF_8))))
-                                .map(data -> new String(data))
-                                .collect(Collectors.joining(PATH_SEPARATOR))
-                )
+                              .map(uriPart -> process.apply(new ImmutablePair<>(secretKeyEntry, uriPart.getBytes(UTF_8))))
+                              .map(data -> new String(data))
+                              .collect(Collectors.joining(PATH_SEPARATOR)))
         );
-        System.out.println(uri.asString());
-        return uri;
     }
 
     private static void validateArgs(SecretKeyIDWithKey secretKeyEntry, Uri bucketPath) {
