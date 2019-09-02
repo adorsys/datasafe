@@ -42,14 +42,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class BaseRandomActions extends WithStorageProvider {
 
     public static final String DISABLE_RANDOM_ACTIONS_TEST = "DISABLE_RANDOM_ACTIONS_TEST";
+    public static final String ENABLE_MULTI_BUCKET_TEST = "ENABLE_MULTI_BUCKET_TEST";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final int KILOBYTE_TO_BYTE = 1024;
     private static final long TIMEOUT = 30L;
 
-    private static String THREADS = readPropOrEnv("THREADS", "8");
-    private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "10240"); // in KB
+    private static String THREADS = readPropOrEnv("THREADS", "2, 4, 8");
+    private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "100, 1024, 10240"); // in KB
 
     private static final Set<Integer> THREAD_COUNT = ImmutableSet.copyOf(
             Stream.of(THREADS.split(",")).map(String::trim)
@@ -61,6 +62,11 @@ public abstract class BaseRandomActions extends WithStorageProvider {
                     .mapToInt(Integer::parseInt).boxed().collect(Collectors.toList())
     );
 
+    private static final List<String> STORAGE_PROVIDERS =
+            Arrays.asList(readPropOrEnv("STORAGE_PROVIDERS", "MINIO").split(","));
+
+    private static final String FIXTURE_SIZE = readPropOrEnv("FIXTURE_SIZE", "SMALL");
+
     @BeforeEach
     void prepare() {
         // Enable logging obfuscation
@@ -68,20 +74,16 @@ public abstract class BaseRandomActions extends WithStorageProvider {
         System.setProperty("SECURE_SENSITIVE", "on");
     }
 
+    protected Fixture getFixture() {
+        switch(FIXTURE_SIZE) {
+            case "MEDIUM" : return fixture("fixture/fixture_1000_ops.json");
+            case "BIG" : return fixture("fixture/fixture_10000_ops.json");
+            default : return fixture("fixture/fixture_200_ops.json");
+        }
+    }
+
     protected Fixture smallSimpleDocusafeAdapterFixture() {
         return fixture("fixture/fixture_simple_datasafe_200_ops.json");
-    }
-
-    protected Fixture smallFixture() {
-        return fixture("fixture/fixture_200_ops.json");
-    }
-
-    protected Fixture mediumFixture() {
-        return fixture("fixture/fixture_1000_ops.json");
-    }
-
-    protected Fixture bigFixture() {
-        return fixture("fixture/fixture_10000_ops.json");
     }
 
     @SneakyThrows
@@ -94,12 +96,28 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     @ValueSource
-    protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
+    protected static Stream<Arguments> actionsOnStoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
-                Collections.singleton(minio()),
+                Collections.singleton(s3()),
                 THREAD_COUNT,
                 FILE_SIZE_K_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
+    }
+
+    private static Set<StorageDescriptor> getStorageDescriptors() {
+        return STORAGE_PROVIDERS.stream().map(it -> {
+            switch (it) {
+                case "AMAZON":
+                    return s3();
+                case "MINIO":
+                    return minio();
+                case "CEPH":
+                    return cephVersioned();
+                case "FILESYSTEM":
+                    return fs();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     protected void executeTest(

@@ -15,6 +15,6 @@ public class DefaultCMSEncryptionConfig implements CMSEncryptionConfig {
 
     @Inject
     public DefaultCMSEncryptionConfig() {
-        algorithm = DatasafeCryptoAlgorithm.AES256_CBC;
+        algorithm = DatasafeCryptoAlgorithm.AES256_GCM;
     }
 }

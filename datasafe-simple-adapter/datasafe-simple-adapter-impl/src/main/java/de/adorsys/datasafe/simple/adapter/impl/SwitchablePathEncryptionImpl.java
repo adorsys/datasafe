@@ -42,16 +42,16 @@ public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
         String value = System.getProperty(NO_BUCKETPATH_ENCRYPTION);
         if (value != null) {
             if (value.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                log.info("path encryption is on");
+                log.debug("path encryption is on");
                 return true;
             }
             if (value.equalsIgnoreCase(Boolean.TRUE.toString())) {
-                log.info("path encryption is off");
+                log.debug("path encryption is off");
                 return false;
             }
             throw new RuntimeException("value " + value + " for " + NO_BUCKETPATH_ENCRYPTION + " is unknown");
         }
-        log.info("path encryption is on");
+        log.debug("path encryption is on");
         return true;
     }
 

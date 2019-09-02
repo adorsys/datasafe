@@ -25,17 +25,16 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
+import de.adorsys.datasafe.types.api.utils.CustomizableByteArrayOutputStream;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -121,7 +120,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
         initiateMultiPartIfNeeded();
 
-        byte[] content = currentOutputStream.getBuffer();
+        byte[] content = currentOutputStream.getBufferOrCopy();
         int size = currentOutputStream.size();
         // Release the memory
         currentOutputStream = newOutputStream();
@@ -152,7 +151,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         int size = currentOutputStream.size();
         objectMetadata.setContentLength(size);
-        byte[] content = currentOutputStream.getBuffer();
+        byte[] content = currentOutputStream.getBufferOrCopy();
 
         // Release the memory
         currentOutputStream = null;
@@ -208,7 +207,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
             return;
         }
 
-        byte[] content = currentOutputStream.getBuffer();
+        byte[] content = currentOutputStream.getBufferOrCopy();
         int size = currentOutputStream.size();
         // Release the memory
         currentOutputStream = null;
@@ -270,83 +269,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     }
 
     private CustomizableByteArrayOutputStream newOutputStream() {
-        return new CustomizableByteArrayOutputStream(32, BUFFER_SIZE);
-    }
-
-    /**
-     * {@link ByteArrayOutputStream}-alike stream that has customized maximum capacity and growing strategy in
-     * order to minimize memory usage.
-     */
-    private class CustomizableByteArrayOutputStream extends OutputStream {
-
-        private final int maxArraySize;
-        private byte[] buffer;
-        private int count;
-
-        CustomizableByteArrayOutputStream(int initialCapacity, int maxArraySize) {
-            this.buffer = new byte[initialCapacity];
-            this.maxArraySize = maxArraySize;
-        }
-
-        @Override
-        @Synchronized
-        public void write(int b) {
-            ensureCapacity(count + 1);
-            buffer[count] = (byte) b;
-            count += 1;
-        }
-
-        @Override
-        @Synchronized
-        public void write(byte[] buffer, int off, int len) {
-            if ((off < 0) || (off > buffer.length) || (len < 0) ||
-                    ((off + len) - buffer.length > 0)) {
-                throw new IndexOutOfBoundsException();
-            }
-
-            ensureCapacity(count + len);
-            System.arraycopy(buffer, off, this.buffer, count, len);
-            count += len;
-        }
-
-        @Synchronized
-        public byte[] getBuffer() {
-            return buffer;
-        }
-
-        @Synchronized
-        public int size() {
-            return count;
-        }
-
-        @Override
-        public void close() {
-            // NOP
-        }
-
-        private void ensureCapacity(int minCapacity) {
-            if (minCapacity <= buffer.length) {
-                return;
-            }
-
-            grow(minCapacity);
-        }
-
-        private void grow(int minCapacity) {
-            int oldCapacity = buffer.length;
-
-            int newCapacity = Math.min(oldCapacity << 1, maxArraySize);
-
-            if (newCapacity < minCapacity) {
-                newCapacity = minCapacity;
-            }
-
-            if (newCapacity > maxArraySize) {
-                throw new OutOfMemoryError();
-            }
-
-            buffer = Arrays.copyOf(buffer, newCapacity);
-        }
+        return new CustomizableByteArrayOutputStream(32, BUFFER_SIZE, 0.5);
     }
 }
 

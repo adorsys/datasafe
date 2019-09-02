@@ -44,7 +44,7 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
 class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
 
     @ParameterizedTest
-    @MethodSource("actionsOnSoragesAndThreadsAndFilesizes")
+    @MethodSource("actionsOnStoragesAndThreadsAndFilesizes")
     void testRandomActionsParallelThreads(StorageDescriptor descriptor, int threadCount, int filesizeInKb) {
         DefaultDatasafeServices datasafeServices = datasafeServicesFromSimpleDatasafeAdapter(descriptor);
         StatisticService statisticService = new StatisticService();

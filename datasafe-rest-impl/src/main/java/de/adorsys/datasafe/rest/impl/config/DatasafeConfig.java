@@ -59,12 +59,19 @@ import java.util.regex.Pattern;
 public class DatasafeConfig {
     public static final String FILESYSTEM_ENV = "USE_FILESYSTEM";
     public static final String CLIENT_CREDENTIALS = "ALLOW_CLIENT_S3_CREDENTIALS";
+    public static final String DATASAFE_S3_STORAGE = "DATASAFE_S3_STORAGE";
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("private_profiles", "public_profiles");
 
     @Bean
-    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue = "true")
-    DFSConfig singleDfsConfig(DatasafeProperties properties) {
+    @ConditionalOnProperty(name = DATASAFE_S3_STORAGE, havingValue = "true")
+    DFSConfig singleDfsConfigS3(DatasafeProperties properties) {
+        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
+    }
+
+    @Bean
+    @ConditionalOnProperty(FILESYSTEM_ENV)
+    DFSConfig singleDfsConfigFilesystem(DatasafeProperties properties) {
         return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
     }
 
@@ -122,16 +129,6 @@ public class DatasafeConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(FILESYSTEM_ENV)
-    StorageService fsStorageService(DatasafeProperties properties) {
-        String root = System.getenv(FILESYSTEM_ENV);
-        log.info("==================== FILESYSTEM");
-        log.info("build DFS to FILESYSTEM with root " + root);
-        properties.setSystemRoot(root);
-        return new FileSystemStorageService(Paths.get(root));
-    }
-
-    @Bean
     @ConditionalOnProperty(value = CLIENT_CREDENTIALS, havingValue = "true")
     StorageService clientCredentials(AmazonS3 s3, DatasafeProperties properties) {
         ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
@@ -164,11 +161,24 @@ public class DatasafeConfig {
     }
 
     /**
+     * @return Filesystem based storage service
+     */
+    @Bean
+    @ConditionalOnProperty(FILESYSTEM_ENV)
+    StorageService singleStorageServiceFilesystem(DatasafeProperties properties) {
+        String root = System.getenv(FILESYSTEM_ENV);
+        log.info("==================== FILESYSTEM");
+        log.info("build DFS to FILESYSTEM with root " + root);
+        properties.setSystemRoot(root);
+        return new FileSystemStorageService(Paths.get(root));
+    }
+
+    /**
      * @return S3 based storage service
      */
     @Bean
-    @ConditionalOnProperty(name = "DATASAFE_SINGLE_STORAGE", havingValue = "true")
-    StorageService singleStorageService(AmazonS3 s3, DatasafeProperties properties) {
+    @ConditionalOnProperty(name = DATASAFE_S3_STORAGE, havingValue = "true")
+    StorageService singleStorageServiceS3(AmazonS3 s3, DatasafeProperties properties) {
         return new S3StorageService(
             s3,
             properties.getBucketName(),
@@ -204,6 +214,7 @@ public class DatasafeConfig {
     }
 
     @Bean
+    @org.springframework.context.annotation.Lazy
     AmazonS3 s3(DatasafeProperties properties) {
         AmazonS3 amazonS3;
 
@@ -216,7 +227,7 @@ public class DatasafeConfig {
         AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard()
                 .withCredentials(credentialsProvider);
 
-        if(useEndpoint) {
+        if (useEndpoint) {
             builder = builder.withEndpointConfiguration(
                     new AwsClientBuilder.EndpointConfiguration(
                             properties.getAmazonUrl(),
