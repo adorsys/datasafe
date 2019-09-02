@@ -7,8 +7,6 @@ import org.cryptomator.siv.SivMode;
 
 import javax.inject.Inject;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 /**
  * Default path encryption/decryption that uses encryption specified by {@link DefaultPathDigestConfig} and
  * encodes resulting bytes using Base64-urlsafe encoding.
@@ -17,7 +15,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class DefaultPathEncryptor implements PathEncryptor {
 
     //TODO add link to RFC and Library on github
-    private final SivMode sivMode;
+    private SivMode sivMode;
 
     @Inject
     public DefaultPathEncryptor(){
@@ -25,10 +23,10 @@ public class DefaultPathEncryptor implements PathEncryptor {
     }
 
     @Override
-    public byte[] encrypt(SecretKeyIDWithKey secretKeyEntry, String rawData) {
-        return sivMode.encrypt(secretKeyEntry.getCounter().getValue(),
+    public byte[] encrypt(SecretKeyIDWithKey secretKeyEntry, byte[] rawData) {
+        return sivMode.encrypt(secretKeyEntry.getCounter().getValue(), 
                                secretKeyEntry.getSecretKey().getEncoded(),
-                               rawData.getBytes(UTF_8));
+                               rawData);
     }
 
     @Override
