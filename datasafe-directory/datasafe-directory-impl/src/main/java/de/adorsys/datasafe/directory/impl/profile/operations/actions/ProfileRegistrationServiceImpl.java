@@ -10,7 +10,7 @@ import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -120,7 +120,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
 
     @SneakyThrows
     private void publishPublicKeysIfNeeded(AbsoluteLocation publishTo,
-                                           List<PublicKeyIDWithPublicKey> publicKeys) {
+                                           List<PublicKeyEntry> publicKeys) {
 
         if (null != publishTo && !checkService.objectExists(access.withSystemAccess(publishTo))) {
             try (OutputStream os = writeService.write(WithCallback.noCallback(access.withSystemAccess(publishTo)))) {

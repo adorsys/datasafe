@@ -7,7 +7,7 @@ import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -45,7 +45,7 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
      * Reads users' public key from DFS and caches the result.
      */
     @Override
-    public PublicKeyIDWithPublicKey publicKey(UserID forUser) {
+    public PublicKeyEntry publicKey(UserID forUser) {
         return keystoreCache.getPublicKeys().computeIfAbsent(
                 forUser,
                 id -> publicKeyList(forUser)
@@ -53,14 +53,14 @@ public class DFSPublicKeyServiceImpl implements PublicKeyService {
     }
 
     @SneakyThrows
-    private List<PublicKeyIDWithPublicKey> publicKeyList(UserID forUser) {
+    private List<PublicKeyEntry> publicKeyList(UserID forUser) {
         AbsoluteLocation<PublicResource> accessiblePublicKey = bucketAccessService.publicAccessFor(
                 forUser,
                 profiles.publicProfile(forUser).getPublicKeys().getResource()
         );
 
         try (JsonReader is = new JsonReader(new InputStreamReader(readService.read(accessiblePublicKey)))) {
-            return serde.fromJson(is, new TypeToken<List<PublicKeyIDWithPublicKey>>() {}.getType());
+            return serde.fromJson(is, new TypeToken<List<PublicKeyEntry>>() {}.getType());
         }
     }
 }

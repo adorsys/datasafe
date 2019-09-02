@@ -2,7 +2,7 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.Decryptor;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.DecryptorFactory;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
@@ -52,7 +52,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     @Override
     @SneakyThrows
     public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream,
-                                                    Set<PublicKeyIDWithPublicKey> publicKeys) {
+                                                    Set<PublicKeyEntry> publicKeys) {
         return streamEncrypt(
                 dataContentStream,
                 publicKeys.stream().map(
