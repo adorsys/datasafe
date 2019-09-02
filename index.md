@@ -27,6 +27,32 @@ To achieve this, Datasafe uses concept of users' _private space_ and _inbox_.
 -  File names are encrypted
 -  Thorough testing
 
+## Quick demo
+### Datasafe-CLI
+
+You can try Datasafe as a CLI (command-line-interface) executable for encryption of your own sensitive files. 
+They can be saved either in S3 bucket or local filesystem 
+(they are currently built from *feature/datasafe-cli-w-s3* branch). 
+
+**Download CLI executable**:
+
+1. [MacOS executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
+1. [Linux executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
+1. Windows executable (N/A yet), please use java version below 
+1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
+
+(Files above are built from [feature/datasafe-cli-w-s3](https://github.com/adorsys/datasafe/tree/feature/datasafe-cli-w-s3) currently)
+
+#### Example actions:
+1. Download application and create new user:
+![new_profile](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/new_profile.gif)
+
+1. Encrypt and decrypt some secret data for our user:
+![encrypt_decrypt_file](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/encrypt_decrypt_file.gif)
+
+3. You can always list available actions in context:
+![list_actions](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/list_actions.gif)
+
 ## Key definitions and functionality overview
 
 _Private space_ is the place where users' private files are kept in encrypted form - something like KeePass or
