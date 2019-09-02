@@ -13,7 +13,9 @@ import javax.crypto.SecretKey;
 @ToString
 @RequiredArgsConstructor
 public class SecretKeyIDWithKey {
+    //TODO: rename to SecretKeyEntry
 
     private final KeyID keyID;
     private final SecretKey secretKey;
+    private final Counter counter;
 }

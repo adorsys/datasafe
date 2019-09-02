@@ -1,53 +1,50 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.security.MessageDigest;
 import java.util.Arrays;
-import java.util.Base64;
 
 /**
  * Default path encryption/decryption that uses encryption specified by {@link DefaultPathDigestConfig} and
  * encodes resulting bytes using Base64-urlsafe encoding.
  */
 @RuntimeDelegate
-public class DefaultPathEncryption implements PathEncryptionConfig {
+public class SimplePathEncryptor implements PathEncryptor {
 
-    private final DefaultPathDigestConfig digestConfig;
+    private final SimplePathDigestConfig digestConfig;
 
     @Inject
-    public DefaultPathEncryption(DefaultPathDigestConfig config) {
+    public SimplePathEncryptor(SimplePathDigestConfig config) {
         this.digestConfig = config;
     }
 
     @Override
-    public Cipher encryptionCipher(SecretKey secretKey) {
-        return createCipher(secretKey, digestConfig, Cipher.ENCRYPT_MODE);
+    @SneakyThrows
+    public byte[] encrypt(SecretKeyIDWithKey secretKeyEntry, byte[] rawData) {
+        Cipher cipher = createCipher(secretKeyEntry, digestConfig, Cipher.ENCRYPT_MODE);
+        byte[] encrypted = cipher.doFinal(rawData);
+        
+        return encrypted;
     }
 
     @Override
-    public Cipher decryptionCipher(SecretKey secretKey) {
-        return createCipher(secretKey, digestConfig, Cipher.DECRYPT_MODE);
-    }
-
-    @Override
-    public String byteSerializer(byte[] bytes) {
-        return Base64.getUrlEncoder().encodeToString(bytes);
-    }
-
-    @Override
-    public byte[] byteDeserializer(String input) {
-        return Base64.getUrlDecoder().decode(input);
+    @SneakyThrows
+    public byte[] decrypt(SecretKeyIDWithKey secretKeyEntry, byte[] encryptedData) {
+        Cipher cipher = createCipher(secretKeyEntry, digestConfig, Cipher.DECRYPT_MODE);
+        byte[] decrypted = cipher.doFinal(encryptedData);
+        
+        return decrypted;
     }
 
     @SneakyThrows
-    private static Cipher createCipher(SecretKey secretKey, DefaultPathDigestConfig config, int cipherMode) {
-        byte[] key = secretKey.getEncoded();
+    private static Cipher createCipher(SecretKeyIDWithKey secretKeyEntry, DefaultPathDigestConfig config, int cipherMode) {
+        byte[] key = secretKeyEntry.getSecretKey().getEncoded();
         MessageDigest sha = MessageDigest.getInstance(config.getMessageDigest());
         key = sha.digest(key);
 
@@ -58,5 +55,7 @@ public class DefaultPathEncryption implements PathEncryptionConfig {
         Cipher cipher = Cipher.getInstance(config.getAlgorithm());
         cipher.init(cipherMode, secretKeySpec);
         return cipher;
+
     }
+
 }
