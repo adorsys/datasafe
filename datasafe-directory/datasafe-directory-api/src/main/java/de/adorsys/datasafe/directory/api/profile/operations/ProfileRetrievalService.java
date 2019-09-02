@@ -19,7 +19,7 @@ public interface ProfileRetrievalService {
     UserPublicProfile publicProfile(UserID ofUser);
 
     /**
-     * Resolves user's private meta-information like privatespace,keystore, etc. folder mapping.
+     * Resolves user's private meta-information like privatespace, keystore, etc. folder mapping.
      * @param ofUser resolve request
      * @return resolved user's profile
      */

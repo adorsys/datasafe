@@ -3,7 +3,7 @@ package de.adorsys.datasafe.encrypiton.impl.document;
 import com.google.common.collect.ImmutableList;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
@@ -38,7 +38,7 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     }
 
     @Override
-    public OutputStream write(Map<PublicKeyIDWithPublicKey, AbsoluteLocation> recipientsWithInbox) {
+    public OutputStream write(Map<PublicKeyEntry, AbsoluteLocation> recipientsWithInbox) {
 
         FanOutStream dfsSink = new FanOutStream(
                 recipientsWithInbox.values().stream()

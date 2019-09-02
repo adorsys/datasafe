@@ -58,7 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class MultiDfsWithCredentialsExampleTest {
 
-    private static final ExecutorService EXECUTOR = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4);
+    private static final ExecutorService EXECUTOR = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);
 
     private static Map<MinioContainerId, GenericContainer> minios = new EnumMap<>(MinioContainerId.class);
     private static AmazonS3 directoryClient = null;

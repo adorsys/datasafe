@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.directory.api.profile.keys;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 
 /**
  * Acts as a public keys database.
@@ -13,5 +13,5 @@ public interface PublicKeyService {
      * @param forUser User who owns public key (and has its private key pair)
      * @return Public key for document sharing.
      */
-    PublicKeyIDWithPublicKey publicKey(UserID forUser);
+    PublicKeyEntry publicKey(UserID forUser);
 }

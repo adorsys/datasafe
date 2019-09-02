@@ -5,18 +5,19 @@ import lombok.Data;
 
 /**
  * Configures document path encryption digest.
+ * By default using AES in GCM mode with SIV(synthetic input vector)
  */
 @Data
 @AllArgsConstructor
 public class DefaultPathDigestConfig {
 
-    private final String messageDigest;
-    private final String algorithm;
-    private final int shaKeyPartSize;
+    String messageDigest;
+    String algorithm;
+    int shaKeyPartSize;
 
     public DefaultPathDigestConfig() {
         this.messageDigest = "SHA-256";
-        this.algorithm = "AES";
+        this.algorithm = "AES-GCM-SIV";
         this.shaKeyPartSize = 16;
     }
 }

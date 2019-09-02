@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionConfig;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class SwitchableCmsEncryptionImpl extends CMSEncryptionServiceImpl {
     }
 
     @Override
-    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyIDWithPublicKey> publicKeys) {
+    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyEntry> publicKeys) {
         if (withCmsEncryption) {
             return super.buildEncryptionOutputStream(dataContentStream, publicKeys);
         }

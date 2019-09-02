@@ -2,7 +2,7 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.Decryptor;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.DecryptorFactory;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -39,9 +38,6 @@ import java.util.stream.Collectors;
 @RuntimeDelegate
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
-    private final Map<Integer, Decryptor> decryptors = new HashMap<>();
-
-
     private CMSEncryptionConfig encryptionConfig;
 
     @Inject
@@ -56,7 +52,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     @Override
     @SneakyThrows
     public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream,
-                                                    Set<PublicKeyIDWithPublicKey> publicKeys) {
+                                                    Set<PublicKeyEntry> publicKeys) {
         return streamEncrypt(
                 dataContentStream,
                 publicKeys.stream().map(

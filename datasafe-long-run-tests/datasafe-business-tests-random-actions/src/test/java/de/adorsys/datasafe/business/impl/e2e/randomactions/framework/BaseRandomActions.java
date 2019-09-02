@@ -48,8 +48,8 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     private static final int KILOBYTE_TO_BYTE = 1024;
     private static final long TIMEOUT = 30L;
 
-    private static String THREADS = readPropOrEnv("THREADS", "2, 4, 8");
-    private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "100, 1024, 10240"); // in KB
+    private static String THREADS = readPropOrEnv("THREADS", "8");
+    private static String FILE_SIZES = readPropOrEnv("FILE_SIZES", "10240"); // in KB
 
     private static final Set<Integer> THREAD_COUNT = ImmutableSet.copyOf(
             Stream.of(THREADS.split(",")).map(String::trim)
@@ -96,7 +96,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     @ValueSource
     protected static Stream<Arguments> actionsOnSoragesAndThreadsAndFilesizes() {
         return Sets.cartesianProduct(
-                Collections.singleton(s3()),
+                Collections.singleton(minio()),
                 THREAD_COUNT,
                 FILE_SIZE_K_BYTES
         ).stream().map(it -> Arguments.of(it.get(0), it.get(1), it.get(2)));
