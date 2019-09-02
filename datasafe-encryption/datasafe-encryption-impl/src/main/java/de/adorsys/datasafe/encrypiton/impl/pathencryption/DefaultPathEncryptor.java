@@ -3,6 +3,8 @@ package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
 import org.cryptomator.siv.SivMode;
 
 import javax.inject.Inject;
@@ -11,6 +13,7 @@ import javax.inject.Inject;
  * Default path encryption/decryption that uses encryption specified by {@link DefaultPathDigestConfig} and
  * encodes resulting bytes using Base64-urlsafe encoding.
  */
+@Slf4j
 @RuntimeDelegate
 public class DefaultPathEncryptor implements PathEncryptor {
 

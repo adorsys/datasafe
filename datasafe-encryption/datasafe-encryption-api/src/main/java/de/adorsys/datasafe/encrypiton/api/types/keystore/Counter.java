@@ -13,7 +13,7 @@ public class Counter {
     private final byte[] value = new byte[16];
 
     public Counter() {
-        Arrays.fill(value, (byte)'a');
+        //Arrays.fill(value, (byte)'a');
         //ThreadLocalRandom.current().nextBytes(value);
     }
 }
