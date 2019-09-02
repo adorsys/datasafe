@@ -43,7 +43,17 @@ They can be saved either in S3 bucket or local filesystem
 1. Windows executable (N/A yet), please use java version below 
 1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
 
-(Files above are built from [feature/datasafe-cli-w-s3](https://github.com/adorsys/datasafe/tree/feature/datasafe-cli-w-s3) currently) 
+(Files above are built from [feature/datasafe-cli-w-s3](https://github.com/adorsys/datasafe/tree/feature/datasafe-cli-w-s3) currently)
+
+#### Example actions:
+1. Download application and create new user:
+![new_profile](docs/demo/new_profile.gif)
+
+1. Encrypt and decrypt some secret data for our user:
+![encrypt_decrypt_file](docs/demo/encrypt_decrypt_file.gif)
+
+3. You can always list available actions in context:
+![list_actions](docs/demo/list_actions.gif)
 
 ### REST based demo
 [Here](datasafe-rest-impl/DEMO.md) you can find quick demo of project capabilities with instructions how to use it.
