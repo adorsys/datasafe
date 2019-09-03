@@ -60,8 +60,8 @@ They can be saved either in S3 bucket or local filesystem
 [**Transcript**](general/transcript/list_actions.md)
 
 ### REST based demo
-[Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo that of project capabilities with 
-instructions how to use it (REST-api based to show how to deploy as encryption server).
+[Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo of project capabilities with 
+instructions of how to use it (REST-api based to show how to deploy as encryption server).
 
 ## Key definitions and functionality overview
 
