@@ -46,80 +46,18 @@ They can be saved either in S3 bucket or local filesystem
 #### Example actions:
 1. Download application and create new user:
 
-<details><summary>New profile animation transcript</summary>
-
-- Download CLI application
-
-```bash
-curl -l https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64 > datasafe-cli && chmod +x datasafe-cli
-```
-- Create file with your credentials (they also can be passed through commandline)
-
-```bash
-echo '{"username": "john", "password": "Doe", "systemPassword": "password"}' > john.credentials
-```
-- Create your new user profile (credentials come from john.credentials). You can enter value or click enter to accept 
-the default value when prompted.
-
-```bash
-./datasafe-cli -c john.credentials profile create
-```
-</details>
-
 ![new_profile](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/new_profile.gif)
+[**Transcript**](general/transcript/new_profile.md)
 
 2. Encrypt and decrypt some secret data for our user:
 
-<details><summary>Encrypting/decrypting data animation transcript</summary>
-
-- Create some unencrypted content
-
-```bash
-echo "Hello world" > unencrypted.txt
-```
-- Encrypt and store file from above in privatespace. In privatespace it will have decrypted name `secret.txt`
-```bash
-./datasafe-cli -c john.credentials private cp unencrypted.txt secret.txt
-```
-- Show that filename is encrypted in privatespace:
-
-```bash
-ls private
-```
-
-- Show that file content is encrypted too:
-
-```bash
-cat private/encrypted_file_name_from_above
-```
-
-- Decrypt file content:
-
-```bash
-./datasafe-cli -c john.credentials private cat secret.txt
-```
-</details>
-
 ![encrypt_decrypt_file](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/encrypt_decrypt_file.gif)
+[**Transcript**](general/transcript/encrypt_decrypt.md)
 
 3. You can always list available actions in context:
 
-<details><summary>List actions animation transcript</summary>
-
-- Show top-level commands
-
-```bash
-./datasafe-cli -c john.credentials
-```
-
-- Show commands for privatespace
-
-```bash
-./datasafe-cli -c john.credentials private
-```
-</details>
-
 ![list_actions](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/list_actions.gif)
+[**Transcript**](general/transcript/list_actions.md)
 
 ### REST based demo
 [Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo that of project capabilities with 
