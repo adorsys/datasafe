@@ -1,4 +1,4 @@
-#Encrypting/decrypting data animation transcript
+# Encrypting/decrypting data animation transcript
 
 - Create some unencrypted content
 
