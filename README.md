@@ -50,7 +50,7 @@ They can be saved either in S3 bucket or local filesystem
 
 <details><summary>New profile animation transcript</summary>
 
-- Download CLI application
+- Download CLI application (MacOS url)
 
 ```bash
 curl -l https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64 > datasafe-cli && chmod +x datasafe-cli
