@@ -70,7 +70,7 @@ the default value when prompted.
 
 ![new_profile](docs/demo/new_profile.gif)
 
-1. Encrypt and decrypt some secret data for our user:
+2. Encrypt and decrypt some secret data for our user:
 
 <details><summary>Encrypting/decrypting data animation transcript</summary>
 
@@ -88,12 +88,11 @@ echo "Hello world" > unencrypted.txt
 ```bash
 ls private
 ```
-</details>
 
 - Show that file content is encrypted too:
 
 ```bash
-cat private/'<encrypted file name from above>'
+cat private/encrypted_file_name_from_above
 ```
 
 - Decrypt file content:
@@ -108,22 +107,6 @@ cat private/'<encrypted file name from above>'
 3. You can always list available actions in context:
 
 <details><summary>List actions animation transcript</summary>
-
-- Create some unencrypted content
-
-```bash
-echo "Hello world" > unencrypted.txt
-```
-- Encrypt and store file from above in privatespace. In privatespace it will have decrypted name `secret.txt`
-```bash
-./datasafe-cli -c john.credentials private cp unencrypted.txt secret.txt
-```
-- Show that filename is encrypted in privatespace:
-
-```bash
-ls private
-```
-</details>
 
 - Show top-level commands
 
