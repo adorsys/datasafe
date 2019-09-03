@@ -124,8 +124,8 @@ cat private/encrypted_file_name_from_above
 ![list_actions](docs/demo/list_actions.gif)
 
 ### REST based demo
-[Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo that of project capabilities with 
-instructions how to use it (REST-api based to show how to deploy as encryption server).
+[Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo of project capabilities with 
+instructions of how to use it (REST-api based to show how to deploy as encryption server).
 
 
 ## Building project
