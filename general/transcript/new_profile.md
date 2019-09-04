@@ -1,8 +1,8 @@
 # Download application and create new profile transcripts
-- Download CLI application (MacOS)
+- Download CLI application (MacOS in this example, change curl url accordingly if other OS)
 
 ```bash
-curl -l https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64 > datasafe-cli && chmod +x datasafe-cli
+curl -L https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64 > datasafe-cli && chmod +x datasafe-cli
 ```
 - Create file with your credentials (they also can be passed through commandline)
 
