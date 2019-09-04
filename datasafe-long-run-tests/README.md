@@ -51,3 +51,13 @@ MULTIBUCKET TEST
 
 All tests were made using AES256_CBC Encryption algorithm. On next chart test results using AES256_GCM comparing to AES256_CBC.
 ![](.images/CBCvsGCM.png)
+
+CEPH Test
+
+Ceph testing cluster consists of osd1, osd2, osd3 t2.xlarge ec2 instances and t2.large instances for ceph monitor and gateway.
+
+9 volumes with size 100gb and type io2 with 4000 IOPS were used as storage.
+
+Each test was run with 2, 4, 8, 16 threads with single bucket and multi bucket(3 buckets were used) from ec2 c5n.2xlarge(8core) instance. 
+
+![](.images/ceph.png)
