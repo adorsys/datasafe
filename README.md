@@ -53,7 +53,7 @@ They can be saved either in S3 bucket or local filesystem
 - Download CLI application (MacOS url)
 
 ```bash
-curl -l https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64 > datasafe-cli && chmod +x datasafe-cli
+curl -L https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64 > datasafe-cli && chmod +x datasafe-cli
 ```
 - Create file with your credentials (they also can be passed through commandline)
 
