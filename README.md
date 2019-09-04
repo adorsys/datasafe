@@ -30,6 +30,104 @@ capability too.
 -  File names are encrypted
 -  Thorough testing
 
+## Quick demo
+### Datasafe-CLI
+You can try Datasafe as a CLI (command-line-interface) executable for encryption of your own sensitive files. 
+They can be saved either in S3 bucket or local filesystem 
+(they are currently built from *feature/datasafe-cli-w-s3* branch). 
+
+**Download CLI executable**:
+
+1. [MacOS executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
+1. [Linux executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
+1. Windows executable (N/A yet), please use java version below 
+1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
+
+(Files above are built from [feature/datasafe-cli-w-s3](https://github.com/adorsys/datasafe/tree/feature/datasafe-cli-w-s3) currently)
+
+#### Example actions:
+1. Download application and create new user:
+
+<details><summary>New profile animation transcript</summary>
+
+- Download CLI application (MacOS url)
+
+```bash
+curl -l https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64 > datasafe-cli && chmod +x datasafe-cli
+```
+- Create file with your credentials (they also can be passed through commandline)
+
+```bash
+echo '{"username": "john", "password": "Doe", "systemPassword": "password"}' > john.credentials
+```
+- Create your new user profile (credentials come from john.credentials). You can enter value or click enter to accept 
+the default value when prompted.
+
+```bash
+./datasafe-cli -c john.credentials profile create
+```
+</details>
+
+![new_profile](docs/demo/new_profile.gif)
+
+2. Encrypt and decrypt some secret data for our user:
+
+<details><summary>Encrypting/decrypting data animation transcript</summary>
+
+- Create some unencrypted content
+
+```bash
+echo "Hello world" > unencrypted.txt
+```
+- Encrypt and store file from above in privatespace. In privatespace it will have decrypted name `secret.txt`
+```bash
+./datasafe-cli -c john.credentials private cp unencrypted.txt secret.txt
+```
+- Show that filename is encrypted in privatespace:
+
+```bash
+ls private
+```
+
+- Show that file content is encrypted too:
+
+```bash
+cat private/encrypted_file_name_from_above
+```
+
+- Decrypt file content:
+
+```bash
+./datasafe-cli -c john.credentials private cat secret.txt
+```
+</details>
+
+![encrypt_decrypt_file](docs/demo/encrypt_decrypt_file.gif)
+
+3. You can always list available actions in context:
+
+<details><summary>List actions animation transcript</summary>
+
+- Show top-level commands
+
+```bash
+./datasafe-cli -c john.credentials
+```
+
+- Show commands for privatespace
+
+```bash
+./datasafe-cli -c john.credentials private
+```
+</details>
+
+![list_actions](docs/demo/list_actions.gif)
+
+### REST based demo
+[Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo of project capabilities with 
+instructions of how to use it (REST-api based to show how to deploy as encryption server).
+
+
 ## Building project
 Without tests:
 ```bash
@@ -39,10 +137,6 @@ Full build:
 ```bash
 mvn clean install
 ```
-
-## Quick demo
-
-[Here](datasafe-rest-impl/DEMO.md) you can find quick demo of project capabilities with instructions how to use it.
 
 ## Adding to your project
 
