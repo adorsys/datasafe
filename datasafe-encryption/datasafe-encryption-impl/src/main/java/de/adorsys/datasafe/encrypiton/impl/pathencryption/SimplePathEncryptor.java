@@ -16,6 +16,7 @@ import java.util.Arrays;
  */
 @RuntimeDelegate
 <<<<<<< HEAD:datasafe-encryption/datasafe-encryption-impl/src/main/java/de/adorsys/datasafe/encrypiton/impl/pathencryption/SimplePathEncryptor.java
+<<<<<<< HEAD:datasafe-encryption/datasafe-encryption-impl/src/main/java/de/adorsys/datasafe/encrypiton/impl/pathencryption/SimplePathEncryptor.java
 public class SimplePathEncryptor implements PathEncryptor {
 
     private final SimplePathDigestConfig digestConfig;
@@ -24,12 +25,19 @@ public class SimplePathEncryptor implements PathEncryptor {
     public SimplePathEncryptor(SimplePathDigestConfig config) {
 =======
 public class DatevPathEncryptor implements PathEncryptor {
+=======
+public class SimplePathEncryptor implements PathEncryptor {
+>>>>>>> 03508a1b... DOC-239: code clean up:datasafe-encryption/datasafe-encryption-impl/src/main/java/de/adorsys/datasafe/encrypiton/impl/pathencryption/SimplePathEncryptor.java
 
-    private final DatevPathDigestConfig digestConfig;
+    private final SimplePathDigestConfig digestConfig;
 
     @Inject
+<<<<<<< HEAD:datasafe-encryption/datasafe-encryption-impl/src/main/java/de/adorsys/datasafe/encrypiton/impl/pathencryption/SimplePathEncryptor.java
     public DatevPathEncryptor(DatevPathDigestConfig config) {
 >>>>>>> a60c9d5a... DOC-239: Using AES in GCM mode. Initial Path encryption impl with SIV:datasafe-encryption/datasafe-encryption-impl/src/main/java/de/adorsys/datasafe/encrypiton/impl/pathencryption/DatevPathEncryptor.java
+=======
+    public SimplePathEncryptor(SimplePathDigestConfig config) {
+>>>>>>> 03508a1b... DOC-239: code clean up:datasafe-encryption/datasafe-encryption-impl/src/main/java/de/adorsys/datasafe/encrypiton/impl/pathencryption/SimplePathEncryptor.java
         this.digestConfig = config;
     }
 
