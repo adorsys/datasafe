@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.directory.impl.profile.keys;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 
 import java.security.KeyStore;
 import java.util.List;
@@ -15,7 +15,7 @@ public interface KeyStoreCache {
     /**
      * Cache for users' public keys
      */
-    Map<UserID, List<PublicKeyIDWithPublicKey>> getPublicKeys();
+    Map<UserID, List<PublicKeyEntry>> getPublicKeys();
 
     /**
      * Cache for users' private/secret keys

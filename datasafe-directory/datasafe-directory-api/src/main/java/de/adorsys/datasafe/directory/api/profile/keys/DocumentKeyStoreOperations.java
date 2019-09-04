@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.directory.api.profile.keys;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 
 import java.security.Key;
@@ -19,7 +19,7 @@ public interface DocumentKeyStoreOperations {
      * @param forUser Keystore owner
      * @return Created public keys from keystore.
      */
-    List<PublicKeyIDWithPublicKey> createAndWriteKeyStore(UserIDAuth forUser);
+    List<PublicKeyEntry> createAndWriteKeyStore(UserIDAuth forUser);
 
     /**
      * Updates ReadKeyPassword for users' keystore. Clears ALL cached keystores.

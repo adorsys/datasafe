@@ -1,14 +1,17 @@
 package de.adorsys.datasafe.directory.api.types;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.Counter;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.Value;
 
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,9 +68,13 @@ public class CreateUserPrivateProfile {
      */
     private final AbsoluteLocation<PublicResource> publishPubKeysTo;
 
-    public UserPrivateProfile removeAccess() {
+    @SneakyThrows
+    public UserPrivateProfile buildPrivateProfile() {
+        SecureRandom strongRNG = SecureRandom.getInstanceStrong();
+        byte counterValue[] = new byte[16];//16 - block size
+        strongRNG.nextBytes(counterValue);
+
         return UserPrivateProfile.builder()
-            // FIXME - remove access ?
             .keystore(keystore)
             .privateStorage(new HashMap<>(Collections.singletonMap(StorageIdentifier.DEFAULT, privateStorage)))
             .storageCredentialsKeystore(storageCredentialsKeystore)
@@ -75,6 +82,7 @@ public class CreateUserPrivateProfile {
             .documentVersionStorage(documentVersionStorage)
             .associatedResources(associatedResources)
             .publishPublicKeysTo(publishPubKeysTo)
+            .counter(new Counter(counterValue))
             .build();
     }
 }

@@ -27,6 +27,7 @@ public class ProfileStoreService {
     private final StorageWriteService writeService;
 
     @Inject
+    @SneakyThrows
     public ProfileStoreService(GsonSerde serde, UserProfileCache profileCache, DFSConfig dfsConfig,
                                BucketAccessService access, StorageWriteService writeService) {
         this.serde = serde;

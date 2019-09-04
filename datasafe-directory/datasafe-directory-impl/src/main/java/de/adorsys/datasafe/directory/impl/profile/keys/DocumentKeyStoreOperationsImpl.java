@@ -73,7 +73,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
 
     @Override
     @SneakyThrows
-    public List<PublicKeyIDWithPublicKey> createAndWriteKeyStore(UserIDAuth forUser) {
+    public List<PublicKeyEntry> createAndWriteKeyStore(UserIDAuth forUser) {
         KeyStoreAuth auth = keystoreAuth(forUser, forUser.getReadKeyPassword());
         KeyStore keystoreBlob = keyStoreService.createKeyStore(
                 auth,
@@ -114,7 +114,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
         log.debug("Keystore created for user {} in path {}", forUser, keystore);
     }
 
-    private KeyStore keyStore(UserIDAuth forUser) {
+    public KeyStore keyStore(UserIDAuth forUser) {
         return keystoreCache.getKeystore().computeIfAbsent(
                 forUser.getUserID(),
                 userId -> {

@@ -24,4 +24,5 @@ public class UserPublicProfile {
      */
     @NonNull
     private final AbsoluteLocation<PublicResource> inbox;
+
 }

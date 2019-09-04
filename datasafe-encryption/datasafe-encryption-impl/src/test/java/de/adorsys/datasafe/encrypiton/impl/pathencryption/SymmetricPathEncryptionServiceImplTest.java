@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     private SymmetricPathEncryptionServiceImpl bucketPathEncryptionService = new SymmetricPathEncryptionServiceImpl(
-            new DefaultPathEncryption(new DefaultPathDigestConfig())
+            new DefaultPathEncryptor()
     );
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
@@ -40,18 +40,21 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
     void testSuccessEncryptDecryptPath() {
         String testPath = "path/to/file";
 
-        log.info("Test path: {}", testPath);
-
         Uri testURI = new Uri(testPath);
 
         SecretKeySpec secretKey = keyStoreService.getSecretKey(
                 keyStoreAccess,
                 KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
         );
-        Uri encrypted = bucketPathEncryptionService.encrypt(secretKey, testURI);
-        Uri decrypted = bucketPathEncryptionService.decrypt(secretKey, encrypted);
 
-        log.debug("Encrypted path: {}", encrypted);
+        SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey(
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, new Counter());
+
+        Uri encrypted = bucketPathEncryptionService.encrypt(secretKeyIDWithKey, testURI);
+        log.debug("Encrypted path: {}"+ encrypted);
+
+        Uri decrypted = bucketPathEncryptionService.decrypt(secretKeyIDWithKey, encrypted);
+        log.debug("Decrypted path: {}"+ decrypted);
 
         assertEquals(testPath, decrypted.toASCIIString());
     }
@@ -65,9 +68,13 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         Uri testURI = new Uri(testPath);
 
         SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID("Invalid key"));
+
+        SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey(
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, new Counter());
+
         // secret keys is null, because during key obtain was used incorrect KeyID,
         // so bucketPathEncryptionService#encrypt throw BaseException(was handled NullPointerException)
-        assertThrows(IllegalArgumentException.class, () -> bucketPathEncryptionService.encrypt(secretKey, testURI));
+        assertThrows(IllegalArgumentException.class, () -> bucketPathEncryptionService.encrypt(secretKeyIDWithKey, testURI));
     }
 
     @Test
@@ -77,8 +84,11 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
                 KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
         );
 
+        SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey(
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, new Counter());
+
         assertThrows(BadPaddingException.class,
-                () -> bucketPathEncryptionService.decrypt(secretKey,
+                () -> bucketPathEncryptionService.decrypt(secretKeyIDWithKey,
                         new Uri(URI.create("bRQiW8qLNPEy5tO7shfV0w==/k0HooCVlmhHkQFw8mc=="))));
     }
 
@@ -89,8 +99,11 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
                 KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
         );
 
+        SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey(
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, new Counter());
+
         assertThrows(IllegalBlockSizeException.class,
-                () -> bucketPathEncryptionService.decrypt(secretKey,
+                () -> bucketPathEncryptionService.decrypt(secretKeyIDWithKey,
                         new Uri("/simple/text/path/")));
     }
 }

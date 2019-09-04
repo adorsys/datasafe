@@ -5,6 +5,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.Value;
 
 /**
@@ -32,9 +33,9 @@ public class CreateUserPublicProfile {
     @NonNull
     private final AbsoluteLocation<PublicResource> inbox;
 
-    public UserPublicProfile removeAccess() {
+    @SneakyThrows
+    public UserPublicProfile buildPublicProfile() {
         return UserPublicProfile.builder()
-            // FIXME - remove access ?
             .inbox(inbox)
             .publicKeys(publicKeys)
             .build();

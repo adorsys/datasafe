@@ -10,7 +10,7 @@ import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -61,7 +61,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @SneakyThrows
     public void registerPublic(CreateUserPublicProfile profile) {
         log.debug("Register public {}", profile);
-        storeProfile.registerPublic(profile.getId(), profile.removeAccess());
+        storeProfile.registerPublic(profile.getId(), profile.buildPublicProfile());
     }
 
     /**
@@ -74,7 +74,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @SneakyThrows
     public void registerPrivate(CreateUserPrivateProfile profile) {
         log.debug("Register private {}", profile);
-        storeProfile.registerPrivate(profile.getId().getUserID(), profile.removeAccess());
+        storeProfile.registerPrivate(profile.getId().getUserID(), profile.buildPrivateProfile());
     }
 
     @Override
@@ -115,12 +115,12 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
         registerPublic(dfsConfig.defaultPublicTemplate(user.getUserID()));
         CreateUserPrivateProfile privateProfile = dfsConfig.defaultPrivateTemplate(user);
         registerPrivate(privateProfile);
-        createAllAllowableKeystores(user, privateProfile.removeAccess());
+        createAllAllowableKeystores(user, privateProfile.buildPrivateProfile());
     }
 
     @SneakyThrows
     private void publishPublicKeysIfNeeded(AbsoluteLocation publishTo,
-                                           List<PublicKeyIDWithPublicKey> publicKeys) {
+                                           List<PublicKeyEntry> publicKeys) {
 
         if (null != publishTo && !checkService.objectExists(access.withSystemAccess(publishTo))) {
             try (OutputStream os = writeService.write(WithCallback.noCallback(access.withSystemAccess(publishTo)))) {
