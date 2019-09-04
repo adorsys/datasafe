@@ -6,9 +6,9 @@ import lombok.Data;
  * Configures document path encryption digest.
  */
 @Data
-public class DatevPathDigestConfig extends DefaultPathDigestConfig {
+public class SimplePathDigestConfig extends DefaultPathDigestConfig {
 
-    public DatevPathDigestConfig() {
+    public SimplePathDigestConfig() {
         this.algorithm = "AES";
     }
 }

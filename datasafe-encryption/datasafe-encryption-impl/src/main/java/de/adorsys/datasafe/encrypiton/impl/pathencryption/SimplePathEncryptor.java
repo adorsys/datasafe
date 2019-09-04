@@ -15,12 +15,12 @@ import java.util.Arrays;
  * encodes resulting bytes using Base64-urlsafe encoding.
  */
 @RuntimeDelegate
-public class DatevPathEncryptor implements PathEncryptor {
+public class SimplePathEncryptor implements PathEncryptor {
 
-    private final DatevPathDigestConfig digestConfig;
+    private final SimplePathDigestConfig digestConfig;
 
     @Inject
-    public DatevPathEncryptor(DatevPathDigestConfig config) {
+    public SimplePathEncryptor(SimplePathDigestConfig config) {
         this.digestConfig = config;
     }
 
