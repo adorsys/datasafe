@@ -44,17 +44,18 @@ They can be saved either in S3 bucket or local filesystem
 (Files above are built from [feature/datasafe-cli-w-s3](https://github.com/adorsys/datasafe/tree/feature/datasafe-cli-w-s3) currently)
 
 #### Example actions:
-1. Download application and create new user:
+
+##### Download application and create new user:
 
 ![new_profile](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/new_profile.gif)
 [**Transcript**](general/transcript/new_profile.md)
 
-2. Encrypt and decrypt some secret data for our user:
+##### Encrypt and decrypt some secret data for our user:
 
 ![encrypt_decrypt_file](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/encrypt_decrypt_file.gif)
 [**Transcript**](general/transcript/encrypt_decrypt.md)
 
-3. You can always list available actions in context:
+##### You can always list available actions in context:
 
 ![list_actions](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/list_actions.gif)
 [**Transcript**](general/transcript/list_actions.md)
