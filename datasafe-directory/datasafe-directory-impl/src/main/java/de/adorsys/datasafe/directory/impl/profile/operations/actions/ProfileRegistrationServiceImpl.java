@@ -61,7 +61,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @SneakyThrows
     public void registerPublic(CreateUserPublicProfile profile) {
         log.debug("Register public {}", profile);
-        storeProfile.registerPublic(profile.getId(), profile.removeAccess());
+        storeProfile.registerPublic(profile.getId(), profile.buildPublicProfile());
     }
 
     /**
@@ -74,7 +74,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @SneakyThrows
     public void registerPrivate(CreateUserPrivateProfile profile) {
         log.debug("Register private {}", profile);
-        storeProfile.registerPrivate(profile.getId().getUserID(), profile.removeAccess());
+        storeProfile.registerPrivate(profile.getId().getUserID(), profile.buildPrivateProfile());
     }
 
     @Override
@@ -115,7 +115,7 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
         registerPublic(dfsConfig.defaultPublicTemplate(user.getUserID()));
         CreateUserPrivateProfile privateProfile = dfsConfig.defaultPrivateTemplate(user);
         registerPrivate(privateProfile);
-        createAllAllowableKeystores(user, privateProfile.removeAccess());
+        createAllAllowableKeystores(user, privateProfile.buildPrivateProfile());
     }
 
     @SneakyThrows

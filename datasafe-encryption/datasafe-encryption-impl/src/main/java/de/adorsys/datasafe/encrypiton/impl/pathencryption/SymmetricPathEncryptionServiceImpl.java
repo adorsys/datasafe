@@ -1,23 +1,21 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.net.URI;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
+import javax.inject.Inject;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Path encryption service that maintains URI segments integrity.
@@ -122,7 +120,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
                 URI.create(
                         Arrays.stream(path.split(PATH_SEPARATOR, -1))
                               .map(uriPart -> process.apply(new ImmutablePair<>(secretKeyEntry, uriPart.getBytes(UTF_8))))
-                              .map(data -> new String(data))
+                              .map(String::new) // byte[] -> string
                               .collect(Collectors.joining(PATH_SEPARATOR)))
         );
     }

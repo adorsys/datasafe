@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.api.types;
 
+import de.adorsys.datasafe.encrypiton.api.types.keystore.Counter;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
@@ -61,4 +62,6 @@ public class UserPrivateProfile {
      * Optional field used for getting storage credentials using default flow.
      */
     private final AbsoluteLocation<PrivateResource> storageCredentialsKeystore;
+    
+    private final Counter counter;
 }

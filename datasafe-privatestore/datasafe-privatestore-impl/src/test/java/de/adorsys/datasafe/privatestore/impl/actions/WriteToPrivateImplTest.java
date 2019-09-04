@@ -4,6 +4,7 @@ import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.Counter;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
@@ -60,7 +61,7 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
 
     @BeforeEach
     void init() {
-        this.secretKeyIDWithKey = new SecretKeyIDWithKey(new KeyID(""), secretKey);
+        this.secretKeyIDWithKey = new SecretKeyIDWithKey(new KeyID(""), secretKey, new Counter());
     }
 
     @Test

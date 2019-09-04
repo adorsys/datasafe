@@ -186,14 +186,19 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     @ValueSource
     protected static Stream<StorageDescriptor> allStorages() {
         return Stream.of(
-                fs(),
-                minio(),
-                cephVersioned(),
-                s3()
+                fs()//,
+               // minio(),
+               // cephVersioned(),
+               // s3()
         ).filter(Objects::nonNull);
     }
 
     protected static StorageDescriptor fs() {
+        System.out.println("*************************");
+        System.out.println("*************************");
+        System.out.println(tempDir.toString());
+        System.out.println("*************************");
+        System.out.println("*************************");
         return new StorageDescriptor(
                 StorageDescriptorName.FILESYSTEM,
                 () -> new FileSystemStorageService(new Uri(tempDir.toUri())),

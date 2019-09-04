@@ -25,7 +25,7 @@ public abstract class DefaultPathEncryptionModule {
      * Default path encryption that uses Base64-urlsafe path serialization
      */
     @Binds
-    abstract PathEncryptor config(DefaultPathEncryptionCipherCipherRuntimeDelegatable config);
+    abstract PathEncryptor config(DefaultPathEncryptorRuntimeDelegatable config);
 
     /**
      * By default simply use

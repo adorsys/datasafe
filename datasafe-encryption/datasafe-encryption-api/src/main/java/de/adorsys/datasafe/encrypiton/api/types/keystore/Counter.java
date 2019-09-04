@@ -1,19 +1,16 @@
 package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
-
-//@AllArgsConstructor
-
-//TODO uncomment above
 @Getter
+@AllArgsConstructor
 public class Counter {
-    private final byte[] value = new byte[16];
+
+    private byte[] value; //size should be 16 bytes
 
     public Counter() {
-        //Arrays.fill(value, (byte)'a');
-        //ThreadLocalRandom.current().nextBytes(value);
+        value = new byte[16];
     }
+
 }

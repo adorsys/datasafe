@@ -7,6 +7,7 @@ import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.Counter;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
@@ -69,8 +70,15 @@ class ProfileStoreServiceTest extends BaseMockitoTest {
     @Mock
     private OutputStream os;
 
+    @Mock
+    private Counter counter;
+
     @BeforeEach
     void init() {
+        when(profilePriv.getCounter()).thenReturn(counter);
+        when(profilePub.getCounter()).thenReturn(counter);
+        when(counter.getValue()).thenReturn(new byte[16]);
+        when(counter.getValue()).thenReturn(new byte[16]);
         when(serde.toJson(profilePriv)).thenReturn(PROFILE_STR);
         when(serde.toJson(profilePub)).thenReturn(PROFILE_STR);
         when(writeService.write(any())).thenReturn(os);
