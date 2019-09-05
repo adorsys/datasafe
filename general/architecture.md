@@ -52,6 +52,6 @@ and only recipient can read it using his private key. Paths are kept unencrypted
 
 ### Reading files from inbox
 
-[Read inbox](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox_read_modules.puml&fmt=svg&vvv=1&sanitize=true)
+![Read inbox](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox_read_modules.puml&fmt=svg&vvv=1&sanitize=true)
 
 [More details](https://github.com/adorsys/datasafe/tree/master/datasafe-inbox)
