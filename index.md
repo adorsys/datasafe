@@ -179,11 +179,6 @@ You can read JavaDoc [here](javadoc/latest/index.html)
 Command to generate JavaDoc from sources:
 ```mvn clean javadoc:aggregate -P javadoc ```
 
-# Usage examples
-
-# Modular design overview
-* [Modular design](general/modular.md)
-
 # Contributing
 * [CodingRules](https://github.com/adorsys/datasafe/blob/develop/docs/codingrules/CodingRules.md)
 * [Branching and commiting](https://github.com/adorsys/datasafe/blob/develop/docs/branching/branch-and-commit.md)

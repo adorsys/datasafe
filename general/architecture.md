@@ -29,11 +29,15 @@ encrypted(a)/encrypted(b)/encrypted(c), so that folder traversal operations are 
 
 ![How privatespace diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private.puml&fmt=svg&vvv=1&sanitize=true)
 
-| Reading files from private space | Writing files to private space  |
-|---|---|
-| ![Read modules](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private_read_modules.puml&fmt=svg&vvv=1&sanitize=true)  |![Write modules](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private_write_modules.puml&fmt=svg&vvv=1&sanitize=true)   |
+### Writing files to privatespace
 
-[Details](https://github.com/adorsys/datasafe/tree/master/datasafe-privatestore)
+![Write private](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private_write_modules.puml&fmt=svg&vvv=1&sanitize=true)
+
+### Reading files from privatespace
+
+![Read private](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_private_read_modules.puml&fmt=svg&vvv=1&sanitize=true)
+
+[More details](https://github.com/adorsys/datasafe/tree/master/datasafe-privatestore)
 
 ## Sharing files with another user
 
@@ -42,8 +46,12 @@ and only recipient can read it using his private key. Paths are kept unencrypted
 
 ![How inbox diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox.puml&fmt=svg&vvv=1&sanitize=true)
 
-| Reading files from inbox | Writing files to inbox  |
-|---|---|
-| ![Read modules](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox_read_modules.puml&fmt=svg&vvv=1&sanitize=true)  |![Write modules](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox_write_modules.puml&fmt=svg&vvv=1&sanitize=true)   |
+### Writing files to inbox
 
-[Details](https://github.com/adorsys/datasafe/tree/master/datasafe-inbox)
+![Write inbox](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox_write_modules.puml&fmt=svg&vvv=1&sanitize=true)
+
+### Reading files from inbox
+
+[Read inbox](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox_read_modules.puml&fmt=svg&vvv=1&sanitize=true)
+
+[More details](https://github.com/adorsys/datasafe/tree/master/datasafe-inbox)
