@@ -3,7 +3,6 @@ package de.adorsys.datasafe.directory.impl.profile.keys;
 import de.adorsys.datasafe.directory.api.profile.keys.DocumentKeyStoreOperations;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.Counter;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -48,11 +47,10 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         String secretPathKeyId = keys.keySet().stream().filter(it -> it.startsWith(PATH_KEY_ID_PREFIX)).findFirst().get();
         String secretPathCrtKeyId = keys.keySet().stream().filter(it -> it.startsWith(PATH_KEY_ID_PREFIX_CRT)).findFirst().get();
 
-        return  new SecretKeyIDWithKey(
+        return new SecretKeyIDWithKey(
                     new KeyID(secretPathKeyId),
                     (SecretKey) keyStoreOper.getKey(forUser, secretPathKeyId),
-                    (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId),
-                null);
+                    (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId));
     }
 
     /**
@@ -88,8 +86,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         return new SecretKeyIDWithKey(
                 key,
                 (SecretKey) keyStoreOper.getKey(forUser, key.getValue()),
-                null,
-                new Counter()
+                null//TODO
         );
     }
 }

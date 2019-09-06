@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.directory.api.types;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.Counter;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
@@ -70,10 +69,6 @@ public class CreateUserPrivateProfile {
 
     @SneakyThrows
     public UserPrivateProfile buildPrivateProfile() {
-        SecureRandom strongRNG = SecureRandom.getInstanceStrong();
-        byte counterValue[] = new byte[16];//16 - block size
-        strongRNG.nextBytes(counterValue);
-
         return UserPrivateProfile.builder()
             .keystore(keystore)
             .privateStorage(new HashMap<>(Collections.singletonMap(StorageIdentifier.DEFAULT, privateStorage)))
@@ -82,7 +77,6 @@ public class CreateUserPrivateProfile {
             .documentVersionStorage(documentVersionStorage)
             .associatedResources(associatedResources)
             .publishPublicKeysTo(publishPubKeysTo)
-            .counter(new Counter(counterValue))
             .build();
     }
 }
