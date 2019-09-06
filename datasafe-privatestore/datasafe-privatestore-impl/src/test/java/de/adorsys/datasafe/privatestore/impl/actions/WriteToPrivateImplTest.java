@@ -45,6 +45,9 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
     private SecretKey secretKey;
 
     @Mock
+    private SecretKey secretCrtKey;
+
+    @Mock
     private PrivateKeyService privateKeyService;
 
     @Mock
@@ -61,7 +64,7 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
 
     @BeforeEach
     void init() {
-        this.secretKeyIDWithKey = new SecretKeyIDWithKey(new KeyID(""), secretKey, new Counter());
+        this.secretKeyIDWithKey = new SecretKeyIDWithKey(new KeyID(""), secretKey, secretCrtKey, new Counter());
     }
 
     @Test

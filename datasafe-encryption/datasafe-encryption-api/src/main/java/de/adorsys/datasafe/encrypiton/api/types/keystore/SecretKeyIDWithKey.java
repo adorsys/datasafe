@@ -17,5 +17,6 @@ public class SecretKeyIDWithKey {
 
     private final KeyID keyID;
     private final SecretKey secretKey;
-    private final Counter counter;
+    private final SecretKey counterSecretKey;
+    private final Counter counter;//TODO  <- remove it
 }

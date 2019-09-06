@@ -12,12 +12,12 @@ import lombok.SneakyThrows;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import java.security.Key;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.*;
 
 /**
  * Retrieves and opens private keystore associated with user location DFS storage.
@@ -38,7 +38,21 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      */
     @Override
     public SecretKeyIDWithKey pathEncryptionSecretKey(UserIDAuth forUser) {
-        return keyByPrefix(forUser, PATH_KEY_ID_PREFIX);
+        List<KeyID> keyIds = keyStoreOper.readAliases(forUser).stream()
+                .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CRT))
+                .map(KeyID::new)
+                .collect(Collectors.toList());
+
+        Map<String, Key> keys = keysByIds(forUser, keyIds.stream().map(it -> it.getValue()).collect(Collectors.toSet()));
+
+        String secretPathKeyId = keys.keySet().stream().filter(it -> it.startsWith(PATH_KEY_ID_PREFIX)).findFirst().get();
+        String secretPathCrtKeyId = keys.keySet().stream().filter(it -> it.startsWith(PATH_KEY_ID_PREFIX_CRT)).findFirst().get();
+
+        return  new SecretKeyIDWithKey(
+                    new KeyID(secretPathKeyId),
+                    (SecretKey) keyStoreOper.getKey(forUser, secretPathKeyId),
+                    (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId),
+                null);
     }
 
     /**
@@ -74,6 +88,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         return new SecretKeyIDWithKey(
                 key,
                 (SecretKey) keyStoreOper.getKey(forUser, key.getValue()),
+                null,
                 new Counter()
         );
     }

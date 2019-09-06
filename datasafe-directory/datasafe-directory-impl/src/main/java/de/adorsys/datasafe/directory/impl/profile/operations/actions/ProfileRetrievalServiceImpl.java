@@ -52,6 +52,7 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
                 ofUser,
                 id -> readProfile(dfsConfig.publicProfile(ofUser), UserPublicProfile.class)
         );
+
         log.debug("get public profile {} for user {}", userPublicProfile, ofUser);
         return userPublicProfile;
     }

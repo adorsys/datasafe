@@ -47,8 +47,13 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
                 KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
         );
 
+        SecretKeySpec secretKeyCrt = keyStoreService.getSecretKey(
+                keyStoreAccess,
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
+        );
+
         SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, new Counter());
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKeyCrt, new Counter());
 
         Uri encrypted = bucketPathEncryptionService.encrypt(secretKeyIDWithKey, testURI);
         log.debug("Encrypted path: {}"+ encrypted);
@@ -70,7 +75,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID("Invalid key"));
 
         SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, new Counter());
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKey, new Counter());
 
         // secret keys is null, because during key obtain was used incorrect KeyID,
         // so bucketPathEncryptionService#encrypt throw BaseException(was handled NullPointerException)
@@ -85,7 +90,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         );
 
         SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, new Counter());
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKey, new Counter());
 
         assertThrows(BadPaddingException.class,
                 () -> bucketPathEncryptionService.decrypt(secretKeyIDWithKey,
@@ -100,7 +105,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         );
 
         SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, new Counter());
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKey, new Counter());
 
         assertThrows(IllegalBlockSizeException.class,
                 () -> bucketPathEncryptionService.decrypt(secretKeyIDWithKey,

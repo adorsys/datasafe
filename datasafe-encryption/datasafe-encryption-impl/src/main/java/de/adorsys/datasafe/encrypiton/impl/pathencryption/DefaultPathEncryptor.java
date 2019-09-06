@@ -23,16 +23,16 @@ public class DefaultPathEncryptor implements PathEncryptor {
     }
 
     @Override
-    public byte[] encrypt(SecretKeyIDWithKey secretKeyEntry, byte[] rawData) {
-        return sivMode.encrypt(secretKeyEntry.getCounter().getValue(),
-                               secretKeyEntry.getSecretKey().getEncoded(),
+    public byte[] encrypt(SecretKeyIDWithKey secretKey, byte[] rawData) {
+        return sivMode.encrypt(secretKey.getCounterSecretKey().getEncoded(),
+                               secretKey.getSecretKey().getEncoded(),
                                rawData);
     }
 
     @Override
     @SneakyThrows
     public byte[] decrypt(SecretKeyIDWithKey secretKey, byte[] encryptedData) {
-        return sivMode.decrypt(secretKey.getCounter().getValue(),
+        return sivMode.decrypt(secretKey.getCounterSecretKey().getEncoded(),
                                secretKey.getSecretKey().getEncoded(),
                                encryptedData);
     }
