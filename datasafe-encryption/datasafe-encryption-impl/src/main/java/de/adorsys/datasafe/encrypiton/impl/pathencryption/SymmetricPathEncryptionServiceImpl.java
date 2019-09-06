@@ -6,6 +6,7 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import javax.inject.Inject;
@@ -118,7 +119,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         // Resulting value of `path` is URL-safe
         return new Uri(
                 URI.create(
-                        Arrays.stream(path.split(PATH_SEPARATOR, -1))
+                        Arrays.stream(StringUtils.split(path, PATH_SEPARATOR))
                                 .map(uriPart -> process.apply(new ImmutablePair<>(secretKeyEntry, uriPart.getBytes(UTF_8))))
                                 .map(String::new) // byte[] -> string
                                 .collect(Collectors.joining(PATH_SEPARATOR)))
