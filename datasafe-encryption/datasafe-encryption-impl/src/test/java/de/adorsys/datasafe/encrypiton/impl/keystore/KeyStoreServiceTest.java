@@ -43,8 +43,8 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         Assertions.assertNotNull(keyStore);
 
         List<String> list = Collections.list(keyStore.aliases());
-        // One additional secret key being generated for path encryption and one for private doc encryption.
-        Assertions.assertEquals(3, list.size());
+        // Two additional secret key(key and counter key) being generated for path encryption and one for private doc encryption.
+        Assertions.assertEquals(4, list.size());
 
         Assertions.assertEquals("UBER", keyStore.getType());
         Assertions.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
@@ -56,7 +56,7 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
         // One additional secret key being generated for path encryption and one for private doc encryption.
-        Assertions.assertEquals(12, list.size());
+        Assertions.assertEquals(13, list.size());
     }
 
     @Test
