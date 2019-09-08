@@ -57,8 +57,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
                 new ReadStorePassword(STORE_PAZZWORD)
         );
 
-        assertThat(aliases(keyStore)).filteredOn(it -> it.matches(PATH_KEY_ID_PREFIX + ".+")).hasSize(1);
-        assertThat(aliases(keyStore)).filteredOn(it -> it.matches(DOCUMENT_KEY_ID_PREFIX + ".+")).hasSize(1);
+        assertThat(aliases(keyStore)).filteredOn(it -> it.matches(PATH_KEY_ID_PREFIX + ".+")).hasSize(2);
     }
 
     @SneakyThrows
