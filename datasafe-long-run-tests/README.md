@@ -1,8 +1,8 @@
 # Datasafe long run test results
 
-###1.  Testing process description.
+### 1. Testing procedure description.
 
-Tests have been run on 6 different aws ec2 instances:
+Tests were done on 6 different aws ec2 instances:
 
 -   m5.large (2 CPU, 8GB RAM);
 -   m5.xlarge (4 CPU, 16GB RAM);
@@ -11,11 +11,14 @@ Tests have been run on 6 different aws ec2 instances:
 -   c5n.xlarge (4 CPU, 10.5GB RAM);
 -   c5n.2xlarge (8 CPU, 21GB RAM).
 
-GP on charts stands for General Purpose (m5) instances
-CO - Compute Optimized (c5n).
+On chart, **GP** stands for General Purpose (m5) instances and  **CO** - for Compute Optimized (c5n).
 
-On each instance test has been run 3 days, 3 times per day with 2, 4 and 8 threads and 100kb, 1mb, 10mb file size.
-JVM was launched with -Xmx256m
+For statistics and repetition, test was executed in following manner:
+1. Test suite consisted of same operation sequence that was executed by 2, 4 and 8 threads 
+and had 100kb, 1mb, 10mb file size as payload.
+1. Test suite was executed 3 times per day on fixed time (Day suite)
+1. Day suite was repeated for 3 days, so each test was done 3 times per day for 3 days
+1. JVM was launched with `-Xmx256m`
 
 For testing multi-bucket performance 6 aws s3 buckets were created.
 Multi-bucket performance was tested only on c5n.2xlarge instance with using 2, 4, 6 buckets.
@@ -70,7 +73,7 @@ Threads	100kb	1mb	10mb
 2	118.67294777989376	42.735968236780366	6.102306403813942  
 ```
 
-###2.  Test result charts.
+### 2.  Test result charts.
 
 1.  WRITE operation
 
@@ -105,9 +108,9 @@ MULTIBUCKET TEST
 All tests were made using AES256_CBC Encryption algorithm. On next chart test results using AES256_GCM comparing to AES256_CBC.
 ![](.images/CBCvsGCM.png)
 
-CEPH Test
+### 3. CEPH S3 storage test
 
-Ceph testing cluster consists of osd1, osd2, osd3 t2.xlarge ec2 instances and t2.large instances for ceph monitor and gateway.
+For Ceph testing, cluster consists of osd1, osd2, osd3 t2.xlarge ec2 instances and t2.large instances for ceph monitor and gateway.
 
 9 volumes with size 100gb and type io2 with 4000 IOPS were used as storage.
 

@@ -4,11 +4,14 @@
 
 
 # General information
-Datasafe is a cross-platform library that allows sharing and storing data and documents securely.
-This is achieved using **CMS-envelopes** for symmetric and asymmetric encryption. Symmetric encryption is used for private files.
-Asymmetric encryption is used for file sharing.
+Datasafe is a cross-platform library that allows sharing and storing data and documents securely. It encrypts
+your data using **AES-GCM** algorithm and uses **CMS-envelopes** as encrypted content wrapper. CMS-envelope
+wraps and encrypts document encryption key using key encryption key that provides additional level of security.
+For user private files, Datasafe uses CMS-envelope with symmetric encryption of data encryption key. For files
+that are shared with other users (sent to their INBOX folder), Datasafe uses asymmetric encryption for 
+data encryption key, so only recipient (or multiple recipients) can read it.
 
-The library is built with the idea to be as configurable as possible - it uses Dagger2 for dependency injection and modular
+Datasafe is built with the idea to be as configurable as possible - it uses Dagger2 for dependency injection and modular
 architecture to combine everything into the business layer, so the user can override any aspect he wants - i.e. to change
 encryption algorithm or to turn path encryption off. Each module is as independent as it is possible - to be used separately.
 
@@ -24,22 +27,32 @@ capability too.
 -  Proprietary software **friendly license**
 -  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
 -  AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
+-  Secure file sharing with other users 
 -  **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
 -  **Client side encryption** - you own your data
 -  Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
 -  File names are encrypted
 -  Thorough testing
 
+## Performance
+
+Datasafe was tested for performance in Amazon cloud. 
+In short, on m5.xlarge amazon instance with Datasafe library can have write throughput of 50 Mb/s and 80 Mb/s of 
+read throughput, when using **Amazon S3 bucket** as backing storage (performance is CPU-bound and network-bound).
+
+Detailed performance report is here: 
+[Datasafe performance results](datasafe-long-run-tests/README.md)
+
 ## Quick demo
 ### Datasafe-CLI
 You can try Datasafe as a CLI (command-line-interface) executable for encryption of your own sensitive files. 
-They can be saved either in S3 bucket or local filesystem 
-(they are currently built from *feature/datasafe-cli-w-s3* branch). 
+Your encrypted files can be saved either in S3 bucket or local filesystem safely, because encryption will happen
+locally - on your machine.
 
 **Download CLI executable**:
 
-1. [MacOS executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
-1. [Linux executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
+1. [MacOS native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
+1. [Linux native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
 1. Windows executable (N/A yet), please use java version below 
 1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
 
