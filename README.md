@@ -37,7 +37,7 @@ capability too.
 ## Performance
 
 Datasafe was tested for performance in Amazon cloud. 
-In short, on m5.xlarge amazon instance with Datasafe library can have write throughput of 50 Mb/s and 80 Mb/s of 
+In short, on m5.xlarge amazon instance with Datasafe library can have write throughput of 50 MiB/s and 80 MiB/s of 
 read throughput, when using **Amazon S3 bucket** as backing storage (performance is CPU-bound and network-bound).
 
 Detailed performance report is here: 
@@ -82,6 +82,14 @@ the default value when prompted.
 </details>
 
 ![new_profile](docs/demo/new_profile.gif)
+
+**Note**: Instead of creating user profile you can provide credentials directly into terminal (this is less
+secure than having credentials file, but is fine for demo purposes):
+```bash
+./datasafe-cli -u=MeHappyUser -p=MyCoolPassword -sp=greatSystemPassword private cat secret.txt
+```
+Command above will show private file `secret.txt` content for user `MeHappyUser` who has password `MyCoolPassword` and 
+system password `greatSystemPassword`
 
 2. Encrypt and decrypt some secret data for our user:
 
