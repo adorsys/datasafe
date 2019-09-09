@@ -51,8 +51,8 @@ locally - on your machine.
 
 **Download CLI executable**:
 
-1. [MacOS executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
-1. [Linux executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
+1. [MacOS native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
+1. [Linux native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
 1. Windows executable (N/A yet), please use java version below 
 1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
 
