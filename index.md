@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/adorsys/datasafe.svg?branch=develop)](https://travis-ci.com/adorsys/datasafe)
-[![codecov](https://codecov.io/gh/adorsys/datasafe/branch/develop/graph/badge.svg)](https://codecov.io/gh/adorsys/datasafe)
+[![Build Status](https://travis-ci.com/adorsys/datasafe.svg?branch=master)](https://travis-ci.com/adorsys/datasafe)
+[![codecov](https://codecov.io/gh/adorsys/datasafe/branch/master/graph/badge.svg)](https://codecov.io/gh/adorsys/datasafe)
 [![Maintainability](https://api.codeclimate.com/v1/badges/06ae7d4cafc3012cee85/maintainability)](https://codeclimate.com/github/adorsys/datasafe/maintainability)
 
 # Why using Datasafe
@@ -14,13 +14,29 @@ of the worldwide annual turnover and can have severe consequences for a company,
 the entire organization.
 
 # Solving security issues with Datasafe
-Datasafe is a cross-platform library that allows sharing and storing data and documents securely. 
-To achieve this, Datasafe uses concept of users' _private space_ and _inbox_. 
+Datasafe is a cross-platform library that allows sharing and storing data and documents securely. It encrypts
+your data using **AES-GCM** algorithm and uses **CMS-envelopes** as encrypted content wrapper. CMS-envelope
+wraps and encrypts document encryption key using key encryption key that provides additional level of security.
+For user private files, Datasafe uses CMS-envelope with symmetric encryption of data encryption key. For files
+that are shared with other users (sent to their INBOX folder), Datasafe uses asymmetric encryption for 
+data encryption key, so only recipient (or multiple recipients) can read it.
+
+Datasafe is built with the idea to be as configurable as possible - it uses Dagger2 for dependency injection and modular
+architecture to combine everything into the business layer, so the user can override any aspect he wants - i.e. to change
+encryption algorithm or to turn path encryption off. Each module is as independent as it is possible - to be used separately.
+
+- Each user has private space that can reside on Amazon S3, minio, filesystem or anything else with proper adapter.
+In his private space, each document and its path is encrypted.
+- For document sharing user has inbox space, that can be accessed from outside. Another user can write the document he
+wants to share into users' inbox space using the recipients' public key so that only inbox owner can read it.
+- For storage systems that do not support file versioning natively (i.e. minio) this library provides versioning
+capability too.
 
 ## Features
 -  Proprietary software **friendly license**
 -  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
 -  AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
+-  Secure file sharing with other users 
 -  **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
 -  **Client side encryption** - you own your data
 -  Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
@@ -36,8 +52,8 @@ They can be saved either in S3 bucket or local filesystem
 
 **Download CLI executable**:
 
-1. [MacOS executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
-1. [Linux executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
+1. [MacOS native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
+1. [Linux native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
 1. Windows executable (N/A yet), please use java version below 
 1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
 
@@ -49,6 +65,14 @@ They can be saved either in S3 bucket or local filesystem
 
 ![new_profile](https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/demo/new_profile.gif)
 [**Transcript**](general/transcript/new_profile.md)
+
+**Note**: Instead of creating file with credentials you can provide credentials directly into terminal (this is less
+secure than having credentials file, but is fine for demo purposes):
+```bash
+./datasafe-cli -u=MeHappyUser -p=MyCoolPassword -sp=greatSystemPassword private cat secret.txt
+```
+Command above will show private file `secret.txt` content for user `MeHappyUser` who has password `MyCoolPassword` and 
+system password `greatSystemPassword`
 
 ##### Encrypt and decrypt some secret data for our user:
 
