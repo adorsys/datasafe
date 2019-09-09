@@ -83,7 +83,7 @@ the default value when prompted.
 
 ![new_profile](docs/demo/new_profile.gif)
 
-**Note**: Instead of creating user profile you can provide credentials directly into terminal (this is less
+**Note**: Instead of creating file with credentials you can provide credentials directly into terminal (this is less
 secure than having credentials file, but is fine for demo purposes):
 ```bash
 ./datasafe-cli -u=MeHappyUser -p=MyCoolPassword -sp=greatSystemPassword private cat secret.txt
