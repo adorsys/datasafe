@@ -59,7 +59,7 @@ locally - on your machine.
 (Files above are built from [feature/datasafe-cli-w-s3](https://github.com/adorsys/datasafe/tree/feature/datasafe-cli-w-s3) currently)
 
 #### Example actions:
-1. Download application and create new user:
+##### Download application and create new user:
 
 <details><summary>New profile animation transcript</summary>
 
@@ -91,7 +91,7 @@ secure than having credentials file, but is fine for demo purposes):
 Command above will show private file `secret.txt` content for user `MeHappyUser` who has password `MyCoolPassword` and 
 system password `greatSystemPassword`
 
-2. Encrypt and decrypt some secret data for our user:
+##### Encrypt and decrypt some secret data for our user:
 
 <details><summary>Encrypting/decrypting data animation transcript</summary>
 
@@ -125,7 +125,7 @@ cat private/encrypted_file_name_from_above
 
 ![encrypt_decrypt_file](docs/demo/encrypt_decrypt_file.gif)
 
-3. You can always list available actions in context:
+##### You can always list available actions in context:
 
 <details><summary>List actions animation transcript</summary>
 
