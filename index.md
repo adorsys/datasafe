@@ -21,17 +21,6 @@ For user private files, Datasafe uses CMS-envelope with symmetric encryption of 
 that are shared with other users (sent to their INBOX folder), Datasafe uses asymmetric encryption for 
 data encryption key, so only recipient (or multiple recipients) can read it.
 
-Datasafe is built with the idea to be as configurable as possible - it uses Dagger2 for dependency injection and modular
-architecture to combine everything into the business layer, so the user can override any aspect he wants - i.e. to change
-encryption algorithm or to turn path encryption off. Each module is as independent as it is possible - to be used separately.
-
-- Each user has private space that can reside on Amazon S3, minio, filesystem or anything else with proper adapter.
-In his private space, each document and its path is encrypted.
-- For document sharing user has inbox space, that can be accessed from outside. Another user can write the document he
-wants to share into users' inbox space using the recipients' public key so that only inbox owner can read it.
-- For storage systems that do not support file versioning natively (i.e. minio) this library provides versioning
-capability too.
-
 ## Features
 -  Proprietary software **friendly license**
 -  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
