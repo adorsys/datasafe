@@ -3,7 +3,7 @@ package de.adorsys.datasafe.simple.adapter.api.types;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "location")
 public class DocumentFQN {
     private final String location;
 
