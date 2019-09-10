@@ -30,17 +30,17 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     private static final String DOT_SLASH_PREFIX = "./";
     private static final String PATH_SEPARATOR = "/";
 
-    private final Function<PathSecretKeyWithData, byte[]> encryptAndEncode;
-    private final Function<PathSecretKeyWithData, byte[]> decryptAndDecode;
+    private final Function<PathSecretKeyWithData, String> encryptAndEncode;
+    private final Function<PathSecretKeyWithData, String> decryptAndDecode;
 
     @Inject
     public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
         encryptAndEncode = keyEntryEncryptedDataPair -> encode(pathEncryptorDecryptor.encrypt(
-                keyEntryEncryptedDataPair.getPathEncryptionSecretKey(), keyEntryEncryptedDataPair.getData()
+                keyEntryEncryptedDataPair.getPathEncryptionSecretKey(), keyEntryEncryptedDataPair.getPath()
         ));
 
         decryptAndDecode = keyEntryDecryptedDataPair -> pathEncryptorDecryptor.decrypt(
-                keyEntryDecryptedDataPair.getPathEncryptionSecretKey(), decode(keyEntryDecryptedDataPair.getData())
+                keyEntryDecryptedDataPair.getPathEncryptionSecretKey(), decode(keyEntryDecryptedDataPair.getPath())
         );
     }
 
@@ -77,27 +77,27 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     @SneakyThrows
-    private static byte[] decode(byte[] encryptedData) {
-        if (null == encryptedData || encryptedData.length == 0) {
-            return encryptedData;
+    private static String decode(String encryptedPath) {
+        if (null == encryptedPath || encryptedPath.isEmpty()) {
+            return encryptedPath;
         }
 
-        return Base64.getUrlDecoder().decode(encryptedData);
+        return new String(Base64.getUrlDecoder().decode(encryptedPath), UTF_8);
     }
 
     @SneakyThrows
-    private static byte[] encode(byte[] encryptedData) {
-        if (null == encryptedData) {
+    private static String encode(String encryptedPath) {
+        if (null == encryptedPath || encryptedPath.isEmpty()) {
             return null;
         }
 
-        return Base64.getUrlEncoder().encodeToString(encryptedData).getBytes(UTF_8);
+        return Base64.getUrlEncoder().encodeToString(encryptedPath.getBytes(UTF_8));
     }
 
     private static Uri processURIparts(
             PathEncryptionSecretKey secretKeyEntry,
             Uri bucketPath,
-            Function<PathSecretKeyWithData, byte[]> process) {
+            Function<PathSecretKeyWithData, String> process) {
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getRawPath();
@@ -115,7 +115,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
                 URI.create(
                         Arrays.stream(path.split(PATH_SEPARATOR))
                                 .map(uriPart -> process.apply(
-                                        new PathSecretKeyWithData(secretKeyEntry, uriPart.getBytes(UTF_8))))
+                                        new PathSecretKeyWithData(secretKeyEntry, uriPart)))
                                 .map(String::new) // byte[] -> string
                                 .collect(Collectors.joining(PATH_SEPARATOR)))
         );

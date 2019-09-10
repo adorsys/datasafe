@@ -9,12 +9,12 @@ import lombok.Setter;
  * Contains data for encryption or decryption and related secret key entity
  *
  * {@code pathEncryptionSecretKey} keys for encryption and decryption path
- * {@code data} encrypted or decrypted data
+ * {@code path} encrypted or decrypted path to file
  */
 @Getter
 @Setter
 @AllArgsConstructor
 public class PathSecretKeyWithData {
     private final PathEncryptionSecretKey pathEncryptionSecretKey;
-    private final byte[] data;
+    private final String path;
 }

@@ -8,6 +8,7 @@ import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.extern.slf4j.Slf4j;
+import org.cryptomator.siv.SivMode;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.BadPaddingException;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     private SymmetricPathEncryptionServiceImpl bucketPathEncryptionService = new SymmetricPathEncryptionServiceImpl(
-            new DefaultPathEncryptorDecryptor()
+            new DefaultPathEncryptorDecryptor(new SivMode())
     );
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
