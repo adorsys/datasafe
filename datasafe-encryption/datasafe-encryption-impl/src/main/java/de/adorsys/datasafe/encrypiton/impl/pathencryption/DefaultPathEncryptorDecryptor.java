@@ -7,6 +7,8 @@ import org.cryptomator.siv.SivMode;
 
 import javax.inject.Inject;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Default path encryption/decryption that uses AES-GCM-SIV mode.
  *
@@ -20,22 +22,24 @@ public class DefaultPathEncryptorDecryptor implements PathEncryptorDecryptor {
     private final SivMode sivMode;
 
     @Inject
-    public DefaultPathEncryptorDecryptor(){
-        sivMode = new SivMode();
+    public DefaultPathEncryptorDecryptor(SivMode sivMode){
+        this.sivMode = sivMode;
     }
 
     @Override
-    public byte[] encrypt(PathEncryptionSecretKey pathSecretKey, byte[] rawData) {
-        return sivMode.encrypt(pathSecretKey.getCounterSecretKey().getEncoded(),
-                               pathSecretKey.getSecretKey().getEncoded(),
-                               rawData);
+    public String encrypt(PathEncryptionSecretKey pathSecretKey, String originalPath) {
+        return new String(sivMode.encrypt(pathSecretKey.getCounterSecretKey().getEncoded(),
+                                          pathSecretKey.getSecretKey().getEncoded(),
+                                          originalPath.getBytes(UTF_8))
+        );
     }
 
     @Override
     @SneakyThrows
-    public byte[] decrypt(PathEncryptionSecretKey pathSecretKey, byte[] encryptedData) {
-        return sivMode.decrypt(pathSecretKey.getCounterSecretKey().getEncoded(),
-                pathSecretKey.getSecretKey().getEncoded(),
-                               encryptedData);
+    public String decrypt(PathEncryptionSecretKey pathSecretKey, String encryptedPath) {
+        return new String(sivMode.decrypt(pathSecretKey.getCounterSecretKey().getEncoded(),
+                                          pathSecretKey.getSecretKey().getEncoded(),
+                                          encryptedPath.getBytes(UTF_8))
+        );
     }
 }

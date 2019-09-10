@@ -6,14 +6,16 @@ public interface PathEncryptorDecryptor {
 
     /**
      * @param pathSecretKey entity that contains keys for encrypt path
+     * @param originalPath
      * @return Encrypted path using {@code pathSecretKey}
      */
-    byte[] encrypt(PathEncryptionSecretKey pathSecretKey, byte[] rawData);
+    String encrypt(PathEncryptionSecretKey pathSecretKey, String originalPath);
 
     /**
      * @param pathSecretKey entity that contains keys for decrypt path
+     * @param encryptedPath
      * @return Decrypted path using {@code pathSecretKey}
      */
-    byte[] decrypt(PathEncryptionSecretKey pathSecretKey, byte[] encryptedData);
+    String decrypt(PathEncryptionSecretKey pathSecretKey, String encryptedPath);
 
 }

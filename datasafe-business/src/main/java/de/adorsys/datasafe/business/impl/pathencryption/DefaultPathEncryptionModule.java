@@ -2,12 +2,14 @@ package de.adorsys.datasafe.business.impl.pathencryption;
 
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.DefaultPathEncryptorDecryptorRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptorDecryptor;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.SymmetricPathEncryptionServiceImplRuntimeDelegatable;
+import org.cryptomator.siv.SivMode;
 
 /**
  * This module is responsible for providing pathencryption of document.
@@ -15,11 +17,15 @@ import de.adorsys.datasafe.encrypiton.impl.pathencryption.SymmetricPathEncryptio
 @Module
 public abstract class DefaultPathEncryptionModule {
 
+
+
+    @Provides
+    abstract SivMode sivMode(SivMode siv);
     /**
-     * Default path encryption that uses Base64-urlsafe path serialization
+     * Default path encryption that uses Base64-urlsafe path serialization and AES-CGM-SIV mode for encryption
      */
     @Binds
-    abstract PathEncryptorDecryptor config(DefaultPathEncryptorDecryptorRuntimeDelegatable config);
+    abstract PathEncryptorDecryptor pathEncryptorDecryptor(DefaultPathEncryptorDecryptorRuntimeDelegatable impl);
 
     /**
      * By default simply use
