@@ -39,11 +39,8 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     public SecretKeyIDWithKey pathEncryptionSecretKey(UserIDAuth forUser) {
         List<KeyID> secretKeyIds = getSecretKeyIds(forUser);
 
-        Map<String, Key> keys = keysByIds(forUser, secretKeyIds.stream()
-                    .map(it -> it.getValue()).collect(Collectors.toSet()));
-
-        String secretPathKeyId = getSecretPathKeyIdByPrefix(keys, PATH_KEY_ID_PREFIX);
-        String secretPathCrtKeyId = getSecretPathKeyIdByPrefix(keys, PATH_KEY_ID_PREFIX_CRT);
+        String secretPathKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX);
+        String secretPathCrtKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX_CRT);
 
         return new SecretKeyIDWithKey(
                     new KeyID(secretPathKeyId),
@@ -51,12 +48,12 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                     (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId));
     }
 
-    private String getSecretPathKeyIdByPrefix(Map<String, Key> keys, String pathKeyIdPrefix) {
-        return keys.keySet()
-                   .stream()
-                   .filter(it -> it.startsWith(pathKeyIdPrefix))
+    private String getSecretPathKeyIdByPrefix(List<KeyID> keys, String pathKeyIdPrefix) {
+        return keys.stream()
+                   .filter(it -> it.getValue().startsWith(pathKeyIdPrefix))
                    .findFirst()
-                   .get();
+                   .get()
+                   .getValue();
     }
 
     private List<KeyID> getSecretKeyIds(UserIDAuth forUser) {
