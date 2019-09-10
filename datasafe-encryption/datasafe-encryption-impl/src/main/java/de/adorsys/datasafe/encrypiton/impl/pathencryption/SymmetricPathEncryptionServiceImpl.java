@@ -26,6 +26,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RuntimeDelegate
 public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncryptionService {
 
+    private static final int DOT_SLASH_PREFIX_LENGTH = 2;
+    private static final String DOT_SLASH_PREFIX = "./";
     private static final String PATH_SEPARATOR = "/";
 
     private final Function<PathSecretKeyWithData, byte[]> encryptAndEncode;
@@ -99,9 +101,9 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getRawPath();
-        if (bucketPath.getRawPath().startsWith("./")) {
-            result.append("./");
-            path = bucketPath.getRawPath().substring(2);
+        if (bucketPath.getRawPath().startsWith(DOT_SLASH_PREFIX)) {
+            result.append(DOT_SLASH_PREFIX);
+            path = bucketPath.getRawPath().substring(DOT_SLASH_PREFIX_LENGTH);
         }
 
         if (path.isEmpty()) {
