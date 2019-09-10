@@ -2,11 +2,11 @@ package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.dto.PathSecretKeyWithData;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import javax.inject.Inject;
 import java.net.URI;
@@ -28,18 +28,17 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
     private static final String PATH_SEPARATOR = "/";
 
-    private final Function<ImmutablePair<PathEncryptionSecretKey, byte[]>, byte[]> encryptAndEncode;
-    private final Function<ImmutablePair<PathEncryptionSecretKey, byte[]>, byte[]> decryptAndDecode;
+    private final Function<PathSecretKeyWithData, byte[]> encryptAndEncode;
+    private final Function<PathSecretKeyWithData, byte[]> decryptAndDecode;
 
     @Inject
     public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
-
         encryptAndEncode = keyEntryEncryptedDataPair -> encode(pathEncryptorDecryptor.encrypt(
-                keyEntryEncryptedDataPair.left, keyEntryEncryptedDataPair.right
+                keyEntryEncryptedDataPair.getPathEncryptionSecretKey(), keyEntryEncryptedDataPair.getData()
         ));
 
         decryptAndDecode = keyEntryDecryptedDataPair -> pathEncryptorDecryptor.decrypt(
-                keyEntryDecryptedDataPair.left, decode(keyEntryDecryptedDataPair.right)
+                keyEntryDecryptedDataPair.getPathEncryptionSecretKey(), decode(keyEntryDecryptedDataPair.getData())
         );
     }
 
@@ -96,7 +95,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     private static Uri processURIparts(
             PathEncryptionSecretKey secretKeyEntry,
             Uri bucketPath,
-            Function<ImmutablePair<PathEncryptionSecretKey, byte[]>, byte[]> process) {
+            Function<PathSecretKeyWithData, byte[]> process) {
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getRawPath();
@@ -113,7 +112,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         return new Uri(
                 URI.create(
                         Arrays.stream(path.split(PATH_SEPARATOR))
-                                .map(uriPart -> process.apply(new ImmutablePair<>(secretKeyEntry, uriPart.getBytes(UTF_8))))
+                                .map(uriPart -> process.apply(
+                                        new PathSecretKeyWithData(secretKeyEntry, uriPart.getBytes(UTF_8))))
                                 .map(String::new) // byte[] -> string
                                 .collect(Collectors.joining(PATH_SEPARATOR)))
         );
