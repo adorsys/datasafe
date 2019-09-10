@@ -36,8 +36,6 @@ public class CaSignedCertificateBuilder {
 
     private X500Name subjectDN;
 
-    private boolean subjectOnlyInAlternativeName;
-
     private Integer notAfterInDays;
     private Integer notBeforeInDays = 0;
 
@@ -87,7 +85,7 @@ public class CaSignedCertificateBuilder {
             // self signed ca certificate
             basicConstraints = new BasicConstraints(true);
             // in ca case, subject must subject must be set
-            subjectOnlyInAlternativeName = false;
+            boolean subjectOnlyInAlternativeName = false;
         } else {
             // not a ca certificate
             basicConstraints = new BasicConstraints(false);

@@ -63,7 +63,7 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
 
     @BeforeEach
     void init() {
-        this.secretKeyIDWithKey = new SecretKeyIDWithKey(new KeyID(""), secretKey, secretCrtKey);
+        this.secretKeyIDWithKey = new SecretKeyIDWithKey(new KeyID(""), secretKey);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
@@ -28,13 +28,11 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
     private static final String PATH_SEPARATOR = "/";
 
-    private final PathEncryptorDecryptor pathEncryptorDecryptor;
-    private final Function<ImmutablePair<SecretKeyIDWithKey, byte[]>, byte[]> encryptAndEncode;
-    private final Function<ImmutablePair<SecretKeyIDWithKey, byte[]>, byte[]> decryptAndDecode;
+    private final Function<ImmutablePair<PathEncryptionSecretKey, byte[]>, byte[]> encryptAndEncode;
+    private final Function<ImmutablePair<PathEncryptionSecretKey, byte[]>, byte[]> decryptAndDecode;
 
     @Inject
     public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
-        this.pathEncryptorDecryptor = pathEncryptorDecryptor;
 
         encryptAndEncode = keyEntryEncryptedDataPair -> encode(pathEncryptorDecryptor.encrypt(
                 keyEntryEncryptedDataPair.left, keyEntryEncryptedDataPair.right
@@ -50,12 +48,12 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
      */
     @Override
     @SneakyThrows
-    public Uri encrypt(SecretKeyIDWithKey secretKeyEntry, Uri bucketPath) {
-        validateArgs(secretKeyEntry, bucketPath);
+    public Uri encrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
+        validateArgs(pathEncryptionSecretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
         return processURIparts(
-                secretKeyEntry,
+                pathEncryptionSecretKey,
                 bucketPath,
                 encryptAndEncode
         );
@@ -66,12 +64,12 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
      */
     @Override
     @SneakyThrows
-    public Uri decrypt(SecretKeyIDWithKey secretKeyEntry, Uri bucketPath) {
-        validateArgs(secretKeyEntry, bucketPath);
+    public Uri decrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
+        validateArgs(pathEncryptionSecretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
         return processURIparts(
-                secretKeyEntry,
+                pathEncryptionSecretKey,
                 bucketPath,
                 decryptAndDecode
         );
@@ -96,9 +94,9 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     private static Uri processURIparts(
-            SecretKeyIDWithKey secretKeyEntry,
+            PathEncryptionSecretKey secretKeyEntry,
             Uri bucketPath,
-            Function<ImmutablePair<SecretKeyIDWithKey, byte[]>, byte[]> process) {
+            Function<ImmutablePair<PathEncryptionSecretKey, byte[]>, byte[]> process) {
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getRawPath();
@@ -121,7 +119,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         );
     }
 
-    private static void validateArgs(SecretKeyIDWithKey secretKeyEntry, Uri bucketPath) {
+    private static void validateArgs(PathEncryptionSecretKey secretKeyEntry, Uri bucketPath) {
         if (null == secretKeyEntry || null == secretKeyEntry.getSecretKey()) {
             throw new IllegalArgumentException("Secret key should not be null");
         }

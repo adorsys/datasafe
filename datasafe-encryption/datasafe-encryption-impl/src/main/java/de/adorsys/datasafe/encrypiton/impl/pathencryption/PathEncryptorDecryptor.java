@@ -1,19 +1,19 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
 
 public interface PathEncryptorDecryptor {
 
     /**
-     * @param secretKeyEntry Use this secret key
-     * @return Encrypted path using {@code secretKey} (secretKey and counterSecretKey)
+     * @param pathSecretKey entity that contains keys for encrypt path
+     * @return Encrypted path using {@code pathSecretKey}
      */
-    byte[] encrypt(SecretKeyIDWithKey secretKeyEntry, byte[] rawData);
+    byte[] encrypt(PathEncryptionSecretKey pathSecretKey, byte[] rawData);
 
     /**
-     * @param secretKey Use this secret key
-     * @return Decrypted path using {@code secretKey}
+     * @param pathSecretKey entity that contains keys for decrypt path
+     * @return Decrypted path using {@code pathSecretKey}
      */
-    byte[] decrypt(SecretKeyIDWithKey secretKey, byte[] encryptedData);
+    byte[] decrypt(PathEncryptionSecretKey pathSecretKey, byte[] encryptedData);
 
 }
