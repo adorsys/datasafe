@@ -90,7 +90,9 @@ public class GsonSerde {
                         return new HashMap<>(
                             Collections.singletonMap(
                                 StorageIdentifier.DEFAULT,
-                                BasePrivateResource.forAbsolutePrivate(object.get("resource").getAsString()))
+                                BasePrivateResource.forAbsolutePrivate(
+                                        URI.create(object.get("resource").getAsString()))
+                            )
                         );
                     }
 

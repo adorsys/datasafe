@@ -1,9 +1,11 @@
 package de.adorsys.datasafe.simple.adapter.api.types;
 
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString
+@EqualsAndHashCode(of = "location")
 public class DocumentDirectoryFQN {
     private final String location;
 
