@@ -5,7 +5,7 @@ import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.inbox.impl.actions.WriteToInboxImpl;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -34,7 +34,7 @@ class WriteToInboxImplTest extends BaseMockitoTest {
 
     private UserID auth = new UserID("");
 
-    private PublicKeyEntry publicKeyWithId;
+    private PublicKeyIDWithPublicKey publicKeyWithId;
 
     @Mock
     private PublicKey publicKey;
@@ -53,7 +53,7 @@ class WriteToInboxImplTest extends BaseMockitoTest {
 
     @BeforeEach
     void init() {
-        this.publicKeyWithId = new PublicKeyEntry(new KeyID(""), publicKey);
+        this.publicKeyWithId = new PublicKeyIDWithPublicKey(new KeyID(""), publicKey);
     }
 
     @Test

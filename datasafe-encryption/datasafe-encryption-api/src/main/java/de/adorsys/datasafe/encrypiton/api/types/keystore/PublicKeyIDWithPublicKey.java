@@ -14,7 +14,7 @@ import java.security.PublicKey;
 @ToString(of = "keyID")
 @RequiredArgsConstructor
 @EqualsAndHashCode
-public class PublicKeyEntry {
+public class PublicKeyIDWithPublicKey {
     private final KeyID keyID;
     private final PublicKey publicKey;
 }

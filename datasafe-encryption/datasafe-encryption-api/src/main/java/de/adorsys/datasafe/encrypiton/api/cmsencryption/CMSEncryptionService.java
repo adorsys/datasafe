@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.encrypiton.api.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 
 import javax.crypto.SecretKey;
 import java.io.InputStream;
@@ -25,7 +25,7 @@ public interface CMSEncryptionService {
      * @return Encrypted stream that wraps {@code dataContentStream}
      * @apiNote Closes underlying stream when result is closed
      */
-    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyEntry> publicKeys);
+    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyIDWithPublicKey> publicKeys);
 
     /**
      * Builds symmetrically encrypted stream.

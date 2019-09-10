@@ -6,7 +6,6 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import javax.inject.Inject;
@@ -29,25 +28,21 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
     private static final String PATH_SEPARATOR = "/";
 
-    private final PathEncryptor pathEncryptor;
+    private final PathEncryptorDecryptor pathEncryptorDecryptor;
     private final Function<ImmutablePair<SecretKeyIDWithKey, byte[]>, byte[]> encryptAndEncode;
     private final Function<ImmutablePair<SecretKeyIDWithKey, byte[]>, byte[]> decryptAndDecode;
 
-    public SymmetricPathEncryptionServiceImpl(PathEncryptor pathEncryptor) {
-        this.pathEncryptor = pathEncryptor;
+    @Inject
+    public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
+        this.pathEncryptorDecryptor = pathEncryptorDecryptor;
 
-        encryptAndEncode = keyEntryEncryptedDataPair -> encode(pathEncryptor.encrypt(
+        encryptAndEncode = keyEntryEncryptedDataPair -> encode(pathEncryptorDecryptor.encrypt(
                 keyEntryEncryptedDataPair.left, keyEntryEncryptedDataPair.right
         ));
 
-        decryptAndDecode = keyEntryDecryptedDataPair -> pathEncryptor.decrypt(
+        decryptAndDecode = keyEntryDecryptedDataPair -> pathEncryptorDecryptor.decrypt(
                 keyEntryDecryptedDataPair.left, decode(keyEntryDecryptedDataPair.right)
         );
-    }
-
-    @Inject
-    public SymmetricPathEncryptionServiceImpl() {
-        this(new DefaultPathEncryptor());
     }
 
     /**
@@ -119,7 +114,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         // Resulting value of `path` is URL-safe
         return new Uri(
                 URI.create(
-                        Arrays.stream(StringUtils.split(path, PATH_SEPARATOR))
+                        Arrays.stream(path.split(PATH_SEPARATOR))
                                 .map(uriPart -> process.apply(new ImmutablePair<>(secretKeyEntry, uriPart.getBytes(UTF_8))))
                                 .map(String::new) // byte[] -> string
                                 .collect(Collectors.joining(PATH_SEPARATOR)))

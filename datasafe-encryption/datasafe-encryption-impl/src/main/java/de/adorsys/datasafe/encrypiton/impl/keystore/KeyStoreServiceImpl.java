@@ -102,9 +102,9 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     @Override
     @SneakyThrows
-    public List<PublicKeyEntry> getPublicKeys(KeyStoreAccess keyStoreAccess) {
+    public List<PublicKeyIDWithPublicKey> getPublicKeys(KeyStoreAccess keyStoreAccess) {
         log.debug("get public keys");
-        List<PublicKeyEntry> result = new ArrayList<>();
+        List<PublicKeyIDWithPublicKey> result = new ArrayList<>();
         KeyStore keyStore = keyStoreAccess.getKeyStore();
         for (Enumeration<String> keyAliases = keyStore.aliases(); keyAliases.hasMoreElements(); ) {
             final String keyAlias = keyAliases.nextElement();
@@ -114,7 +114,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
             // digitalSignature (0), nonRepudiation (1), keyEncipherment (2), dataEncipherment (3),
             // keyAgreement (4), keyCertSign (5), cRLSign (6), encipherOnly (7), decipherOnly (8)
             if (keyUsage[2] || keyUsage[3] || keyUsage[4]) {
-                result.add(new PublicKeyEntry(new KeyID(keyAlias), cert.getPublicKey()));
+                result.add(new PublicKeyIDWithPublicKey(new KeyID(keyAlias), cert.getPublicKey()));
             }
         }
         return result;

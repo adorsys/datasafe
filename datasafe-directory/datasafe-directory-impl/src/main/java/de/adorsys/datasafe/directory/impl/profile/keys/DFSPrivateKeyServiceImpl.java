@@ -37,20 +37,33 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      */
     @Override
     public SecretKeyIDWithKey pathEncryptionSecretKey(UserIDAuth forUser) {
-        List<KeyID> keyIds = keyStoreOper.readAliases(forUser).stream()
-                .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CRT))
-                .map(KeyID::new)
-                .collect(Collectors.toList());
+        List<KeyID> secretKeyIds = getSecretKeyIds(forUser);
 
-        Map<String, Key> keys = keysByIds(forUser, keyIds.stream().map(it -> it.getValue()).collect(Collectors.toSet()));
+        Map<String, Key> keys = keysByIds(forUser, secretKeyIds.stream()
+                    .map(it -> it.getValue()).collect(Collectors.toSet()));
 
-        String secretPathKeyId = keys.keySet().stream().filter(it -> it.startsWith(PATH_KEY_ID_PREFIX)).findFirst().get();
-        String secretPathCrtKeyId = keys.keySet().stream().filter(it -> it.startsWith(PATH_KEY_ID_PREFIX_CRT)).findFirst().get();
+        String secretPathKeyId = getSecretPathKeyIdByPrefix(keys, PATH_KEY_ID_PREFIX);
+        String secretPathCrtKeyId = getSecretPathKeyIdByPrefix(keys, PATH_KEY_ID_PREFIX_CRT);
 
         return new SecretKeyIDWithKey(
                     new KeyID(secretPathKeyId),
                     (SecretKey) keyStoreOper.getKey(forUser, secretPathKeyId),
                     (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId));
+    }
+
+    private String getSecretPathKeyIdByPrefix(Map<String, Key> keys, String pathKeyIdPrefix) {
+        return keys.keySet()
+                   .stream()
+                   .filter(it -> it.startsWith(pathKeyIdPrefix))
+                   .findFirst()
+                   .get();
+    }
+
+    private List<KeyID> getSecretKeyIds(UserIDAuth forUser) {
+        return keyStoreOper.readAliases(forUser).stream()
+                    .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CRT))
+                    .map(KeyID::new)
+                    .collect(Collectors.toList());
     }
 
     /**

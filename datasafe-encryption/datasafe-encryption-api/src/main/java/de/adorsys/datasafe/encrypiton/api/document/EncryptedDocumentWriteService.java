@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.encrypiton.api.document;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -22,7 +22,7 @@ public interface EncryptedDocumentWriteService {
      * @param recipientsWithInbox Map of (recipient public key - recipients' inbox) of users with whom to share file.
      * @return Sink where you can send unencrypted data that will be encrypted and stored
      */
-    OutputStream write(Map<PublicKeyEntry, AbsoluteLocation> recipientsWithInbox);
+    OutputStream write(Map<PublicKeyIDWithPublicKey, AbsoluteLocation> recipientsWithInbox);
 
     /**
      * Writes and encrypts data using symmetric cryptography.

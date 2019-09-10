@@ -14,7 +14,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.KeyStore;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     private SymmetricPathEncryptionServiceImpl bucketPathEncryptionService = new SymmetricPathEncryptionServiceImpl(
-            new DefaultPathEncryptor()
+            new DefaultPathEncryptorDecryptor()
     );
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
@@ -56,16 +55,16 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
                 KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKeyCrt);
 
         Uri encrypted = bucketPathEncryptionService.encrypt(secretKeyIDWithKey, testURI);
-        log.debug("Encrypted path: {}"+ encrypted);
+        log.debug("Encrypted path: {}", encrypted);
 
         Uri decrypted = bucketPathEncryptionService.decrypt(secretKeyIDWithKey, encrypted);
-        log.debug("Decrypted path: {}"+ decrypted);
+        log.debug("Decrypted path: {}", decrypted);
 
         assertEquals(testPath, decrypted.toASCIIString());
     }
 
     @Test
-    void testFailEncryptPathWithWrongKeyID() throws URISyntaxException {
+    void testFailEncryptPathWithWrongKeyID() {
         String testPath = "path/to/file/";
 
         log.info("Test path: {}", testPath);

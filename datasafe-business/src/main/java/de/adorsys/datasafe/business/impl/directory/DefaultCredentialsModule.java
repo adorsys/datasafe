@@ -13,7 +13,7 @@ import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.keys.*;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 
 import javax.annotation.Nullable;
@@ -46,7 +46,7 @@ public abstract class DefaultCredentialsModule {
                 .build();
 
         // These are actually static, so we can afford longer expiry time
-        Supplier<Cache<UserID, List<PublicKeyEntry>>> cachePubKeys = () -> CacheBuilder.newBuilder()
+        Supplier<Cache<UserID, List<PublicKeyIDWithPublicKey>>> cachePubKeys = () -> CacheBuilder.newBuilder()
                 .initialCapacity(1000)
                 .expireAfterWrite(60, TimeUnit.MINUTES)
                 .build();

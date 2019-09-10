@@ -73,7 +73,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
 
     @Override
     @SneakyThrows
-    public List<PublicKeyEntry> createAndWriteKeyStore(UserIDAuth forUser) {
+    public List<PublicKeyIDWithPublicKey> createAndWriteKeyStore(UserIDAuth forUser) {
         KeyStoreAuth auth = keystoreAuth(forUser, forUser.getReadKeyPassword());
         KeyStore keystoreBlob = keyStoreService.createKeyStore(
                 auth,
