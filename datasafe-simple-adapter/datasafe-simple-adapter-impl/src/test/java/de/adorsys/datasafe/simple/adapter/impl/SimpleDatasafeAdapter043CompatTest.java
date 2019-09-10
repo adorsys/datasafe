@@ -1,30 +1,26 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
-import com.google.common.io.MoreFiles;
-import com.google.common.io.Resources;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.shared.Dirs;
+import de.adorsys.datasafe.types.api.shared.Resources;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.Security;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * This test ensures that SimpleDatasafeAdapter can use setup and folder structure from version 0.4.3
+ * (backward compatibility)
  */
 class SimpleDatasafeAdapter043CompatTest extends BaseMockitoTest {
 
@@ -37,28 +33,10 @@ class SimpleDatasafeAdapter043CompatTest extends BaseMockitoTest {
     void extractFixtureAndPrepare(@TempDir Path tempDir) {
         Security.addProvider(new BouncyCastleProvider());
         dfsRoot = tempDir;
-        Path resources = Paths.get(Resources.getResource("compat-0.4.3").toURI());
-
-        try (Stream<Path> walk = Files.walk(resources)) {
-            walk.forEach(resource -> copyResource(tempDir, resources, resource));
-        }
-
+        Resources.copyResourceDir("compat-0.4.3", tempDir);
         simpleDatasafeService = new SimpleDatasafeServiceImpl(
                 FilesystemDFSCredentials.builder().root(tempDir.toString()).build()
         );
-    }
-
-    @SneakyThrows
-    private void copyResource(@TempDir Path tempDir, Path resourcesRoot, Path resource) {
-        Path relative = resourcesRoot.relativize(resource);
-        Path inTemp = tempDir.resolve(relative);
-        MoreFiles.createParentDirectories(inTemp);
-
-        if (resource.toFile().isDirectory()) {
-            return;
-        }
-
-        Files.copy(resource, inTemp);
     }
 
     @Test
@@ -87,10 +65,10 @@ class SimpleDatasafeAdapter043CompatTest extends BaseMockitoTest {
                 .containsExactlyInAnyOrder(newPath, oldPath);
 
         // validate folder structure
-        assertThat(walkDirNonRecursive(dfsRoot, 1)).containsExactlyInAnyOrder("profiles", "users");
-        assertThat(walkDirNonRecursive(dfsRoot.resolve("profiles")))
+        assertThat(Dirs.walk(dfsRoot, 1)).containsExactlyInAnyOrder("profiles", "users");
+        assertThat(Dirs.walk(dfsRoot.resolve("profiles")))
                 .containsExactlyInAnyOrder("private", "public", "private/peter", "public/peter");
-        assertThat(walkDirNonRecursive(dfsRoot.resolve("users"), 3))
+        assertThat(Dirs.walk(dfsRoot.resolve("users"), 3))
                 .containsExactlyInAnyOrder(
                         "peter",
                         "peter/private",
@@ -99,21 +77,5 @@ class SimpleDatasafeAdapter043CompatTest extends BaseMockitoTest {
                         "peter/private/files",
                         "peter/public/pubkeys"
                 );
-    }
-
-    @SneakyThrows
-    private List<String> walkDirNonRecursive(Path root) {
-        return walkDirNonRecursive(root, Integer.MAX_VALUE);
-    }
-
-    @SneakyThrows
-    private List<String> walkDirNonRecursive(Path root, int depth) {
-        try (Stream<Path> walk = Files.walk(root, depth)) {
-            return walk
-                    .filter(it -> !(it.getFileName().startsWith(".") || it.getFileName().startsWith("..")))
-                    .filter(it -> !it.equals(root))
-                    .map(it -> root.relativize(it).toString().replaceFirst("\\./", ""))
-                    .collect(Collectors.toList());
-        }
     }
 }
