@@ -18,7 +18,7 @@ install:
 # Original build
 script:
   - echo "Script"
-  - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET} -DskipTests # FIXME remove skipTests
+  - ./mvnw --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET} -DskipTests # FIXME remove skipTests
 
 # Original deploy
 deploy:
@@ -36,11 +36,11 @@ build-cli: &build-cli
     # re-export JAVA_HOME
     - source  ~/.jdk_config
     # Prepare everything, no settings.xml needed
-    - mvn clean install -B -V -DskipTests
+    - ./mvnw clean install -B -V -DskipTests
     # Change security providers of JDK
     - /bin/bash .travis/enable_bouncycastle_security.sh
     # Build native image, no settings.xml needed
-    - mvn -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
+    - ./mvnw -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
 
 # CLI artifacts publishing:
 deploy-cli: &deploy-cli
