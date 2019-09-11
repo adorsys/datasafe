@@ -73,6 +73,7 @@ matrix:
     - os: linux
       language: bash
       before_install:
+        - source ./travis/drop_deploy_secrets.sh
         - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
       <<: *build-cli
       <<: *deploy-cli
@@ -80,6 +81,7 @@ matrix:
     - os: osx
       language: bash
       before_install:
+        - source ./travis/drop_deploy_secrets.sh
         - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
       <<: *build-cli
       <<: *deploy-cli
@@ -89,6 +91,7 @@ matrix:
 #        - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
 #      language: bash
 #      before_install:
+#        - source ./travis/drop_deploy_secrets.sh
 #        - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
 #      <<: *build-cli
 #      <<: *deploy-cli
