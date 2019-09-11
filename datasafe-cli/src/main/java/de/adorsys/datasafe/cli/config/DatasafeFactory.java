@@ -80,7 +80,6 @@ public class DatasafeFactory {
     private static StorageService amazonS3() {
         return new UriBasedAuthStorageService(
                 acc -> {
-                    System.out.println("S3");
                     log.debug("S3 reading");
                     return new S3StorageService(
                             S3ClientFactory.getClientByRegion(
