@@ -6,3 +6,41 @@
 1. add org.bouncycastle.jsse.provider.BouncyCastleJsseProvider to java.security as SSL provider (bctls jar) 
 Basically, you need to add a line of the following format in a location with similar properties:
 security.provider.n=provider-class-name
+
+# SimpleTest with Minio
+Lets assume you have a minio running with url: <code>http://localhost:9000</code>.
+Further you have a bucket named <code>"affe"</code> in that minio.
+
+Before you run the Cli (which is the main class) in the project directory, create a temporary folder <code><$projectDir>/tmp</code>.
+And than allways start the Cli in this tmp directory. In this case, you can use the default confirms and all profiles/keys/secrets will be stored in the tmp directory. As this example is to store the data in minio, the data is not stored in the tmp directory, but in minio.
+
+1. First you create a profile. Simple confirm all asked questions with enter.
+    ```
+    -u=peter -p=peter -sp=system profile create
+    ```
+1. Add the url of minio with a new storagename. Notice that the bucket is at the end of the url.
+    ```
+    -u=peter -p=peter -sp=system profile storage add -i my-minio -p http://localhost:9000/affe
+    ```
+
+1. Add the accesskey and secretkey. It assumed, they are <code>simpleAcessKey</code> and <code>simpleSecretKey</code>.
+    ```
+    -u=peter -p=peter -sp=system profile storage credentials add -m http://.+ --username=simpleAccessKey --password=simpleSecretKey
+    ```
+ 
+1. Now you can store data to your minio. The data will be encrypted with the keys stored in the tmp directory.
+   So in this case the pom is stored to minio. Of course encrypted. But with the new name pom2.xml. 
+    ```
+    -u=peter -p=peter -sp=system private  cp -s=my-minio ../pom.xml pom2.xml
+    ```
+
+1. Now you can see the encrypted data in your minio. To see the decrypted name, you can use the list command.    
+    ```
+    -u=peter -p=peter -sp=system private ls -s=my-minio
+    ```
+    
+1. Eventually you can decrypt the content of <code>pom2.xml</code>. I will be written to stdout.    
+    ```
+    -u=peter -p=peter -sp=system private cat -s=my-minio pom2.xml
+    ```
+       
