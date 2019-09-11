@@ -43,7 +43,7 @@ build-cli: &build-cli
 
 # CLI artifacts publishing:
 deploy-cli: &deploy-cli
-  # FIXME Enabling temporary deploy rule
+  # FIXME Enabling temporary deploy rule for cli
   deploy:
     on:
       branch: feature/datasafe-cli-w-s3
