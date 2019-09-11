@@ -12,13 +12,18 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import picocli.CommandLine;
 
+import java.io.Console;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Security;
 
+@Slf4j
 @CommandLine.Command(
         name = "datasafe-cli",
         subcommands = {
@@ -45,7 +50,8 @@ public class Cli implements Runnable {
     public static void main(String[] args) {
         // silencing AWS SDK:
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-
+        // Hi Valentyn, did not get it running locally without the registration
+        Security.addProvider(new BouncyCastleProvider());
         int exitCode = new CommandLine(new Cli()).execute(args);
         System.exit(exitCode);
     }

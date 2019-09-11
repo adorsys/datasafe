@@ -1,5 +1,12 @@
 package de.adorsys.datasafe.cli.config;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.collect.ImmutableMap;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -19,10 +26,12 @@ import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class DatasafeFactory {
 
     public static DefaultDatasafeServices datasafe(Path fsRoot, String systemPassword) {
@@ -34,7 +43,10 @@ public class DatasafeFactory {
                         new RegexDelegatingStorage(
                                 ImmutableMap.<Pattern, StorageService>builder()
                                         .put(Pattern.compile("file:/.+"), localFs(fsRoot))
-                                        .put(Pattern.compile("s3://.+"), amazonS3()).build()
+                                        .put(Pattern.compile("s3://.+"), amazonS3())
+                                        .put(Pattern.compile("http://.+"), httpS3())
+                                        .put(Pattern.compile("https://.+"), httpS3())
+                                        .build()
                         )
                 )
                 .overridesRegistry(registry)
@@ -51,18 +63,36 @@ public class DatasafeFactory {
         return new FileSystemStorageService(fsRoot);
     }
 
+    private static StorageService httpS3() {
+        return new UriBasedAuthStorageService(
+                acc -> {
+                    String url = acc.getOnlyHostPart().toString();
+                    String accessKey = acc.getAccessKey();
+                    String secretKey = acc.getSecretKey();
+                    String bucketName = acc.getBucketName();
+                    String region = "eu-central-1";
+                    log.debug("HTTP reading");
+                    return getStorageService(accessKey, secretKey, url, region, bucketName);
+                }
+        );
+    }
+
     private static StorageService amazonS3() {
         return new UriBasedAuthStorageService(
-                acc -> new S3StorageService(
-                        S3ClientFactory.getClientByRegion(
-                                acc.getOnlyHostPart().toString().split("://")[1],
-                                acc.getAccessKey(),
-                                acc.getSecretKey()
-                        ),
-                        // Bucket name is encoded in first path segment
-                        acc.getBucketName(),
-                        ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
-                )
+                acc -> {
+                    System.out.println("S3");
+                    log.debug("S3 reading");
+                    return new S3StorageService(
+                            S3ClientFactory.getClientByRegion(
+                                    acc.getOnlyHostPart().toString().split("://")[1],
+                                    acc.getAccessKey(),
+                                    acc.getSecretKey()
+                            ),
+                            // Bucket name is encoded in first path segment
+                            acc.getBucketName(),
+                            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
+                    );
+                }
         );
     }
 
@@ -76,4 +106,42 @@ public class DatasafeFactory {
             this.delegate = new RegexAccessServiceWithStorageCredentialsImpl(storageKeyStoreOperations);
         }
     }
+
+    private static S3StorageService getStorageService(String accessKey, String secretKey, String url, String region, String bucket) {
+        AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(
+                                        accessKey,
+                                        secretKey))
+                )
+                .enablePathStyleAccess();
+
+            AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
+                    url,
+                    region
+            );
+            amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
+
+        if (! url.toLowerCase().startsWith("https")) {
+            log.info("Creating S3 client without https");
+            ClientConfiguration clientConfig = new ClientConfiguration();
+            clientConfig.setProtocol(Protocol.HTTP);
+            clientConfig.disableSocketProxy();
+            amazonS3ClientBuilder.withClientConfiguration(clientConfig);
+        }
+
+        AmazonS3 amazons3 = amazonS3ClientBuilder.build();
+        S3StorageService storageService = new S3StorageService(
+                amazons3,
+                bucket,
+                ExecutorServiceUtil
+                        .submitterExecutesOnStarvationExecutingService(
+                                5,
+                                5
+                        )
+        );
+        return storageService;
+    }
 }
+
