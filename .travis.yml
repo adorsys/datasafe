@@ -29,6 +29,7 @@ deploy:
 after_success:
   - echo "Success"
 
+################ Custom build stages:
 # Special test-skipping stage to build CLI, using maven-wrapper
 build-cli: &build-cli
   script:
@@ -56,6 +57,7 @@ deploy-cli: &deploy-cli
     local_dir: datasafe-cli/target
     upload-dir: datasafe-cli/${TRAVIS_OS_NAME}/${TRAVIS_COMMIT}
 
+################ Build matrix:
 # Build configuration definition:
 matrix:
   include:
