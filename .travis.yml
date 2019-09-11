@@ -67,26 +67,26 @@ matrix:
 
     #### CLI-ORIENTED BUILD ####
     # These are CLI-only builds that produce Datasafe cli executable for each OS:
-    # CLI for Linux:
-#    - os: linux
-#      language: bash
-#      before_install:
-#        - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
-#      <<: *build-cli
-#      <<: *deploy-cli
-#    # CLI for MacOS:
-#    - os: osx
-#      language: bash
-#      before_install:
-#        - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
-#      <<: *build-cli
-#      <<: *deploy-cli
-    # CLI for Windows (disabled as of now):
-    - os: windows
-      env:
-        - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
+     CLI for Linux:
+    - os: linux
       language: bash
       before_install:
         - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
       <<: *build-cli
       <<: *deploy-cli
+    # CLI for MacOS:
+    - os: osx
+      language: bash
+      before_install:
+        - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
+      <<: *build-cli
+      <<: *deploy-cli
+    # CLI for Windows (disabled as of now):
+#    - os: windows
+#      env:
+#        - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
+#      language: bash
+#      before_install:
+#        - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
+#      <<: *build-cli
+#      <<: *deploy-cli
