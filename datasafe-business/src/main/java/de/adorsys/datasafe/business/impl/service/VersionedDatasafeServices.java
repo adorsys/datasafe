@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 /**
- * This is Datasafe services that always work with latest file appVersion using `software` versioning.
+ * This is Datasafe services that always work with latest file version using `software` versioning.
  * Note, that despite is has {@code @Singleton} annotation, it is not real singleton, the only shared thing
  * across all services instantiated using build() is bindings with {@code Singleton} in its Module.
  */
@@ -46,7 +46,7 @@ import javax.inject.Singleton;
 public interface VersionedDatasafeServices {
 
     /**
-     * @return Provides appVersion information for a given resource (shows only versioned resources)
+     * @return Provides version information for a given resource (shows only versioned resources)
      */
     DefaultVersionInfoServiceImpl versionInfo();
 
