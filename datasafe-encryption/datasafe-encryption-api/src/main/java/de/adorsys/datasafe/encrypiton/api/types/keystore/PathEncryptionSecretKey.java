@@ -11,7 +11,8 @@ import javax.crypto.SecretKey;
 @RequiredArgsConstructor
 public class PathEncryptionSecretKey {
 
-    private final KeyID keyID;
+    private final KeyID secretKeyId;
     private final SecretKey secretKey;
+    private final KeyID counterKeyId;
     private final SecretKey counterSecretKey;
 }

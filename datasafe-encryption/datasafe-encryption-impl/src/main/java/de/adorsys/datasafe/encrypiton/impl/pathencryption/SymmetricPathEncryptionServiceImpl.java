@@ -1,8 +1,9 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
+import com.google.common.primitives.Ints;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.dto.PathSecretKeyWithData;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.dto.PathSegmentWithSecretKeyWith;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
@@ -10,12 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import java.util.stream.IntStream;
 
 /**
  * Path encryption service that maintains URI segments integrity.
@@ -30,18 +30,29 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     private static final String DOT_SLASH_PREFIX = "./";
     private static final String PATH_SEPARATOR = "/";
 
-    private final Function<PathSecretKeyWithData, String> encryptAndEncode;
-    private final Function<PathSecretKeyWithData, String> decryptAndDecode;
+    private final Function<PathSegmentWithSecretKeyWith, String> encryptAndEncode;
+    private final Function<PathSegmentWithSecretKeyWith, String> decryptAndDecode;
 
     @Inject
     public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
-        encryptAndEncode = keyEntryEncryptedDataPair -> encode(pathEncryptorDecryptor.encrypt(
-                keyEntryEncryptedDataPair.getPathEncryptionSecretKey(), keyEntryEncryptedDataPair.getPath()
-        ));
+        encryptAndEncode = keyEntryEncryptedDataPair ->
+                encode(
+                        pathEncryptorDecryptor.encrypt(
+                                keyEntryEncryptedDataPair.getPathEncryptionSecretKey(),
+                                keyEntryEncryptedDataPair.getPath().getBytes(StandardCharsets.UTF_8),
+                                Ints.toByteArray(keyEntryEncryptedDataPair.getAuthenticationPosition())
+                        )
+                );
 
-        decryptAndDecode = keyEntryDecryptedDataPair -> pathEncryptorDecryptor.decrypt(
-                keyEntryDecryptedDataPair.getPathEncryptionSecretKey(), decode(keyEntryDecryptedDataPair.getPath())
-        );
+        decryptAndDecode = keyEntryDecryptedDataPair ->
+                new String(
+                        pathEncryptorDecryptor.decrypt(
+                                keyEntryDecryptedDataPair.getPathEncryptionSecretKey(),
+                                decode(keyEntryDecryptedDataPair.getPath()),
+                                Ints.toByteArray(keyEntryDecryptedDataPair.getAuthenticationPosition())
+                        ),
+                        StandardCharsets.UTF_8
+                );
     }
 
     /**
@@ -77,27 +88,27 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     @SneakyThrows
-    private static String decode(String encryptedPath) {
-        if (null == encryptedPath || encryptedPath.isEmpty()) {
-            return encryptedPath;
-        }
-
-        return new String(Base64.getUrlDecoder().decode(encryptedPath), UTF_8);
-    }
-
-    @SneakyThrows
-    private static String encode(String encryptedPath) {
+    private static byte[] decode(String encryptedPath) {
         if (null == encryptedPath || encryptedPath.isEmpty()) {
             return null;
         }
 
-        return Base64.getUrlEncoder().encodeToString(encryptedPath.getBytes(UTF_8));
+        return Base64.getUrlDecoder().decode(encryptedPath);
+    }
+
+    @SneakyThrows
+    private static String encode(byte[] encryptedPath) {
+        if (null == encryptedPath) {
+            return null;
+        }
+
+        return Base64.getUrlEncoder().encodeToString(encryptedPath);
     }
 
     private static Uri processURIparts(
             PathEncryptionSecretKey secretKeyEntry,
             Uri bucketPath,
-            Function<PathSecretKeyWithData, String> process) {
+            Function<PathSegmentWithSecretKeyWith, String> process) {
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getRawPath();
@@ -110,20 +121,33 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
             return new Uri(result.toString());
         }
 
-        // Resulting value of `path` is URL-safe
-        return new Uri(
-                URI.create(
-                        Arrays.stream(path.split(PATH_SEPARATOR))
-                                .map(uriPart -> process.apply(
-                                        new PathSecretKeyWithData(secretKeyEntry, uriPart)))
-                                .map(String::new) // byte[] -> string
-                                .collect(Collectors.joining(PATH_SEPARATOR)))
-        );
+        String[] segments = path.split(PATH_SEPARATOR);
+
+        return new Uri(URI.create(processSegments(secretKeyEntry, process, segments)));
+    }
+
+    private static String processSegments(PathEncryptionSecretKey secretKeyEntry,
+                                          Function<PathSegmentWithSecretKeyWith, String> process,
+                                          String[] segments) {
+        return IntStream.range(0, segments.length)
+                .boxed()
+                .map(position ->
+                        process.apply(
+                                new PathSegmentWithSecretKeyWith(
+                                        secretKeyEntry,
+                                        position,
+                                        segments[position]
+                                ))
+                ).collect(Collectors.joining(PATH_SEPARATOR));
     }
 
     private static void validateArgs(PathEncryptionSecretKey secretKeyEntry, Uri bucketPath) {
         if (null == secretKeyEntry || null == secretKeyEntry.getSecretKey()) {
             throw new IllegalArgumentException("Secret key should not be null");
+        }
+
+        if (null == secretKeyEntry.getCounterSecretKey()) {
+            throw new IllegalArgumentException("Counter secret key should not be null");
         }
 
         if (null == bucketPath) {

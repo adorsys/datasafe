@@ -41,7 +41,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         List<KeyID> secretKeyIds = getSecretKeyIds(forUser);
 
         String secretPathKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX);
-        String secretPathCrtKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX_CRT);
+        String secretPathCrtKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX_CTR);
 
         return new PathEncryptionSecretKey(
                     new KeyID(secretPathKeyId),
@@ -59,7 +59,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
     private List<KeyID> getSecretKeyIds(UserIDAuth forUser) {
         return keyStoreOper.readAliases(forUser).stream()
-                    .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CRT))
+                    .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CTR))
                     .map(KeyID::new)
                     .collect(Collectors.toList());
     }
