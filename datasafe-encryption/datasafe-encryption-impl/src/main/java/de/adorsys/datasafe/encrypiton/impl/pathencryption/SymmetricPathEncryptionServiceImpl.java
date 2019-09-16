@@ -142,12 +142,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     private static void validateArgs(PathEncryptionSecretKey secretKeyEntry, Uri bucketPath) {
-        if (null == secretKeyEntry || null == secretKeyEntry.getSecretKey()) {
+        if (null == secretKeyEntry) {
             throw new IllegalArgumentException("Secret key should not be null");
-        }
-
-        if (null == secretKeyEntry.getCounterSecretKey()) {
-            throw new IllegalArgumentException("Counter secret key should not be null");
         }
 
         if (null == bucketPath) {

@@ -68,40 +68,6 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
     }
 
     @Test
-    void testFailEncryptPathWithWrongPathKeyID() {
-        String testPath = "path/to/file/";
-
-        Uri testURI = new Uri(testPath);
-
-        PathEncryptionSecretKey correctKey = pathEncryptionSecretKey();
-        PathEncryptionSecretKey toTest = new PathEncryptionSecretKey(
-                new KeyID("Wrong id"),
-                null,
-                correctKey.getCounterKeyId(),
-                correctKey.getCounterSecretKey()
-        );
-
-        assertThrows(IllegalArgumentException.class, () -> bucketPathEncryptionService.encrypt(toTest, testURI));
-    }
-
-    @Test
-    void testFailEncryptPathWithWrongPathCtrKeyID() {
-        String testPath = "path/to/file/";
-
-        Uri testURI = new Uri(testPath);
-
-        PathEncryptionSecretKey correctKey = pathEncryptionSecretKey();
-        PathEncryptionSecretKey toTest = new PathEncryptionSecretKey(
-                correctKey.getSecretKeyId(),
-                correctKey.getSecretKey(),
-                new KeyID("Wrong id"),
-                null
-        );
-
-        assertThrows(IllegalArgumentException.class, () -> bucketPathEncryptionService.encrypt(toTest, testURI));
-    }
-
-    @Test
     void testFailEncryptPathWithBrokenEncryptedPath() {
         PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
