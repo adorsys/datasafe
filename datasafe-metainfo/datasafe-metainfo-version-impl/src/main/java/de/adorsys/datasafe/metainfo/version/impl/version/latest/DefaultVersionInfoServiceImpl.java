@@ -16,9 +16,9 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Default implementation of appVersion information service that determines latest resource using
+ * Default implementation of version information service that determines latest resource using
  * {@link EncryptedLatestLinkService} and reads all associated blobs with versions using {@link ListPrivate}
- * within privatespace. Then it decrypts associated blobs into appVersion and path using {@link VersionEncoderDecoder}
+ * within privatespace. Then it decrypts associated blobs into version and path using {@link VersionEncoderDecoder}
  */
 @RuntimeDelegate
 public class DefaultVersionInfoServiceImpl implements VersionInfoService<DFSVersion> {
@@ -65,7 +65,7 @@ public class DefaultVersionInfoServiceImpl implements VersionInfoService<DFSVers
                         request.getStorageIdentifier()
                 );
 
-        // TODO: This can be cached - latest links for resource appVersion.
+        // TODO: This can be cached - latest links for resource version.
         AbsoluteLocation<ResolvedResource> resolved = listPrivate
                 .list(request.toBuilder().location(latestLink.getResource()).build())
                 .findFirst().orElse(null);

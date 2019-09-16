@@ -67,7 +67,7 @@ public class VersionController {
     }
 
     /**
-     * reads latest appVersion of file from user's private space.
+     * reads latest version of file from user's private space.
      */
     @SneakyThrows
     @GetMapping(value = "/versioned/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
@@ -95,7 +95,7 @@ public class VersionController {
     }
 
     /**
-     * writes latest appVersion of file to user's private space.
+     * writes latest version of file to user's private space.
      */
     @SneakyThrows
     @PutMapping(value = "/versioned/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
@@ -119,7 +119,7 @@ public class VersionController {
     }
 
     /**
-     * deletes latest appVersion of file from user's private space.
+     * deletes latest version of file from user's private space.
      */
     @DeleteMapping("/versioned/{path:.*}")
     @ApiOperation("Delete latest document from user's private space")

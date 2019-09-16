@@ -50,7 +50,7 @@ public class UserController {
      * private-profile: ${systemRoot}/profiles/private/${userName}
      * User files:
      * privatespace-raw-files: ${systemRoot}/${userName}/private/files
-     * privatespace-latest-file-appVersion: ${systemRoot}/${userName}/versions
+     * privatespace-latest-file-version: ${systemRoot}/${userName}/versions
      * privatespace-keystore: ${systemRoot}/${userName}/private/keystore
      * inbox: ${systemRoot}/${userName}/inbox
      * public-keys: ${systemRoot}/${userName}/public/keystore

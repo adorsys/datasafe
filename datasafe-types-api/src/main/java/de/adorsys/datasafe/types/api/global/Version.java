@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * This class carries logical Datasafe version (i.e. dictates user profile structure).
+ * This class carries logical Datasafe version (i.e. dictates user profile structure) so that application can
+ * detect incompatibilities between old data and new code and act accordingly.
  */
 @Getter
 @RequiredArgsConstructor

@@ -27,7 +27,7 @@ import java.io.OutputStream;
  * Link content is the resource that is relative to user privatespace.
  * Relativization against privatespace root of written blob is done by {@link EncryptedResourceResolver}.
  * @implNote Writes only to versioned resources - can't be used with ordinary one
- * @param <V> appVersion tag
+ * @param <V> version tag
  */
 @RuntimeDelegate
 public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWrite<V> {

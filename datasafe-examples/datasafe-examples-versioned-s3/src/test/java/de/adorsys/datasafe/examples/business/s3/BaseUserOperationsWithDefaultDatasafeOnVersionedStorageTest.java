@@ -128,8 +128,8 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
     }
 
     /**
-     * S3 storage adapter supports sending back file appVersion (if S3 storage returns it) when storing object to
-     * bucket and it allows reading object using its appVersion too.
+     * S3 storage adapter supports sending back file version (if S3 storage returns it) when storing object to
+     * bucket and it allows reading object using its version too.
      */
     @Test
     @SneakyThrows
@@ -140,7 +140,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
 
         // writing data to my/own/file.txt 3 times with different content:
         // 1st time, writing into my/own/file.txt:
-        // Expanded snippet of how to capture file appVersion when writing object:
+        // Expanded snippet of how to capture file version when writing object:
         AtomicReference<String> version = new AtomicReference<>();
         try (OutputStream os = defaultDatasafeServices.privateService()
                 .write(WriteRequest.forDefaultPrivate(user, MY_OWN_FILE_TXT)
@@ -148,43 +148,43 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
                         .callback((PhysicalVersionCallback) version::set)
                         .build())
         ) {
-            // Initial appVersion will contain "Hello 1":
+            // Initial version will contain "Hello 1":
             os.write("Hello 1".getBytes(StandardCharsets.UTF_8));
         }
-        // this variable has our initial file appVersion:
+        // this variable has our initial file version:
         String version1 = version.get();
 
         // Write 2 more times different data to same file - my/own/file.txt:
         String version2 = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
-        // Last appVersion will contain "Hello 3":
+        // Last version will contain "Hello 3":
         String version3 = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 3");
 
-        // now, when we read file without specifying appVersion - we see latest file content:
+        // now, when we read file without specifying version - we see latest file content:
         assertThat(defaultDatasafeServices.privateService().read(
                 ReadRequest.forDefaultPrivate(user, MY_OWN_FILE_TXT))
         ).hasContent("Hello 3");
 
-        // but if we specify file appVersion - we get content for it:
+        // but if we specify file version - we get content for it:
         assertThat(defaultDatasafeServices.privateService().read(
                 ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(version1)))
         ).hasContent("Hello 1");
         // END_SNIPPET
 
-        log.debug("appVersion 1 " + version1);
-        log.debug("appVersion 2 " + version2);
-        log.debug("appVersion 3 " + version3);
+        log.debug("version 1 " + version1);
+        log.debug("version 2 " + version2);
+        log.debug("version 3 " + version3);
         assertThat(defaultDatasafeServices.privateService().list(ListRequest.forDefaultPrivate(user, ""))).hasSize(1);
         assertThat(version1.equals(version2)).isFalse();
         assertThat(version1.equals(version3)).isFalse();
     }
 
     /**
-     * Example of how to remove specific appVersion id
+     * Example of how to remove specific version id
      */
     @Test
     @SneakyThrows
     void removeSpecificVersionId() {
-        // BEGIN_SNIPPET:Versioned storage support - removing specific appVersion
+        // BEGIN_SNIPPET:Versioned storage support - removing specific version
         // creating new user
         UserIDAuth user = registerUser("john");
 
@@ -192,12 +192,12 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
         String versionId = writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 1");
         writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
 
-        // now, we read old file appVersion
+        // now, we read old file version
         assertThat(defaultDatasafeServices.privateService().read(
                 ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
         ).hasContent("Hello 1");
 
-        // now, we remove old file appVersion
+        // now, we remove old file version
         defaultDatasafeServices.privateService().remove(
                 RemoveRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId))
         );
@@ -207,7 +207,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
                 ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
         );
 
-        // but latest file appVersion is still available
+        // but latest file version is still available
         assertThat(defaultDatasafeServices.privateService().read(
                 ReadRequest.forDefaultPrivate(user, MY_OWN_FILE_TXT))
         ).hasContent("Hello 2");

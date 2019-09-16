@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * Encoder/decoder that creates URI versions using UUID generator and path separator, so that versioned resource
  * http://example.com/some/path/75943a83-ae8a-4eaf-bffb-1a20f235416c
- * means appVersion 75943a83-ae8a-4eaf-bffb-1a20f235416c of http://example.com/some/path
+ * means version 75943a83-ae8a-4eaf-bffb-1a20f235416c of http://example.com/some/path
  */
 @RuntimeDelegate
 public class DefaultVersionEncoderDecoder implements VersionEncoderDecoder {

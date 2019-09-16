@@ -19,7 +19,7 @@ import java.io.InputStream;
  * {@link EncryptedLatestLinkService}, follows that link by reading its content to get latest blob
  * location, reads and decrypts latest blob content using {@link ReadFromPrivate}
  * @implNote Reads only from versioned resources - can't be used with ordinary one
- * @param <V> appVersion tag
+ * @param <V> version tag
  */
 @RuntimeDelegate
 public class LatestReadImpl<V extends LatestDFSVersion> implements VersionedRead<V> {

@@ -51,8 +51,8 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
 
         if (null == privateProfile.getDocumentVersionStorage()) {
-            log.error("Missing appVersion storage for {}", Obfuscate.secure(owner.getUserID().getValue()));
-            throw new IllegalStateException("User private profile is missing document appVersion storage");
+            log.error("Missing version storage for {}", Obfuscate.secure(owner.getUserID().getValue()));
+            throw new IllegalStateException("User private profile is missing document version storage");
         }
 
         AbsoluteLocation<PrivateResource> encryptedPath = resolver.encryptAndResolvePath(
