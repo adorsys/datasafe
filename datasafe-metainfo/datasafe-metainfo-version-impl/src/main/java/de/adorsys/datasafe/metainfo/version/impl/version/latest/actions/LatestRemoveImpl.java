@@ -17,7 +17,7 @@ import javax.inject.Inject;
  * Default versioned resource remove action that simply removes document returned by {@link EncryptedLatestLinkService}
  * so that old versions are preserved, because they are blobs within privatestorage.
  * @implNote Removes only versioned resource - can't be used with ordinary one
- * @param <V> version tag
+ * @param <V> appVersion tag
  */
 @RuntimeDelegate
 public class LatestRemoveImpl<V extends LatestDFSVersion> implements VersionedRemove<V> {

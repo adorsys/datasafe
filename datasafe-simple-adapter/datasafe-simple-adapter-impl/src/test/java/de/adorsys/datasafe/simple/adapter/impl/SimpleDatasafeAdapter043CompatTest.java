@@ -19,7 +19,7 @@ import java.security.Security;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * This test ensures that SimpleDatasafeAdapter can use setup and folder structure from version 0.4.3
+ * This test ensures that SimpleDatasafeAdapter can use setup and folder structure from appVersion 0.4.3
  * (backward compatibility)
  */
 class SimpleDatasafeAdapter043CompatTest extends BaseMockitoTest {

@@ -105,7 +105,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
         assertThat(versionedServices.latestPrivate().list(ListRequest.forDefaultPrivate(user, ""))).hasSize(1);
         // END_SNIPPET
 
-        // BEGIN_SNIPPET:Lets check how to read oldest file version
+        // BEGIN_SNIPPET:Lets check how to read oldest file appVersion
         // so lets collect all versions
         List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> withVersions =
             versionedServices.versionInfo().versionsOf(
@@ -126,7 +126,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
 
     /**
      * Imagine the usecase when you have some cached local files from users' privatespace and your application
-     * wants to check if your local version is outdated and you need to download new version from storage.
+     * wants to check if your local appVersion is outdated and you need to download new appVersion from storage.
      */
     @Test
     @SneakyThrows
@@ -138,7 +138,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
         // First lets store some file, for example John stored it from mobile phone
         try (OutputStream os = versionedServices.latestPrivate()
                 .write(WriteRequest.forDefaultPrivate(user, "my/own/file.txt"))) {
-            os.write(("Hello old version").getBytes(StandardCharsets.UTF_8));
+            os.write(("Hello old appVersion").getBytes(StandardCharsets.UTF_8));
         }
 
         // Application on mobile phone caches file content to improve performance, so it should cache timestamp too
@@ -150,7 +150,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
         Thread.sleep(1000L); // it took some time for him to get to PC
         try (OutputStream os = versionedServices.latestPrivate()
                 .write(WriteRequest.forDefaultPrivate(user, "my/own/file.txt"))) {
-            os.write(("Hello new version").getBytes(StandardCharsets.UTF_8));
+            os.write(("Hello new appVersion").getBytes(StandardCharsets.UTF_8));
         }
 
         // John takes his mobile phone and application checks if it needs to sync content
@@ -160,7 +160,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
 
         // This indicates that we need to update our cache on mobile phone
         // Modified date of saved file has changed and it is newer that our cached date
-        // So mobile application should download latest file version
+        // So mobile application should download latest file appVersion
         assertThat(savedOnPC).isAfter(savedOnMobile);
         // END_SNIPPET
     }

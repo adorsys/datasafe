@@ -106,7 +106,6 @@ public class DefaultDFSConfig implements DFSConfig {
                 .documentVersionStorage(accessPrivate(rootLocation.resolve("./" + VERSION_COMPONENT + "/")))
                 .publishPubKeysTo(access(publicKeys(rootLocation)))
                 .associatedResources(Collections.singletonList(accessPrivate(rootLocation)))
-                .version(currentDatasafeVersion())
                 .build();
     }
 
@@ -118,7 +117,6 @@ public class DefaultDFSConfig implements DFSConfig {
                 .id(id)
                 .inbox(access(inbox(rootLocation)))
                 .publicKeys(access(publicKeys(rootLocation)))
-                .version(currentDatasafeVersion())
                 .build();
     }
 
@@ -155,10 +153,6 @@ public class DefaultDFSConfig implements DFSConfig {
 
     protected Uri publicKeys(Uri rootLocation) {
         return rootLocation.resolve("./" + PUBLIC_COMPONENT + "/" + "pubkeys");
-    }
-
-    public static String currentDatasafeVersion() {
-        return "v062";
     }
 
     public static Uri addTrailingSlashIfNeeded(Uri systemRoot) {

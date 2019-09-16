@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.directory.api.types;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
@@ -66,10 +67,11 @@ public class CreateUserPrivateProfile {
     private final AbsoluteLocation<PublicResource> publishPubKeysTo;
 
     /**
-     * Entity version. Keeps version of datasafe which create profile
+     * Entity appVersion. Keeps version of datasafe which was used to create profile
      */
     @NonNull
-    private final String version;
+    @Builder.Default
+    private final Version appVersion = Version.current();
 
     public UserPrivateProfile removeAccess() {
         return UserPrivateProfile.builder()
@@ -81,7 +83,7 @@ public class CreateUserPrivateProfile {
             .documentVersionStorage(documentVersionStorage)
             .associatedResources(associatedResources)
             .publishPublicKeysTo(publishPubKeysTo)
-            .version(version)
+            .appVersion(appVersion)
             .build();
     }
 }

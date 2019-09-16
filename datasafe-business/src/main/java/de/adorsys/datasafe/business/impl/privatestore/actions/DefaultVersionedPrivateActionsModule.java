@@ -38,7 +38,7 @@ public abstract class DefaultVersionedPrivateActionsModule {
     }
 
     /**
-     * Encode version into URL, by default http://example.com/path is encoded to http://example.com/path/VERSION
+     * Encode appVersion into URL, by default http://example.com/path is encoded to http://example.com/path/VERSION
      */
     @Binds
     abstract VersionEncoderDecoder versionEncoder(DefaultVersionEncoderDecoderRuntimeDelegatable impl);
@@ -74,7 +74,7 @@ public abstract class DefaultVersionedPrivateActionsModule {
     abstract VersionedRemove<LatestDFSVersion> latestRemove(LatestRemoveImplRuntimeDelegatable<LatestDFSVersion> impl);
 
     /**
-     * Writes blob and updates the latest link, so that it points to written blob (creates a version of
+     * Writes blob and updates the latest link, so that it points to written blob (creates a appVersion of
      * the document that automatically should become the latest).
      */
     @Binds

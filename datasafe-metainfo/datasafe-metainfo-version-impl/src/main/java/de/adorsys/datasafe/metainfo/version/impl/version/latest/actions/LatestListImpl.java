@@ -20,10 +20,10 @@ import java.util.stream.Stream;
 /**
  * Default latest list operation that reads latest resource root for incoming request
  * using {@link EncryptedLatestLinkService}, then lists raw blobs within that root
- * (inside privatespace using {@link ListPrivate}) and parses them into version, logical resource
+ * (inside privatespace using {@link ListPrivate}) and parses them into appVersion, logical resource
  * using {@link VersionEncoderDecoder}
  * @implNote Shows only versioned resources, won't show unversioned resources
- * @param <V> version tag
+ * @param <V> appVersion tag
  */
 @RuntimeDelegate
 public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList<V> {

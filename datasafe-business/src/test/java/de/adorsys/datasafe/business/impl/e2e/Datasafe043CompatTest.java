@@ -8,6 +8,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
+import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * This test ensures that Datasafe can use setup and folder structure from version 0.4.3 (backward compatibility)
+ * This test ensures that Datasafe can use setup and folder structure from appVersion 0.4.3 (backward compatibility)
  */
 class Datasafe043CompatTest extends BaseMockitoTest {
 
@@ -128,6 +129,12 @@ class Datasafe043CompatTest extends BaseMockitoTest {
                         "jane/private/keystore",
                         "jane/private/files"
                 );
+
+        // 0.4.3 is baseline-compatible and there was no versioning before
+        assertThat(datasafe.userProfile().privateProfile(john).getAppVersion()).isEqualTo(Version.BASELINE);
+        assertThat(datasafe.userProfile().privateProfile(jane).getAppVersion()).isEqualTo(Version.BASELINE);
+        assertThat(datasafe.userProfile().publicProfile(john.getUserID()).getAppVersion()).isEqualTo(Version.BASELINE);
+        assertThat(datasafe.userProfile().publicProfile(john.getUserID()).getAppVersion()).isEqualTo(Version.BASELINE);
     }
 
     @SneakyThrows
