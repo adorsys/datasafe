@@ -61,4 +61,10 @@ public class UserPrivateProfile {
      * Optional field used for getting storage credentials using default flow.
      */
     private final AbsoluteLocation<PrivateResource> storageCredentialsKeystore;
+
+    /**
+     * Entity version. Keeps version of datasafe which create profile
+     */
+    @NonNull
+    private final String version;
 }

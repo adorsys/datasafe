@@ -32,11 +32,18 @@ public class CreateUserPublicProfile {
     @NonNull
     private final AbsoluteLocation<PublicResource> inbox;
 
+    /**
+     * Entity version. Keeps version of datasafe which create profile
+     */
+    @NonNull
+    private final String version;
+
     public UserPublicProfile removeAccess() {
         return UserPublicProfile.builder()
             // FIXME - remove access ?
             .inbox(inbox)
             .publicKeys(publicKeys)
+            .version(version)
             .build();
     }
 }

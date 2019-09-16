@@ -230,6 +230,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
             .id(auth.getUserID())
             .inbox(BasePublicResource.forAbsolutePublic(inboxLocation))
             .publicKeys(BasePublicResource.forAbsolutePublic(pubKeysLocation))
+            .version(DefaultDFSConfig.currentDatasafeVersion())
             .build()
         );
 
@@ -248,6 +249,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
             )
             .associatedResources(Collections.emptyList())
             .publishPubKeysTo(BasePublicResource.forAbsolutePublic(pubKeysLocation))
+            .version(DefaultDFSConfig.currentDatasafeVersion())
             .build()
         );
 

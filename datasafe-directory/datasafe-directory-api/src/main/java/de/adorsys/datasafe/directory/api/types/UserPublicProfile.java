@@ -24,4 +24,10 @@ public class UserPublicProfile {
      */
     @NonNull
     private final AbsoluteLocation<PublicResource> inbox;
+
+    /**
+     * Entity version. Keeps version of datasafe which create profile
+     */
+    @NonNull
+    private final String version;
 }

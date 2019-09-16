@@ -65,6 +65,12 @@ public class CreateUserPrivateProfile {
      */
     private final AbsoluteLocation<PublicResource> publishPubKeysTo;
 
+    /**
+     * Entity version. Keeps version of datasafe which create profile
+     */
+    @NonNull
+    private final String version;
+
     public UserPrivateProfile removeAccess() {
         return UserPrivateProfile.builder()
             // FIXME - remove access ?
@@ -75,6 +81,7 @@ public class CreateUserPrivateProfile {
             .documentVersionStorage(documentVersionStorage)
             .associatedResources(associatedResources)
             .publishPublicKeysTo(publishPubKeysTo)
+            .version(version)
             .build();
     }
 }
