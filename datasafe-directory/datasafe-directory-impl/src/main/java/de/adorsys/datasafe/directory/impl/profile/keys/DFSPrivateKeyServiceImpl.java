@@ -44,24 +44,25 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         String secretPathCrtKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX_CTR);
 
         return new PathEncryptionSecretKey(
-                    new KeyID(secretPathKeyId),
-                    (SecretKey) keyStoreOper.getKey(forUser, secretPathKeyId),
-                    (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId));
+                new KeyID(secretPathKeyId),
+                (SecretKey) keyStoreOper.getKey(forUser, secretPathKeyId),
+                new KeyID(secretPathCrtKeyId),
+                (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId));
     }
 
     private String getSecretPathKeyIdByPrefix(List<KeyID> keys, String pathKeyIdPrefix) {
         return keys.stream()
-                   .filter(it -> it.getValue().startsWith(pathKeyIdPrefix))
-                   .findFirst()
-                   .get()
-                   .getValue();
+                .filter(it -> it.getValue().startsWith(pathKeyIdPrefix))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Key ID with prefix " + pathKeyIdPrefix + " not found"))
+                .getValue();
     }
 
     private List<KeyID> getSecretKeyIds(UserIDAuth forUser) {
         return keyStoreOper.readAliases(forUser).stream()
-                    .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CTR))
-                    .map(KeyID::new)
-                    .collect(Collectors.toList());
+                .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CTR))
+                .map(KeyID::new)
+                .collect(Collectors.toList());
     }
 
     /**
