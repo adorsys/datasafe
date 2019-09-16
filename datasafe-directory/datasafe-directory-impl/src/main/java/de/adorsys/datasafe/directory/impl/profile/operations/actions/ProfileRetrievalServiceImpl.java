@@ -13,7 +13,6 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
-import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -51,9 +50,7 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
     public UserPublicProfile publicProfile(UserID ofUser) {
         UserPublicProfile userPublicProfile = userProfileCache.getPublicProfile().computeIfAbsent(
                 ofUser,
-                id -> handleMissingVersion(
-                        readProfile(dfsConfig.publicProfile(ofUser), UserPublicProfile.class)
-                )
+                id -> readProfile(dfsConfig.publicProfile(ofUser), UserPublicProfile.class)
         );
         log.debug("get public profile {} for user {}", userPublicProfile, ofUser);
         return userPublicProfile;
@@ -66,9 +63,7 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
     public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
         UserPrivateProfile userPrivateProfile = userProfileCache.getPrivateProfile().computeIfAbsent(
                 ofUser.getUserID(),
-                id -> handleMissingVersion(
-                        readProfile(dfsConfig.privateProfile(ofUser.getUserID()), UserPrivateProfile.class)
-                )
+                id -> readProfile(dfsConfig.privateProfile(ofUser.getUserID()), UserPrivateProfile.class)
         );
         log.debug("get private profile {} for user {}", userPrivateProfile, ofUser);
         return userPrivateProfile;
@@ -89,21 +84,5 @@ public class ProfileRetrievalServiceImpl implements ProfileRetrievalService {
             log.debug("read profile {}", resource.location());
             return serde.fromJson(new String(ByteStreams.toByteArray(is)), clazz);
         }
-    }
-
-    private UserPublicProfile handleMissingVersion(UserPublicProfile profile) {
-        if (null == profile.getAppVersion()) {
-            return profile.toBuilder().appVersion(Version.BASELINE).build();
-        }
-
-        return profile;
-    }
-
-    private UserPrivateProfile handleMissingVersion(UserPrivateProfile profile) {
-        if (null == profile.getAppVersion()) {
-            return profile.toBuilder().appVersion(Version.BASELINE).build();
-        }
-
-        return profile;
     }
 }

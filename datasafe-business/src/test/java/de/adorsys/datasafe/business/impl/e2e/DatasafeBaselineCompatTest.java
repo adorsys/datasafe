@@ -32,11 +32,11 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * This test ensures that Datasafe can use setup and folder structure from version 0.4.3 (backward compatibility)
+ * This test ensures that Datasafe can use setup and folder structure from version 0.6.2 (baseline backward compatibility)
  */
-class Datasafe043CompatTest extends BaseMockitoTest {
+class DatasafeBaselineCompatTest extends BaseMockitoTest {
 
-    private static final String BASE_FIXTURE = "compat-0.4.3";
+    private static final String BASE_FIXTURE = "compat-0.6.2";
     private static final String OLD_ROOT =
             "file:/var/folders/3w/fzdgs28j1_b3r4y8x9_s4wpw0000gn/T/junit4892767241345613098/";
 
@@ -130,7 +130,6 @@ class Datasafe043CompatTest extends BaseMockitoTest {
                         "jane/private/files"
                 );
 
-        // 0.4.3 is baseline-compatible and there was no versioning before
         assertThat(datasafe.userProfile().privateProfile(john).getAppVersion()).isEqualTo(Version.BASELINE);
         assertThat(datasafe.userProfile().privateProfile(jane).getAppVersion()).isEqualTo(Version.BASELINE);
         assertThat(datasafe.userProfile().publicProfile(john.getUserID()).getAppVersion()).isEqualTo(Version.BASELINE);
