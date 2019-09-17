@@ -2,6 +2,7 @@ package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.types.api.global.PathEncryptionVersion;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -45,10 +47,11 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
         Cipher cipher = encryptionConfig.encryptionCipher(secretKey);
 
-        return processURIparts(
+        Uri uri = processURIparts(
                 bucketPath,
                 str -> encode(str, cipher)
         );
+        return new Uri(URI.create(uri.getPath() + PathEncryptionVersion.AES_SIV.getName()));
     }
 
     /**
@@ -61,6 +64,13 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         validateUriIsRelative(bucketPath);
 
         Cipher cipher = encryptionConfig.decryptionCipher(secretKey);
+
+        String path = bucketPath.getPath();
+        String pathEncryptionName = path.substring(path.length() - 3);
+        if (Stream.of(PathEncryptionVersion.values()).map(PathEncryptionVersion::getName).collect(Collectors.toSet())
+                .contains(pathEncryptionName)) {
+            bucketPath = new Uri(URI.create(path.substring(0, path.length() - 3)));
+        }
 
         return processURIparts(
                 bucketPath,
