@@ -1,6 +1,6 @@
-package de.adorsys.datasafe.encrypiton.impl.pathencryption;
+package de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption;
 
-import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.simple.adapter.api.legacy.pathencryption.LegacyPathEncryptionConfig;
 import lombok.SneakyThrows;
 
 import javax.crypto.Cipher;
@@ -12,16 +12,15 @@ import java.util.Arrays;
 import java.util.Base64;
 
 /**
- * Default path encryption/decryption that uses encryption specified by {@link DefaultPathDigestConfig} and
+ * Default path encryption/decryption that uses encryption specified by {@link LegacyPathDigestConfig} and
  * encodes resulting bytes using Base64-urlsafe encoding.
  */
-@RuntimeDelegate
-public class DefaultPathEncryption implements PathEncryptionConfig {
+public class LegacyPathEncryptor implements LegacyPathEncryptionConfig {
 
-    private final DefaultPathDigestConfig digestConfig;
+    private final LegacyPathDigestConfig digestConfig;
 
     @Inject
-    public DefaultPathEncryption(DefaultPathDigestConfig config) {
+    public LegacyPathEncryptor(LegacyPathDigestConfig config) {
         this.digestConfig = config;
     }
 
@@ -46,7 +45,7 @@ public class DefaultPathEncryption implements PathEncryptionConfig {
     }
 
     @SneakyThrows
-    private static Cipher createCipher(SecretKey secretKey, DefaultPathDigestConfig config, int cipherMode) {
+    private static Cipher createCipher(SecretKey secretKey, LegacyPathDigestConfig config, int cipherMode) {
         byte[] key = secretKey.getEncoded();
         MessageDigest sha = MessageDigest.getInstance(config.getMessageDigest());
         key = sha.digest(key);

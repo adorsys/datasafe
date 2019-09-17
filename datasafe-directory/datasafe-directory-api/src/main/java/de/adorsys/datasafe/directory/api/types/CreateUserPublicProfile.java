@@ -6,6 +6,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.Value;
 
 /**
@@ -40,9 +41,8 @@ public class CreateUserPublicProfile {
     @Builder.Default
     private final Version appVersion = Version.current();
 
-    public UserPublicProfile removeAccess() {
+    public UserPublicProfile buildPublicProfile() {
         return UserPublicProfile.builder()
-            // FIXME - remove access ?
             .inbox(inbox)
             .publicKeys(publicKeys)
             .appVersion(appVersion)

@@ -1,27 +1,27 @@
-package de.adorsys.datasafe.encrypiton.api.pathencryption.encryption;
+package de.adorsys.datasafe.simple.adapter.api.legacy.pathencryption;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
 import de.adorsys.datasafe.types.api.resource.Uri;
+
+import javax.crypto.SecretKey;
 
 /**
  * Encrypts and decrypts relative URI's using symmetric cryptography.
  */
-public interface SymmetricPathEncryptionService {
+public interface LegacySymmetricPathEncryptionService {
 
     /**
      * Encrypts relative URI using secret key and serializes it into URL-friendly format.
-     * @param pathEncryptionSecretKey entity with keys for encrypt path
+     * @param secretKey Key to encrypt with
      * @param bucketPath Path to encrypt
      * @return Encrypted relative URI that can be safely published.
      */
-    Uri encrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath);
+    Uri encrypt(SecretKey secretKey, Uri bucketPath);
 
     /**
      * Decrypts relative URI using secret key.
-     * @param pathEncryptionSecretKey entity with keys for decrypt path
+     * @param secretKey Key to decrypt with
      * @param bucketPath Path to decrypt
      * @return Decrypted relative URI typically containing some sensitive information.
      */
-    Uri decrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath);
-
+    Uri decrypt(SecretKey secretKey, Uri bucketPath);
 }

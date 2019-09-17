@@ -5,7 +5,11 @@ import dagger.Module;
 import dagger.Provides;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.*;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.DefaultPathEncryptorDecryptorRuntimeDelegatable;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptorDecryptor;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.SymmetricPathEncryptionServiceImplRuntimeDelegatable;
+import org.cryptomator.siv.SivMode;
 
 /**
  * This module is responsible for providing pathencryption of document.
@@ -13,19 +17,16 @@ import de.adorsys.datasafe.encrypiton.impl.pathencryption.*;
 @Module
 public abstract class DefaultPathEncryptionModule {
 
-    /**
-     * Default path digest that specifies AES and SHA-256 for path encryption.
-     */
     @Provides
-    static DefaultPathDigestConfig digestConfig() {
-        return new DefaultPathDigestConfig();
+    static SivMode sivMode() {
+        return new SivMode();
     }
 
     /**
-     * Default path encryption that uses Base64-urlsafe path serialization
+     * Default path encryption that uses Base64-urlsafe path serialization and AES-CGM-SIV mode for encryption
      */
     @Binds
-    abstract PathEncryptionConfig config(DefaultPathEncryptionRuntimeDelegatable config);
+    abstract PathEncryptorDecryptor pathEncryptorDecryptor(DefaultPathEncryptorDecryptorRuntimeDelegatable impl);
 
     /**
      * By default simply use

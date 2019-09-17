@@ -4,6 +4,7 @@ import de.adorsys.datasafe.directory.api.profile.keys.DocumentKeyStoreOperations
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
@@ -11,12 +12,12 @@ import lombok.SneakyThrows;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import java.security.Key;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.*;
 
 /**
  * Retrieves and opens private keystore associated with user location DFS storage.
@@ -36,8 +37,17 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      * Reads path encryption secret key from DFS and caches the result.
      */
     @Override
-    public SecretKeyIDWithKey pathEncryptionSecretKey(UserIDAuth forUser) {
-        return keyByPrefix(forUser, PATH_KEY_ID_PREFIX);
+    public PathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser) {
+        List<KeyID> secretKeyIds = getSecretKeyIds(forUser);
+
+        String secretPathKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX);
+        String secretPathCrtKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX_CTR);
+
+        return new PathEncryptionSecretKey(
+                new KeyID(secretPathKeyId),
+                (SecretKey) keyStoreOper.getKey(forUser, secretPathKeyId),
+                new KeyID(secretPathCrtKeyId),
+                (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId));
     }
 
     /**
@@ -63,7 +73,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 );
     }
 
-    private SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {
+    protected SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {
         KeyID key = keyStoreOper.readAliases(forUser).stream()
                 .filter(it -> it.startsWith(prefix))
                 .map(KeyID::new)
@@ -74,5 +84,20 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 key,
                 (SecretKey) keyStoreOper.getKey(forUser, key.getValue())
         );
+    }
+
+    private String getSecretPathKeyIdByPrefix(List<KeyID> keys, String pathKeyIdPrefix) {
+        return keys.stream()
+                .filter(it -> it.getValue().startsWith(pathKeyIdPrefix))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Key ID with prefix " + pathKeyIdPrefix + " not found"))
+                .getValue();
+    }
+
+    private List<KeyID> getSecretKeyIds(UserIDAuth forUser) {
+        return keyStoreOper.readAliases(forUser).stream()
+                .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CTR))
+                .map(KeyID::new)
+                .collect(Collectors.toList());
     }
 }
