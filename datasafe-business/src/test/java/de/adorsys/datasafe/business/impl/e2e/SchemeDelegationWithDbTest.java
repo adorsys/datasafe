@@ -15,7 +15,7 @@ import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
-import de.adorsys.datasafe.types.api.global.PathEncryptionVersion;
+import de.adorsys.datasafe.types.api.global.PathEncryptionId;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -86,7 +86,7 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
         assertThat(listDb("jdbc://localhost:9999/h2:mem:test/public_profiles/"))
             .containsExactly("jdbc://localhost:9999/h2:mem:test/public_profiles/john");
 
-        Path path = fsPath.resolve("users/john/private/files/" + PathEncryptionVersion.AES_SIV.getName() + "/");
+        Path path = fsPath.resolve("users/john/private/files/" + PathEncryptionId.AES_SIV.getName() + "/");
         Path encryptedFile = Files.walk(path).collect(Collectors.toList()).get(1);
         // File and keystore/pub keys are on FS
         assertThat(Files.walk(fsPath))
