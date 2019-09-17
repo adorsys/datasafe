@@ -72,7 +72,6 @@
         <dependency>
             <groupId>org.cryptomator</groupId>
             <artifactId>siv-mode</artifactId>
-            <version>${siv-mode.version}</version>
         </dependency>
 
         <dependency>

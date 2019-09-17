@@ -20,7 +20,8 @@ import java.util.stream.IntStream;
 /**
  * Path encryption service that maintains URI segments integrity.
  * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of example:
- * cipher(path) will yield same string.
+ * cipher(path) will yield same string, but cipher(path)/cipher(path) will not yield same segments -
+ * it will be more like abc/cde and not like abc/abc.
  */
 @Slf4j
 @RuntimeDelegate
