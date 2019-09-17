@@ -15,7 +15,6 @@ import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
-import de.adorsys.datasafe.types.api.global.PathEncryptionId;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -32,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SchemeDelegationWithDbTest extends WithStorageProvider {
@@ -39,14 +39,13 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
 
     private Path fsPath;
-    private StorageService filesystem;
     private StorageService db;
     private DefaultDatasafeServices datasafeServices;
 
     @BeforeEach
     void initialize(@TempDir Path tempDir) {
         this.fsPath = tempDir;
-        this.filesystem = new FileSystemStorageService(tempDir);
+        StorageService filesystem = new FileSystemStorageService(tempDir);
         this.db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
             uri -> uri.location().getWrapped().getScheme() + ":" + uri.location().getPath().split("/")[1],
             ImmutableMap.of("jdbc://localhost:9999", new DatabaseCredentials("sa", "sa")))
@@ -86,7 +85,7 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
         assertThat(listDb("jdbc://localhost:9999/h2:mem:test/public_profiles/"))
             .containsExactly("jdbc://localhost:9999/h2:mem:test/public_profiles/john");
 
-        Path path = fsPath.resolve("users/john/private/files/" + PathEncryptionId.AES_SIV.getName() + "/");
+        Path path = fsPath.resolve(new Uri("users/john/private/files/").resolve(AES_SIV.asUriRoot()).asString());
         Path encryptedFile = Files.walk(path).collect(Collectors.toList()).get(1);
         // File and keystore/pub keys are on FS
         assertThat(Files.walk(fsPath))
