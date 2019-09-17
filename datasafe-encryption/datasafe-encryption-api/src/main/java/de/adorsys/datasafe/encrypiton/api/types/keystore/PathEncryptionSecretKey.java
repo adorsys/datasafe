@@ -7,7 +7,7 @@ import lombok.ToString;
 import javax.crypto.SecretKey;
 
 @Getter
-@ToString
+@ToString(callSuper=true)
 @RequiredArgsConstructor
 public class PathEncryptionSecretKey {
 

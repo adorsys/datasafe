@@ -45,7 +45,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                 config,
                 ImmutableMap.of(
                         new KeyID(PATH_KEY_ID_PREFIX + UUID.randomUUID().toString()), Optional.empty(),
-                        new KeyID(PATH_KEY_ID_PREFIX_CRT + UUID.randomUUID().toString()), Optional.empty(),
+                        new KeyID(PATH_KEY_ID_PREFIX_CTR + UUID.randomUUID().toString()), Optional.empty(),
                         new KeyID(DOCUMENT_KEY_ID_PREFIX + UUID.randomUUID().toString()), Optional.empty()
                 )
         );

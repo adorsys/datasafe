@@ -18,6 +18,7 @@ import java.net.URI;
 import java.security.KeyStore;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -38,7 +39,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     @Test
     void testSuccessEncryptDecryptPath() {
-        String testPath = "path/to/file";
+        String testPath = "path";
 
         Uri testURI = new Uri(testPath);
 
@@ -47,18 +48,20 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
                 KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
         );
 
-        SecretKeySpec secretKeyCrt = keyStoreService.getSecretKey(
+        SecretKeySpec secretKeyCtr = keyStoreService.getSecretKey(
                 keyStoreAccess,
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX_CTR)
         );
 
-        PathEncryptionSecretKey secretKeyIDWithKey = new PathEncryptionSecretKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKeyCrt);
+        PathEncryptionSecretKey pathEncryptionSecretKey = new PathEncryptionSecretKey(
+                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX),
+                secretKey,
+                secretKeyCtr);
 
-        Uri encrypted = bucketPathEncryptionService.encrypt(secretKeyIDWithKey, testURI);
+        Uri encrypted = bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
         log.debug("Encrypted path: {}", encrypted);
 
-        Uri decrypted = bucketPathEncryptionService.decrypt(secretKeyIDWithKey, encrypted);
+        Uri decrypted = bucketPathEncryptionService.decrypt(pathEncryptionSecretKey, encrypted);
         log.debug("Decrypted path: {}", decrypted);
 
         assertEquals(testPath, decrypted.toASCIIString());

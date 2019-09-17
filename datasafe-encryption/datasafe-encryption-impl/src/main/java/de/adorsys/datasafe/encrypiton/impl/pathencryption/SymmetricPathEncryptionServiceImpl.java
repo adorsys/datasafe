@@ -31,16 +31,16 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     private static final String PATH_SEPARATOR = "/";
 
     private final Function<PathSecretKeyWithData, String> encryptAndEncode;
-    private final Function<PathSecretKeyWithData, String> decryptAndDecode;
+    private final Function<PathSecretKeyWithData, String> decodeAndDecrypt;
 
     @Inject
     public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
-        encryptAndEncode = keyEntryEncryptedDataPair -> encode(pathEncryptorDecryptor.encrypt(
-                keyEntryEncryptedDataPair.getPathEncryptionSecretKey(), keyEntryEncryptedDataPair.getPath()
+        encryptAndEncode = keyEntryEncryptedData -> encode(pathEncryptorDecryptor.encrypt(
+                keyEntryEncryptedData.getPathEncryptionSecretKey(), keyEntryEncryptedData.getPath()
         ));
 
-        decryptAndDecode = keyEntryDecryptedDataPair -> pathEncryptorDecryptor.decrypt(
-                keyEntryDecryptedDataPair.getPathEncryptionSecretKey(), decode(keyEntryDecryptedDataPair.getPath())
+        decodeAndDecrypt = keyEntryDecryptedData -> pathEncryptorDecryptor.decrypt(
+                keyEntryDecryptedData.getPathEncryptionSecretKey(), decode(keyEntryDecryptedData.getPath())
         );
     }
 
@@ -54,9 +54,9 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         validateUriIsRelative(bucketPath);
 
         return processURIparts(
-                pathEncryptionSecretKey,
-                bucketPath,
-                encryptAndEncode
+                    pathEncryptionSecretKey,
+                    bucketPath,
+                    encryptAndEncode
         );
     }
 
@@ -65,14 +65,14 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
      */
     @Override
     @SneakyThrows
-    public Uri decrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
-        validateArgs(pathEncryptionSecretKey, bucketPath);
-        validateUriIsRelative(bucketPath);
+    public Uri decrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri encryptedBucketPath) {
+        validateArgs(pathEncryptionSecretKey, encryptedBucketPath);
+        validateUriIsRelative(encryptedBucketPath);
 
         return processURIparts(
-                pathEncryptionSecretKey,
-                bucketPath,
-                decryptAndDecode
+                    pathEncryptionSecretKey,
+                    encryptedBucketPath,
+                    decodeAndDecrypt
         );
     }
 
@@ -95,7 +95,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     private static Uri processURIparts(
-            PathEncryptionSecretKey secretKeyEntry,
+            PathEncryptionSecretKey pathSecretKeyEntry,
             Uri bucketPath,
             Function<PathSecretKeyWithData, String> process) {
         StringBuilder result = new StringBuilder();
@@ -115,8 +115,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
                 URI.create(
                         Arrays.stream(path.split(PATH_SEPARATOR))
                                 .map(uriPart -> process.apply(
-                                        new PathSecretKeyWithData(secretKeyEntry, uriPart)))
-                                .map(String::new) // byte[] -> string
+                                        new PathSecretKeyWithData(pathSecretKeyEntry, uriPart)))
                                 .collect(Collectors.joining(PATH_SEPARATOR)))
         );
     }
