@@ -50,21 +50,6 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId));
     }
 
-    private String getSecretPathKeyIdByPrefix(List<KeyID> keys, String pathKeyIdPrefix) {
-        return keys.stream()
-                .filter(it -> it.getValue().startsWith(pathKeyIdPrefix))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Key ID with prefix " + pathKeyIdPrefix + " not found"))
-                .getValue();
-    }
-
-    private List<KeyID> getSecretKeyIds(UserIDAuth forUser) {
-        return keyStoreOper.readAliases(forUser).stream()
-                .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CTR))
-                .map(KeyID::new)
-                .collect(Collectors.toList());
-    }
-
     /**
      * Reads document encryption secret key from DFS and caches the result.
      */
@@ -88,7 +73,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 );
     }
 
-    private SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {
+    protected SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {
         KeyID key = keyStoreOper.readAliases(forUser).stream()
                 .filter(it -> it.startsWith(prefix))
                 .map(KeyID::new)
@@ -99,5 +84,20 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 key,
                 (SecretKey) keyStoreOper.getKey(forUser, key.getValue())
         );
+    }
+
+    private String getSecretPathKeyIdByPrefix(List<KeyID> keys, String pathKeyIdPrefix) {
+        return keys.stream()
+                .filter(it -> it.getValue().startsWith(pathKeyIdPrefix))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Key ID with prefix " + pathKeyIdPrefix + " not found"))
+                .getValue();
+    }
+
+    private List<KeyID> getSecretKeyIds(UserIDAuth forUser) {
+        return keyStoreOper.readAliases(forUser).stream()
+                .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CTR))
+                .map(KeyID::new)
+                .collect(Collectors.toList());
     }
 }
