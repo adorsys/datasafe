@@ -12,6 +12,8 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
+
 /**
  * This service ignores profiles stored at some external location and instead assumes that all files are relative
  * to system root.
@@ -23,6 +25,7 @@ public class DFSRelativeProfileRetrievalServiceImpl extends ProfileRetrievalServ
     private final StorageCheckService checkService;
     private final BucketAccessService access;
 
+    @Inject
     public DFSRelativeProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageCheckService checkService,
                                            BucketAccessService access) {
         super(null, null, null, null, null, null);
