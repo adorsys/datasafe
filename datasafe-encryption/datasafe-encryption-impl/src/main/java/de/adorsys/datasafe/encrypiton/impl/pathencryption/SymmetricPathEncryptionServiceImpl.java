@@ -51,7 +51,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
                 bucketPath,
                 str -> encode(str, cipher)
         );
-        return new Uri(URI.create(uri.getPath() + PathEncryptionVersion.AES_SIV.getName()));
+        return new Uri(PathEncryptionVersion.AES_SIV.getName() + "/").resolve(uri);
     }
 
     /**
@@ -64,14 +64,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         validateUriIsRelative(bucketPath);
 
         Cipher cipher = encryptionConfig.decryptionCipher(secretKey);
-
-        String path = bucketPath.getPath();
-        String pathEncryptionName = path.substring(path.length() - 3);
-        if (Stream.of(PathEncryptionVersion.values()).map(PathEncryptionVersion::getName).collect(Collectors.toSet())
-                .contains(pathEncryptionName)) {
-            bucketPath = new Uri(URI.create(path.substring(0, path.length() - 3)));
-        }
-
+        bucketPath = new Uri(PathEncryptionVersion.AES_SIV.getName() + "/").relativize(bucketPath);
         return processURIparts(
                 bucketPath,
                 str -> decode(str, cipher)
