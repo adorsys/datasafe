@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.rest.impl.dto;
 
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
+import de.adorsys.datasafe.types.api.global.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class UserPublicProfileDTO {
         return UserPublicProfile.builder()
             .inbox(Util.publicResource(inbox))
             .publicKeys(Util.publicResource(publicKeys))
+            .appVersion(Version.current())
             .build();
     }
 }
