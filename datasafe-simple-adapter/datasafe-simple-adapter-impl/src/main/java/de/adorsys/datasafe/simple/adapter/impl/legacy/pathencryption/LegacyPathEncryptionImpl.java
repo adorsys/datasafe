@@ -34,7 +34,7 @@ public class LegacyPathEncryptionImpl implements PathEncryption {
     @Override
     public Uri encrypt(UserIDAuth forUser, Uri path) {
         PathEncryptionSecretKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);
-        Uri encrypt = bucketPathEncryptionService.encrypt(keySpec.getSecretKey(), path);
+        Uri encrypt = bucketPathEncryptionService.encrypt(keySpec.getSecretKey().getSecretKey(), path);
         log.debug("encrypted path {} for user {} path {}", encrypt, forUser.getUserID(), path);
         return encrypt;
     }
@@ -46,7 +46,7 @@ public class LegacyPathEncryptionImpl implements PathEncryption {
     public Function<Uri, Uri> decryptor(UserIDAuth forUser) {
         PathEncryptionSecretKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);
         return encryptedPath -> {
-            Uri decrypt = bucketPathEncryptionService.decrypt(keySpec.getSecretKey(), encryptedPath);
+            Uri decrypt = bucketPathEncryptionService.decrypt(keySpec.getSecretKey().getSecretKey(), encryptedPath);
             log.debug("decrypted path {} for user {} path {}", decrypt, forUser.getUserID(), encryptedPath);
             return decrypt;
         };

@@ -12,7 +12,7 @@ import lombok.SneakyThrows;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import java.security.Key;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,16 +38,14 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      */
     @Override
     public PathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser) {
-        List<KeyID> secretKeyIds = getSecretKeyIds(forUser);
-
-        String secretPathKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX);
-        String secretPathCtrKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX_CTR);
+        Set<String> aliases = keyStoreOper.readAliases(forUser);
+        SecretKeyIDWithKey secretPathKeyId = keyByPrefix(forUser, aliases, PATH_KEY_ID_PREFIX);
+        SecretKeyIDWithKey secretPathCtrKeyId = keyByPrefix(forUser, aliases, PATH_KEY_ID_PREFIX_CTR);
 
         return new PathEncryptionSecretKey(
-                new KeyID(secretPathKeyId),
-                (SecretKey) keyStoreOper.getKey(forUser, secretPathKeyId),
-                new KeyID(secretPathCtrKeyId),
-                (SecretKey) keyStoreOper.getKey(forUser, secretPathCtrKeyId));
+                secretPathKeyId,
+                secretPathCtrKeyId
+        );
     }
 
     /**
@@ -74,7 +72,15 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     }
 
     protected SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {
-        KeyID key = keyStoreOper.readAliases(forUser).stream()
+        return keyByPrefix(
+                forUser,
+                keyStoreOper.readAliases(forUser),
+                prefix
+        );
+    }
+
+    protected SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, Collection<String> aliases, String prefix) {
+        KeyID key = aliases.stream()
                 .filter(it -> it.startsWith(prefix))
                 .map(KeyID::new)
                 .findFirst()
@@ -84,20 +90,5 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 key,
                 (SecretKey) keyStoreOper.getKey(forUser, key.getValue())
         );
-    }
-
-    private String getSecretPathKeyIdByPrefix(List<KeyID> keys, String pathKeyIdPrefix) {
-        return keys.stream()
-                .filter(it -> it.getValue().startsWith(pathKeyIdPrefix))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Key ID with prefix " + pathKeyIdPrefix + " not found"))
-                .getValue();
-    }
-
-    private List<KeyID> getSecretKeyIds(UserIDAuth forUser) {
-        return keyStoreOper.readAliases(forUser).stream()
-                .filter(it -> it.startsWith(PATH_KEY_ID_PREFIX) || it.startsWith(PATH_KEY_ID_PREFIX_CTR))
-                .map(KeyID::new)
-                .collect(Collectors.toList());
     }
 }
