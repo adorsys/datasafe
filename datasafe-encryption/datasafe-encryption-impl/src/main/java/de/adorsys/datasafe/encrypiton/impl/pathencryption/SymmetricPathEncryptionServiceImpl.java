@@ -1,8 +1,9 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
+import com.google.common.primitives.Ints;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.dto.PathSecretKeyWithData;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.dto.PathSegmentWithSecretKeyWith;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
@@ -10,17 +11,17 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import java.util.stream.IntStream;
 
 /**
  * Path encryption service that maintains URI segments integrity.
  * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of example:
- * cipher(path) will yield same string.
+ * cipher(path) will yield same string, but cipher(path)/cipher(path) will not yield same segments -
+ * it will be more like abc/cde and not like abc/abc.
  */
 @Slf4j
 @RuntimeDelegate
@@ -88,27 +89,27 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     @SneakyThrows
-    private static String decode(String encryptedPath) {
-        if (null == encryptedPath || encryptedPath.isEmpty()) {
-            return encryptedPath;
-        }
-
-        return new String(Base64.getUrlDecoder().decode(encryptedPath), UTF_8);
-    }
-
-    @SneakyThrows
-    private static String encode(String encryptedPath) {
+    private static byte[] decode(String encryptedPath) {
         if (null == encryptedPath || encryptedPath.isEmpty()) {
             return null;
         }
 
-        return Base64.getUrlEncoder().encodeToString(encryptedPath.getBytes(UTF_8));
+        return Base64.getUrlDecoder().decode(encryptedPath);
+    }
+
+    @SneakyThrows
+    private static String encode(byte[] encryptedPath) {
+        if (null == encryptedPath) {
+            return null;
+        }
+
+        return Base64.getUrlEncoder().encodeToString(encryptedPath);
     }
 
     private static Uri processURIparts(
             PathEncryptionSecretKey secretKeyEntry,
             Uri bucketPath,
-            Function<PathSecretKeyWithData, String> process) {
+            Function<PathSegmentWithSecretKeyWith, String> process) {
         StringBuilder result = new StringBuilder();
 
         String path = bucketPath.getRawPath();

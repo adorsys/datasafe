@@ -41,13 +41,13 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         List<KeyID> secretKeyIds = getSecretKeyIds(forUser);
 
         String secretPathKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX);
-        String secretPathCrtKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX_CTR);
+        String secretPathCtrKeyId = getSecretPathKeyIdByPrefix(secretKeyIds, PATH_KEY_ID_PREFIX_CTR);
 
         return new PathEncryptionSecretKey(
                 new KeyID(secretPathKeyId),
                 (SecretKey) keyStoreOper.getKey(forUser, secretPathKeyId),
-                new KeyID(secretPathCrtKeyId),
-                (SecretKey) keyStoreOper.getKey(forUser, secretPathCrtKeyId));
+                new KeyID(secretPathCtrKeyId),
+                (SecretKey) keyStoreOper.getKey(forUser, secretPathCtrKeyId));
     }
 
     /**

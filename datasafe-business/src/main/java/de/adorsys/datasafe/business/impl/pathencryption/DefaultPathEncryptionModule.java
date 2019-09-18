@@ -12,11 +12,15 @@ import de.adorsys.datasafe.encrypiton.impl.pathencryption.SymmetricPathEncryptio
 import org.cryptomator.siv.SivMode;
 
 /**
- * This module is responsible for providing pathencryption of document.
+ * This module is responsible for providing path encryption of document.
  */
 @Module
 public abstract class DefaultPathEncryptionModule {
 
+    /**
+     * SivMode using for encryption and decryption in AES CGM SIV mode
+     * @return SivMode
+     */
     @Provides
     static SivMode sivMode() {
         return new SivMode();
