@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.com.google.common.io.ByteStreams;
 
+import javax.crypto.AEADBadTagException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +25,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.assertj.core.api.Java6Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -33,8 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 class DataTamperingResistanceTest extends BaseE2ETest {
 
-    private static final String TEXT = "Tampering test";
-    private static final String FILENAME = "my_file.txt";
+    private static final String TEXT = "Tampering test!!";
+    private static final String FILENAME = "my_file_with_quite_a_long_name_to_check_stuff.txt";
 
     @BeforeEach
     void prepare() {
@@ -53,10 +55,9 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         tamperFileByReplacingOneByteOfEncryptedMessage(privateFile);
 
         try (InputStream is = readFromPrivate.read(ReadRequest.forDefaultPrivate(jane, FILENAME))) {
-            assertThrows(
-                    InvalidCipherTextIOException.class,
+            assertThatThrownBy(
                     () -> ByteStreams.copy(is, ByteStreams.nullOutputStream())
-            );
+            ).isInstanceOf(InvalidCipherTextIOException.class).hasCauseInstanceOf(AEADBadTagException.class);
         }
     }
 
@@ -73,10 +74,9 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         tamperFileByReplacingOneByteOfEncryptedMessage(inboxFile);
 
         try (InputStream is = readFromInbox.read(ReadRequest.forDefaultPrivate(john, FILENAME))) {
-            assertThrows(
-                    InvalidCipherTextIOException.class,
+            assertThatThrownBy(
                     () -> ByteStreams.copy(is, ByteStreams.nullOutputStream())
-            );
+            ).isInstanceOf(InvalidCipherTextIOException.class).hasCauseInstanceOf(AEADBadTagException.class);
         }
     }
 
@@ -110,8 +110,11 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         Path physicalFile = Paths.get(privateFile.getResource().location().asURI());
         byte[] privateBytes = Files.readAllBytes(physicalFile);
         String pathAsString = physicalFile.toAbsolutePath().toString();
-        pathAsString = pathAsString.substring(0, pathAsString.length() - 1)
-                + randomChar(pathAsString.charAt(pathAsString.length() - 1));
+        // this should 'approximately' be inside encrypted text
+        int somewhereInEncText = pathAsString.length() - FILENAME.length() / 2;
+        pathAsString = pathAsString.substring(0, somewhereInEncText - 1)
+                + randomChar(pathAsString.charAt(somewhereInEncText))
+                + pathAsString.substring(somewhereInEncText);
         Files.write(Paths.get(pathAsString), privateBytes, StandardOpenOption.CREATE);
     }
 
@@ -120,9 +123,9 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         // tamper the file by replacing 1 byte in it
         Path physicalFile = Paths.get(privateFile.getResource().location().asURI());
         byte[] privateBytes = Files.readAllBytes(physicalFile);
-        // this should 'approximately' end at encrypted text
-        privateBytes[privateBytes.length - TEXT.length()] =
-                randomByte(privateBytes[privateBytes.length - TEXT.length()]);
+        // this should 'approximately' be inside encrypted text
+        int somewhereInEncText = privateBytes.length - TEXT.length() / 2;
+        privateBytes[somewhereInEncText] = randomByte(privateBytes[somewhereInEncText]);
         Files.write(physicalFile, privateBytes, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
