@@ -2,7 +2,6 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.global.Version;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,7 @@ class ProfileContainsDatasafeVersionTest extends BaseE2ETest {
     @Test
     @SneakyThrows
     void getProfileVersionTest() {
-        StorageDescriptor fs = fs();
-        init(fs);
+        init();
 
         UserIDAuth bob = registerUser("bob");
 
@@ -23,7 +21,8 @@ class ProfileContainsDatasafeVersionTest extends BaseE2ETest {
         assertThat(version).isEqualTo(Version.current());
     }
 
-    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+    private void init() {
+        StorageDescriptor descriptor = fs();
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
                 .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);
