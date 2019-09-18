@@ -1,8 +1,9 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
+import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecretKey;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.dto.PathSegmentWithSecretKeyWith;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -43,7 +44,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
                         pathEncryptorDecryptor.encrypt(
                                 keyEntryEncryptedDataPair.getPathEncryptionSecretKey(),
                                 keyEntryEncryptedDataPair.getPath().getBytes(StandardCharsets.UTF_8),
-                                Ints.toByteArray(keyEntryEncryptedDataPair.getAuthenticationPosition())
+                                extractAuthentication(keyEntryEncryptedDataPair)
                         )
                 );
 
@@ -52,7 +53,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
                         pathEncryptorDecryptor.decrypt(
                                 keyEntryDecryptedDataPair.getPathEncryptionSecretKey(),
                                 decode(keyEntryDecryptedDataPair.getPath()),
-                                Ints.toByteArray(keyEntryDecryptedDataPair.getAuthenticationPosition())
+                                extractAuthentication(keyEntryDecryptedDataPair)
                         ),
                         StandardCharsets.UTF_8
                 );
@@ -63,7 +64,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
      */
     @Override
     @SneakyThrows
-    public Uri encrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
+    public Uri encrypt(AuthPathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
         validateArgs(pathEncryptionSecretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
@@ -81,7 +82,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
      */
     @Override
     @SneakyThrows
-    public Uri decrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
+    public Uri decrypt(AuthPathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
         validateArgs(pathEncryptionSecretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
@@ -95,7 +96,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     @SneakyThrows
-    private static byte[] decode(String encryptedPath) {
+    private byte[] decode(String encryptedPath) {
         if (null == encryptedPath || encryptedPath.isEmpty()) {
             return null;
         }
@@ -104,7 +105,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     @SneakyThrows
-    private static String encode(byte[] encryptedPath) {
+    private String encode(byte[] encryptedPath) {
         if (null == encryptedPath) {
             return null;
         }
@@ -112,8 +113,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         return Base64.getUrlEncoder().encodeToString(encryptedPath);
     }
 
-    private static Uri processURIparts(
-            PathEncryptionSecretKey secretKeyEntry,
+    private Uri processURIparts(
+            AuthPathEncryptionSecretKey secretKeyEntry,
             Uri bucketPath,
             Function<PathSegmentWithSecretKeyWith, String> process) {
         StringBuilder result = new StringBuilder();
@@ -133,7 +134,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         return new Uri(URI.create(processSegments(secretKeyEntry, process, segments)));
     }
 
-    private static String processSegments(PathEncryptionSecretKey secretKeyEntry,
+    private String processSegments(AuthPathEncryptionSecretKey secretKeyEntry,
                                           Function<PathSegmentWithSecretKeyWith, String> process,
                                           String[] segments) {
         return IntStream.range(0, segments.length)
@@ -148,7 +149,15 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
                 ).collect(Collectors.joining(PATH_SEPARATOR));
     }
 
-    private static void validateArgs(PathEncryptionSecretKey secretKeyEntry, Uri bucketPath) {
+
+    private static byte[] extractAuthentication(PathSegmentWithSecretKeyWith holder) {
+        return Bytes.concat(
+                Ints.toByteArray(holder.getAuthenticationPosition()),
+                holder.getPathEncryptionSecretKey().getUser().getValue().getBytes(StandardCharsets.UTF_8)
+        );
+    }
+
+    private static void validateArgs(AuthPathEncryptionSecretKey secretKeyEntry, Uri bucketPath) {
         if (null == secretKeyEntry) {
             throw new IllegalArgumentException("Secret key should not be null");
         }

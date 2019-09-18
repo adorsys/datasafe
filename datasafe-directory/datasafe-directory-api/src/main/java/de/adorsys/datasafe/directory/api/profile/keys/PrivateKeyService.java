@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.directory.api.profile.keys;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecretKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 
 import java.security.Key;
@@ -18,7 +18,7 @@ public interface PrivateKeyService {
      * @param forUser Key owner
      * @return Path encryption entity which contain secret keys and key ID.
      */
-    PathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser);
+    AuthPathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser);
 
     /**
      * Get document-encryption key

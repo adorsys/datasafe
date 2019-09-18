@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
@@ -42,13 +43,13 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         String testPath = "path/to/path/file/to";
 
         Uri testURI = new Uri(testPath);
-        PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
+        AuthPathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
         Uri encrypted = bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
 
         String[] encryptedSegments = encrypted.asString().split("/");
-        assertThat(encryptedSegments[0]).isNotEqualTo(encryptedSegments[2]);
-        assertThat(encryptedSegments[1]).isNotEqualTo(encryptedSegments[4]);
+        assertThat(encryptedSegments[1]).isNotEqualTo(encryptedSegments[3]);
+        assertThat(encryptedSegments[2]).isNotEqualTo(encryptedSegments[5]);
     }
 
     @Test
@@ -56,7 +57,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         String testPath = "path/to/file";
 
         Uri testURI = new Uri(testPath);
-        PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
+        AuthPathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
         Uri encrypted = bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
         log.debug("Encrypted path: {}", encrypted);
@@ -69,7 +70,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     @Test
     void testFailEncryptPathWithBrokenEncryptedPath() {
-        PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
+        AuthPathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
         assertThrows(BadPaddingException.class,
                 () -> bucketPathEncryptionService.decrypt(pathEncryptionSecretKey,
@@ -78,7 +79,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     @Test
     void testFailEncryptPathWithTextPath() {
-        PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
+        AuthPathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
         assertThrows(
                 IllegalBlockSizeException.class,
@@ -86,7 +87,7 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         );
     }
 
-    private PathEncryptionSecretKey pathEncryptionSecretKey() {
+    private AuthPathEncryptionSecretKey pathEncryptionSecretKey() {
         KeyID secretKeyId = KeystoreUtil.keyIdByPrefix(keyStore, KeyStoreCreationConfig.PATH_KEY_ID_PREFIX);
         SecretKeySpec secretKey = keyStoreService.getSecretKey(
                 keyStoreAccess,
@@ -99,7 +100,8 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
                 counterSecretKeyId
         );
 
-        return new PathEncryptionSecretKey(
+        return new AuthPathEncryptionSecretKey(
+                new UserID("john"),
                 new SecretKeyIDWithKey(secretKeyId, secretKey),
                 new SecretKeyIDWithKey(counterSecretKeyId, secretKeyCtr)
         );

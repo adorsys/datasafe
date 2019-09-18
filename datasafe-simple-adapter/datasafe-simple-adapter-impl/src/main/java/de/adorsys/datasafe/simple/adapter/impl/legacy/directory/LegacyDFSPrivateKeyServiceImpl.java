@@ -3,7 +3,7 @@ package de.adorsys.datasafe.simple.adapter.impl.legacy.directory;
 import de.adorsys.datasafe.directory.api.profile.keys.DocumentKeyStoreOperations;
 import de.adorsys.datasafe.directory.impl.profile.keys.DFSPrivateKeyServiceImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecretKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 
 import javax.inject.Inject;
@@ -25,9 +25,11 @@ public class LegacyDFSPrivateKeyServiceImpl extends DFSPrivateKeyServiceImpl {
      * Reads path encryption secret key from DFS and caches the result.
      */
     @Override
-    public PathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser) {
+    public AuthPathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser) {
         SecretKeyIDWithKey secretKeyIDWithKey = keyByPrefix(forUser, PATH_KEY_ID_PREFIX);
-        return new PathEncryptionSecretKey(
+
+        return new AuthPathEncryptionSecretKey(
+                forUser.getUserID(),
                 secretKeyIDWithKey,
                 secretKeyIDWithKey
         );

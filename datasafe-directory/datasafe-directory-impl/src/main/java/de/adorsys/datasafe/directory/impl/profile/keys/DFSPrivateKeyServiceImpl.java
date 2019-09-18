@@ -4,7 +4,7 @@ import de.adorsys.datasafe.directory.api.profile.keys.DocumentKeyStoreOperations
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecretKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
@@ -37,12 +37,13 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      * Reads path encryption secret key from DFS and caches the result.
      */
     @Override
-    public PathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser) {
+    public AuthPathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser) {
         Set<String> aliases = keyStoreOper.readAliases(forUser);
         SecretKeyIDWithKey secretPathKeyId = keyByPrefix(forUser, aliases, PATH_KEY_ID_PREFIX);
         SecretKeyIDWithKey secretPathCtrKeyId = keyByPrefix(forUser, aliases, PATH_KEY_ID_PREFIX_CTR);
 
-        return new PathEncryptionSecretKey(
+        return new AuthPathEncryptionSecretKey(
+                forUser.getUserID(),
                 secretPathKeyId,
                 secretPathCtrKeyId
         );

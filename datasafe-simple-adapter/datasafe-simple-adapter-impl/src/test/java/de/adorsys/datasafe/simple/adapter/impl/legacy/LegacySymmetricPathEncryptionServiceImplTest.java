@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
+class LegacySymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     private LegacySymmetricPathEncryptionService bucketPathEncryptionService = new LegacySymmetricPathEncryptionServiceImpl(
             new LegacyPathEncryptor(new LegacyPathDigestConfig())

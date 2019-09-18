@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecretKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class DefaultPathEncryptorDecryptor implements PathEncryptorDecryptor {
     }
 
     @Override
-    public byte[] encrypt(PathEncryptionSecretKey pathSecretKey, byte[] originalPath, byte[] associated) {
+    public byte[] encrypt(AuthPathEncryptionSecretKey pathSecretKey, byte[] originalPath, byte[] associated) {
 
         return sivMode.encrypt(
                 pathSecretKey.getCounterSecretKey().getSecretKey(),
@@ -39,7 +39,7 @@ public class DefaultPathEncryptorDecryptor implements PathEncryptorDecryptor {
 
     @Override
     @SneakyThrows
-    public byte[] decrypt(PathEncryptionSecretKey pathSecretKey, byte[] encryptedPath, byte[] associated) {
+    public byte[] decrypt(AuthPathEncryptionSecretKey pathSecretKey, byte[] encryptedPath, byte[] associated) {
 
         return sivMode.decrypt(
                 pathSecretKey.getCounterSecretKey().getSecretKey(),

@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption.dto;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.PathEncryptionSecretKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecretKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ public class PathSegmentWithSecretKeyWith {
     /**
      * Keys for encryption and decryption path.
      */
-    private final PathEncryptionSecretKey pathEncryptionSecretKey;
+    private final AuthPathEncryptionSecretKey pathEncryptionSecretKey;
 
     /**
      * Path segment position to authenticate.
