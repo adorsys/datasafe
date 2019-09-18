@@ -17,8 +17,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.security.KeyStore;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX_CTR;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -38,25 +38,25 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
     @Test
-    void testSuccessEncryptDecryptPath() {
-        String testPath = "path";
+    void testEncryptionDoesNotLeakSameSegments() {
+        String testPath = "path/to/path/file/to";
 
         Uri testURI = new Uri(testPath);
+        PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
-        SecretKeySpec secretKey = keyStoreService.getSecretKey(
-                keyStoreAccess,
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
-        );
+        Uri encrypted = bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
 
-        SecretKeySpec secretKeyCtr = keyStoreService.getSecretKey(
-                keyStoreAccess,
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX_CTR)
-        );
+        String[] encryptedSegments = encrypted.asString().split("/");
+        assertThat(encryptedSegments[0]).isNotEqualTo(encryptedSegments[2]);
+        assertThat(encryptedSegments[1]).isNotEqualTo(encryptedSegments[4]);
+    }
 
-        PathEncryptionSecretKey pathEncryptionSecretKey = new PathEncryptionSecretKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX),
-                secretKey,
-                secretKeyCtr);
+    @Test
+    void testSuccessEncryptDecryptPath() {
+        String testPath = "path/to/file";
+
+        Uri testURI = new Uri(testPath);
+        PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
         Uri encrypted = bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
         log.debug("Encrypted path: {}", encrypted);
@@ -68,32 +68,8 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
     }
 
     @Test
-    void testFailEncryptPathWithWrongKeyID() {
-        String testPath = "path/to/file/";
-
-        log.info("Test path: {}", testPath);
-
-        Uri testURI = new Uri(testPath);
-
-        SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID("Invalid key"));
-
-        PathEncryptionSecretKey pathEncryptionSecretKey = new PathEncryptionSecretKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKey);
-
-        // secret keys is null, because during key obtain was used incorrect KeyID,
-        // so bucketPathEncryptionService#encrypt throw BaseException(was handled NullPointerException)
-        assertThrows(IllegalArgumentException.class, () -> bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI));
-    }
-
-    @Test
     void testFailEncryptPathWithBrokenEncryptedPath() {
-        SecretKeySpec secretKey = keyStoreService.getSecretKey(
-                keyStoreAccess,
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
-        );
-
-        PathEncryptionSecretKey pathEncryptionSecretKey = new PathEncryptionSecretKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKey);
+        PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
         assertThrows(BadPaddingException.class,
                 () -> bucketPathEncryptionService.decrypt(pathEncryptionSecretKey,
@@ -102,16 +78,28 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
 
     @Test
     void testFailEncryptPathWithTextPath() {
+        PathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
+
+        assertThrows(
+                IllegalBlockSizeException.class,
+                () -> bucketPathEncryptionService.decrypt(pathEncryptionSecretKey, new Uri("simple/text/path/"))
+        );
+    }
+
+    private PathEncryptionSecretKey pathEncryptionSecretKey() {
+        KeyID secretKeyId = KeystoreUtil.keyIdByPrefix(keyStore, KeyStoreCreationConfig.PATH_KEY_ID_PREFIX);
         SecretKeySpec secretKey = keyStoreService.getSecretKey(
                 keyStoreAccess,
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
+                secretKeyId
         );
 
-        PathEncryptionSecretKey pathEncryptionSecretKey = new PathEncryptionSecretKey(
-                KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX), secretKey, secretKey);
+        KeyID counterSecretKeyId = KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX_CTR);
+        SecretKeySpec secretKeyCtr = keyStoreService.getSecretKey(
+                keyStoreAccess,
+                counterSecretKeyId
+        );
 
-        assertThrows(IllegalBlockSizeException.class,
-                () -> bucketPathEncryptionService.decrypt(pathEncryptionSecretKey,
-                        new Uri("/simple/text/path/")));
+        return new PathEncryptionSecretKey(
+                secretKeyId, secretKey, counterSecretKeyId, secretKeyCtr);
     }
 }

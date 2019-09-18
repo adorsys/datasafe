@@ -1,9 +1,9 @@
-package de.adorsys.datasafe.simple.adapter.impl;
+package de.adorsys.datasafe.simple.adapter.impl.pathencryption;
 
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
-import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImpl;
+import de.adorsys.datasafe.simple.adapter.api.legacy.pathencryption.LegacySymmetricPathEncryptionService;
+import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathEncryptionImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,14 +11,14 @@ import javax.inject.Inject;
 import java.util.function.Function;
 
 @Slf4j
-public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
+public class SwitchablePathEncryptionImpl extends LegacyPathEncryptionImpl {
 
     public static final String NO_BUCKETPATH_ENCRYPTION = "SC-NO-BUCKETPATH-ENCRYPTION";
 
     private boolean withPathEncryption = checkIsPathEncryptionToUse();
 
     @Inject
-    public SwitchablePathEncryptionImpl(SymmetricPathEncryptionService bucketPathEncryptionService, PrivateKeyService privateKeyService) {
+    public SwitchablePathEncryptionImpl(LegacySymmetricPathEncryptionService bucketPathEncryptionService, PrivateKeyService privateKeyService) {
         super(bucketPathEncryptionService, privateKeyService);
     }
 

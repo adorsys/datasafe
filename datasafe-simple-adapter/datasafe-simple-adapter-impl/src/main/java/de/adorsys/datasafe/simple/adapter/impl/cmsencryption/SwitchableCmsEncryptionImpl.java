@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.simple.adapter.impl;
+package de.adorsys.datasafe.simple.adapter.impl.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;

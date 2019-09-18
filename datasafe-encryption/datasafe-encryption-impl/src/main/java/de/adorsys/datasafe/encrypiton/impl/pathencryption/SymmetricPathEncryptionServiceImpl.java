@@ -30,18 +30,29 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     private static final String DOT_SLASH_PREFIX = "./";
     private static final String PATH_SEPARATOR = "/";
 
-    private final Function<PathSecretKeyWithData, String> encryptAndEncode;
-    private final Function<PathSecretKeyWithData, String> decodeAndDecrypt;
+    private final Function<PathSegmentWithSecretKeyWith, String> encryptAndEncode;
+    private final Function<PathSegmentWithSecretKeyWith, String> decryptAndDecode;
 
     @Inject
     public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
-        encryptAndEncode = keyEntryEncryptedData -> encode(pathEncryptorDecryptor.encrypt(
-                keyEntryEncryptedData.getPathEncryptionSecretKey(), keyEntryEncryptedData.getPath()
-        ));
+        encryptAndEncode = keyEntryEncryptedDataPair ->
+                encode(
+                        pathEncryptorDecryptor.encrypt(
+                                keyEntryEncryptedDataPair.getPathEncryptionSecretKey(),
+                                keyEntryEncryptedDataPair.getPath().getBytes(StandardCharsets.UTF_8),
+                                Ints.toByteArray(keyEntryEncryptedDataPair.getAuthenticationPosition())
+                        )
+                );
 
-        decodeAndDecrypt = keyEntryDecryptedData -> pathEncryptorDecryptor.decrypt(
-                keyEntryDecryptedData.getPathEncryptionSecretKey(), decode(keyEntryDecryptedData.getPath())
-        );
+        decryptAndDecode = keyEntryDecryptedDataPair ->
+                new String(
+                        pathEncryptorDecryptor.decrypt(
+                                keyEntryDecryptedDataPair.getPathEncryptionSecretKey(),
+                                decode(keyEntryDecryptedDataPair.getPath()),
+                                Ints.toByteArray(keyEntryDecryptedDataPair.getAuthenticationPosition())
+                        ),
+                        StandardCharsets.UTF_8
+                );
     }
 
     /**
@@ -54,9 +65,9 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         validateUriIsRelative(bucketPath);
 
         return processURIparts(
-                    pathEncryptionSecretKey,
-                    bucketPath,
-                    encryptAndEncode
+                pathEncryptionSecretKey,
+                bucketPath,
+                encryptAndEncode
         );
     }
 
@@ -65,14 +76,14 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
      */
     @Override
     @SneakyThrows
-    public Uri decrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri encryptedBucketPath) {
-        validateArgs(pathEncryptionSecretKey, encryptedBucketPath);
-        validateUriIsRelative(encryptedBucketPath);
+    public Uri decrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
+        validateArgs(pathEncryptionSecretKey, bucketPath);
+        validateUriIsRelative(bucketPath);
 
         return processURIparts(
-                    pathEncryptionSecretKey,
-                    encryptedBucketPath,
-                    decodeAndDecrypt
+                pathEncryptionSecretKey,
+                bucketPath,
+                decryptAndDecode
         );
     }
 
@@ -95,7 +106,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     }
 
     private static Uri processURIparts(
-            PathEncryptionSecretKey pathSecretKeyEntry,
+            PathEncryptionSecretKey secretKeyEntry,
             Uri bucketPath,
             Function<PathSecretKeyWithData, String> process) {
         StringBuilder result = new StringBuilder();
@@ -110,18 +121,28 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
             return new Uri(result.toString());
         }
 
-        // Resulting value of `path` is URL-safe
-        return new Uri(
-                URI.create(
-                        Arrays.stream(path.split(PATH_SEPARATOR))
-                                .map(uriPart -> process.apply(
-                                        new PathSecretKeyWithData(pathSecretKeyEntry, uriPart)))
-                                .collect(Collectors.joining(PATH_SEPARATOR)))
-        );
+        String[] segments = path.split(PATH_SEPARATOR);
+
+        return new Uri(URI.create(processSegments(secretKeyEntry, process, segments)));
+    }
+
+    private static String processSegments(PathEncryptionSecretKey secretKeyEntry,
+                                          Function<PathSegmentWithSecretKeyWith, String> process,
+                                          String[] segments) {
+        return IntStream.range(0, segments.length)
+                .boxed()
+                .map(position ->
+                        process.apply(
+                                new PathSegmentWithSecretKeyWith(
+                                        secretKeyEntry,
+                                        position,
+                                        segments[position]
+                                ))
+                ).collect(Collectors.joining(PATH_SEPARATOR));
     }
 
     private static void validateArgs(PathEncryptionSecretKey secretKeyEntry, Uri bucketPath) {
-        if (null == secretKeyEntry || null == secretKeyEntry.getSecretKey()) {
+        if (null == secretKeyEntry) {
             throw new IllegalArgumentException("Secret key should not be null");
         }
 

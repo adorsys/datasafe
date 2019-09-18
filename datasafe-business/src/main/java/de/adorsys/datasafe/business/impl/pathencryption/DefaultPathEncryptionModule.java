@@ -17,10 +17,11 @@ import org.cryptomator.siv.SivMode;
 @Module
 public abstract class DefaultPathEncryptionModule {
 
-
-
     @Provides
-    abstract SivMode sivMode(SivMode siv);
+    static SivMode sivMode() {
+        return new SivMode();
+    }
+
     /**
      * Default path encryption that uses Base64-urlsafe path serialization and AES-CGM-SIV mode for encryption
      */

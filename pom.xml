@@ -196,6 +196,11 @@
                 <artifactId>auto-service</artifactId>
                 <version>${auto-service.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.cryptomator</groupId>
+                <artifactId>siv-mode</artifactId>
+                <version>${siv-mode.version}</version>
+            </dependency>
 
             <!-- Storages -->
             <dependency>

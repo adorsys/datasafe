@@ -6,15 +6,25 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Contains data for encryption or decryption and related secret key entity
- *
- * {@code pathEncryptionSecretKey} keys for encryption and decryption path
- * {@code path} encrypted or decrypted path to file
+ * Contains path segment for encryption or decryption and related secret key entity.
  */
 @Getter
 @Setter
 @AllArgsConstructor
-public class PathSecretKeyWithData {
+public class PathSegmentWithSecretKeyWith {
+
+    /**
+     * Keys for encryption and decryption path.
+     */
     private final PathEncryptionSecretKey pathEncryptionSecretKey;
+
+    /**
+     * Path segment position to authenticate.
+     */
+    private final int authenticationPosition;
+
+    /**
+     * Encrypted or decrypted path segment.
+     */
     private final String path;
 }
