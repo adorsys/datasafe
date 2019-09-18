@@ -114,7 +114,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
         log.debug("Keystore created for user {} in path {}", forUser, keystore);
     }
 
-    public KeyStore keyStore(UserIDAuth forUser) {
+    private KeyStore keyStore(UserIDAuth forUser) {
         return keystoreCache.getKeystore().computeIfAbsent(
                 forUser.getUserID(),
                 userId -> {
