@@ -13,10 +13,17 @@
     <dependencies>
         <dependency>
             <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-types-api</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
             <artifactId>datasafe-encryption-api</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
