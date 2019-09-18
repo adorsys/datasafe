@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.api.types;
 
+import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import lombok.Builder;
@@ -25,4 +26,9 @@ public class UserPublicProfile {
     @NonNull
     private final AbsoluteLocation<PublicResource> inbox;
 
+    /**
+     * Entity appVersion. Keeps version (logical, not release) of datasafe which was used to create profile
+     */
+    @NonNull
+    private final Version appVersion;
 }

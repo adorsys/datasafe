@@ -17,6 +17,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
+
 /**
  * Path encryption service that maintains URI segments integrity.
  * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of example:
@@ -65,11 +67,13 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
         validateArgs(pathEncryptionSecretKey, bucketPath);
         validateUriIsRelative(bucketPath);
 
-        return processURIparts(
+        Uri uri = processURIparts(
                 pathEncryptionSecretKey,
                 bucketPath,
                 encryptAndEncode
         );
+
+        return AES_SIV.asUriRoot().resolve(uri);
     }
 
     /**
@@ -80,6 +84,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     public Uri decrypt(PathEncryptionSecretKey pathEncryptionSecretKey, Uri bucketPath) {
         validateArgs(pathEncryptionSecretKey, bucketPath);
         validateUriIsRelative(bucketPath);
+
+        bucketPath = AES_SIV.asUriRoot().relativize(bucketPath);
 
         return processURIparts(
                 pathEncryptionSecretKey,
