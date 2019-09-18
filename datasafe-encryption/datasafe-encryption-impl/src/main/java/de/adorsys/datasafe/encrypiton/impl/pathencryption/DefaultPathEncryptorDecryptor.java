@@ -23,19 +23,15 @@ public class DefaultPathEncryptorDecryptor implements PathEncryptorDecryptor {
 
     @Inject
     public DefaultPathEncryptorDecryptor(SivMode sivMode) {
-        if(sivMode == null) {
-            throw new IllegalArgumentException("SivMode must be provided for encryption and decryption");
-        }
         this.sivMode = sivMode;
     }
 
     @Override
     public byte[] encrypt(PathEncryptionSecretKey pathSecretKey, byte[] originalPath, byte[] associated) {
-        log.debug("Path secret key: {}, original path: {}", pathSecretKey.toString(), originalPath);
 
         return sivMode.encrypt(
-                pathSecretKey.getCounterSecretKey().getEncoded(),
-                pathSecretKey.getSecretKey().getEncoded(),
+                pathSecretKey.getCounterSecretKey().getSecretKey(),
+                pathSecretKey.getSecretKey().getSecretKey(),
                 originalPath,
                 associated
         );
@@ -44,11 +40,10 @@ public class DefaultPathEncryptorDecryptor implements PathEncryptorDecryptor {
     @Override
     @SneakyThrows
     public byte[] decrypt(PathEncryptionSecretKey pathSecretKey, byte[] encryptedPath, byte[] associated) {
-        log.debug("Path secret key: {}, encrypted path: {}", pathSecretKey.toString(), encryptedPath);
 
         return sivMode.decrypt(
-                pathSecretKey.getCounterSecretKey().getEncoded(),
-                pathSecretKey.getSecretKey().getEncoded(),
+                pathSecretKey.getCounterSecretKey().getSecretKey(),
+                pathSecretKey.getSecretKey().getSecretKey(),
                 encryptedPath,
                 associated
         );

@@ -100,6 +100,8 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         );
 
         return new PathEncryptionSecretKey(
-                secretKeyId, secretKey, counterSecretKeyId, secretKeyCtr);
+                new SecretKeyIDWithKey(secretKeyId, secretKey),
+                new SecretKeyIDWithKey(counterSecretKeyId, secretKeyCtr)
+        );
     }
 }

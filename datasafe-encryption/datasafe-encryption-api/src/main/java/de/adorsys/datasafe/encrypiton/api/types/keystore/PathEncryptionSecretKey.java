@@ -2,8 +2,6 @@ package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
 import lombok.*;
 
-import javax.crypto.SecretKey;
-
 @Getter
 @ToString
 @Value
@@ -11,14 +9,8 @@ import javax.crypto.SecretKey;
 public class PathEncryptionSecretKey {
 
     @NonNull
-    private final KeyID secretKeyId;
+    private final SecretKeyIDWithKey secretKey;
 
     @NonNull
-    private final SecretKey secretKey;
-
-    @NonNull
-    private final KeyID counterKeyId;
-
-    @NonNull
-    private final SecretKey counterSecretKey;
+    private final SecretKeyIDWithKey counterSecretKey;
 }

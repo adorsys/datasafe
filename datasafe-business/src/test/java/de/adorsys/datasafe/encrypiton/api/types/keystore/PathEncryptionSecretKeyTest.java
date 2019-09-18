@@ -26,38 +26,24 @@ class PathEncryptionSecretKeyTest extends BaseMockitoTest {
     @Test
     void validateAllOk() {
         PathEncryptionSecretKey key = new PathEncryptionSecretKey(
-                secretKeyId, secretKey, counterKeyId, counterSecretKey
+                new SecretKeyIDWithKey(secretKeyId, secretKey), new SecretKeyIDWithKey(counterKeyId, counterSecretKey)
         );
 
-        assertThat(key.getSecretKey()).isEqualTo(secretKey);
-        assertThat(key.getCounterSecretKey()).isEqualTo(counterSecretKey);
-    }
-
-    @Test
-    void validateNullSecretKeyIdImpossible() {
-        assertThrows(NullPointerException.class, () ->
-                new PathEncryptionSecretKey(null, secretKey, counterKeyId, counterSecretKey)
-        );
+        assertThat(key.getSecretKey().getSecretKey()).isEqualTo(secretKey);
+        assertThat(key.getCounterSecretKey().getSecretKey()).isEqualTo(counterSecretKey);
     }
 
     @Test
     void validateNullSecretKeyImpossible() {
         assertThrows(NullPointerException.class, () ->
-                new PathEncryptionSecretKey(secretKeyId, null, counterKeyId, counterSecretKey)
-        );
-    }
-
-    @Test
-    void validateNullCounterKeyIdImpossible() {
-        assertThrows(NullPointerException.class, () ->
-                new PathEncryptionSecretKey(secretKeyId, secretKey, null, counterSecretKey)
+                new PathEncryptionSecretKey(null, new SecretKeyIDWithKey(counterKeyId, counterSecretKey))
         );
     }
 
     @Test
     void validateNullCounterKeyImpossible() {
         assertThrows(NullPointerException.class, () ->
-                new PathEncryptionSecretKey(secretKeyId, secretKey, counterKeyId, null)
+                new PathEncryptionSecretKey(new SecretKeyIDWithKey(secretKeyId, secretKey), null)
         );
     }
 }

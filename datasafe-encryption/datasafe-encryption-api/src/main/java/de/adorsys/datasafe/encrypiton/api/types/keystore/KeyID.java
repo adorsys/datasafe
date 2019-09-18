@@ -6,7 +6,7 @@ import lombok.ToString;
 /**
  * Wrapper that identifies key inside keystore.
  */
-@ToString(callSuper=true)
+@ToString(callSuper = true)
 public class KeyID extends BaseTypeString {
 
     public KeyID(String value) {
