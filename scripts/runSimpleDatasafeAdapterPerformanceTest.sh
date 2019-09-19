@@ -1,7 +1,8 @@
 #!/bin/sh
 if [ $# -eq 0 ]; then
     echo "No arguments provided"
-    echo "Example usage: sh runSimpleDatasafeAdapterPerformanceTest.sh ACCESS=your_aws_access_key SECRET=your_aws_secret_key BUCKET=bucket_name"
+    echo "Example usage: sh runSimpleDatasafeAdapterPerformanceTest.sh" \
+    "ACCESS=your_aws_access_key SECRET=your_aws_secret_key BUCKET=bucket_name [URL=ceph_url]"
     exit 1
 fi
 
@@ -14,6 +15,7 @@ do
             ACCESS)    AWS_ACCESS_KEY=${VALUE} ;;
             SECRET)    AWS_SECRET_KEY=${VALUE} ;;
             BUCKET)    AWS_BUCKET=${VALUE} ;;
+            URL)       AWS_URL=${VALUE} ;;
             *)
     esac
 done
@@ -23,6 +25,7 @@ mvn \
 -DAWS_ACCESS_KEY="$AWS_ACCESS_KEY" \
 -DAWS_SECRET_KEY="$AWS_SECRET_KEY" \
 -DAWS_BUCKET="$AWS_BUCKET" \
+-DAWS_URL="$AWS_URL" \
 -DDEFAULT_USER="username" \
 -DDEFAULT_PASSWORD="password" \
 -DAWS_REGION="eu-central-1" \
