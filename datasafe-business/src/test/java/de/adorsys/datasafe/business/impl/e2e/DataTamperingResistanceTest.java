@@ -92,7 +92,7 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{arguments}")
     @ValueSource(strings = {FILENAME, DIR_AND_FILENAME, DIR_DIR_AND_FILENAME})
     @SneakyThrows
     void testPrivateDocumentPathTamperResistance(String path) {
@@ -131,9 +131,11 @@ class DataTamperingResistanceTest extends BaseE2ETest {
             somewhereInEncText = somewhereInEncText - 1;
         }
 
+        log.info("About to tamper path `{}`", pathAsString);
         pathAsString = pathAsString.substring(0, somewhereInEncText - 1)
                 + randomChar(pathAsString.charAt(somewhereInEncText))
                 + pathAsString.substring(somewhereInEncText);
+        log.info("Tampered path as `{}`", pathAsString);
         Files.createDirectories(Paths.get(pathAsString).getParent());
         Files.write(Paths.get(pathAsString), privateBytes, StandardOpenOption.CREATE);
     }
