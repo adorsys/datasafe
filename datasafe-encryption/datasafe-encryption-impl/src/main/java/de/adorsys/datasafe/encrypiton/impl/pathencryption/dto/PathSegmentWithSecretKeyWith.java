@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.security.MessageDigest;
+
 /**
  * Contains path segment for encryption or decryption and related secret key entity.
  */
@@ -14,14 +16,19 @@ import lombok.Setter;
 public class PathSegmentWithSecretKeyWith {
 
     /**
+     * Digest to update with encrypted URI segment to authenticate.
+     */
+    private final MessageDigest digest;
+
+    /**
+     * Parent path hash.
+     */
+    private final byte[] parentHash;
+
+    /**
      * Keys for encryption and decryption path.
      */
     private final AuthPathEncryptionSecretKey pathEncryptionSecretKey;
-
-    /**
-     * Path segment position to authenticate.
-     */
-    private final int authenticationPosition;
 
     /**
      * Encrypted or decrypted path segment.

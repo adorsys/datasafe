@@ -1,7 +1,5 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Ints;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecretKey;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.dto.PathSegmentWithSecretKeyWith;
@@ -13,10 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
 
@@ -25,6 +24,8 @@ import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
  * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of example:
  * cipher(path) will yield same string, but cipher(path)/cipher(path) will not yield same segments -
  * it will be more like abc/cde and not like abc/abc.
+ * Additionally each segment is authenticated against its parent path hash, so attacker can't
+ * move a/file to b/file without being detected.
  */
 @Slf4j
 @RuntimeDelegate
@@ -39,24 +40,8 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
 
     @Inject
     public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
-        encryptAndEncode = keyEntryEncryptedDataPair ->
-                encode(
-                        pathEncryptorDecryptor.encrypt(
-                                keyEntryEncryptedDataPair.getPathEncryptionSecretKey(),
-                                keyEntryEncryptedDataPair.getPath().getBytes(StandardCharsets.UTF_8),
-                                extractAuthentication(keyEntryEncryptedDataPair)
-                        )
-                );
-
-        decryptAndDecode = keyEntryDecryptedDataPair ->
-                new String(
-                        pathEncryptorDecryptor.decrypt(
-                                keyEntryDecryptedDataPair.getPathEncryptionSecretKey(),
-                                decode(keyEntryDecryptedDataPair.getPath()),
-                                extractAuthentication(keyEntryDecryptedDataPair)
-                        ),
-                        StandardCharsets.UTF_8
-                );
+        encryptAndEncode = keyAndSegment -> encryptorAndEncoder(keyAndSegment, pathEncryptorDecryptor);
+        decryptAndDecode = keyAndSegment -> decryptorAndDecoder(keyAndSegment, pathEncryptorDecryptor);
     }
 
     /**
@@ -93,6 +78,46 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
                 bucketPath,
                 decryptAndDecode
         );
+    }
+
+    /**
+     * Parent path authentication digest. a/b/c - each path segment on encryption will be authenticated:
+     * for a - will be authenticated against ``
+     * for b - will be authenticated against `/encrypted(a)`
+     * for c - will be authenticated against `/encrypted(a)/encrypted(b)`
+     */
+    @SneakyThrows
+    protected MessageDigest getDigest() {
+        return MessageDigest.getInstance("SHA-256");
+    }
+
+    protected String decryptorAndDecoder(PathSegmentWithSecretKeyWith keyAndSegment,
+                                         PathEncryptorDecryptor pathEncryptorDecryptor) {
+            byte[] segment = keyAndSegment.getPath().getBytes(StandardCharsets.UTF_8);
+            keyAndSegment.getDigest().update(segment);
+
+            return new String(
+                    pathEncryptorDecryptor.decrypt(
+                            keyAndSegment.getPathEncryptionSecretKey(),
+                            decode(keyAndSegment.getPath()),
+                            keyAndSegment.getParentHash()
+                    ),
+                    StandardCharsets.UTF_8
+            );
+    }
+
+    protected String encryptorAndEncoder(PathSegmentWithSecretKeyWith keyAndSegment,
+                                         PathEncryptorDecryptor pathEncryptorDecryptor) {
+        String result = encode(
+                pathEncryptorDecryptor.encrypt(
+                        keyAndSegment.getPathEncryptionSecretKey(),
+                        keyAndSegment.getPath().getBytes(StandardCharsets.UTF_8),
+                        keyAndSegment.getParentHash()
+                )
+        );
+
+        keyAndSegment.getDigest().update(result.getBytes(StandardCharsets.UTF_8));
+        return result;
     }
 
     @SneakyThrows
@@ -137,23 +162,28 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     private String processSegments(AuthPathEncryptionSecretKey secretKeyEntry,
                                           Function<PathSegmentWithSecretKeyWith, String> process,
                                           String[] segments) {
-        return IntStream.range(0, segments.length)
-                .boxed()
-                .map(position ->
-                        process.apply(
-                                new PathSegmentWithSecretKeyWith(
-                                        secretKeyEntry,
-                                        position,
-                                        segments[position]
-                                ))
-                ).collect(Collectors.joining(PATH_SEPARATOR));
+        MessageDigest digest = getDigest();
+        digest.update(PATH_SEPARATOR.getBytes(StandardCharsets.UTF_8));
+
+        return Arrays.stream(segments)
+                .map(it -> processAndAuthenticateSegment(it, secretKeyEntry, process, digest))
+                .collect(Collectors.joining(PATH_SEPARATOR));
     }
 
-
-    private static byte[] extractAuthentication(PathSegmentWithSecretKeyWith holder) {
-        return Bytes.concat(
-                Ints.toByteArray(holder.getAuthenticationPosition()),
-                holder.getPathEncryptionSecretKey().getUser().getValue().getBytes(StandardCharsets.UTF_8)
+    @SneakyThrows
+    private String processAndAuthenticateSegment(
+            String segment,
+            AuthPathEncryptionSecretKey secretKeyEntry,
+            Function<PathSegmentWithSecretKeyWith, String> process,
+            MessageDigest digest) {
+        MessageDigest currentDigest = (MessageDigest) digest.clone();
+        return process.apply(
+                new PathSegmentWithSecretKeyWith(
+                        digest,
+                        currentDigest.digest(),
+                        secretKeyEntry,
+                        segment
+                )
         );
     }
 

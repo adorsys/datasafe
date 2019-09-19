@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
-import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
@@ -101,7 +100,6 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
         );
 
         return new AuthPathEncryptionSecretKey(
-                new UserID("john"),
                 new SecretKeyIDWithKey(secretKeyId, secretKey),
                 new SecretKeyIDWithKey(counterSecretKeyId, secretKeyCtr)
         );

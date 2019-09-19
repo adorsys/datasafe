@@ -12,6 +12,8 @@ import org.bouncycastle.crypto.io.InvalidCipherTextIOException;
 import org.cryptomator.siv.UnauthenticCiphertextException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.shaded.com.google.common.io.ByteStreams;
 
 import javax.crypto.AEADBadTagException;
@@ -36,11 +38,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DataTamperingResistanceTest extends BaseE2ETest {
 
     // Should be long enough to dominate compared to padding
-    private static final String TEXT =
+    private static final String FILE_TEXT =
             "Tampering test!!Tampering test!!Tampering test!!Tampering test!!Tampering test!!";
     // Should be long enough to dominate compared to padding
     private static final String FILENAME =
             "my_file_with_quite_a__long_na.me_na.me_na.me_na.me_na.me_na.me_na.me_na.me";
+    // Should be long enough to dominate compared to padding
+    private static final String DIR_AND_FILENAME =
+            "my_directory_with_quite_a__long_na.me_na.me_na.me_na.me_na.me_na.me_na.me_na.me/my_file";
+    // Should be long enough to dominate compared to padding
+    private static final String DIR_DIR_AND_FILENAME =
+            "my_directory_with_quite_a__long_na.me_na.me_na.me_na.me_na.me_na.me_na.me_na.me/deeper/my_file";
 
     @BeforeEach
     void prepare() {
@@ -52,8 +60,7 @@ class DataTamperingResistanceTest extends BaseE2ETest {
     @SneakyThrows
     void testPrivateDocumentContentTamperResistance() {
         try (OutputStream os = writeToPrivate.write(WriteRequest.forDefaultPrivate(jane, FILENAME))) {
-            log.info("Write TEXT");
-            os.write(TEXT.getBytes(StandardCharsets.UTF_8));
+            os.write(FILE_TEXT.getBytes(StandardCharsets.UTF_8));
         }
 
         AbsoluteLocation<ResolvedResource> privateFile = getFirstFileInPrivate(jane);
@@ -72,7 +79,7 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         try (OutputStream os = writeToInbox.write(
                 WriteRequest.forDefaultPublic(Collections.singleton(john.getUserID()), FILENAME))
         ) {
-            os.write(TEXT.getBytes(StandardCharsets.UTF_8));
+            os.write(FILE_TEXT.getBytes(StandardCharsets.UTF_8));
         }
 
         AbsoluteLocation<ResolvedResource> inboxFile = getFirstFileInInbox(john);
@@ -85,15 +92,16 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         }
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {FILENAME, DIR_AND_FILENAME, DIR_DIR_AND_FILENAME})
     @SneakyThrows
-    void testPrivateDocumentPathTamperResistance() {
-        try (OutputStream os = writeToPrivate.write(WriteRequest.forDefaultPrivate(jane, FILENAME))) {
-            os.write(TEXT.getBytes(StandardCharsets.UTF_8));
+    void testPrivateDocumentPathTamperResistance(String path) {
+        try (OutputStream os = writeToPrivate.write(WriteRequest.forDefaultPrivate(jane, path))) {
+            os.write(FILE_TEXT.getBytes(StandardCharsets.UTF_8));
         }
 
         AbsoluteLocation<ResolvedResource> privateFile = getFirstFileInPrivate(jane);
-        tamperFilenameByReplacingOneCharOfPath(privateFile);
+        tamperFilenameByReplacingOneCharOfPath(privateFile, path);
 
         assertThrows(
                 UnauthenticCiphertextException.class,
@@ -110,16 +118,23 @@ class DataTamperingResistanceTest extends BaseE2ETest {
     }
 
     @SneakyThrows
-    private void tamperFilenameByReplacingOneCharOfPath(AbsoluteLocation<ResolvedResource> privateFile) {
+    private void tamperFilenameByReplacingOneCharOfPath(AbsoluteLocation<ResolvedResource> privateFile,
+                                                        String origPath) {
         // tamper the file by replacing 1 byte in it
         Path physicalFile = Paths.get(privateFile.getResource().location().asURI());
         byte[] privateBytes = Files.readAllBytes(physicalFile);
         String pathAsString = physicalFile.toAbsolutePath().toString();
+
         // this should 'approximately' be inside encrypted text
-        int somewhereInEncText = pathAsString.length() - FILENAME.length() / 2;
+        int somewhereInEncText = pathAsString.length() - origPath.length() / 2;
+        if (pathAsString.charAt(somewhereInEncText) == '/') {
+            somewhereInEncText = somewhereInEncText - 1;
+        }
+
         pathAsString = pathAsString.substring(0, somewhereInEncText - 1)
                 + randomChar(pathAsString.charAt(somewhereInEncText))
                 + pathAsString.substring(somewhereInEncText);
+        Files.createDirectories(Paths.get(pathAsString).getParent());
         Files.write(Paths.get(pathAsString), privateBytes, StandardOpenOption.CREATE);
     }
 
@@ -129,7 +144,7 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         Path physicalFile = Paths.get(privateFile.getResource().location().asURI());
         byte[] privateBytes = Files.readAllBytes(physicalFile);
         // this should 'approximately' be inside encrypted text
-        int somewhereInEncText = privateBytes.length - TEXT.length() / 2;
+        int somewhereInEncText = privateBytes.length - FILE_TEXT.length() / 2;
         privateBytes[somewhereInEncText] = randomByte(privateBytes[somewhereInEncText]);
         Files.write(physicalFile, privateBytes, StandardOpenOption.TRUNCATE_EXISTING);
     }

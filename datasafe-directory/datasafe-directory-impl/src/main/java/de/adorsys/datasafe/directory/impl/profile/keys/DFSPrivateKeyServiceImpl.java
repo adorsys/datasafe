@@ -43,7 +43,6 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         SecretKeyIDWithKey secretPathCtrKeyId = keyByPrefix(forUser, aliases, PATH_KEY_ID_PREFIX_CTR);
 
         return new AuthPathEncryptionSecretKey(
-                forUser.getUserID(),
                 secretPathKeyId,
                 secretPathCtrKeyId
         );

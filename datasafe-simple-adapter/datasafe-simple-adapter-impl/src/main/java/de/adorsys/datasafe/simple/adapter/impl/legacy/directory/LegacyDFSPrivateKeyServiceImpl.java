@@ -29,7 +29,6 @@ public class LegacyDFSPrivateKeyServiceImpl extends DFSPrivateKeyServiceImpl {
         SecretKeyIDWithKey secretKeyIDWithKey = keyByPrefix(forUser, PATH_KEY_ID_PREFIX);
 
         return new AuthPathEncryptionSecretKey(
-                forUser.getUserID(),
                 secretKeyIDWithKey,
                 secretKeyIDWithKey
         );
