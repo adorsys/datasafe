@@ -35,8 +35,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 class DataTamperingResistanceTest extends BaseE2ETest {
 
-    private static final String TEXT = "Tampering test!!";
-    private static final String FILENAME = "my_file_with_quite_a_long_name_to_check_stuff.txt";
+    // Should be long enough to dominate compared to padding
+    private static final String TEXT =
+            "Tampering test!!Tampering test!!Tampering test!!Tampering test!!Tampering test!!";
+    // Should be long enough to dominate compared to padding
+    private static final String FILENAME =
+            "my_file_with_quite_a__long_na.me_na.me_na.me_na.me_na.me_na.me_na.me_na.me";
 
     @BeforeEach
     void prepare() {
@@ -48,6 +52,7 @@ class DataTamperingResistanceTest extends BaseE2ETest {
     @SneakyThrows
     void testPrivateDocumentContentTamperResistance() {
         try (OutputStream os = writeToPrivate.write(WriteRequest.forDefaultPrivate(jane, FILENAME))) {
+            log.info("Write TEXT");
             os.write(TEXT.getBytes(StandardCharsets.UTF_8));
         }
 
