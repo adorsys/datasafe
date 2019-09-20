@@ -35,7 +35,5 @@ mvn \
 -DAWS_BUCKET="$AWS_BUCKET" \
 -DAWS_URL="$AWS_URL" \
 -DAWS_REGION="$AWS_REGION" \
--DDEFAULT_USER="username" \
--DDEFAULT_PASSWORD="password" \
 -DtestArgs="-Xmx256m -DSTORAGE_PROVIDERS="AMAZON" -DFIXTURE_SIZE="SMALL" -DTHREADS=2 -DFILE_SIZES=100" \
 -Dtest=RandomActionsOnSimpleDatasafeAdapterTest test
