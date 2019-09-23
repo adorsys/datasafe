@@ -29,7 +29,6 @@ Datasafe checkout and compilation
 
 ```text
 git clone https://github.com/adorsys/datasafe.git
-git checkout feature/DOC-236_RunThroughputTest
 mvn -DskipTests=true install
 cd datasafe-long-run-tests/datasafe-business-tests-random-actions/
 ```
@@ -40,8 +39,6 @@ Test execution command.
 mvn -DAWS_ACCESS_KEY="***" \
     -DAWS_SECRET_KEY="***" \
     -DAWS_BUCKET="***" \
-    -DDEFAULT_USER="username" \
-    -DDEFAULT_PASSWORD="password" \
     -DAWS_REGION="eu-central-1" \
     -DtestArgs="-Xmx512m \
     -Dcom.sun.management.jmxremote.ssl=false \
@@ -207,7 +204,8 @@ mvn -DAWS_ACCESS_KEY="accesskey" \
 ```
 Test will automatcally run in all combinations of values of threads, file_size and storage providers lists.
 
-For simplifying running this test there is [runSimpleDatasafeAdapterPerformanceTest.sh](/script/runSimpleDatasafeAdapterPerformanceTest.sh) 
+For simplifying running this test there is [runSimpleDatasafeAdapterPerformanceTest.sh](../scripts/runSimpleDatasafeAdapterPerformanceTest.sh) 
 script which uses credentials from environment variables and by default runs test with small fixture size, 2 threads and 100kb file size.
+AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_BUCKET, AWS_REGION environment variables have to be set. And for Ceph also AWS_URL has to be set. 
 
 
