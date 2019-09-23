@@ -97,8 +97,6 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     @BeforeAll
     static void init(@TempDir Path tempDir) {
         log.info("Executing init");
-        // TODO fixme
-        log.info(""); // for some strange reason, the newline of the previous statement is gone
         WithStorageProvider.tempDir = tempDir;
 
         minioStorage = Suppliers.memoize(() -> {
@@ -273,11 +271,18 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
+        // if bucket name contains slashes then move all after first slash to prefix
+        String[] parts = bucket.split("/", 2);
+        if (parts.length == 2) {
+            bucket = parts[0];
+            prefix = parts[1] + "/" + prefix;
+        }
+        String lambdafinalBucket = bucket;
         amazonS3.listObjects(bucket, prefix)
                 .getObjectSummaries()
                 .forEach(it -> {
                     log.debug("Remove {}", it.getKey());
-                    amazonS3.deleteObject(bucket, it.getKey());
+                    amazonS3.deleteObject(lambdafinalBucket, it.getKey());
                 });
     }
 
