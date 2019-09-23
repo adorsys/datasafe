@@ -4,7 +4,7 @@
 Datasafe throughput tests was run on different Amazon EC2 instances. On each instance after creation was installed JDK, maven and git. Then datasafe project was pulled and executed 
 [RandomActionsOnDatasafeTest](datasafe-business-tests-random-actions/src/test/java/de/adorsys/datasafe/business/impl/e2e/randomactions/RandomActionsOnDatasafeTest.java) which uses one bucket. Test was launched with all combinations of 2, 4, 8 and 16 parallel threads and 100kb, 1mb and 10mb file sizes.
 
-#### Preparation commands for running test:
+#### Preparation commands for running test
 
 ```text
 ssh -i ~/Documents/mhr.pem ec2-user@x.x.x.x
@@ -59,7 +59,7 @@ Enabling jmx monitoring
 ssh -i ~/Documents/mhr.pem -L 8090:127.0.0.1:8090 ec2-user@x.x.x.x
 ```
 
-### 2. Testing procedure description.
+### 2. Testing procedure description
 
 Tests were done on 6 different aws ec2 instances:
 
@@ -132,7 +132,7 @@ Threads	100kb	1mb	10mb
 2	118.67294777989376	42.735968236780366	6.102306403813942  
 ```
 
-### 3.  Test result charts.
+### 3.  Test result charts
 
 1.  WRITE operation
 
@@ -207,5 +207,3 @@ Test will automatcally run in all combinations of values of threads, file_size a
 For simplifying running this test there is [runSimpleDatasafeAdapterPerformanceTest.sh](../scripts/runSimpleDatasafeAdapterPerformanceTest.sh) 
 script which uses credentials from environment variables and by default runs test with small fixture size, 2 threads and 100kb file size.
 AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_BUCKET, AWS_REGION environment variables have to be set. And for Ceph also AWS_URL has to be set. 
-
-
