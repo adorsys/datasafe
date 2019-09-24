@@ -1,9 +1,22 @@
 package de.adorsys.datasafe.encrypiton.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class KeyPairGeneratorTest {
+import java.security.Security;
+import java.util.Date;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class KeyPairGeneratorTest extends BaseMockitoTest {
+
+    @BeforeAll
+    static void setupBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     @Test
     void testKeyPairGenerationWithCA() {
@@ -11,6 +24,12 @@ class KeyPairGeneratorTest {
         TestableKeyPairGeneratorImpl i = new TestableKeyPairGeneratorImpl("RSA", 2048, "SHA256withRSA", "enc");
         i.setDayAfter(40);
         i.setWithCA(true);
-        i.generateEncryptionKey("affe", readKeyPassword);
+
+        assertThat(
+                i.generateEncryptionKey("affe", readKeyPassword)
+                        .getKeyPair()
+                        .getSubjectCert()
+                        .isValidOn(new Date())
+        ).isTrue();
     }
 }

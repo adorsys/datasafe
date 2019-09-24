@@ -9,7 +9,9 @@ import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImp
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +29,11 @@ class KeyStoreServiceTest extends BaseMockitoTest {
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
     private KeyStoreAuth keyStoreAuth;
+
+    @BeforeAll
+    static void setupBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     @BeforeEach
     void setUp() {
