@@ -1,4 +1,7 @@
 # Using bash because Travis CI does not support Java on Windows
+sudo: required
+services:
+  - docker
 
 branches:
   except:
@@ -9,25 +12,47 @@ env:
     - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
     - JDK="graalvm@19.2.0"
 
+### This section represents primary build actions
 before_install:
-  - echo "Before install"
+  - curl -L https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz > oc-cli.tar.gz
+  - tar -xzf oc-cli.tar.gz
+  - sudo mv ./openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit/oc /usr/local/bin
 
+# preparations to build frontend
 install:
-  - echo "Install"
+  - nvm install 11.12.0
+  - npm install -g @angular/cli
+  - cd frontend/datasafe-ui && npm install && cd ../..
 
-# Original build
 script:
-  - echo "Script"
-  - ./mvnw --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET} -DskipTests # FIXME remove skipTests
+  - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
+    # make frontend available for REST-docker
+  - cd frontend/datasafe-ui && ng build --deploy-url /static/ --base-href /static/ && mv dist ../../datasafe-rest-impl/target/dist && cd ../..
 
-# Original deploy
 deploy:
   - provider: script
     skip_cleanup: true
-    script: echo "Deploy"
+    script: /bin/bash .travis/deploy.sh
+    on:
+      tags: true
+      condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
+
+  - provider: script
+    skip_cleanup: true
+    script: /bin/bash .travis/deploy_develop_to_openshift.sh
+    on:
+      branch: develop
+
+  - provider: script
+    skip_cleanup: true
+    script: /bin/bash .travis/upload_dockerhub.sh
+    on:
+      all_branches: true
+      tags: true
+      condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
 
 after_success:
-  - echo "Success"
+  - /bin/bash .travis/codecov_bash.sh
 
 ################ Custom build stages:
 # Special test-skipping stage to build CLI, using maven-wrapper
@@ -61,37 +86,39 @@ deploy-cli: &deploy-cli
 # Build configuration definition:
 matrix:
   include:
-    #### ORIGINAL BUILD ####
-    # This is original build and deploy, that runs E2E tests and deploys docker images
+
+    #### PRIMARY BUILD ####
+    # This is original build and deploy script, that runs E2E tests and deploys docker images
     - os: linux
       language: java
       jdk: openjdk8
 
+
     #### CLI-ORIENTED BUILD ####
     # These are CLI-only builds that produce Datasafe cli executable for each OS:
+
     ### CLI for Linux:
     - os: linux
       language: bash
       before_install:
         - source .travis/drop_deploy_secrets.sh
         - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
+      install:
+        - echo 'Nothing to do' # Override primary build logic
       <<: *build-cli
       <<: *deploy-cli
+      after_success:
+        - echo 'Nothing to do' # Override primary build logic
+
     ### CLI for MacOS:
     - os: osx
       language: bash
       before_install:
         - source .travis/drop_deploy_secrets.sh
         - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
+      install:
+        - echo 'Nothing to do' # Override primary build logic
       <<: *build-cli
       <<: *deploy-cli
-#     CLI for Windows (disabled as of now):
-#    - os: windows
-#      env:
-#        - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
-#      language: bash
-#      before_install:
-#        - source .travis/drop_deploy_secrets.sh
-#        - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
-#      <<: *build-cli
-#      <<: *deploy-cli
+      after_success:
+        - echo 'Nothing to do' # Override primary build logic

@@ -49,7 +49,7 @@ public class Create implements Runnable {
         profile.getCli().datasafe().userProfile().registerPrivate(privateProfile);
         profile.getCli().datasafe().userProfile().createAllAllowableKeystores(
                 profile.getCli().auth(),
-                privateProfile.removeAccess()
+                privateProfile.buildPrivateProfile()
         );
     }
 

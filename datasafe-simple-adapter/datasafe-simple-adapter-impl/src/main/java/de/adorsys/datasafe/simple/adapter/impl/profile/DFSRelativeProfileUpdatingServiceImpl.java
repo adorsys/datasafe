@@ -4,13 +4,11 @@ import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.keys.DocumentKeyStoreOperations;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
-import de.adorsys.datasafe.directory.api.types.StorageCredentials;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileUpdatingServiceImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 
 import javax.inject.Inject;
 
@@ -40,15 +38,5 @@ public class DFSRelativeProfileUpdatingServiceImpl extends ProfileUpdatingServic
     @Override
     public void updateReadKeyPassword(UserIDAuth forUser, ReadKeyPassword newPassword) {
         super.updateReadKeyPassword(forUser, newPassword);
-    }
-
-    @Override
-    public void registerStorageCredentials(UserIDAuth user, StorageIdentifier storageId, StorageCredentials credentials) {
-        super.registerStorageCredentials(user, storageId, credentials);
-    }
-
-    @Override
-    public void deregisterStorageCredentials(UserIDAuth user, StorageIdentifier storageId) {
-        super.deregisterStorageCredentials(user, storageId);
     }
 }
