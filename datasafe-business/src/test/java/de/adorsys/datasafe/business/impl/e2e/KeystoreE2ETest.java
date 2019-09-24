@@ -9,6 +9,8 @@ import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -18,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.security.Security;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +36,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class KeystoreE2ETest extends BaseMockitoTest {
 
     private DefaultDatasafeServices datasafeServices;
+
+    @BeforeAll
+    static void addBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     @BeforeEach
     void init(@TempDir Path rootPath) {
