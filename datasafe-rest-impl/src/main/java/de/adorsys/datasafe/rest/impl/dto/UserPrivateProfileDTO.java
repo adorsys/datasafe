@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.rest.impl.dto;
 
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
+import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -81,6 +82,7 @@ public class UserPrivateProfileDTO {
                             it -> Util.privateResource(it.getValue())
                     ))
             )
+            .appVersion(Version.current())
             .build();
     }
 }

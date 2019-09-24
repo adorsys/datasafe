@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.directory.api.types;
 
+import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 @Data
 @Builder(toBuilder = true)
-public class UserPrivateProfile {
+public class UserPrivateProfile{
 
     /**
      * Users' keystore location
@@ -61,4 +62,10 @@ public class UserPrivateProfile {
      * Optional field used for getting storage credentials using default flow.
      */
     private final AbsoluteLocation<PrivateResource> storageCredentialsKeystore;
+
+    /**
+     * Entity appVersion. Keeps appVersion of datasafe which was used to create profile
+     */
+    @NonNull
+    private final Version appVersion;
 }

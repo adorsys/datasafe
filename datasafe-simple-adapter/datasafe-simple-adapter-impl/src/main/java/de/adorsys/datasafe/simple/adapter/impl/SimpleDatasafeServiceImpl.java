@@ -8,37 +8,28 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.io.ByteStreams;
-import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
-import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRegistrationServiceImplRuntimeDelegatable;
-import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRemovalServiceImplRuntimeDelegatable;
-import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
-import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImplRuntimeDelegatable;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
-import de.adorsys.datasafe.simple.adapter.impl.profile.DFSRelativeProfileRegistrationService;
-import de.adorsys.datasafe.simple.adapter.impl.profile.DFSRelativeProfileRemovalServiceImpl;
-import de.adorsys.datasafe.simple.adapter.impl.profile.DFSRelativeProfileRetrievalServiceImpl;
+import de.adorsys.datasafe.simple.adapter.impl.pathencryption.SwitchablePathEncryptionImpl;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
-import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocationWithCapability;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageCapability;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,19 +56,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials) {
-        BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
-        PathEncryptionImplRuntimeDelegatable.overrideWith(
-                baseOverridesRegistry,
-                args -> new SwitchablePathEncryptionImpl(
-                        args.getBucketPathEncryptionService(),
-                        args.getPrivateKeyService())
-        );
-
-        CMSEncryptionServiceImplRuntimeDelegatable.overrideWith(
-                baseOverridesRegistry, args -> new SwitchableCmsEncryptionImpl(args.getEncryptionConfig())
-        );
-
-        makeUserProfilePathsHardcoded(baseOverridesRegistry);
 
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
@@ -88,10 +66,9 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             log.info(lsf.toString());
             this.systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
             storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
-            customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
+            customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .storage(getStorageService())
-                    .overridesRegistry(baseOverridesRegistry)
                     .build();
 
             log.info("build DFS to FILESYSTEM with root " + filesystemDFSCredentials.getRoot());
@@ -152,49 +129,14 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                             )
             );
             this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
-            customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
+
+            customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .storage(getStorageService())
-                    .overridesRegistry(baseOverridesRegistry)
                     .build();
+
             log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
         }
-    }
-
-    private void makeUserProfilePathsHardcoded(BaseOverridesRegistry baseOverridesRegistry) {
-        ProfileRegistrationServiceImplRuntimeDelegatable.overrideWith(
-                baseOverridesRegistry,
-                args -> new DFSRelativeProfileRegistrationService(
-                        args.getStorageKeyStoreOper(),
-                        args.getKeyStoreOper(),
-                        args.getAccess(),
-                        args.getCheckService(),
-                        args.getWriteService(),
-                        args.getSerde(),
-                        args.getDfsConfig()
-                )
-        );
-
-        ProfileRetrievalServiceImplRuntimeDelegatable.overrideWith(
-                baseOverridesRegistry, args -> new DFSRelativeProfileRetrievalServiceImpl(
-                        args.getDfsConfig(),
-                        args.getCheckService(),
-                        args.getAccess()
-                )
-        );
-
-        ProfileRemovalServiceImplRuntimeDelegatable.overrideWith(
-                baseOverridesRegistry,
-                args -> new DFSRelativeProfileRemovalServiceImpl(
-                        args.getPrivateKeyService(),
-                        args.getKeyStoreCache(),
-                        args.getListService(),
-                        args.getAccess(),
-                        args.getDfsConfig(),
-                        args.getRemoveService(),
-                        args.getRetrievalService()
-                )
-        );
     }
 
     public StorageService getStorageService() {

@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static de.adorsys.datasafe.business.impl.e2e.DatasafeServicesProvider.STORE_PAZZWORD;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -58,7 +58,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
         );
 
         assertThat(aliases(keyStore)).filteredOn(it -> it.matches(PATH_KEY_ID_PREFIX + ".+")).hasSize(1);
-        assertThat(aliases(keyStore)).filteredOn(it -> it.matches(DOCUMENT_KEY_ID_PREFIX + ".+")).hasSize(1);
+        assertThat(aliases(keyStore)).filteredOn(it -> it.matches(PATH_KEY_ID_PREFIX_CTR + ".+")).hasSize(1);
     }
 
     @SneakyThrows

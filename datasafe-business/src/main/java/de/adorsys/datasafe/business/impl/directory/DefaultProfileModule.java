@@ -70,7 +70,7 @@ public abstract class DefaultProfileModule {
     abstract ProfileRegistrationService creationService(ProfileRegistrationServiceImplRuntimeDelegatable impl);
 
     /**
-     * Default profile removal service.
+     * Default profile updating service.
      */
     @Binds
     abstract ProfileUpdatingService updatingService(ProfileUpdatingServiceImplRuntimeDelegatable impl);

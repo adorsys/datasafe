@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 public class KeyStoreCreationConfig {
 
     public static final String PATH_KEY_ID_PREFIX = "PATH_SECRET";
+    public static final String PATH_KEY_ID_PREFIX_CTR = "PATH_CTR_SECRET_";
     public static final String DOCUMENT_KEY_ID_PREFIX = "PRIVATE_SECRET";
 
     private final int encKeyNumber;

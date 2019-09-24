@@ -7,6 +7,7 @@ import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
@@ -44,8 +45,12 @@ class BasicFunctionalityTest extends BaseE2ETest {
         init(descriptor);
         UserID userJohn = new UserID("john");
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
+
         john = registerUser(userJohn.getValue());
         assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
+        assertThat(profileRetrievalService.privateProfile(john).getAppVersion()).isEqualTo(Version.current());
+        assertThat(profileRetrievalService.publicProfile(john.getUserID()).getAppVersion()).isEqualTo(Version.current());
+
         profileRemovalService.deregister(john);
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
     }

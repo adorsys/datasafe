@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SchemeDelegationWithDbTest extends WithStorageProvider {
@@ -38,14 +39,13 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
 
     private Path fsPath;
-    private StorageService filesystem;
     private StorageService db;
     private DefaultDatasafeServices datasafeServices;
 
     @BeforeEach
     void initialize(@TempDir Path tempDir) {
         this.fsPath = tempDir;
-        this.filesystem = new FileSystemStorageService(tempDir);
+        StorageService filesystem = new FileSystemStorageService(tempDir);
         this.db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
             uri -> uri.location().getWrapped().getScheme() + ":" + uri.location().getPath().split("/")[1],
             ImmutableMap.of("jdbc://localhost:9999", new DatabaseCredentials("sa", "sa")))
@@ -85,7 +85,8 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
         assertThat(listDb("jdbc://localhost:9999/h2:mem:test/public_profiles/"))
             .containsExactly("jdbc://localhost:9999/h2:mem:test/public_profiles/john");
 
-        Path encryptedFile = Files.walk(fsPath.resolve("users/john/private/files/")).collect(Collectors.toList()).get(1);
+        Path path = fsPath.resolve(new Uri("users/john/private/files/").resolve(AES_SIV.asUriRoot()).asString());
+        Path encryptedFile = Files.walk(path).collect(Collectors.toList()).get(1);
         // File and keystore/pub keys are on FS
         assertThat(Files.walk(fsPath))
             .extracting(it -> fsPath.relativize(it))
@@ -99,6 +100,7 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
                 "users/john/private",
                 "users/john/private/keystore",
                 "users/john/private/files",
+                "users/john/private/files/SIV",
                 fsPath.relativize(encryptedFile).toString()
             );
     }
