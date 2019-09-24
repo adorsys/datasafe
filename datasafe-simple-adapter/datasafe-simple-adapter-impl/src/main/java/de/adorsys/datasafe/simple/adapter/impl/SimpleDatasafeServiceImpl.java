@@ -94,7 +94,8 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                     )
                     .enablePathStyleAccess();
 
-            boolean useEndpoint = (!amazonS3DFSCredentials.getUrl().equals(AMAZON_URL));
+            boolean useEndpoint = !amazonS3DFSCredentials.getUrl().equals(AMAZON_URL)
+                    && !amazonS3DFSCredentials.getUrl().startsWith(S3_PREFIX);
             if (useEndpoint) {
                 AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
                         amazonS3DFSCredentials.getUrl(),
