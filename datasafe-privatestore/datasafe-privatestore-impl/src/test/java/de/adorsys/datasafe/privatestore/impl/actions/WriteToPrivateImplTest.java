@@ -44,6 +44,9 @@ class WriteToPrivateImplTest extends BaseMockitoTest {
     private SecretKey secretKey;
 
     @Mock
+    private SecretKey secretCrtKey;
+
+    @Mock
     private PrivateKeyService privateKeyService;
 
     @Mock

@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.encrypiton.impl.pathencryption;
+package de.adorsys.datasafe.simple.adapter.api.legacy.pathencryption;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -6,7 +6,7 @@ import javax.crypto.SecretKey;
 /**
  * Path encryption cipher configurer.
  */
-public interface PathEncryptionConfig {
+public interface LegacyPathEncryptionConfig {
 
     /**
      * @param secretKey Use this secret key

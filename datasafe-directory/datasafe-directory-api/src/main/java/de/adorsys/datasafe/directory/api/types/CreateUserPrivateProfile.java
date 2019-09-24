@@ -1,12 +1,14 @@
 package de.adorsys.datasafe.directory.api.types;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.Value;
 
 import java.util.Collections;
@@ -65,9 +67,15 @@ public class CreateUserPrivateProfile {
      */
     private final AbsoluteLocation<PublicResource> publishPubKeysTo;
 
-    public UserPrivateProfile removeAccess() {
+    /**
+     * Entity appVersion. Keeps version of datasafe which was used to create profile
+     */
+    @NonNull
+    @Builder.Default
+    private final Version appVersion = Version.current();
+
+    public UserPrivateProfile buildPrivateProfile() {
         return UserPrivateProfile.builder()
-            // FIXME - remove access ?
             .keystore(keystore)
             .privateStorage(new HashMap<>(Collections.singletonMap(StorageIdentifier.DEFAULT, privateStorage)))
             .storageCredentialsKeystore(storageCredentialsKeystore)
@@ -75,6 +83,7 @@ public class CreateUserPrivateProfile {
             .documentVersionStorage(documentVersionStorage)
             .associatedResources(associatedResources)
             .publishPublicKeysTo(publishPubKeysTo)
+            .appVersion(appVersion)
             .build();
     }
 }

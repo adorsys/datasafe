@@ -12,6 +12,8 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
+
 /**
  * This service ignores profiles stored at some external location and instead assumes that all files are relative
  * to system root.
@@ -23,6 +25,7 @@ public class DFSRelativeProfileRetrievalServiceImpl extends ProfileRetrievalServ
     private final StorageCheckService checkService;
     private final BucketAccessService access;
 
+    @Inject
     public DFSRelativeProfileRetrievalServiceImpl(DFSConfig dfsConfig, StorageCheckService checkService,
                                            BucketAccessService access) {
         super(null, null, null, null, null, null);
@@ -35,7 +38,7 @@ public class DFSRelativeProfileRetrievalServiceImpl extends ProfileRetrievalServ
     @Override
     public UserPublicProfile publicProfile(UserID ofUser) {
         CreateUserPublicProfile createUserPublicProfile = dfsConfig.defaultPublicTemplate(ofUser);
-        UserPublicProfile userPublicProfile = createUserPublicProfile.removeAccess();
+        UserPublicProfile userPublicProfile = createUserPublicProfile.buildPublicProfile();
         log.debug("get public profile {} for user {}", userPublicProfile, ofUser);
         return userPublicProfile;
     }
@@ -44,7 +47,7 @@ public class DFSRelativeProfileRetrievalServiceImpl extends ProfileRetrievalServ
     public UserPrivateProfile privateProfile(UserIDAuth ofUser) {
 
         CreateUserPrivateProfile privateProfile = dfsConfig.defaultPrivateTemplate(ofUser);
-        UserPrivateProfile userPrivateProfile = privateProfile.removeAccess();
+        UserPrivateProfile userPrivateProfile = privateProfile.buildPrivateProfile();
 
         log.debug("get private profile {} for user {}", userPrivateProfile, ofUser);
         return userPrivateProfile;

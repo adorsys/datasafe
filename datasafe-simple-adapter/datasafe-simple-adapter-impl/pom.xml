@@ -5,7 +5,7 @@
     <parent>
         <artifactId>datasafe-simple-adapter</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>0.6.1-SNAPSHOT</version>
+        <version>0.6.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -103,6 +103,11 @@
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.dagger</groupId>
+                            <artifactId>dagger-compiler</artifactId>
+                            <version>${dagger.version}</version>
+                        </path>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>

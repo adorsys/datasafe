@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.encrypiton.impl.pathencryption;
+package de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,13 +8,13 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class DefaultPathDigestConfig {
+public class LegacyPathDigestConfig {
 
     private final String messageDigest;
     private final String algorithm;
     private final int shaKeyPartSize;
 
-    public DefaultPathDigestConfig() {
+    public LegacyPathDigestConfig() {
         this.messageDigest = "SHA-256";
         this.algorithm = "AES";
         this.shaKeyPartSize = 16;

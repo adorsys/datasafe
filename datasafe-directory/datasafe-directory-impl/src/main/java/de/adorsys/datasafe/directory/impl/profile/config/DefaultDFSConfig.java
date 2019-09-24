@@ -166,12 +166,15 @@ public class DefaultDFSConfig implements DFSConfig {
 
     public static String addTrailingSlashIfNeeded(String systemRoot) {
         if (systemRoot == null) {
-            throw new RuntimeException("systemRoot must not be null");
+            throw new IllegalArgumentException("systemRoot must not be null");
         }
+
         int last = systemRoot.length();
-        if (systemRoot.substring(last - 1).equals("/")) {
+
+        if (!systemRoot.isEmpty() && systemRoot.substring(last - 1).equals("/")) {
             return systemRoot;
         }
+
         return systemRoot + "/";
     }
 }

@@ -11,19 +11,22 @@ import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 
+import javax.inject.Inject;
+
 /**
  * This service does not store user profile files, assuming profile paths are hardcoded relative to system root or
  * accessible using {@link DFSConfig}
  */
-public class DFSRelativeProfileRegistrationService extends ProfileRegistrationServiceImpl {
+public class DFSRelativeProfileRegistrationServiceImpl extends ProfileRegistrationServiceImpl {
 
-    public DFSRelativeProfileRegistrationService(StorageKeyStoreOperations storageKeyStoreOper,
-                                                 DocumentKeyStoreOperations keyStoreOper,
-                                                 BucketAccessService access,
-                                                 StorageCheckService checkService,
-                                                 StorageWriteService writeService,
-                                                 GsonSerde serde,
-                                                 DFSConfig dfsConfig) {
+    @Inject
+    public DFSRelativeProfileRegistrationServiceImpl(StorageKeyStoreOperations storageKeyStoreOper,
+                                                     DocumentKeyStoreOperations keyStoreOper,
+                                                     BucketAccessService access,
+                                                     StorageCheckService checkService,
+                                                     StorageWriteService writeService,
+                                                     GsonSerde serde,
+                                                     DFSConfig dfsConfig) {
         super(null, storageKeyStoreOper, keyStoreOper, access, checkService, writeService, serde, dfsConfig);
     }
 

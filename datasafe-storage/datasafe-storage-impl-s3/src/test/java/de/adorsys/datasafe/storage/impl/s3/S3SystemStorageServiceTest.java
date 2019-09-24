@@ -31,7 +31,6 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
 
     private static String accessKeyID = "admin";
     private static String secretAccessKey = "password";
-    private static String region = "eu-central-1";
     private static String url = "http://localhost";
     private static BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
     private static AmazonS3 s3;
@@ -56,6 +55,7 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
         minio.start();
         Integer mappedPort = minio.getMappedPort(9000);
         log.info("Mapped port: " + mappedPort);
+        String region = "eu-central-1";
         s3 = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(url + ":" + mappedPort, region))
                 .withCredentials(new AWSStaticCredentialsProvider(creds))
