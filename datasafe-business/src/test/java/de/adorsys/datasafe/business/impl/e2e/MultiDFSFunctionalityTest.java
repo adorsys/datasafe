@@ -208,10 +208,10 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
         assertThat(listInBucket(FILES_TWO)).hasSize(1);
         assertThat(listInBucket(KEYSTORE)).hasSize(1);
         assertThat(listInBucket(CREDENTIALS)).containsExactlyInAnyOrder(
-            "credentialsbucket/profiles/private/john",
-            "credentialsbucket/profiles/public/john",
-            "credentialsbucket/pubkeys",
-            "credentialsbucket/storagecreds");
+            "profiles/private/john",
+            "profiles/public/john",
+            "pubkeys",
+            "storagecreds");
     }
 
     private void deregisterAndValidateEmpty(UserIDAuth john) {

@@ -45,6 +45,6 @@ public class ProfileStorageCredentialsServiceImpl implements ProfileStorageCrede
 
     private void validateKeystoreAccess(UserIDAuth user) {
         // avoid only unauthorized access
-        privateKeyService.documentEncryptionSecretKey(user); // for access check
+        privateKeyService.validateUserHasAccessOrThrow(user); // for access check
     }
 }

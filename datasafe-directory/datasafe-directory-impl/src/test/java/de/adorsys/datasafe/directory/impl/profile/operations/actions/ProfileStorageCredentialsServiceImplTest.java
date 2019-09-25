@@ -36,7 +36,7 @@ class ProfileStorageCredentialsServiceImplTest extends BaseMockitoTest {
     void registerStorageCredentials() {
         tested.registerStorageCredentials(user, storageIdentifier, storageCredentials);
 
-        verify(privateKeyService).documentEncryptionSecretKey(user);
+        verify(privateKeyService).validateUserHasAccessOrThrow(user);
         verify(storageKeyStoreOper).addStorageCredentials(user, storageIdentifier, storageCredentials);
     }
 
@@ -44,7 +44,7 @@ class ProfileStorageCredentialsServiceImplTest extends BaseMockitoTest {
     void deregisterStorageCredentials() {
         tested.deregisterStorageCredentials(user, storageIdentifier);
 
-        verify(privateKeyService).documentEncryptionSecretKey(user);
+        verify(privateKeyService).validateUserHasAccessOrThrow(user);
         verify(storageKeyStoreOper).removeStorageCredentials(user, storageIdentifier);
     }
 }

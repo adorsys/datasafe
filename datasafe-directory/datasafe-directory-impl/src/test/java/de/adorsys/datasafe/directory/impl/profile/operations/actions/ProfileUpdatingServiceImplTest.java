@@ -48,7 +48,7 @@ class ProfileUpdatingServiceImplTest extends BaseMockitoTest {
     void updatePublicProfile() {
         tested.updatePublicProfile(user, publicProfile);
 
-        verify(privateKeyService).documentEncryptionSecretKey(user);
+        verify(privateKeyService).validateUserHasAccessOrThrow(user);
         verify(storeService).registerPublic(user.getUserID(), publicProfile);
     }
 
@@ -56,7 +56,7 @@ class ProfileUpdatingServiceImplTest extends BaseMockitoTest {
     void updatePrivateProfile() {
         tested.updatePrivateProfile(user, privateProfile);
 
-        verify(privateKeyService).documentEncryptionSecretKey(user);
+        verify(privateKeyService).validateUserHasAccessOrThrow(user);
         verify(storeService).registerPrivate(user.getUserID(), privateProfile);
     }
 
@@ -64,7 +64,7 @@ class ProfileUpdatingServiceImplTest extends BaseMockitoTest {
     void updateReadKeyPassword() {
         tested.updateReadKeyPassword(user, readKeyPassword);
 
-        verify(privateKeyService, never()).documentEncryptionSecretKey(user);
+        verify(privateKeyService, never()).validateUserHasAccessOrThrow(user);
         verify(keyStoreOper).updateReadKeyPassword(user, readKeyPassword);
     }
 }
