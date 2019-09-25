@@ -1,22 +1,13 @@
 package de.adorsys.datasafe.encrypiton.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.security.Security;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class KeyPairGeneratorTest extends BaseMockitoTest {
-
-    @BeforeAll
-    static void setupBouncyCastle() {
-        Security.addProvider(new BouncyCastleProvider());
-    }
+class KeyPairGeneratorTest extends WithBouncyCastle {
 
     @Test
     void testKeyPairGenerationWithCA() {

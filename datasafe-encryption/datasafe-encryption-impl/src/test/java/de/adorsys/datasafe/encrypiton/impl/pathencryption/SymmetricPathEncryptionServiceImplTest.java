@@ -3,14 +3,12 @@ package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
+import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
-import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.cryptomator.siv.SivMode;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.BadPaddingException;
@@ -18,7 +16,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.security.KeyStore;
-import java.security.Security;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
+class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
 
     private SymmetricPathEncryptionServiceImpl bucketPathEncryptionService = new SymmetricPathEncryptionServiceImpl(
             new DefaultPathEncryptorDecryptor(new SivMode())
@@ -39,11 +36,6 @@ class SymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
     private KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
     private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-
-    @BeforeAll
-    static void setupBouncyCastle() {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
     @Test
     void testEncryptionDoesNotLeakSameSegments() {

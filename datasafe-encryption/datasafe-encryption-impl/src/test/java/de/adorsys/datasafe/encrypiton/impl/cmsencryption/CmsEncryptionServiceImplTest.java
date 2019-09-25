@@ -4,10 +4,10 @@ import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
-import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Sets;
@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.MessageDigest;
-import java.security.Security;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -39,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.internal.util.io.IOUtil.closeQuietly;
 
 @Slf4j
-class CmsEncryptionServiceImplTest extends BaseMockitoTest {
+class CmsEncryptionServiceImplTest extends WithBouncyCastle {
 
     private static final String TEST_MESSAGE_CONTENT = "message content";
 
@@ -50,7 +49,6 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
 
     @BeforeAll
     static void setUp() {
-        Security.addProvider(new BouncyCastleProvider());
         keyStoreAccess = getKeyStoreAccess();
     }
 

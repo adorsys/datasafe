@@ -4,14 +4,12 @@ import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
+import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreCreationConfigImpl;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
-import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,15 +23,10 @@ import java.util.UUID;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
-class KeyStoreServiceTest extends BaseMockitoTest {
+class KeyStoreServiceTest extends WithBouncyCastle {
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
     private KeyStoreAuth keyStoreAuth;
-
-    @BeforeAll
-    static void setupBouncyCastle() {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
     @BeforeEach
     void setUp() {
