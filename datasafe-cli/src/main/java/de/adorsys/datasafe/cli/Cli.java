@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import picocli.CommandLine;
 
-import java.io.Console;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,11 +47,13 @@ public class Cli implements Runnable {
 
     @SneakyThrows
     public static void main(String[] args) {
+        // Only needed when running using JRE, unnecessary for CLI:
+        Security.addProvider(new BouncyCastleProvider());
         // silencing AWS SDK:
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-        // Hi Valentyn, did not get it running locally without the registration
-        Security.addProvider(new BouncyCastleProvider());
+
         int exitCode = new CommandLine(new Cli()).execute(args);
+
         System.exit(exitCode);
     }
 
