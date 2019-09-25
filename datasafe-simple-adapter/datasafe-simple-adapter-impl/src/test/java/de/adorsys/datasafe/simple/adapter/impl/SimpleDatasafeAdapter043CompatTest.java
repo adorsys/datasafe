@@ -4,17 +4,14 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
-import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.shared.Dirs;
 import de.adorsys.datasafe.types.api.shared.Resources;
 import lombok.SneakyThrows;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
-import java.security.Security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * This test ensures that SimpleDatasafeAdapter can use setup and folder structure from version 0.4.3
  * (backward compatibility)
  */
-class SimpleDatasafeAdapter043CompatTest extends BaseMockitoTest {
+class SimpleDatasafeAdapter043CompatTest extends WithBouncyCastle {
 
     private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
     private SimpleDatasafeServiceImpl simpleDatasafeService;
@@ -31,7 +28,6 @@ class SimpleDatasafeAdapter043CompatTest extends BaseMockitoTest {
     @SneakyThrows
     @BeforeEach
     void extractFixtureAndPrepare(@TempDir Path tempDir) {
-        Security.addProvider(new BouncyCastleProvider());
         dfsRoot = tempDir;
         Resources.copyResourceDir("compat-0.4.3", tempDir);
         simpleDatasafeService = new SimpleDatasafeServiceImpl(

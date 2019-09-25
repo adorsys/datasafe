@@ -11,17 +11,14 @@ import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.nio.file.NoSuchFileException;
-import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +41,6 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     private static Stream<StorageDescriptor> storages() {
             return allDefaultStorages();
-    }
-
-    @BeforeEach
-    void mybefore() {
-        Security.addProvider(new BouncyCastleProvider());
     }
 
     void mystart() {

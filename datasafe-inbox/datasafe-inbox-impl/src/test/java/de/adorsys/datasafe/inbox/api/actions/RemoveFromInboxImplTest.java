@@ -54,6 +54,6 @@ class RemoveFromInboxImplTest extends BaseMockitoTest {
         inbox.remove(request);
 
         verify(removeService).remove(resource);
-        verify(privateKeyService).documentEncryptionSecretKey(auth);
+        verify(privateKeyService).validateUserHasAccessOrThrow(auth);
     }
 }
