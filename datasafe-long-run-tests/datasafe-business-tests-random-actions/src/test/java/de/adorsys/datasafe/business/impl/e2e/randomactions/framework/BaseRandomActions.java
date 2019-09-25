@@ -21,9 +21,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.security.Security;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -69,6 +71,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
 
     @BeforeEach
     void prepare() {
+        Security.addProvider(new BouncyCastleProvider());
         // Enable logging obfuscation
         System.setProperty("SECURE_LOGS", "on");
         System.setProperty("SECURE_SENSITIVE", "on");
