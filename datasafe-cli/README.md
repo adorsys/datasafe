@@ -14,7 +14,7 @@ Further you have a bucket named <code>"affe"</code> in that minio.
 Before you run the Cli (which is the main class) in the project directory, create a temporary folder <code><$projectDir>/tmp</code>.
 And than allways start the Cli in this tmp directory. In this case, you can use the default confirms and all profiles/keys/secrets will be stored in the tmp directory. As this example is to store the data in minio, the data is not stored in the tmp directory, but in minio.
 
-1. First you create a profile. Simple confirm all asked questions with enter.
+1. First you create a profile. Simply confirm all asked questions with enter.
     ```
     -u=peter -p=peter -sp=system profile create
     ```

@@ -56,7 +56,7 @@ locally - on your machine.
 1. Windows executable (N/A yet), please use java version below 
 1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
 
-(Files above are built from [feature/datasafe-cli-w-s3](https://github.com/adorsys/datasafe/tree/feature/datasafe-cli-w-s3) currently)
+(Files above are built from [Datasafe-CLI](datasafe-cli) currently)
 
 #### Example actions:
 ##### Download application and create new user:

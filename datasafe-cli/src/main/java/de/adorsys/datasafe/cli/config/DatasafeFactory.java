@@ -106,7 +106,8 @@ public class DatasafeFactory {
         }
     }
 
-    private static S3StorageService getStorageService(String accessKey, String secretKey, String url, String region, String bucket) {
+    private static S3StorageService getStorageService(String accessKey, String secretKey, String url, String region,
+                                                      String bucket) {
         AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
@@ -131,7 +132,8 @@ public class DatasafeFactory {
         }
 
         AmazonS3 amazons3 = amazonS3ClientBuilder.build();
-        S3StorageService storageService = new S3StorageService(
+
+        return new S3StorageService(
                 amazons3,
                 bucket,
                 ExecutorServiceUtil
@@ -140,7 +142,6 @@ public class DatasafeFactory {
                                 5
                         )
         );
-        return storageService;
     }
 }
 
