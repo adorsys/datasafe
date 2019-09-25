@@ -8,8 +8,12 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.security.Security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,6 +21,11 @@ class CleanupDbTest extends WithStorageProvider {
 
     private SimpleDatasafeService simpleDatasafeService;
     private DFSCredentials dfsCredentials;
+
+    @BeforeAll
+    static void setupBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     private void createSimpleService(WithStorageProvider.StorageDescriptor descriptor) {
         dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
