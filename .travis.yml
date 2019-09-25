@@ -69,10 +69,9 @@ build-cli: &build-cli
 
 # CLI artifacts publishing:
 deploy-cli: &deploy-cli
-  # FIXME Enabling temporary deploy rule for cli
   deploy:
     on:
-      branch: feature/datasafe-cli-w-s3
+      branch: develop
     provider: s3
     access_key_id: ${AWS_ACCESS_KEY_ID}
     secret_access_key: ${AWS_SECRET_ACCESS_KEY}
