@@ -101,7 +101,7 @@ matrix:
       language: bash
       before_install:
         - source .travis/drop_deploy_secrets.sh
-        - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
+        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
       install:
         - echo 'Nothing to do' # Override primary build logic
       <<: *build-cli
@@ -114,7 +114,7 @@ matrix:
       language: bash
       before_install:
         - source .travis/drop_deploy_secrets.sh
-        - /bin/bash .travis/install_maven_custom_jdk_and_add_security_providers.sh
+        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
       install:
         - echo 'Nothing to do' # Override primary build logic
       <<: *build-cli

@@ -1,4 +1,9 @@
 # Build
+
+## Using Dockerfile
+You can build Datasafe-CLI for Linux using this [Dockerfile](Dockerfile)
+
+## Manual
 1. You need GraalVM compiler and BouncyCastle in java-home/jre/lib/ext/ of this compiler.
 1. Edit the java-home/jre/lib/security/java.security properties file in any text editor. 
 1. Add the JCE provider you’ve just downloaded to this file.

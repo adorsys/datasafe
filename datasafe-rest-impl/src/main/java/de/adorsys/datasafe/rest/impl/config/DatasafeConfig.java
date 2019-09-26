@@ -148,7 +148,8 @@ public class DatasafeConfig {
                     new UriBasedAuthStorageService(
                         acc -> new S3StorageService(
                             S3ClientFactory.getClient(
-                                acc.getOnlyHostPart().toString(),
+                                acc.getEndpoint(),
+                                acc.getRegion(),
                                 acc.getAccessKey(),
                                 acc.getSecretKey()
                             ),
@@ -203,14 +204,12 @@ public class DatasafeConfig {
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
 
-        StorageService multiDfs = new SchemeDelegatingStorage(
+        return new SchemeDelegatingStorage(
                 ImmutableMap.of(
                         "s3", s3StorageService,
                         "jdbc-mysql", db
                 )
         );
-
-        return multiDfs;
     }
 
     @Bean

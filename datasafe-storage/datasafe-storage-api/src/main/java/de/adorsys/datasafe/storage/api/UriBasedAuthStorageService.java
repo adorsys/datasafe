@@ -13,13 +13,14 @@ import java.util.function.Function;
 /**
  * Storage connection pool that creates S3/or other clients on the fly, based on provided credentials in URI.
  * URI format that is expected:
- * s3://access-key:secret-key@bucket/path/in/bucket
+ * s3://access-key:secret-key@region/bucket/path/in/bucket
  */
 @RequiredArgsConstructor
 public class UriBasedAuthStorageService extends BaseDelegatingStorage {
 
     private final Map<AccessId, StorageService> clientByItsAccessKey = new ConcurrentHashMap<>();
     private final Function<URI, String> bucketExtractor;
+    private final Function<URI, String> regionExtractor;
     private final Function<URI, String> endpointExtractor;
 
     // Builder to create S3 or other kind of Storage service
@@ -30,10 +31,11 @@ public class UriBasedAuthStorageService extends BaseDelegatingStorage {
      */
     public UriBasedAuthStorageService(Function<AccessId, StorageService> storageServiceBuilder) {
         this.storageServiceBuilder = storageServiceBuilder;
-        this.bucketExtractor = location -> location.getPath().replaceAll("^/", "").split("/")[0];
+        Function<URI, String[]> segmentator = location -> location.getPath().replaceAll("^/", "").split("/");
+        this.regionExtractor = location -> segmentator.apply(location)[0];
+        this.bucketExtractor = location -> segmentator.apply(location)[1];
         this.endpointExtractor = location ->
-            location.getScheme() + "://" + location.getHost() + portValue(location) + "/" +
-                this.bucketExtractor.apply(location);
+            location.getScheme() + "://" + location.getHost() + portValue(location) + "/";
     }
 
     @Override
@@ -43,6 +45,7 @@ public class UriBasedAuthStorageService extends BaseDelegatingStorage {
         AccessId accessId = new AccessId(
                 authority[0],
                 authority[1],
+                regionExtractor.apply(uri),
                 bucketExtractor.apply(uri),
                 endpointExtractor.apply(uri),
                 uri,
@@ -65,6 +68,7 @@ public class UriBasedAuthStorageService extends BaseDelegatingStorage {
 
         private final String accessKey;
         private final String secretKey;
+        private final String region;
         private final String bucketName;
         private final String endpoint;
 

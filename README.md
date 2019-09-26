@@ -47,7 +47,7 @@ Detailed performance report is here:
 ### Datasafe-CLI
 You can try Datasafe as a CLI (command-line-interface) executable for encryption of your own sensitive files. 
 Your encrypted files can be saved either in S3 bucket or local filesystem safely, because encryption will happen
-locally - on your machine.
+locally - on your machine (See [CLI-README](datasafe-cli/README.md) for details).
 
 **Download CLI executable**:
 
@@ -55,8 +55,6 @@ locally - on your machine.
 1. [Linux native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
 1. Windows executable (N/A yet), please use java version below 
 1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
-
-(Files above are built from [Datasafe-CLI](datasafe-cli) currently)
 
 #### Example actions:
 ##### Download application and create new user:

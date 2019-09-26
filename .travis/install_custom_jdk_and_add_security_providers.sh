@@ -6,14 +6,11 @@
 
 REPO_ROOT=`pwd`
 
-# 1. Custom JDK and standard maven
+# 1. Custom JDK
 curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
 source ~/.install-jdk-travis.sh
 
-echo "Installing maven"
-apt-get install maven -y
-
-cd "$REPO_ROOT"
+cd "$REPO_ROOT" || exit 1
 
 # 2. BC libs - download
 # 2.1 Parse BouncyCastle version
