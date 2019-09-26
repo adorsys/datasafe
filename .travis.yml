@@ -67,7 +67,8 @@ build-cli: &build-cli
     # Build native image, no settings.xml needed
     - ./mvnw -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
     # Perform basic testing
-    - ./datasafe-cli/basic_functionality_test.sh datasafe-cli/target/datasafe-cli
+    - echo 'Testing built CLI'
+    - ./datasafe-cli/src/test/bash/basic_functionality_test.sh datasafe-cli/target/datasafe-cli
 
 # CLI artifacts publishing:
 deploy-cli: &deploy-cli
