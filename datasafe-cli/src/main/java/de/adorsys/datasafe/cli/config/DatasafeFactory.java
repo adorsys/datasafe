@@ -89,7 +89,7 @@ public class DatasafeFactory {
                         acc.getBucketName(),
                         ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
                 ),
-                uri -> (uri.getHost() + "/" + uri.getPath()).split("/")
+                uri -> (uri.getHost() + "/" + uri.getPath().replaceFirst("^/", "")).split("/")
         );
     }
 
