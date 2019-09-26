@@ -1318,10 +1318,7 @@
       "pattern": "org/bouncycastle/util/io/TeeOutputStream.class"
     },
     {
-      "pattern": "org/joda/time/tz/data/Europe/Kiev"
-    },
-    {
-      "pattern": "org/joda/time/tz/data/ZoneInfoMap"
+      "pattern": "org/joda/time/tz/data/*"
     },
     {
       "pattern": "org/slf4j/impl/StaticLoggerBinder.class"
