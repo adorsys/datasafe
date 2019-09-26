@@ -89,7 +89,9 @@ public class FileSystemStorageService implements StorageService {
         log.debug("Write file request: {}", locationWithCallback.getWrapped().location());
         Path filePath = resolve(locationWithCallback.getWrapped().location().getRawPath(), true);
         log.debug("Write file: {}", locationWithCallback.getWrapped().location());
-        return MoreFiles.asByteSink(filePath, StandardOpenOption.TRUNCATE_EXISTING).openStream();
+        return MoreFiles
+                .asByteSink(filePath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
+                .openStream();
     }
 
     @SneakyThrows
