@@ -15,6 +15,7 @@ security.provider.n=provider-class-name
 # SimpleTest with Minio
 Lets assume you have a minio running with url: <code>http://localhost:9000</code>.
 Further you have a bucket named <code>"affe"</code> in that minio.
+Also we will assume (although minio ignores it) that you have this bucket in eu-central-1 region.
 
 Before you run the Cli (which is the main class) in the project directory, create a temporary folder <code><$projectDir>/tmp</code>.
 And than allways start the Cli in this tmp directory. In this case, you can use the default confirms and all profiles/keys/secrets will be stored in the tmp directory. As this example is to store the data in minio, the data is not stored in the tmp directory, but in minio.
@@ -24,6 +25,8 @@ And than allways start the Cli in this tmp directory. In this case, you can use 
     -u=peter -p=peter -sp=system profile create
     ```
 1. Add the url of minio with a new storagename. Notice that the bucket (*affe*) is at the end of the url.
+Also, notice region *eu-central-1* is at the beginning of URL path.
+
     ```
     -u=peter -p=peter -sp=system profile storage add -i my-minio -p http://localhost:9000/eu-central-1/affe/
     ```
