@@ -23,9 +23,9 @@ And than allways start the Cli in this tmp directory. In this case, you can use 
     ```
     -u=peter -p=peter -sp=system profile create
     ```
-1. Add the url of minio with a new storagename. Notice that the bucket is at the end of the url.
+1. Add the url of minio with a new storagename. Notice that the bucket (*affe*) is at the end of the url.
     ```
-    -u=peter -p=peter -sp=system profile storage add -i my-minio -p http://localhost:9000/affe
+    -u=peter -p=peter -sp=system profile storage add -i my-minio -p http://localhost:9000/eu-central-1/affe/
     ```
 
 1. Add the accesskey and secretkey. It assumed, they are <code>simpleAcessKey</code> and <code>simpleSecretKey</code>.
