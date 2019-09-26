@@ -33,8 +33,8 @@ echo 'Creating profile'
 yes '' | $CLI -u=user -p=password -sp=system_password -rd="$PROFILE_ROOT" profile create || exit 1
 
 echo 'Register MINIO storage'
-$CLI -u=user -p=password -sp=system_password -rd="$PROFILE_ROOT" profile storage add -i=MINIO -p="https://127.0.0.1:9000/eu-central-1/$MINIO_BUCKET/" || exit 1
-$CLI -u=user -p=password -sp=system_password -rd="$PROFILE_ROOT" profile storage credentials add -m="https://.+" -u="$MINIO_ACCESS_KEY" -p="$MINIO_SECRET_KEY" || exit 1
+$CLI -u=user -p=password -sp=system_password -rd="$PROFILE_ROOT" profile storage add -i=MINIO -p="http://127.0.0.1:9000/eu-central-1/$MINIO_BUCKET/" || exit 1
+$CLI -u=user -p=password -sp=system_password -rd="$PROFILE_ROOT" profile storage credentials add -m="http://.+" -u="$MINIO_ACCESS_KEY" -p="$MINIO_SECRET_KEY" || exit 1
 
 echo "$SECRET_TEXT" > my_secret.txt
 
