@@ -38,6 +38,15 @@ public class UriBasedAuthStorageService extends BaseDelegatingStorage {
             location.getScheme() + "://" + location.getHost() + portValue(location) + "/";
     }
 
+    public UriBasedAuthStorageService(Function<AccessId, StorageService> storageServiceBuilder,
+                                      Function<URI, String[]> segmentator) {
+        this.storageServiceBuilder = storageServiceBuilder;
+        this.regionExtractor = location -> segmentator.apply(location)[0];
+        this.bucketExtractor = location -> segmentator.apply(location)[1];
+        this.endpointExtractor = location ->
+                location.getScheme() + "://" + location.getHost() + portValue(location) + "/";
+    }
+
     @Override
     protected StorageService service(AbsoluteLocation location) {
         String[] authority = location.location().asURI().getAuthority().split("@")[0].split(":");

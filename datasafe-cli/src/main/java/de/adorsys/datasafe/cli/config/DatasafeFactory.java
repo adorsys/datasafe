@@ -88,7 +88,8 @@ public class DatasafeFactory {
                         // Bucket name is encoded in first path segment
                         acc.getBucketName(),
                         ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
-                )
+                ),
+                uri -> (uri.getHost() + "/" + uri.getPath()).split("/")
         );
     }
 
