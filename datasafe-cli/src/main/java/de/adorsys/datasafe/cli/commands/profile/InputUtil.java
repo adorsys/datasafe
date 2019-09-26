@@ -1,17 +1,27 @@
 package de.adorsys.datasafe.cli.commands.profile;
 
 import com.google.common.base.Strings;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.experimental.UtilityClass;
 
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+/**
+ * Allows to read users input from STDIN.
+ */
 @UtilityClass
 public class InputUtil {
 
     private static final Scanner sc = new Scanner(System.in);
 
+    /**
+     * Asks user to input value
+     * @param text Message describing what value to input
+     * @param defaultValue Default value to return, when user clicked enter on blank line
+     * @return User input
+     */
     public static String input(String text, String defaultValue) {
         System.out.println(text + " (" + defaultValue + "):");
         String input = sc.hasNextLine() ? sc.nextLine() : null;
@@ -22,17 +32,26 @@ public class InputUtil {
         return input;
     }
 
-    public static String inpPath(String text, String defaultValue) {
+    /**
+     * Asks user to input path-alike value
+     * @param text Print message to user describing which value to input
+     * @param defaultValue Value to return when user hits 'Enter'
+     * @return Users' input
+     */
+    public static Uri inpPath(String text, String defaultValue) {
         String result = input(text, defaultValue);
 
-        if (URI.create(result).isAbsolute()) {
-            return result;
+        // Fully qualified url
+        URI asUri = URI.create(result);
+        if (asUri.isAbsolute()) {
+            return new Uri(asUri);
         }
 
+        // Some local resource url
         if (result.startsWith("~/")) {
             result = result.replaceFirst("^~", System.getProperty("user.home"));
         }
 
-        return Paths.get(result).toUri().toASCIIString();
+        return new Uri(Paths.get(result).toUri());
     }
 }

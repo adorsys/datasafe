@@ -4,6 +4,7 @@ import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import picocli.CommandLine;
 
 import java.util.Collections;
@@ -21,8 +22,8 @@ public class Create implements Runnable {
 
     @Override
     public void run() {
-        String publicKeys = inpPath("Public keys", atRoot("pubkeys"));
-        String inbox = inpPath("Your INBOX folder", atRoot("inbox/"));
+        Uri publicKeys = inpPath("Public keys", atRoot("pubkeys"));
+        Uri inbox = inpPath("Your INBOX folder", atRoot("inbox/"));
 
         CreateUserPublicProfile publicProfile = CreateUserPublicProfile.builder()
                 .id(profile.getCli().auth().getUserID())

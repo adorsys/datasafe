@@ -15,7 +15,6 @@ RUN ~/.install-jdk-travis.sh
 RUN apt-get install git -y
 RUN git clone https://github.com/adorsys/datasafe
 WORKDIR datasafe
-RUN git checkout -t origin/develop
 
 RUN .travis/install_custom_jdk_and_add_security_providers.sh
 

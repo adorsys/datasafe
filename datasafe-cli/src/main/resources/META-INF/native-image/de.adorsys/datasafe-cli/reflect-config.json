@@ -138,6 +138,14 @@
     ]
   },
   {
+    "name": "de.adorsys.datasafe.types.api.global.PathEncryptionId",
+    "allDeclaredFields": true
+  },
+  {
+    "name": "de.adorsys.datasafe.types.api.global.Version",
+    "allDeclaredFields": true
+  },
+  {
     "name": "de.adorsys.datasafe.directory.api.types.StorageCredentials",
     "allDeclaredFields": true,
     "fields": [
@@ -183,6 +191,10 @@
       {
         "name": "storageCredentialsKeystore",
         "allowWrite": true
+      },
+      {
+        "name": "appVersion",
+        "allowWrite": true
       }
     ]
   },
@@ -197,6 +209,10 @@
       },
       {
         "name": "inbox",
+        "allowWrite": true
+      },
+      {
+        "name": "appVersion",
         "allowWrite": true
       }
     ]

@@ -26,12 +26,14 @@ import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.experimental.Delegate;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 @Slf4j
+@UtilityClass
 public class DatasafeFactory {
 
     public static DefaultDatasafeServices datasafe(Path fsRoot, String systemPassword) {
@@ -65,33 +67,28 @@ public class DatasafeFactory {
 
     private static StorageService httpS3() {
         return new UriBasedAuthStorageService(
-                acc -> {
-                    String url = acc.getOnlyHostPart().toString();
-                    String accessKey = acc.getAccessKey();
-                    String secretKey = acc.getSecretKey();
-                    String bucketName = acc.getBucketName();
-                    String region = "eu-central-1";
-                    log.debug("HTTP reading");
-                    return getStorageService(accessKey, secretKey, url, region, bucketName);
-                }
+                acc -> getStorageService(
+                        acc.getAccessKey(),
+                        acc.getSecretKey(),
+                        acc.getEndpoint(),
+                        acc.getRegion(),
+                        acc.getBucketName()
+                )
         );
     }
 
     private static StorageService amazonS3() {
         return new UriBasedAuthStorageService(
-                acc -> {
-                    log.debug("S3 reading");
-                    return new S3StorageService(
-                            S3ClientFactory.getClientByRegion(
-                                    acc.getOnlyHostPart().toString().split("://")[1],
-                                    acc.getAccessKey(),
-                                    acc.getSecretKey()
-                            ),
-                            // Bucket name is encoded in first path segment
-                            acc.getBucketName(),
-                            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
-                    );
-                }
+                acc -> new S3StorageService(
+                        S3ClientFactory.getAmazonClient(
+                                acc.getRegion(),
+                                acc.getAccessKey(),
+                                acc.getSecretKey()
+                        ),
+                        // Bucket name is encoded in first path segment
+                        acc.getBucketName(),
+                        ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
+                )
         );
     }
 
