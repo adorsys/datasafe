@@ -1318,7 +1318,7 @@
       "pattern": "org/bouncycastle/util/io/TeeOutputStream.class"
     },
     {
-      "pattern": "org/joda/time/tz/data/*"
+      "pattern": "org/joda/time/tz/data/.+"
     },
     {
       "pattern": "org/slf4j/impl/StaticLoggerBinder.class"
