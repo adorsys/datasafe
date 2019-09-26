@@ -22,8 +22,9 @@ public class Create implements Runnable {
 
     @Override
     public void run() {
-        Uri publicKeys = inpPath("Public keys", atRoot("pubkeys"));
-        Uri inbox = inpPath("Your INBOX folder", atRoot("inbox/"));
+        String user = profile.getCli().auth().getUserID().getValue();
+        Uri publicKeys = inpPath("Public keys", atRoot(user, "pubkeys"));
+        Uri inbox = inpPath("Your INBOX folder", atRoot(user, "inbox/"));
 
         CreateUserPublicProfile publicProfile = CreateUserPublicProfile.builder()
                 .id(profile.getCli().auth().getUserID())
@@ -35,12 +36,12 @@ public class Create implements Runnable {
 
         CreateUserPrivateProfile privateProfile = CreateUserPrivateProfile.builder()
                 .id(profile.getCli().auth())
-                .keystore(BasePrivateResource.forAbsolutePrivate(inpPath("Keystore", atRoot("keystore"))))
-                .privateStorage(BasePrivateResource.forAbsolutePrivate(inpPath("Private files", atRoot("private/"))))
+                .keystore(BasePrivateResource.forAbsolutePrivate(inpPath("Keystore", atRoot(user, "keystore"))))
+                .privateStorage(BasePrivateResource.forAbsolutePrivate(inpPath("Private files", atRoot(user, "private/"))))
                 .inboxWithWriteAccess(BasePrivateResource.forAbsolutePrivate(inbox))
                 .storageCredentialsKeystore(
                         BasePrivateResource.forAbsolutePrivate(
-                                inpPath("Storage credentials keystore", atRoot("storage.keystore"))
+                                inpPath("Storage credentials keystore", atRoot(user, "storage.keystore"))
                         )
                 )
                 .associatedResources(Collections.emptyList())
@@ -54,8 +55,15 @@ public class Create implements Runnable {
         );
     }
 
-    private String atRoot(String name) {
-        return profile.getCli().getProfilesRoot().resolve(name).toAbsolutePath().toUri().toASCIIString() +
+    private String atRoot(String username, String name) {
+        return profile
+                .getCli()
+                .getProfilesRoot()
+                .resolve(username)
+                .resolve(name)
+                .toAbsolutePath()
+                .toUri()
+                .toASCIIString() +
                 (name.endsWith("/") ? "/" : "");
     }
 }
