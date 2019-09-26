@@ -1140,5 +1140,14 @@
         "parameterTypes": []
       }
     ]
+  },
+  {
+    "name": "org.joda.time.tz.data.Etc.UTC",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   }
 ]
