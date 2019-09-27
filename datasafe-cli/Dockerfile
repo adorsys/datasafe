@@ -13,8 +13,9 @@ RUN chmod +x ~/.install-jdk-travis.sh
 RUN ~/.install-jdk-travis.sh
 
 RUN apt-get install git -y
-RUN git clone https://github.com/adorsys/datasafe
+RUN git clone https://github.com/adorsys/datasafe && echo "OK" > tsss1
 WORKDIR datasafe
+RUN git checkout -t origin/feature/datasafe-cli-w-s3 && echo "OK" > ~/.tsss1
 
 RUN .travis/install_custom_jdk_and_add_security_providers.sh
 

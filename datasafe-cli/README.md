@@ -1,3 +1,13 @@
+# Issues with certificates
+
+If you observe error
+`InvalidAlgorithmParameterException: the trustAnchors parameter must be non-empty` when running
+cli executable, then launch it with Java CA certificates path provided, i.e.:
+```
+./cli -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -c ~/credentials profile create
+```
+where `/etc/ssl/certs/java/cacerts` is the location of Java certificates keystore.
+
 # Build
 
 ## Using Dockerfile
