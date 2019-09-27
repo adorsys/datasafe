@@ -10,14 +10,14 @@ PROFILE_ROOT="$(pwd)/cli-profiles/"
 MINIO_ACCESS_KEY="minio-access-key"
 MINIO_SECRET_KEY="minio-secret-key"
 MINIO_BUCKET="testBucket"
-VOLUME="$(pwd)/minio/$MINIO_BUCKET"
+VOLUME="$(pwd)/minio"
 SECRET_TEXT="Secret text"
 PRIVATE_ON_FS="folder-fs/secret_on_fs.txt"
 INBOX_ON_FS="hello.txt"
 PRIVATE_ON_MINIO="folder-minio/secret_on_minio.txt"
 
 # create minio volume bucket
-mkdir -p "$VOLUME"
+mkdir -p "$VOLUME/$MINIO_BUCKET"
 
 # Spin up minio to imitate S3, minio will create MINIO_BUCKET based on volume
 docker run -d \
