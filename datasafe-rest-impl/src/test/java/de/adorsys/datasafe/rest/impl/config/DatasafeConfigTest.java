@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,8 +21,6 @@ import java.io.ByteArrayInputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -40,6 +39,10 @@ class DatasafeConfigTest extends BaseMockitoTest {
     private static final String DATA_FILE_STORAGE_PATH = "path-to/file";
     private static final String DATA_STORAGE_PATH = "http://user:passwd@0.0.0.0:9000/eu-central-1/databucket/path-to/file";
 
+    @Value("${AWS_BUCKET}")
+    private String basicBucket;
+
+    // bucket name is overridden by dev build environment variable
     @Autowired
     private StorageService storageService;
 
@@ -56,8 +59,7 @@ class DatasafeConfigTest extends BaseMockitoTest {
     void prepare() {
         S3Object object = new S3Object();
         object.setObjectContent(new ByteArrayInputStream(BASIC_STORAGE_ANSWER.getBytes(UTF_8)));
-        // bucket name is overridden by dev build environment variable - using anyString():
-        when(amazonS3.getObject(anyString(), eq(BASIC_FILE_STORAGE_PATH))).thenReturn(object);
+        when(amazonS3.getObject(basicBucket, BASIC_FILE_STORAGE_PATH)).thenReturn(object);
 
         when(s3Factory.getClient("http://0.0.0.0:9000/", "eu-central-1", "user", "passwd"))
                 .thenReturn(amazonS3FromFactory);
