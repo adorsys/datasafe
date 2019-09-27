@@ -70,8 +70,8 @@ build-cli: &build-cli
     # Perform basic testing
     - echo 'Testing built CLI'
     - ./datasafe-cli/src/test/bash/basic_functionality_test_fs.sh datasafe-cli/target/datasafe-cli
-    # Docker not available on MacOS
-    - '[[ "linux" == "$TRAVIS_OS_NAME"]] && ./datasafe-cli/src/test/bash/basic_functionality_test_minio.sh datasafe-cli/target/datasafe-cli'
+    # Docker not available on MacOS, allow to pass
+    - ./datasafe-cli/src/test/bash/basic_functionality_test_minio.sh datasafe-cli/target/datasafe-cli
 
 # CLI artifacts publishing:
 deploy-cli: &deploy-cli

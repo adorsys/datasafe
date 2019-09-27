@@ -56,14 +56,15 @@ public class Create implements Runnable {
     }
 
     private String atRoot(String username, String name) {
-        return profile
+        String resolved = profile
                 .getCli()
                 .getProfilesRoot()
                 .resolve(username)
                 .resolve(name)
                 .toAbsolutePath()
                 .toUri()
-                .toASCIIString() +
-                (name.endsWith("/") ? "/" : "");
+                .toASCIIString();
+
+        return (name.endsWith("/") && !resolved.endsWith("/") ? resolved + "/" : resolved);
     }
 }

@@ -14,7 +14,7 @@ import java.util.Scanner;
 @UtilityClass
 public class InputUtil {
 
-    private static final Scanner sc = new Scanner(System.in);
+    private static final Scanner SCANNER = new Scanner(System.in);
 
     /**
      * Asks user to input value
@@ -23,8 +23,8 @@ public class InputUtil {
      * @return User input
      */
     public static String input(String text, String defaultValue) {
-        System.out.println(text + " (" + defaultValue + "):");
-        String input = sc.hasNextLine() ? sc.nextLine() : null;
+        System.out.printf("%s (%s):%n", text, defaultValue);
+        String input = SCANNER.hasNextLine() ? SCANNER.nextLine() : null;
 
         if (Strings.isNullOrEmpty(input)) {
             return defaultValue;
