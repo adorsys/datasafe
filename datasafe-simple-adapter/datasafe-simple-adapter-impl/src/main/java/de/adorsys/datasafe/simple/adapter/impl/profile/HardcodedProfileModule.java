@@ -5,6 +5,7 @@ import dagger.Module;
 import de.adorsys.datasafe.directory.api.profile.operations.*;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImplRuntimeDelegatable;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileStorageCredentialsServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.resource.ResourceResolverImplRuntimeDelegatable;
 
 @Module
@@ -33,6 +34,12 @@ public abstract class HardcodedProfileModule {
      */
     @Binds
     abstract ProfileRemovalService removalService(DFSRelativeProfileRemovalServiceImpl impl);
+
+    /**
+     * Storage credentials access.
+     */
+    @Binds
+    abstract ProfileStorageCredentialsService profileStorageCredentialsService(ProfileStorageCredentialsServiceImplRuntimeDelegatable impl);
 
     /**
      * Resource resolver that simply prepends relevant path segment from profile based on location type.

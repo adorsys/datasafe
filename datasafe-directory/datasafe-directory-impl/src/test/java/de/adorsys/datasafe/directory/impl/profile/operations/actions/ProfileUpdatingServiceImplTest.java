@@ -3,12 +3,10 @@ package de.adorsys.datasafe.directory.impl.profile.operations.actions;
 import de.adorsys.datasafe.directory.api.profile.keys.DocumentKeyStoreOperations;
 import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.keys.StorageKeyStoreOperations;
-import de.adorsys.datasafe.directory.api.types.StorageCredentials;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -46,17 +44,11 @@ class ProfileUpdatingServiceImplTest extends BaseMockitoTest {
     @Mock
     private ReadKeyPassword readKeyPassword;
 
-    @Mock
-    private StorageIdentifier storageIdentifier;
-
-    @Mock
-    private StorageCredentials storageCredentials;
-
     @Test
     void updatePublicProfile() {
         tested.updatePublicProfile(user, publicProfile);
 
-        verify(privateKeyService).documentEncryptionSecretKey(user);
+        verify(privateKeyService).validateUserHasAccessOrThrow(user);
         verify(storeService).registerPublic(user.getUserID(), publicProfile);
     }
 
@@ -64,7 +56,7 @@ class ProfileUpdatingServiceImplTest extends BaseMockitoTest {
     void updatePrivateProfile() {
         tested.updatePrivateProfile(user, privateProfile);
 
-        verify(privateKeyService).documentEncryptionSecretKey(user);
+        verify(privateKeyService).validateUserHasAccessOrThrow(user);
         verify(storeService).registerPrivate(user.getUserID(), privateProfile);
     }
 
@@ -72,23 +64,7 @@ class ProfileUpdatingServiceImplTest extends BaseMockitoTest {
     void updateReadKeyPassword() {
         tested.updateReadKeyPassword(user, readKeyPassword);
 
-        verify(privateKeyService, never()).documentEncryptionSecretKey(user);
+        verify(privateKeyService, never()).validateUserHasAccessOrThrow(user);
         verify(keyStoreOper).updateReadKeyPassword(user, readKeyPassword);
-    }
-
-    @Test
-    void registerStorageCredentials() {
-        tested.registerStorageCredentials(user, storageIdentifier, storageCredentials);
-
-        verify(privateKeyService).documentEncryptionSecretKey(user);
-        verify(storageKeyStoreOper).addStorageCredentials(user, storageIdentifier, storageCredentials);
-    }
-
-    @Test
-    void deregisterStorageCredentials() {
-        tested.deregisterStorageCredentials(user, storageIdentifier);
-
-        verify(privateKeyService).documentEncryptionSecretKey(user);
-        verify(storageKeyStoreOper).removeStorageCredentials(user, storageIdentifier);
     }
 }

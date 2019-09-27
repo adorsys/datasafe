@@ -10,10 +10,10 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class S3ClientFactory {
 
-    public AmazonS3 getClient(String endpointUrl, String accessKey, String secretKey) {
+    public AmazonS3 getClient(String endpointUrl, String region, String accessKey, String secretKey) {
         return AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration(endpointUrl, "eu-central-1")
+                        new AwsClientBuilder.EndpointConfiguration(endpointUrl, region)
                 )
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
@@ -21,6 +21,17 @@ public class S3ClientFactory {
                         )
                 )
                 .enablePathStyleAccess()
+                .build();
+    }
+
+    public AmazonS3 getAmazonClient(String region, String accessKey, String secretKey) {
+        return AmazonS3ClientBuilder.standard()
+                .withRegion(region)
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(accessKey, secretKey)
+                        )
+                )
                 .build();
     }
 }

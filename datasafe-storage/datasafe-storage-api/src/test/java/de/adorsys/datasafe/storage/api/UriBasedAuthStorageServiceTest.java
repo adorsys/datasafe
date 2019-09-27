@@ -6,6 +6,7 @@ import de.adorsys.datasafe.types.api.resource.WithCallback;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -87,68 +88,74 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
     private static Stream<MappedItem> fixture() {
         return Stream.of(
             new MappedItem(
-                "http://user:password@host:9999/bucket",
+                "http://user:password@host:9999/region/bucket",
                 new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
+                        "region",
                     "bucket",
-                    "http://host:9999/bucket",
-                    URI.create("http://host:9999/bucket"),
+                    "http://host:9999/",
+                    URI.create("http://host:9999/region/bucket"),
                     URI.create("http://host:9999")
                 )
             ),
             new MappedItem(
-                "http://user:password@host:9999/bucket/",
+                "http://user:password@host:9999/region/bucket/",
                 new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
+                        "region",
                     "bucket",
-                    "http://host:9999/bucket",
-                    URI.create("http://host:9999/bucket/"),
+                    "http://host:9999/",
+                    URI.create("http://host:9999/region/bucket/"),
                     URI.create("http://host:9999")
                 )
             ),
             new MappedItem(
-                "http://user:password@host:9999/bucket/path/to",
+                "http://user:password@host:9999/region/bucket/path/to",
                 new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
+                        "region",
                     "bucket",
-                    "http://host:9999/bucket",
-                    URI.create("http://host:9999/bucket/path/to"),
+                    "http://host:9999/",
+                    URI.create("http://host:9999/region/bucket/path/to"),
                     URI.create("http://host:9999")
                 )
             ),
             new MappedItem(
-                "http://user:password@host:9999/bucket/path/to/",
+                "http://user:password@host:9999/region/bucket/path/to/",
                 new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
+                        "region",
                     "bucket",
-                    "http://host:9999/bucket",
-                    URI.create("http://host:9999/bucket/path/to/"),
+                    "http://host:9999/",
+                    URI.create("http://host:9999/region/bucket/path/to/"),
                     URI.create("http://host:9999")
                 )
             ),
             new MappedItem(
-                "http://user:password@host.com/bucket",
+                "http://user:password@host.com/region/bucket",
                 new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
+                        "region",
                     "bucket",
-                    "http://host.com/bucket",
-                    URI.create("http://host.com/bucket"),
+                    "http://host.com/",
+                    URI.create("http://host.com/region/bucket"),
                     URI.create("http://host.com")
                 )
             ),
             new MappedItem(
-                "http://user:password@host.com/bucket/",
+                "http://user:password@host.com/region/bucket/",
                 new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
+                        "region",
                     "bucket",
-                    "http://host.com/bucket",
-                    URI.create("http://host.com/bucket/"),
+                    "http://host.com/",
+                    URI.create("http://host.com/region/bucket/"),
                     URI.create("http://host.com")
                 )
             )
@@ -156,6 +163,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
     }
 
     @Getter
+    @ToString(of = "uriAsString")
     @RequiredArgsConstructor
     private static class MappedItem {
 
@@ -163,7 +171,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
         private final AbsoluteLocation uri;
         private final UriBasedAuthStorageService.AccessId accessId;
 
-        public MappedItem(String uri, UriBasedAuthStorageService.AccessId accessId) {
+        private MappedItem(String uri, UriBasedAuthStorageService.AccessId accessId) {
             this.uriAsString = uri;
             this.uri = BasePrivateResource.forAbsolutePrivate(uri);
             this.accessId = accessId;

@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -38,17 +38,17 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     private UserIDAuth userIDAuth;
     private DFSCredentials dfsCredentials;
 
+    @BeforeAll
+    static void setupBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     void myinit(StorageDescriptor descriptor) {
         dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
     }
 
     private static Stream<StorageDescriptor> storages() {
             return allDefaultStorages();
-    }
-
-    @BeforeEach
-    void mybefore() {
-        Security.addProvider(new BouncyCastleProvider());
     }
 
     void mystart() {

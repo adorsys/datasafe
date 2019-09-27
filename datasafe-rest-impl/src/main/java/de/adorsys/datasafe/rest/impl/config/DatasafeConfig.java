@@ -29,11 +29,10 @@ import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.BucketNameRemovingRouter;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
-import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -130,7 +129,7 @@ public class DatasafeConfig {
 
     @Bean
     @ConditionalOnProperty(value = CLIENT_CREDENTIALS, havingValue = "true")
-    StorageService clientCredentials(AmazonS3 s3, DatasafeProperties properties) {
+    StorageService clientCredentials(AmazonS3 s3, S3Factory factory, DatasafeProperties properties) {
         ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
         S3StorageService basicStorage = new S3StorageService(
             s3,
@@ -147,8 +146,9 @@ public class DatasafeConfig {
                     Pattern.compile(".+"),
                     new UriBasedAuthStorageService(
                         acc -> new S3StorageService(
-                            S3ClientFactory.getClient(
-                                acc.getOnlyHostPart().toString(),
+                                factory.getClient(
+                                acc.getEndpoint(),
+                                acc.getRegion(),
                                 acc.getAccessKey(),
                                 acc.getSecretKey()
                             ),
@@ -158,6 +158,11 @@ public class DatasafeConfig {
                     )
                 ).build()
         );
+    }
+
+    @Bean
+    S3Factory factory() {
+        return new BasicS3Factory();
     }
 
     /**
@@ -203,14 +208,12 @@ public class DatasafeConfig {
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
 
-        StorageService multiDfs = new SchemeDelegatingStorage(
+        return new SchemeDelegatingStorage(
                 ImmutableMap.of(
                         "s3", s3StorageService,
                         "jdbc-mysql", db
                 )
         );
-
-        return multiDfs;
     }
 
     @Bean

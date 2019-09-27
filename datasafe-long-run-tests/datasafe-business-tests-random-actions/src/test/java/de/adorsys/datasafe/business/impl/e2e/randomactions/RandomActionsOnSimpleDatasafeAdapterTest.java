@@ -218,6 +218,11 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                     }
 
                     @Override
+                    public Set<StorageIdentifier> listRegisteredStorageCredentials(UserIDAuth user) {
+                        throw new IllegalStateException("Not implemented");
+                    }
+
+                    @Override
                     public boolean userExists(UserID ofUser) {
                         throw new IllegalStateException("Not implemented");
                     }

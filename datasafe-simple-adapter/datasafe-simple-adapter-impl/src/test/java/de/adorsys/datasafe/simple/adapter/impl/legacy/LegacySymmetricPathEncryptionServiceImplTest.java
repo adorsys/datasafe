@@ -5,11 +5,11 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.simple.adapter.api.legacy.pathencryption.LegacySymmetricPathEncryptionService;
+import de.adorsys.datasafe.simple.adapter.impl.WithBouncyCastle;
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathDigestConfig;
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathEncryptor;
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacySymmetricPathEncryptionServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
-import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-class LegacySymmetricPathEncryptionServiceImplTest extends BaseMockitoTest {
+class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
 
     private LegacySymmetricPathEncryptionService bucketPathEncryptionService = new LegacySymmetricPathEncryptionServiceImpl(
             new LegacyPathEncryptor(new LegacyPathDigestConfig())

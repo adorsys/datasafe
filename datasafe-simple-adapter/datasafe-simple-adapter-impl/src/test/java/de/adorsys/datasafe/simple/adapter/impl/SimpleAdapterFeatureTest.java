@@ -30,7 +30,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-class SimpleAdapterFeatureTest {
+class SimpleAdapterFeatureTest extends WithBouncyCastle {
     
     private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
     private String content = "content of document";

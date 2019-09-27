@@ -9,6 +9,9 @@ import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.experimental.UtilityClass;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import java.security.Security;
 
 /**
  * Factory to get Datasafe services.
@@ -19,6 +22,7 @@ public class DatasafeServicesProvider {
     public static final String STORE_PAZZWORD = "PAZZWORD";
 
     public static DefaultDatasafeServices defaultDatasafeServices(StorageService storageService, Uri systemRoot) {
+        Security.addProvider(new BouncyCastleProvider());
         return DaggerDefaultDatasafeServices
                 .builder()
                 .config(dfsConfig(systemRoot))
@@ -27,6 +31,7 @@ public class DatasafeServicesProvider {
     }
 
     public static VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, Uri systemRoot) {
+        Security.addProvider(new BouncyCastleProvider());
         return DaggerVersionedDatasafeServices
                 .builder()
                 .config(dfsConfig(systemRoot))

@@ -1,19 +1,32 @@
-language: java
-
-jdk:
-  - oraclejdk8
-
+# Using bash because Travis CI does not support Java on Windows
 sudo: required
-
 services:
   - docker
 
-# travis is quite limited for multi-language projects when one needs to share artifacts:
-# https://github.com/travis-ci/travis-ci/issues/4090
+branches:
+  except:
+    - gh-pages
+env:
+  global:
+    # This is a convenience variable for shortening download commands
+    - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
+    - JDK="graalvm@19.2.0"
+
+### This section represents primary build actions
+before_install:
+  - curl -L https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz > oc-cli.tar.gz
+  - tar -xzf oc-cli.tar.gz
+  - sudo mv ./openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit/oc /usr/local/bin
+
+# preparations to build frontend
+install:
+  - nvm install 11.12.0
+  - npm install -g @angular/cli
+  - cd frontend/datasafe-ui && npm install && cd ../..
 
 script:
   - mvn --settings .travis/settings.xml clean verify -B -V -DAWS_BUCKET=${AWS_BUCKET}
-# make frontend available for REST-docker
+    # make frontend available for REST-docker
   - cd frontend/datasafe-ui && ng build --deploy-url /static/ --base-href /static/ && mv dist ../../datasafe-rest-impl/target/dist && cd ../..
 
 deploy:
@@ -38,16 +51,79 @@ deploy:
       tags: true
       condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
 
-before_install:
-  - curl -L https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz > oc-cli.tar.gz
-  - tar -xzf oc-cli.tar.gz
-  - sudo mv ./openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit/oc /usr/local/bin
-
-# preparations to build frontend
-install:
-  - nvm install 11.12.0
-  - npm install -g @angular/cli
-  - cd frontend/datasafe-ui && npm install && cd ../..
-
 after_success:
   - /bin/bash .travis/codecov_bash.sh
+
+################ Custom build stages:
+# Special test-skipping stage to build CLI, using maven-wrapper
+
+build-cli: &build-cli
+  script:
+    # re-export JAVA_HOME
+    - source  ~/.jdk_config
+    # Prepare everything, no settings.xml needed
+    - ./mvnw clean install -B -V -DskipTests
+    # Change security providers of JDK
+    - /bin/bash .travis/enable_bouncycastle_security.sh
+    # Build native image, no settings.xml needed
+    - ./mvnw -f datasafe-cli/pom.xml clean package -B -V -Pnative-image -DskipTests
+    # Perform basic testing
+    - echo 'Testing built CLI'
+    - ./datasafe-cli/src/test/bash/basic_functionality_test_fs.sh datasafe-cli/target/datasafe-cli
+    # Docker not available on MacOS, allow to pass
+    - ./datasafe-cli/src/test/bash/basic_functionality_test_minio.sh datasafe-cli/target/datasafe-cli
+
+# CLI artifacts publishing:
+deploy-cli: &deploy-cli
+  deploy:
+    on:
+      branch: develop
+    provider: s3
+    access_key_id: ${AWS_ACCESS_KEY_ID}
+    secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+    bucket: ${AWS_BUCKET}
+    region: ${AWS_REGION}
+    skip_cleanup: true
+    local_dir: datasafe-cli/target
+    upload-dir: datasafe-cli/${TRAVIS_OS_NAME}/${TRAVIS_COMMIT}
+
+################ Build matrix:
+# Build configuration definition:
+matrix:
+  include:
+
+    #### PRIMARY BUILD ####
+    # This is original build and deploy script, that runs E2E tests and deploys docker images
+    - os: linux
+      language: java
+      jdk: openjdk8
+
+
+    #### CLI-ORIENTED BUILD ####
+    # These are CLI-only builds that produce Datasafe cli executable for each OS:
+
+    ### CLI for Linux:
+    - os: linux
+      language: bash
+      before_install:
+        - source .travis/drop_deploy_secrets.sh
+        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
+      install:
+        - echo 'Nothing to do' # Override primary build logic
+      <<: *build-cli
+      <<: *deploy-cli
+      after_success:
+        - echo 'Nothing to do' # Override primary build logic
+
+    ### CLI for MacOS:
+    - os: osx
+      language: bash
+      before_install:
+        - source .travis/drop_deploy_secrets.sh
+        - /bin/bash .travis/install_custom_jdk_and_add_security_providers.sh
+      install:
+        - echo 'Nothing to do' # Override primary build logic
+      <<: *build-cli
+      <<: *deploy-cli
+      after_success:
+        - echo 'Nothing to do' # Override primary build logic

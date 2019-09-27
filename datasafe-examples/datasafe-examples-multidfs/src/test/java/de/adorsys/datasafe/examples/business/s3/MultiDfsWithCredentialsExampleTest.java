@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class MultiDfsWithCredentialsExampleTest {
 
+    private static final String REGION = "eu-central-1";
     private static final ExecutorService EXECUTOR = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);
 
     private static Map<MinioContainerId, GenericContainer> minios = new EnumMap<>(MinioContainerId.class);
@@ -72,12 +73,13 @@ class MultiDfsWithCredentialsExampleTest {
             minios.put(it, minio);
 
             String endpoint = "http://127.0.0.1:" + minio.getFirstMappedPort() + "/";
-            endpointsByHost.put(it, endpoint + it.getBucketName() + "/");
+            endpointsByHost.put(it, endpoint + REGION + "/" + it.getBucketName() + "/");
             log.info("MINIO for {} is available at: {} with access: '{}'/'{}'", it, endpoint, it.getAccessKey(),
                     it.getSecretKey());
 
             AmazonS3 client = S3ClientFactory.getClient(
                     endpoint,
+                    REGION,
                     it.getAccessKey(),
                     it.getSecretKey()
             );
@@ -127,7 +129,8 @@ class MultiDfsWithCredentialsExampleTest {
                                         new UriBasedAuthStorageService(
                                             acc -> new S3StorageService(
                                                 S3ClientFactory.getClient(
-                                                    acc.getOnlyHostPart().toString(),
+                                                    acc.getEndpoint(),
+                                                    acc.getRegion(),
                                                     acc.getAccessKey(),
                                                     acc.getSecretKey()
                                                 ),

@@ -32,6 +32,7 @@ import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,6 +44,7 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +66,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
+    private static final String REGION = "eu-central-1";
     private static final String LOCALHOST = "http://127.0.0.1";
 
     private static final String CREDENTIALS = "credentialsbucket";
@@ -83,6 +86,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @BeforeAll
     static void initDistributedMinios() {
+        Security.addProvider(new BouncyCastleProvider());
         // Create all required minio-backed S3 buckets:
         Stream.of(CREDENTIALS, KEYSTORE, FILES_ONE, FILES_TWO, INBOX).forEach(it -> {
             GenericContainer minio = new GenericContainer("minio/minio")
@@ -98,13 +102,15 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
             log.info("Minio `{}` with endpoint `{}` and keys `{}`/`{}` has started",
                 it, endpoint, accessKey(it), secretKey(it));
 
-            endpointsByHost.put(it, endpoint + it + "/");
+            // http://localhost:1234/eu-central-1/bucket/
+            endpointsByHost.put(it, endpoint + REGION + "/" + it + "/");
             endpointsByHostNoBucket.put(it, endpoint);
 
             AmazonS3 client = S3ClientFactory.getClient(
-                endpoint,
-                accessKey(it),
-                secretKey(it)
+                    endpoint,
+                    REGION,
+                    accessKey(it),
+                    secretKey(it)
             );
 
             client.createBucket(it);
@@ -121,6 +127,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
         StorageService directoryStorage = new S3StorageService(
             S3ClientFactory.getClient(
                 endpointsByHostNoBucket.get(CREDENTIALS),
+                REGION,
                 accessKey(CREDENTIALS),
                 secretKey(CREDENTIALS)
             ),
@@ -140,7 +147,8 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
                         new UriBasedAuthStorageService(
                             acc -> new S3StorageService(
                                 S3ClientFactory.getClient(
-                                    acc.getOnlyHostPart().toString(),
+                                    acc.getEndpoint(),
+                                    acc.getRegion(),
                                     acc.getAccessKey(),
                                     acc.getSecretKey()
                                 ),
@@ -205,10 +213,10 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
         assertThat(listInBucket(FILES_TWO)).hasSize(1);
         assertThat(listInBucket(KEYSTORE)).hasSize(1);
         assertThat(listInBucket(CREDENTIALS)).containsExactlyInAnyOrder(
-            "credentialsbucket/profiles/private/john",
-            "credentialsbucket/profiles/public/john",
-            "credentialsbucket/pubkeys",
-            "credentialsbucket/storagecreds");
+            "profiles/private/john",
+            "profiles/public/john",
+            "pubkeys",
+            "storagecreds");
     }
 
     private void deregisterAndValidateEmpty(UserIDAuth john) {
@@ -276,7 +284,12 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     }
 
     private List<String> listInBucket(String bucket) {
-        return S3ClientFactory.getClient(endpointsByHostNoBucket.get(bucket), accessKey(bucket), secretKey(bucket))
+        return S3ClientFactory.getClient(
+                endpointsByHostNoBucket.get(bucket),
+                REGION,
+                accessKey(bucket),
+                secretKey(bucket)
+        )
                 .listObjects(bucket, "")
                 .getObjectSummaries()
                 .stream()

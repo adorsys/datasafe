@@ -12,7 +12,6 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -20,20 +19,21 @@ import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.resource.StorageVersion;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
-import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.security.Security;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -62,7 +62,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
      * This creates CEPH Rados gateway in docker container and creates S3 client for it.
      */
     @BeforeAll
-    static void createServices(@TempDir Path root) {
+    static void createServices() {
         log.info("Starting CEPH");
         // Create CEPH container:
         cephContainer = new GenericContainer("ceph/daemon")
@@ -135,6 +135,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
     @SneakyThrows
     void writeFileThenReadLatestAndReadByVersion() {
         // BEGIN_SNIPPET:Versioned storage support - writing file and reading back
+        Security.addProvider(new BouncyCastleProvider());
         // creating new user
         UserIDAuth user = registerUser("john");
 

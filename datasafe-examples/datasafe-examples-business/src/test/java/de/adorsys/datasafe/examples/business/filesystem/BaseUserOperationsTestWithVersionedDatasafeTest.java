@@ -44,7 +44,6 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
      */
     @BeforeEach
     void createServices(@TempDir Path root) {
-        Security.addProvider(new BouncyCastleProvider());
         // BEGIN_SNIPPET:Create versioned Datasafe services
         Security.addProvider(new BouncyCastleProvider());
         // this will create all Datasafe files and user documents under <temp dir path>

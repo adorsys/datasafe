@@ -3,7 +3,11 @@ package de.adorsys.datasafe.encrypiton.impl;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import org.junit.jupiter.api.Test;
 
-class KeyPairGeneratorTest {
+import java.util.Date;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class KeyPairGeneratorTest extends WithBouncyCastle {
 
     @Test
     void testKeyPairGenerationWithCA() {
@@ -11,6 +15,12 @@ class KeyPairGeneratorTest {
         TestableKeyPairGeneratorImpl i = new TestableKeyPairGeneratorImpl("RSA", 2048, "SHA256withRSA", "enc");
         i.setDayAfter(40);
         i.setWithCA(true);
-        i.generateEncryptionKey("affe", readKeyPassword);
+
+        assertThat(
+                i.generateEncryptionKey("affe", readKeyPassword)
+                        .getKeyPair()
+                        .getSubjectCert()
+                        .isValidOn(new Date())
+        ).isTrue();
     }
 }

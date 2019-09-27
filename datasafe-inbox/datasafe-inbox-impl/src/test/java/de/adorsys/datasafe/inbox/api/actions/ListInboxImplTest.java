@@ -70,6 +70,6 @@ class ListInboxImplTest extends BaseMockitoTest {
         when(listService.list(resource)).thenReturn(Stream.of(absoluteResolvedResource));
 
         assertThat(inbox.list(request)).hasSize(1);
-        verify(privateKeyService).documentEncryptionSecretKey(auth);
+        verify(privateKeyService).validateUserHasAccessOrThrow(auth);
     }
 }

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 import org.testcontainers.shaded.com.google.common.io.ByteStreams;
 
 import javax.crypto.AEADBadTagException;
@@ -25,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Java6Assertions.assertThatThrownBy;
@@ -36,6 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @Slf4j
 class DataTamperingResistanceTest extends BaseE2ETest {
+
+    private static final Set<Character> NOT_TO_REPLACE_IN_PATH = ImmutableSet.of('=', '/');
 
     // Should be long enough to dominate compared to padding
     private static final String FILE_TEXT =
@@ -126,15 +130,15 @@ class DataTamperingResistanceTest extends BaseE2ETest {
         String pathAsString = physicalFile.toAbsolutePath().toString();
 
         // this should 'approximately' be inside encrypted text
-        int somewhereInEncText = pathAsString.length() - origPath.length() / 2;
-        if (pathAsString.charAt(somewhereInEncText) == '/') {
-            somewhereInEncText = somewhereInEncText - 1;
+        int characterToTamper = pathAsString.length() - origPath.length() / 2;
+        while (NOT_TO_REPLACE_IN_PATH.contains(pathAsString.charAt(characterToTamper))) {
+            characterToTamper--;
         }
 
         log.info("About to tamper path `{}`", pathAsString);
-        pathAsString = pathAsString.substring(0, somewhereInEncText - 1)
-                + randomChar(pathAsString.charAt(somewhereInEncText))
-                + pathAsString.substring(somewhereInEncText);
+        pathAsString = pathAsString.substring(0, characterToTamper - 1)
+                + randomChar(pathAsString.charAt(characterToTamper))
+                + pathAsString.substring(characterToTamper);
         log.info("Tampered path as `{}`", pathAsString);
         Files.createDirectories(Paths.get(pathAsString).getParent());
         Files.write(Paths.get(pathAsString), privateBytes, StandardOpenOption.CREATE);

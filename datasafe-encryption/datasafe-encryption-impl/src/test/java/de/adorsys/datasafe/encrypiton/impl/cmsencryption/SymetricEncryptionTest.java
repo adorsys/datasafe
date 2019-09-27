@@ -3,6 +3,7 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import lombok.SneakyThrows;
@@ -25,7 +26,7 @@ import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.get
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class SymetricEncryptionTest {
+class SymetricEncryptionTest extends WithBouncyCastle {
 
     private static final String MESSAGE_CONTENT = "message content";
 

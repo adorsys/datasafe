@@ -33,6 +33,8 @@ import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -41,6 +43,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Security;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,6 +75,11 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     protected UserIDAuth john;
     protected UserIDAuth jane;
+
+    @BeforeAll
+    static void addBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     protected void initialize(DFSConfig dfsConfig, DefaultDatasafeServices datasafeServices) {
         this.dfsConfig = dfsConfig;

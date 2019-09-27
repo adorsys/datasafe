@@ -8,10 +8,14 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecre
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import java.security.Key;
+import java.security.KeyStoreException;
+import java.security.UnrecoverableKeyException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +27,7 @@ import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreation
  * Retrieves and opens private keystore associated with user location DFS storage.
  * Attempts to re-read keystore if not able to open it.
  */
+@Slf4j
 @RuntimeDelegate
 public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
 
@@ -54,6 +59,28 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     @Override
     public SecretKeyIDWithKey documentEncryptionSecretKey(UserIDAuth forUser) {
         return keyByPrefix(forUser, DOCUMENT_KEY_ID_PREFIX);
+    }
+
+    /**
+     * Read users' document access key to validate that he can open his keystore.
+     */
+    @Override
+    @SneakyThrows
+    public void validateUserHasAccessOrThrow(UserIDAuth forUser) {
+        // avoid only unauthorized access
+        try {
+            keyByPrefix(forUser, DOCUMENT_KEY_ID_PREFIX); // for access check
+        } catch (RuntimeException ex) {
+            // lombok @SneakyThrows handling
+            if (ex.getCause() instanceof KeyStoreException
+                    || ex.getCause() instanceof UnrecoverableKeyException
+                    || ex.getCause() instanceof BadPaddingException) {
+                throw ex.getCause();
+            }
+
+            // It is safe to ignore other types of exceptions - i.e. keystore does not exist
+            log.debug("Caught exception while validating keystore access", ex.getCause());
+        }
     }
 
     /**
