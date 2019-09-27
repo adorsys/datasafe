@@ -21,19 +21,19 @@ PRIVATE_ON_MINIO="folder-minio/secret_on_minio.txt"
 mkdir -p "$VOLUME/$MINIO_BUCKET"
 
 # Spin up minio to imitate S3, minio will create MINIO_BUCKET based on volume
-MINIO_ID=$(docker run -d \
+docker run -d \
+  --name MINIO \
   -p 9000:9000 \
   -e MINIO_ACCESS_KEY="$MINIO_ACCESS_KEY" \
   -e MINIO_SECRET_KEY="$MINIO_SECRET_KEY" \
   --mount type=bind,source="$VOLUME,target=/data" \
   minio/minio \
-  server /data)
-[[ -z "$MINIO_ID" ]] && echo "Minio ID missing, maybe minio failed to start, aborting" && exit 1
+  server /data
 
 do_exit() {
   # Stop minio
   echo "Stopping minio"
-  docker rm -f "$MINIO_ID"
+  docker rm -f MINIO
   exit "$1"
 }
 
