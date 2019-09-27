@@ -130,7 +130,7 @@ public class DatasafeConfig {
 
     @Bean
     @ConditionalOnProperty(value = CLIENT_CREDENTIALS, havingValue = "true")
-    StorageService clientCredentials(AmazonS3 s3, DatasafeProperties properties) {
+    StorageService clientCredentials(AmazonS3 s3, S3Factory factory, DatasafeProperties properties) {
         ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
         S3StorageService basicStorage = new S3StorageService(
             s3,
@@ -147,7 +147,7 @@ public class DatasafeConfig {
                     Pattern.compile(".+"),
                     new UriBasedAuthStorageService(
                         acc -> new S3StorageService(
-                            S3ClientFactory.getClient(
+                                factory.getClient(
                                 acc.getEndpoint(),
                                 acc.getRegion(),
                                 acc.getAccessKey(),
@@ -159,6 +159,11 @@ public class DatasafeConfig {
                     )
                 ).build()
         );
+    }
+
+    @Bean
+    S3Factory factory() {
+        return new BasicS3Factory();
     }
 
     /**
