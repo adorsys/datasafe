@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -29,7 +31,6 @@ import static org.mockito.Mockito.when;
 class DatasafeConfigTest extends BaseMockitoTest {
 
     private static final String BASIC_STORAGE_ANSWER = "Hello";
-    private static final String BASIC_STORAGE_BUCKET = "fooBar";
     private static final String BASIC_FILE_STORAGE_PATH = "tmp/profile";
     private static final String BASIC_STORAGE_PATH = "file:///tmp/profile";
 
@@ -55,7 +56,8 @@ class DatasafeConfigTest extends BaseMockitoTest {
     void prepare() {
         S3Object object = new S3Object();
         object.setObjectContent(new ByteArrayInputStream(BASIC_STORAGE_ANSWER.getBytes(UTF_8)));
-        when(amazonS3.getObject(BASIC_STORAGE_BUCKET, BASIC_FILE_STORAGE_PATH)).thenReturn(object);
+        // bucket name is overridden by dev build environment variable - using anyString():
+        when(amazonS3.getObject(anyString(), eq(BASIC_FILE_STORAGE_PATH))).thenReturn(object);
 
         when(s3Factory.getClient("http://0.0.0.0:9000/", "eu-central-1", "user", "passwd"))
                 .thenReturn(amazonS3FromFactory);
