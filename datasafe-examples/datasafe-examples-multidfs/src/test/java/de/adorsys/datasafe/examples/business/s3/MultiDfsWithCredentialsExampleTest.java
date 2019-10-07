@@ -128,7 +128,7 @@ class MultiDfsWithCredentialsExampleTest {
                                     // bind URI that contains `directoryBucket` to directoryStorage
                                     .put(Pattern.compile(directoryBucketS3Uri + ".+"), directoryStorage)
                                     .put(
-                                        Pattern.compile("http://127.0.0.1.+"),
+                                        Pattern.compile(getDockerUri("http://127.0.0.1") + ".+"),
                                         // Dynamically creates S3 client with bucket name equal to host value
                                         new UriBasedAuthStorageService(
                                             acc -> new S3StorageService(

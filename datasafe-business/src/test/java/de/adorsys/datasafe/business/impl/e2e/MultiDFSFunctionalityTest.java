@@ -44,7 +44,6 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.Collections;
@@ -56,6 +55,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -351,16 +351,5 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
             super(null);
             this.delegate = new RegexAccessServiceWithStorageCredentialsImpl(storageKeyStoreOperations);
         }
-    }
-
-    @SneakyThrows
-    private static String getDockerUri(String defaultUri) {
-        String dockerhost = System.getenv("DOCKER_HOST");
-        if (dockerhost == null) {
-            return defaultUri;
-        }
-
-        URI dockerUri = new URI(dockerhost);
-        return "http://" + dockerUri.getHost();
     }
 }

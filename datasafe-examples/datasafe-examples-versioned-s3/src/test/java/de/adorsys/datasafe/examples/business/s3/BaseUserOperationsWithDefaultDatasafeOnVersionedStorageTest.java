@@ -32,6 +32,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.concurrent.atomic.AtomicReference;
@@ -83,7 +84,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
         cephContainer.start();
         Integer mappedPort = cephContainer.getMappedPort(8000);
         // URL for S3 API/bucket root:
-        cephMappedUrl = "http://0.0.0.0" + ":" + mappedPort;
+        cephMappedUrl = getDockerUri("http://0.0.0.0") + ":" + mappedPort;
         log.info("Ceph mapped URL: {}", cephMappedUrl);
         cephS3 = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(
@@ -234,5 +235,16 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
         UserIDAuth creds = new UserIDAuth(username, "passwrd" + username);
         defaultDatasafeServices.userProfile().registerUsingDefaults(creds);
         return creds;
+    }
+
+    @SneakyThrows
+    private static String getDockerUri(String defaultUri) {
+        String dockerHost = System.getenv("DOCKER_HOST");
+        if (dockerHost == null) {
+            return defaultUri;
+        }
+
+        URI dockerUri = new URI(dockerHost);
+        return "http://" + dockerUri.getHost();
     }
 }

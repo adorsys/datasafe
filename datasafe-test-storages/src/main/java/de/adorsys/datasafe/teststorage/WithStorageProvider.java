@@ -32,7 +32,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
-import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
@@ -43,6 +42,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 
 
 /**
@@ -63,14 +64,14 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
     private static String minioRegion = "eu-central-1";
-    private static String minioUrl = getDockerUriFromOrigUri("http://localhost");
+    private static String minioUrl = getDockerUri("http://localhost");
     private static String minioMappedUrl;
 
     // Note that CEPH is used to test bucket-level versioning, so you will get versioned bucket:
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
     private static String cephRegion = "eu-central-1";
-    private static String cephUrl = "http://0.0.0.0"; // not localhost!
+    private static String cephUrl = getDockerUri("http://localhost");// not localhost!
     private static String cephMappedUrl;
 
     private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
@@ -456,16 +457,5 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         MINIO,
         CEPH,
         AMAZON
-    }
-
-
-    @SneakyThrows
-    private static String getDockerUriFromOrigUri(String uri) {
-        String dockerhost = System.getenv("DOCKER_HOST");
-        if (dockerhost == null) {
-            return uri;
-        }
-        URI dockeruri = new URI(dockerhost);
-        return "http://" + dockeruri.getHost();
     }
 }
