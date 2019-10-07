@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -31,7 +32,7 @@ class S3SystemStorageServiceTest extends BaseMockitoTest {
 
     private static String accessKeyID = "admin";
     private static String secretAccessKey = "password";
-    private static String url = "http://localhost";
+    private static String url = getDockerUri("http://localhost");
     private static BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
     private static AmazonS3 s3;
     private static AbsoluteLocation<PrivateResource> root;
