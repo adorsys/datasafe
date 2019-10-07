@@ -23,7 +23,9 @@ public class Dirs {
             return walk
                     .filter(it -> !(it.getFileName().startsWith(".") || it.getFileName().startsWith("..")))
                     .filter(it -> !it.equals(root))
-                    .map(it -> root.relativize(it).toString().replaceFirst("\\./", ""))
+                    .map(it -> root.toUri().relativize(it.toUri()).toString()
+                            .replaceFirst("\\./", "")
+                            .replaceAll("/$", ""))
                     .collect(Collectors.toList());
         }
     }
