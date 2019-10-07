@@ -229,7 +229,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         if (skipCeph()) {
             return null;
         }
-        
+
         return new StorageDescriptor(
                 StorageDescriptorName.CEPH,
                 () -> {

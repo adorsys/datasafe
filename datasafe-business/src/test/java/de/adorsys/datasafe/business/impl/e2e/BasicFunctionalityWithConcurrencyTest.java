@@ -184,8 +184,8 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
                     );
 
                     metricCollector.addSaveRecord(
-                           user.getUserID().getValue(),
-                           durationOfSavingFile
+                            user.getUserID().getValue(),
+                            durationOfSavingFile
                     );
 
                     log.debug("Save file in {} ms", durationOfSavingFile);
@@ -297,16 +297,14 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
     protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, String filePathForReading,
                                           CountDownLatch latch) {
-        try {
-            try (OutputStream write = writeToPrivate.write(WriteRequest.forDefaultPrivate(john, filePathForWriting))) {
-                try (FileInputStream fis = new FileInputStream(filePathForReading)) {
-                    ByteStreams.copy(fis, write);
-                }
-            }
+        try (OutputStream write = writeToPrivate.write(WriteRequest.forDefaultPrivate(john, filePathForWriting));
+             FileInputStream fis = new FileInputStream(filePathForReading)
+        ) {
+            ByteStreams.copy(fis, write);
         } catch (IOException e) {
             log.error("writeDataToFileForUser: {}", e.getMessage(), e);
         }
-
+        
         latch.countDown();
     }
 
