@@ -132,7 +132,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
         log.trace("*** Main thread waiting for all threads ***");
         finishHoldingLatch.await(TIMEOUT_S, SECONDS);
-        executor.shutdown();
+        executor.awaitTermination(TIMEOUT_S, SECONDS);
         log.trace("*** All threads are finished work ***");
 
         log.trace("*** Starting read info saved earlier *** ");
@@ -304,7 +304,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         } catch (IOException e) {
             log.error("writeDataToFileForUser: {}", e.getMessage(), e);
         }
-        
+
         latch.countDown();
     }
 
