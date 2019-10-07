@@ -29,7 +29,6 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
         jane = registerUser("jane");
 
-
         String unicodeMessage = "привет мир!";
         writeDataToPrivate(jane, PRIVATE_FILE_PATH, unicodeMessage);
 
@@ -46,7 +45,6 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
         init(descriptor);
 
         jane = registerUser("jane");
-
 
         String unicodeMessage = "привет мир!";
         writeDataToPrivate(jane, " привет/prüfungsdokument=/файл:&? с пробелом.док", unicodeMessage);

@@ -17,6 +17,7 @@ import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -105,9 +107,10 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
             );
     }
 
-    private Stream<String> listDb(String path) {
-        return db.list(BasePrivateResource.forAbsolutePrivate(URI.create(path)))
-            .map(it -> it.location().asURI().toString());
+    private List<String> listDb(String path) {
+        try (Stream<AbsoluteLocation<ResolvedResource>> stream = db.list(BasePrivateResource.forAbsolutePrivate(URI.create(path)))){
+            return stream.map(it -> it.location().asURI().toString()).collect(Collectors.toList());
+        }
     }
 
     static class ProfilesOnDbDataOnFs extends DefaultDFSConfig {

@@ -19,7 +19,6 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -29,6 +28,7 @@ import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +44,7 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.Collections;
@@ -67,7 +68,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     private static final String REGION = "eu-central-1";
-    private static final String LOCALHOST = "http://127.0.0.1";
+    private static final String LOCALHOST = getDockerUri("http://127.0.0.1");
 
     private static final String CREDENTIALS = "credentialsbucket";
     private static final String KEYSTORE = "keystorebucket";
@@ -350,5 +351,16 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
             super(null);
             this.delegate = new RegexAccessServiceWithStorageCredentialsImpl(storageKeyStoreOperations);
         }
+    }
+
+    @SneakyThrows
+    private static String getDockerUri(String defaultUri) {
+        String dockerhost = System.getenv("DOCKER_HOST");
+        if (dockerhost == null) {
+            return defaultUri;
+        }
+
+        URI dockerUri = new URI(dockerhost);
+        return "http://" + dockerUri.getHost();
     }
 }

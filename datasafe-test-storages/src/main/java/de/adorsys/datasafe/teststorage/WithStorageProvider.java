@@ -32,6 +32,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
@@ -62,7 +63,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
     private static String minioRegion = "eu-central-1";
-    private static String minioUrl = "http://localhost";
+    private static String minioUrl = getDockerUriFromOrigUri("http://localhost");
     private static String minioMappedUrl;
 
     // Note that CEPH is used to test bucket-level versioning, so you will get versioned bucket:
@@ -188,6 +189,13 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 minio(),
                 cephVersioned(),
                 s3()
+        ).filter(Objects::nonNull);
+    }
+
+    @ValueSource
+    protected static Stream<StorageDescriptor> minioOnly() {
+        return Stream.of(
+                minio()
         ).filter(Objects::nonNull);
     }
 
@@ -448,5 +456,16 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         MINIO,
         CEPH,
         AMAZON
+    }
+
+
+    @SneakyThrows
+    private static String getDockerUriFromOrigUri(String uri) {
+        String dockerhost = System.getenv("DOCKER_HOST");
+        if (dockerhost == null) {
+            return uri;
+        }
+        URI dockeruri = new URI(dockerhost);
+        return "http://" + dockeruri.getHost();
     }
 }

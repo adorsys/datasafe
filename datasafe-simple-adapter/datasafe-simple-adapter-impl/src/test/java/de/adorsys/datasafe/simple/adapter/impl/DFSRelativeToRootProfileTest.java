@@ -9,7 +9,9 @@ import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.security.Security;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,8 +56,11 @@ class DFSRelativeToRootProfileTest extends WithStorageProvider {
         simpleDatasafeService.destroyUser(userIDAuth);
 
         // Everything is cleaned up:
-        assertThat(descriptor.getStorageService().get().list(
-                BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
-        ).isEmpty();
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls =
+                     descriptor.getStorageService().get()
+                             .list(BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
+        ) {
+            assertThat(ls).isEmpty();
+        }
     }
 }

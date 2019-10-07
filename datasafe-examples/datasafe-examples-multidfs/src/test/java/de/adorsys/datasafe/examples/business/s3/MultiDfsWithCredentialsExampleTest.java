@@ -15,7 +15,6 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -25,6 +24,7 @@ import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +37,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Arrays;
@@ -67,12 +68,15 @@ class MultiDfsWithCredentialsExampleTest {
 
     @BeforeAll
     static void startup() {
+        // on windows this is required
+        Security.addProvider(new BouncyCastleProvider());
+
         // Create all required minio-backed S3 buckets:
         Arrays.stream(MinioContainerId.values()).forEach(it -> {
             GenericContainer minio = createAndStartMinio(it.getAccessKey(), it.getSecretKey());
             minios.put(it, minio);
 
-            String endpoint = "http://127.0.0.1:" + minio.getFirstMappedPort() + "/";
+            String endpoint = getDockerUri("http://127.0.0.1") + ":" + minio.getFirstMappedPort() + "/";
             endpointsByHost.put(it, endpoint + REGION + "/" + it.getBucketName() + "/");
             log.info("MINIO for {} is available at: {} with access: '{}'/'{}'", it, endpoint, it.getAccessKey(),
                     it.getSecretKey());
@@ -239,5 +243,16 @@ class MultiDfsWithCredentialsExampleTest {
             super(null);
             this.delegate = new RegexAccessServiceWithStorageCredentialsImpl(storageKeyStoreOperations);
         }
+    }
+
+    @SneakyThrows
+    private static String getDockerUri(String defaultUri) {
+        String dockerHost = System.getenv("DOCKER_HOST");
+        if (dockerHost == null) {
+            return defaultUri;
+        }
+
+        URI dockerUri = new URI(dockerHost);
+        return "http://" + dockerUri.getHost();
     }
 }
