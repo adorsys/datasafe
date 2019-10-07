@@ -14,16 +14,18 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
-import de.adorsys.datasafe.types.api.shared.Dirs;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.OutputStream;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
 import java.util.List;
@@ -80,8 +82,8 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         }
 
         // Profiles are on FS - note that raw file path has `+` instead of space
-        assertThat(Dirs.walk(fsPath))
-                .extracting(it -> new Uri(it).asString())
+        assertThat(listFs(fsPath))
+                .extracting(it -> computeRelative(fsPath, it))
                 .containsExactlyInAnyOrder(
                         "",
                         "prüfungs",
@@ -107,6 +109,22 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         ) {
             return ls.collect(Collectors.toList());
         }
+    }
+
+    @SneakyThrows
+    private List<Path> listFs(Path fsPath) {
+        try (Stream<Path> ls = Files.walk(fsPath)) {
+            return ls.collect(Collectors.toList());
+        }
+    }
+
+    private String computeRelative(Path root, Path child) {
+        if (!OS.WINDOWS.isCurrentOs()) {
+            return URI.create(root.relativize(child).toString()).getPath();
+        }
+
+        // Windows causes double-encoding of URI
+        return root.relativize(child).toString().replace('\\', '/');
     }
 
     static class ProfilesOnFsDataOnMinio extends DefaultDFSConfig {
