@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.containers.GenericContainer;
@@ -71,7 +72,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
     private static String cephRegion = "eu-central-1";
-    private static String cephUrl = getDockerUri("http://localhost");// not localhost!
+    private static String cephUrl = getDockerUri("http://0.0.0.0");// not localhost!
     private static String cephMappedUrl;
 
     private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
@@ -226,9 +227,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     protected static StorageDescriptor cephVersioned() {
-        if (skipCeph()) {
+        if (skipCeph() || OS.WINDOWS.isCurrentOs()) {
             return null;
         }
+
         return new StorageDescriptor(
                 StorageDescriptorName.CEPH,
                 () -> {
