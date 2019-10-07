@@ -14,17 +14,18 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.shared.Dirs;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.Security;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +38,11 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
     private Uri minioPath;
     private StorageService minio;
     private DefaultDatasafeServices datasafeServices;
+
+    @BeforeAll
+    static void addBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     @BeforeEach
     void initialize(@TempDir Path tempDir) {
@@ -74,9 +80,8 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         }
 
         // Profiles are on FS - note that raw file path has `+` instead of space
-        assertThat(listFs())
-                .extracting(it -> fsPath.relativize(it))
-                .extracting(it -> URI.create(it.toString()).getPath())
+        assertThat(Dirs.walk(fsPath))
+                .extracting(it -> new Uri(it).asString())
                 .containsExactlyInAnyOrder(
                         "",
                         "prüfungs",
@@ -100,12 +105,6 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         try (Stream<AbsoluteLocation<ResolvedResource>> ls =
                      minio.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(minioPath.resolve(""))))
         ) {
-            return ls.collect(Collectors.toList());
-        }
-    }
-
-    private List<Path> listFs() throws IOException {
-        try (Stream<Path> ls = Files.walk(fsPath)) {
             return ls.collect(Collectors.toList());
         }
     }

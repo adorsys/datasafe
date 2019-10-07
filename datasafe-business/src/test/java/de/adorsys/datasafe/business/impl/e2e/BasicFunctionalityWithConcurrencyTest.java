@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -59,8 +60,6 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
     private static int NUMBER_OF_TEST_USERS = 3;
     private static int NUMBER_OF_TEST_FILES = 5;
     private static int EXPECTED_NUMBER_OF_FILES_PER_USER = NUMBER_OF_TEST_FILES;
-
-    private static final String TEST_FILENAME = "test.txt";
 
     @TempDir
     protected Path tempTestFileFolder;
@@ -99,7 +98,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
     void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor, int size, int poolSize) {
         init(descriptor);
 
-        String testFile = tempTestFileFolder.resolve(TEST_FILENAME).toString();
+        String testFile = tempTestFileFolder.resolve(UUID.randomUUID().toString()).toString();
         generateTestFile(testFile, size);
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(poolSize);
@@ -109,7 +108,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
         String checksumOfOriginTestFile;
         log.trace("*** get checksum of {} ***", testFile);
-        try(FileInputStream input = new FileInputStream(new File(testFile))) {
+        try (FileInputStream input = new FileInputStream(new File(testFile))) {
             checksumOfOriginTestFile = checksum(input);
         }
 
