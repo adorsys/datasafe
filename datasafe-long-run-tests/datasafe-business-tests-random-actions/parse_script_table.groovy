@@ -1,4 +1,5 @@
 import java.nio.file.Paths
+import groovy.transform.Field
 
 // script expects file name as argument
 rawData = [:]
@@ -31,25 +32,30 @@ Paths.get(this.args[0]).readLines().forEach { line ->
     }
 }
 
-final String ANSI_RESET = "\u001B[0m";
-final String ANSI_RED = "\u001B[31m";
-final String ANSI_YELLOW = "\u001B[33m";
+@Field final String ANSI_RESET = "\u001B[0m"
+@Field final String ANSI_RED = "\u001B[31m"
+@Field final String ANSI_YELLOW = "\u001B[33m"
 
 rawData.forEach { op, byOpValues ->
     byOpValues.forEach { sz, bySizeValues ->
-        println(ANSI_YELLOW + "${op}" + ANSI_RESET + " operation performance with " + ANSI_YELLOW + "${sz}" + ANSI_RESET +" kb objects")
+        println(ANSI_YELLOW + "${op}" + ANSI_RESET + " operation performance with " + ANSI_YELLOW + "${sz}" + ANSI_RESET +" KB objects")
         printSeparator()
-        curStr = ["Threads", "Throughput", "p50", "p99", "p90", "p75", "p95"]
-        printString(curStr);
+        curStr = ["Threads", "Throughput", "Throughput", "p50", "p99", "p90", "p75", "p95"]
+        printString(curStr)
+        curStr = ["", "ops", "MB/s", "", "", "", "", ""]
+        printString(curStr)
         printSeparator()
         bySizeValues.forEach { nThreads, byThreadValues ->
             byThreadValues.forEach { itnum, val ->
+                def opsPerSec = Double.parseDouble(val[5]) * Integer.parseInt(nThreads)
+                String thr_ops = opsPerSec.round(2).toString()
+                String thr_kb = ANSI_RED + (opsPerSec * Integer.parseInt(sz) / 1024).round(2).toString() + ANSI_RESET
                 for (int i=0; i < val.size(); i++) {
                     if (val[i].isDouble() && !val[i].isInteger()) {
                         val[i] = Double.parseDouble(val[i]).round(2).toString()
                     }
                 }
-                curStr = [nThreads, val[5], val[0], val[1], val[2], val[3], val[4]]
+                curStr = [nThreads, thr_ops, thr_kb, val[0], val[1], val[2], val[3], val[4]]
                 printString(curStr)
                 printSeparator()
             }
@@ -59,10 +65,10 @@ rawData.forEach { op, byOpValues ->
 }
 
 def printSeparator() {
-    println(("+"+"-".multiply(10)).multiply(7)+"+")
+    println(("+"+"-".multiply(10)).multiply(8)+"+")
 }
 
 def printString(List<String> params) {
-    params.each { print '|' + it.center(10) }
+    params.each { print '|' + it.center(it.contains(ANSI_RESET) ? 19 : 10) }
     println("|")
 }
