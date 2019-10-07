@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.google.common.io.ByteStreams;
+import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -22,8 +23,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.*;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Duration;
@@ -98,7 +97,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
     void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor, int size, int poolSize) {
         init(descriptor);
 
-        String testFile = tempTestFileFolder.resolve(UUID.randomUUID().toString()).toString();
+        Path testFile = tempTestFileFolder.resolve(UUID.randomUUID().toString());
         generateTestFile(testFile, size);
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(poolSize);
@@ -108,7 +107,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
         String checksumOfOriginTestFile;
         log.trace("*** get checksum of {} ***", testFile);
-        try (FileInputStream input = new FileInputStream(new File(testFile))) {
+        try (FileInputStream input = new FileInputStream(testFile.toFile())) {
             checksumOfOriginTestFile = checksum(input);
         }
 
@@ -163,7 +162,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
     }
 
     private void createFileForUserParallelly(ThreadPoolExecutor executor, CountDownLatch holdingLatch,
-                                             CountDownLatch finishHoldingLatch, String testFilePath,
+                                             CountDownLatch finishHoldingLatch, Path testFilePath,
                                              UserIDAuth user) {
         AtomicInteger counter = new AtomicInteger();
         String remotePath = "folder2";
@@ -222,10 +221,10 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         return Hex.toHexString(digest.digest());
     }
 
-    private static void generateTestFile(String testFile, int testFileSizeInBytes) {
+    private static void generateTestFile(Path testFile, int testFileSizeInBytes) {
         log.trace("*** generate {} ***", testFile);
 
-        File directory = new File(testFile).getParentFile();
+        File directory = testFile.toFile().getParentFile();
         // in previous version file handles were not closed directories were not removed
         // and following tests were able to reuse directory. Now file handles are closed
         // and all files including directory are deleted.
@@ -233,21 +232,18 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
             log.trace(directory + " does not exist. will be created now");
             directory.mkdir();
         }
-        try (RandomAccessFile originTestFile = new RandomAccessFile(testFile, "rw")) {
-            MappedByteBuffer out = originTestFile.getChannel()
-                    .map(FileChannel.MapMode.READ_WRITE, 0, testFileSizeInBytes);
-
+        try (OutputStream os = MoreFiles.asByteSink(testFile).openBufferedStream()) {
             for (int i = 0; i < testFileSizeInBytes; i++) {
-                out.put((byte) 'x');
+                os.write((byte) 'x');
             }
         } catch (IOException e) {
             log.error("generateTestFile: {}", e.getMessage());
         }
     }
 
-    private static void deleteTestFile(String testFile) {
+    private static void deleteTestFile(Path testFile) {
         log.trace("*** delete {} ***", testFile);
-        File file = new File(testFile);
+        File file = testFile.toFile();
         if (file.exists()) {
             boolean ok = file.delete();
             if (!ok) {
@@ -295,10 +291,10 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         this.storage = descriptor.getStorageService().get();
     }
 
-    protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, String filePathForReading,
+    protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, Path filePathForReading,
                                           CountDownLatch latch) {
         try (OutputStream write = writeToPrivate.write(WriteRequest.forDefaultPrivate(john, filePathForWriting));
-             FileInputStream fis = new FileInputStream(filePathForReading)
+             FileInputStream fis = new FileInputStream(filePathForReading.toFile())
         ) {
             ByteStreams.copy(fis, write);
         } catch (IOException e) {
