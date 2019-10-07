@@ -124,7 +124,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         }
 
         // Windows causes double-encoding of URI
-        return root.relativize(child).toString().replace('\\', '/');
+        return new Uri(URI.create(root.relativize(child).toString().replace('\\', '/'))).asString();
     }
 
     static class ProfilesOnFsDataOnMinio extends DefaultDFSConfig {
