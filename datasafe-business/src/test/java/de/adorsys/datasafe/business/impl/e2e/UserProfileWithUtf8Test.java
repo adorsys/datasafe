@@ -18,13 +18,11 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
@@ -32,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.adorsys.datasafe.types.api.shared.Dirs.computeRelativePreventingDoubleUrlEncode;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserProfileWithUtf8Test extends WithStorageProvider {
@@ -83,7 +82,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
 
         // Profiles are on FS - note that raw file path has `+` instead of space
         assertThat(listFs(fsPath))
-                .extracting(it -> computeRelative(fsPath, it))
+                .extracting(it -> computeRelativePreventingDoubleUrlEncode(fsPath, it))
                 .containsExactlyInAnyOrder(
                         "",
                         "prüfungs",
@@ -118,14 +117,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         }
     }
 
-    private String computeRelative(Path root, Path child) {
-        if (!OS.WINDOWS.isCurrentOs()) {
-            return URI.create(root.relativize(child).toString()).getPath();
-        }
 
-        // Windows causes double-encoding of URI
-        return new Uri(URI.create(root.relativize(child).toString().replace('\\', '/'))).asString();
-    }
 
     static class ProfilesOnFsDataOnMinio extends DefaultDFSConfig {
 
