@@ -92,7 +92,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
                             "users/peter/private/keystore"
                     );
         }
-        log.info("test create user and delete user with " + descriptor.getName());
+        log.info("test create user and delete user with  {}", descriptor.getName());
     }
 
     @ParameterizedTest
@@ -112,7 +112,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
                             "users/peter/private/keystore"
                     );
         }
-        log.info("test create user and delete user with " + descriptor.getName());
+        log.info("test create user and delete user with {}", descriptor.getName());
     }
 
     @ParameterizedTest
@@ -187,7 +187,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
         List<DSDocument> list = TestHelper.createDocuments(root, 2, 2, 3);
         List<DocumentFQN> created = new ArrayList<>();
         for (DSDocument dsDocument : list) {
-            log.debug("store " + dsDocument.getDocumentFQN().toString());
+            log.debug("store {}", dsDocument.getDocumentFQN());
             simpleDatasafeService.storeDocument(userIDAuth, dsDocument);
             created.add(dsDocument.getDocumentFQN());
             assertTrue(simpleDatasafeService.documentExists(userIDAuth, dsDocument.getDocumentFQN()));
@@ -306,7 +306,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
         log.debug("---------------------------------");
         log.debug(message);
         for (DocumentFQN doc : listFound) {
-            log.debug("found:" + doc);
+            log.debug("found: {}", doc);
         }
     }
 

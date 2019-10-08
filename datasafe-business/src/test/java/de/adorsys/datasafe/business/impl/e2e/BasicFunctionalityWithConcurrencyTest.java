@@ -132,6 +132,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         log.trace("*** Main thread waiting for all threads ***");
         finishHoldingLatch.await(TIMEOUT_S, SECONDS);
         executor.awaitTermination(TIMEOUT_S, SECONDS);
+        executor.shutdown();
         log.trace("*** All threads are finished work ***");
 
         log.trace("*** Starting read info saved earlier *** ");
@@ -229,7 +230,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         // and following tests were able to reuse directory. Now file handles are closed
         // and all files including directory are deleted.
         if (!directory.exists()) {
-            log.trace(directory + " does not exist. will be created now");
+            log.trace("{} does not exist. will be created now", directory);
             directory.mkdir();
         }
         try (OutputStream os = MoreFiles.asByteSink(testFile).openBufferedStream()) {
@@ -247,12 +248,12 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         if (file.exists()) {
             boolean ok = file.delete();
             if (!ok) {
-                log.error("can not delete " + testFile);
+                log.error("can not delete {}", testFile);
             } else {
-                log.debug("deleted testfile " + testFile);
+                log.debug("deleted testfile {}", testFile);
             }
         } else {
-            log.error("testfile did not exist:" + testFile);
+            log.error("testfile did not exist: {}", testFile);
         }
     }
 
