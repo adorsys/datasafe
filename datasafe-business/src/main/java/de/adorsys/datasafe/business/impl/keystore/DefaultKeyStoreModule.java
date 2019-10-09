@@ -22,7 +22,7 @@ public abstract class DefaultKeyStoreModule {
     public abstract PublicKeySerde publicKeySerde(PublicKeySerdeImplRuntimeDelegatable impl);
 
     /**
-     * By default, BouncyCastle keystore - UBER, or one specified by system property SERVER_KEYSTORE_TYPE.
+     * If no external configuration provided, BCFKS key store type is used by default.
      */
     @Binds
     public abstract KeyStoreService keyStoreService(KeyStoreServiceImplRuntimeDelegatable impl);

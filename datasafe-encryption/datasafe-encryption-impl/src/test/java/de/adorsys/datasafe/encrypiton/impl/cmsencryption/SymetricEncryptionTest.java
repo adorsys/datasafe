@@ -20,8 +20,8 @@ import java.io.OutputStream;
 import java.security.KeyStore;
 import java.util.Enumeration;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.getKeys;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,8 +35,8 @@ class SymetricEncryptionTest extends WithBouncyCastle {
     private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-    private KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 1);
-    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+    private KeyCreationConfig config = new KeyCreationConfig(1, 1);
+    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
     @Test
@@ -64,7 +64,7 @@ class SymetricEncryptionTest extends WithBouncyCastle {
     @SneakyThrows
     void symetricNegativeStreamEncryptAndDecryptTest() {
         // This is the keystore we use to encrypt, it has SYMM_KEY_ID and PATH_KEY_ID symm. keys.
-        keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+        keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, config);
         SecretKey realSecretKey = keyStoreService.getSecretKey(keyStoreAccess, keyIdByPrefix(DOCUMENT_KEY_ID_PREFIX));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         // Test consist in encrypting with real secret key, but use fake secretKeyId - PATH_KEY_ID

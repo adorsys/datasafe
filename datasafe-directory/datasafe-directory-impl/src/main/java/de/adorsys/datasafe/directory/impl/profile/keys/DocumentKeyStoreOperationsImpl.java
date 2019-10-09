@@ -77,8 +77,8 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
         KeyStoreAuth auth = keystoreAuth(forUser, forUser.getReadKeyPassword());
         KeyStore keystoreBlob = keyStoreService.createKeyStore(
                 auth,
-                KeyStoreType.DEFAULT,
-                new KeyStoreCreationConfig(1, 1)
+                KeyStoreCreationConfig.DEFAULT,
+                new KeyCreationConfig(1, 1)
         );
 
         writeKeystore(forUser.getUserID(), auth, keystoreLocationWithAccess(forUser), keystoreBlob);

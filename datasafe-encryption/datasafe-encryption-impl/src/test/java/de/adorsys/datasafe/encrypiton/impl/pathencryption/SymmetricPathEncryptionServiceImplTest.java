@@ -17,7 +17,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.security.KeyStore;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX_CTR;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,8 +33,8 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
     private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-    private KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
-    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+    private KeyCreationConfig config = new KeyCreationConfig(0, 1);
+    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
     @Test
@@ -87,7 +87,7 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
     }
 
     private AuthPathEncryptionSecretKey pathEncryptionSecretKey() {
-        KeyID secretKeyId = KeystoreUtil.keyIdByPrefix(keyStore, KeyStoreCreationConfig.PATH_KEY_ID_PREFIX);
+        KeyID secretKeyId = KeystoreUtil.keyIdByPrefix(keyStore, KeyCreationConfig.PATH_KEY_ID_PREFIX);
         SecretKeySpec secretKey = keyStoreService.getSecretKey(
                 keyStoreAccess,
                 secretKeyId

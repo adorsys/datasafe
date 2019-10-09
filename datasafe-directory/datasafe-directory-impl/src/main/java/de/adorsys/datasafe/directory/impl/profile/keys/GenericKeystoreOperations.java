@@ -6,8 +6,8 @@ import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreType;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
@@ -55,7 +55,7 @@ public class GenericKeystoreOperations {
 
     public KeyStore createEmptyKeystore(UserIDAuth auth) {
         return keyStoreService
-            .createKeyStore(keystoreAuth(auth), KeyStoreType.DEFAULT, new KeyStoreCreationConfig(0, 0));
+            .createKeyStore(keystoreAuth(auth), KeyStoreCreationConfig.DEFAULT, new KeyCreationConfig(0, 0));
     }
 
     /**

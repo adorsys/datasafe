@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.rest.impl;
 
 import de.adorsys.datasafe.rest.impl.config.DatasafeProperties;
+import de.adorsys.datasafe.rest.impl.config.KeystoreProperties;
 import de.adorsys.datasafe.rest.impl.security.SecurityProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -11,7 +12,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({DatasafeProperties.class, SecurityProperties.class})
+@EnableConfigurationProperties({DatasafeProperties.class, SecurityProperties.class, KeystoreProperties.class})
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 public class DatasafeRestApplication {
 

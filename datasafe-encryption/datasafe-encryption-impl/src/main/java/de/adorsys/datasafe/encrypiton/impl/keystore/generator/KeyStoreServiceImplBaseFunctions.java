@@ -4,6 +4,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import lombok.SneakyThrows;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.jcajce.BCFKSLoadStoreParameter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,6 +23,8 @@ import java.util.List;
  */
 public class KeyStoreServiceImplBaseFunctions {
 
+    public static final String KEYSTORE_TYPE = "BCFKS";
+
     private KeyStoreServiceImplBaseFunctions() {
         throw new IllegalStateException("Not supported");
     }
@@ -29,13 +32,18 @@ public class KeyStoreServiceImplBaseFunctions {
     /**
      * Create an initializes a new key store. The key store is not yet password protected.
      *
-     * @param keyStoreType storeType
+     * @param keyStoreConfig storeType
      * @return KeyStore keyStore
      */
     @SneakyThrows
-    public static KeyStore newKeyStore(KeyStoreType keyStoreType) {
-        KeyStore ks = KeyStore.getInstance(keyStoreType.getValue());
-        ks.load(null, null);
+    public static KeyStore newKeyStore(KeyStoreCreationConfig keyStoreConfig) {
+        KeyStore ks = KeyStore.getInstance(KEYSTORE_TYPE);
+        ks.load(new BCFKSLoadStoreParameter.Builder()
+                .withStoreEncryptionAlgorithm(keyStoreConfig.getStoreEncryptionAlgorithm())
+                .withStorePBKDFConfig(keyStoreConfig.getStorePBKDFConfig())
+                .withStoreMacAlgorithm(keyStoreConfig.getStoreMacAlgorithm())
+                .build()
+        );
         return ks;
     }
 
@@ -58,15 +66,15 @@ public class KeyStoreServiceImplBaseFunctions {
      *
      * @param in        : the inputStream location which to read the keystore
      * @param storeId   : The store id. This is passed to the callback handler to identify the requested password record.
-     * @param storeType : the type of this key store. f null, the defaut java keystore type is used.
+     * @param keyStoreConfig : the type of this key store. f null, the defaut java keystore type is used.
      * @return KeyStore
      */
     @SneakyThrows
-    public static KeyStore loadKeyStore(InputStream in, String storeId, KeyStoreType storeType, ReadStorePassword readStorePassword) {
-        // Use default type if blank.
-        if (storeType == null) storeType = KeyStoreType.DEFAULT;
+    public static KeyStore loadKeyStore(InputStream in, String storeId, KeyStoreCreationConfig keyStoreConfig, ReadStorePassword readStorePassword) {
+        // Use default if blank.
+        if (keyStoreConfig == null) keyStoreConfig = KeyStoreCreationConfig.DEFAULT;
 
-        KeyStore ks = KeyStore.getInstance(storeType.getValue());
+        KeyStore ks = KeyStore.getInstance(KEYSTORE_TYPE);
 
         ks.load(in, readStorePassword.getValue().toCharArray());
         return ks;
@@ -75,11 +83,11 @@ public class KeyStoreServiceImplBaseFunctions {
     /**
      * @param data         : the byte array containing key store data.
      * @param storeId      : The store id. This is passed to the callback handler to identify the requested password record.
-     * @param keyStoreType : the type of this key store. f null, the defaut java keystore type is used.
+     * @param keyStoreCreationConfig : the type of this key store. f null, the defaut java keystore type is used.
      * @return KeyStore
      */
-    public static KeyStore loadKeyStore(byte[] data, String storeId, KeyStoreType keyStoreType, ReadStorePassword readStorePassword) {
-        return loadKeyStore(new ByteArrayInputStream(data), storeId, keyStoreType, readStorePassword);
+    public static KeyStore loadKeyStore(byte[] data, String storeId, KeyStoreCreationConfig keyStoreCreationConfig, ReadStorePassword readStorePassword) {
+        return loadKeyStore(new ByteArrayInputStream(data), storeId, keyStoreCreationConfig, readStorePassword);
     }
 
     /**

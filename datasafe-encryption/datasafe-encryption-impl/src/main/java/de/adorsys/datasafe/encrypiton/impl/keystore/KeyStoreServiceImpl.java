@@ -21,7 +21,7 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.*;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.*;
 
 @Slf4j
 @RuntimeDelegate
@@ -36,12 +36,12 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     @Override
     public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
-                                   KeyStoreType keyStoreType,
-                                   KeyStoreCreationConfig config) {
+                                   KeyStoreCreationConfig keyStoreCreationConfig,
+                                   KeyCreationConfig config) {
 
         return createKeyStore(
                 keyStoreAuth,
-                keyStoreType,
+                keyStoreCreationConfig,
                 config,
                 ImmutableMap.of(
                         new KeyID(PATH_KEY_ID_PREFIX + UUID.randomUUID().toString()), Optional.empty(),
@@ -53,20 +53,20 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     @Override
     public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
-                                   KeyStoreType keyStoreType,
-                                   KeyStoreCreationConfig config,
+                                   KeyStoreCreationConfig keyStoreCreationConfig,
+                                   KeyCreationConfig config,
                                    Map<KeyID, Optional<SecretKeyEntry>> secretKeys) {
 
         log.debug("start create keystore ");
         if (config == null) {
-            config = new KeyStoreCreationConfig(5, 5);
+            config = new KeyCreationConfig(5, 5);
         }
         // TODO, hier also statt der StoreID nun das
         String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
         log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
         KeyStoreGenerator keyStoreGenerator = KeyStoreGenerator.builder()
-                .config(config)
-                .keyStoreType(keyStoreType)
+                .keyCreationConfig(config)
+                .keyStoreCreationConfig(keyStoreCreationConfig)
                 .serverKeyPairAliasPrefix(serverKeyPairAliasPrefix)
                 .readKeyPassword(keyStoreAuth.getReadKeyPassword())
                 .secretKeys(secretKeys)
@@ -173,7 +173,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         return KeyStoreServiceImplBaseFunctions.loadKeyStore(
                 payload,
                 storeId,
-                KeyStoreType.DEFAULT,
+                KeyStoreCreationConfig.DEFAULT,
                 readStorePassword
         );
     }

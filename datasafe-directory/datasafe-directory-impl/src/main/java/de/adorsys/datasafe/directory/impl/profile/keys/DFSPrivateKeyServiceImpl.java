@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.*;
+import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.*;
 
 /**
  * Retrieves and opens private keystore associated with user location DFS storage.

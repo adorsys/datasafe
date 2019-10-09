@@ -1,14 +1,14 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig;
 
 /**
  * Created by peter on 09.01.18.
  */
-public class KeyStoreCreationConfigImpl {
-    private final KeyStoreCreationConfig config;
+public class KeyCreationConfigImpl {
+    private final KeyCreationConfig config;
 
-    public KeyStoreCreationConfigImpl(KeyStoreCreationConfig config) {
+    public KeyCreationConfigImpl(KeyCreationConfig config) {
         this.config = config;
     }
 
