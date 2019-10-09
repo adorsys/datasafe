@@ -20,7 +20,9 @@ public class PasswordClearingInputStream extends InputStream {
     @SneakyThrows
     @Override
     public void close() {
-        readKeyPassword.clear();
+        if (readKeyPassword != null) {
+            readKeyPassword.clear();
+        }
         inputStream.close();
     }
 }

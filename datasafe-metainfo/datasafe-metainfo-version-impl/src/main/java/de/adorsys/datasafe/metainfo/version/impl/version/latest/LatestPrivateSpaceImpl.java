@@ -7,6 +7,9 @@ import de.adorsys.datasafe.metainfo.version.api.actions.VersionedRemove;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedWrite;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -49,7 +52,7 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
 
     // Delegate didn't work
     @Override
-    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+    public PasswordClearingStream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
         return listService.list(request);
     }
 
@@ -62,7 +65,7 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
 
     // Delegate didn't work
     @Override
-    public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
+    public PasswordClearingInputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
         return readService.read(request);
     }
 
@@ -74,7 +77,7 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
 
     // Delegate didn't work
     @Override
-    public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
+    public PasswordClearingOutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
         return writeService.write(request);
     }
 }

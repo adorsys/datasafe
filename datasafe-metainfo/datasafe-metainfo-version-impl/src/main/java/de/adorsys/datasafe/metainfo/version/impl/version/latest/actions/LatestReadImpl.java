@@ -4,6 +4,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.metainfo.version.api.actions.VersionedRead;
 import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
 import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -39,7 +40,7 @@ public class LatestReadImpl<V extends LatestDFSVersion> implements VersionedRead
     }
 
     @Override
-    public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
+    public PasswordClearingInputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
 
         AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(

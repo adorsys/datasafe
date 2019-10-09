@@ -18,7 +18,9 @@ public class PasswordClearingStream<T> implements Stream<T> {
     @SneakyThrows
     @Override
     public void close() {
-        readKeyPassword.clear();
+        if (readKeyPassword != null) {
+            readKeyPassword.clear();
+        }
         stream.close();
     }
 
