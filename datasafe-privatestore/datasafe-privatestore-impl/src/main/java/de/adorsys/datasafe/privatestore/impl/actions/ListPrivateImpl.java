@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.privatestore.impl.actions;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
 import de.adorsys.datasafe.storage.api.actions.StorageListService;
@@ -32,7 +33,7 @@ public class ListPrivateImpl implements ListPrivate {
     }
 
     @Override
-    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+    public PasswordClearingStream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
         // Access check is implicit - on keystore access in EncryptedResourceResolver
         AbsoluteLocation<PrivateResource> listDir =
                 resolver.encryptAndResolvePath(
@@ -45,9 +46,9 @@ public class ListPrivateImpl implements ListPrivate {
                 request.getOwner(), listDir.getResource(), request.getStorageIdentifier()
         );
 
-        return listService.list(listDir).map(it -> {
+        return new PasswordClearingStream<>(listService.list(listDir).map(it -> {
             AbsoluteLocation<PrivateResource> decrypted = decryptingResolver.apply(it.getResource().asPrivate());
             return new AbsoluteLocation<>(it.getResource().withResource(decrypted.getResource()));
-        });
+        }), request.getOwner().getReadKeyPassword());
     }
 }

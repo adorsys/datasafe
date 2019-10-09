@@ -2,15 +2,16 @@ package de.adorsys.datasafe.privatestore.impl.actions;
 
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
 import javax.inject.Inject;
-import java.io.InputStream;
 
 /**
  * Default implementation for stream reading that encrypts incoming resource path if it is relative using
@@ -22,6 +23,8 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
     private final EncryptedResourceResolver resolver;
     private final EncryptedDocumentReadService reader;
 
+    private ReadKeyPassword readKeyPassword;
+
     @Inject
     public ReadFromPrivateImpl(EncryptedResourceResolver resolver, EncryptedDocumentReadService reader) {
         this.resolver = resolver;
@@ -29,9 +32,9 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
     }
 
     @Override
-    public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
+    public PasswordClearingInputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
         // Access check is implicit - on keystore access in EncryptedResourceResolver
-        return reader.read(resolveRelative(request));
+        return new PasswordClearingInputStream(reader.read(resolveRelative(request)), request.getOwner().getReadKeyPassword());
     }
 
     private ReadRequest<UserIDAuth, AbsoluteLocation<PrivateResource>> resolveRelative(
@@ -46,4 +49,5 @@ public class ReadFromPrivateImpl implements ReadFromPrivate {
                 .storageIdentifier(request.getStorageIdentifier())
                 .build();
     }
+
 }
