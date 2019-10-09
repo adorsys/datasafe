@@ -6,6 +6,7 @@ import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.when;
 class StorageKeyStoreOperationsImplTest extends BaseMockitoTest {
 
     private static final String STORAGE_ID = "id";
-    private static final String SECRET = "secret";
+    private static final ReadKeyPassword SECRET = new ReadKeyPassword("secret");
     private static final AbsoluteLocation<PrivateResource> STORAGE_KEYSTORE =
             BasePrivateResource.forAbsolutePrivate("file://path");
 

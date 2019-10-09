@@ -6,6 +6,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.experimental.UtilityClass;
@@ -19,7 +20,7 @@ import java.security.Security;
 @UtilityClass
 public class DatasafeServicesProvider {
 
-    public static final String STORE_PAZZWORD = "PAZZWORD";
+    public static final ReadStorePassword STORE_PAZZWORD = new ReadStorePassword("PAZZWORD");
 
     public static DefaultDatasafeServices defaultDatasafeServices(StorageService storageService, Uri systemRoot) {
         Security.addProvider(new BouncyCastleProvider());

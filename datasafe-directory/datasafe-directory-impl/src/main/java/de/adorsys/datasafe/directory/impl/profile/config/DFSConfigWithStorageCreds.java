@@ -14,15 +14,15 @@ public class DFSConfigWithStorageCreds extends DefaultDFSConfig {
         super(systemRoot, systemPassword, userProfileLocation);
     }
 
-    public DFSConfigWithStorageCreds(String systemRoot, String systemPassword) {
+    public DFSConfigWithStorageCreds(String systemRoot, ReadStorePassword systemPassword) {
         super(systemRoot, systemPassword);
     }
 
-    public DFSConfigWithStorageCreds(URI systemRoot, String systemPassword) {
+    public DFSConfigWithStorageCreds(URI systemRoot, ReadStorePassword systemPassword) {
         super(systemRoot, systemPassword);
     }
 
-    public DFSConfigWithStorageCreds(Uri systemRoot, String systemPassword) {
+    public DFSConfigWithStorageCreds(Uri systemRoot, ReadStorePassword systemPassword) {
         super(systemRoot, systemPassword);
     }
 

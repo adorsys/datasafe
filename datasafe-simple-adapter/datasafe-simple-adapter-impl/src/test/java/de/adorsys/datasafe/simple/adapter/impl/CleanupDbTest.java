@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
@@ -44,8 +45,8 @@ class CleanupDbTest extends WithStorageProvider {
         String content = "content of document";
         String path = "a/b/c.txt";
 
-        UserIDAuth user1 = new UserIDAuth("uzr", "user");
-        UserIDAuth user2 = new UserIDAuth("other", "user");
+        UserIDAuth user1 = new UserIDAuth("uzr", new ReadKeyPassword("user"));
+        UserIDAuth user2 = new UserIDAuth("other", new ReadKeyPassword("user"));
         simpleDatasafeService.createUser(user1);
         simpleDatasafeService.createUser(user2);
 

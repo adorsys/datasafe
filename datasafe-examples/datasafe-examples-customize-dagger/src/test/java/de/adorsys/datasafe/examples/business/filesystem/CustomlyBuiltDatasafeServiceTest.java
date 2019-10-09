@@ -2,6 +2,8 @@ package de.adorsys.datasafe.examples.business.filesystem;
 
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -26,12 +28,12 @@ class CustomlyBuiltDatasafeServiceTest {
         Security.addProvider(new BouncyCastleProvider());
         // Customized service, we create required module using compile time DI provided by Dagger:
         CustomlyBuiltDatasafeServices datasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
-                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))
                 .storage(new FileSystemStorageService(root))
                 .build();
 
         // registering user
-        UserIDAuth user = new UserIDAuth("user", "passwrd");
+        UserIDAuth user = new UserIDAuth("user", new ReadKeyPassword("passwrd"));
         datasafeServices.userProfile().registerUsingDefaults(user);
         // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
         datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));

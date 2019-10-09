@@ -7,6 +7,8 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.db.DatabaseConnectionRegistry;
@@ -68,7 +70,7 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
     @Test
     @SneakyThrows
     void testProfileOnDbDataOnFsWorks() {
-        UserIDAuth userJohn = new UserIDAuth("john", "doe");
+        UserIDAuth userJohn = new UserIDAuth("john", new ReadKeyPassword("doe"));
 
         // John's profile will be saved to Database
         datasafeServices.userProfile().registerUsingDefaults(userJohn);
@@ -115,7 +117,7 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
         private final Uri profilesPath;
 
         ProfilesOnDbDataOnFs(URI fsPath, URI profilesPath) {
-            super(fsPath, "PAZZWORT");
+            super(fsPath, new ReadStorePassword("PAZZWORT"));
             this.profilesPath = new Uri(profilesPath);
         }
 

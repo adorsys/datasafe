@@ -5,6 +5,7 @@ import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.St
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.UserBasedDelegatingStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -41,7 +42,7 @@ class RandomActionsOnMultiBucketTest extends BaseRandomActions {
 
         return DaggerDefaultDatasafeServices
                 .builder()
-                .config(new DefaultDFSConfig(descriptor.getLocation(), "PAZZWORT"))
+                .config(new DefaultDFSConfig(descriptor.getLocation(), new ReadStorePassword("PAZZWORT")))
                 .storage(new UserBasedDelegatingStorage(storageServiceByBucket(), buckets))
                 .build();
     }

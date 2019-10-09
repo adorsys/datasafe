@@ -9,6 +9,9 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.api.InboxService;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
@@ -71,21 +74,21 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
             public PrivateSpaceService privateService() {
                 return new PrivateSpaceService() {
                     @Override
-                    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
-                        return datasafeService.list(
+                    public PasswordClearingStream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+                        return new PasswordClearingStream<>(datasafeService.list(
                                 request.getOwner(),
                                 asFqnDir(request.getLocation()),
                                 ListRecursiveFlag.TRUE
-                        ).stream().map(it -> new AbsoluteLocation<>(asResolved(descriptor.getLocation(), it)));
+                        ).stream().map(it -> new AbsoluteLocation<>(asResolved(descriptor.getLocation(), it))), request.getOwner().getReadKeyPassword());
                     }
 
                     @Override
-                    public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
-                        return new ByteArrayInputStream(
+                    public PasswordClearingInputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
+                        return new PasswordClearingInputStream(new ByteArrayInputStream(
                                 datasafeService.readDocument(
                                         request.getOwner(),
                                         asFqnDoc(request.getLocation())).getDocumentContent().getValue()
-                        );
+                        ), request.getOwner().getReadKeyPassword());
                     }
 
                     @Override
@@ -94,8 +97,8 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                     }
 
                     @Override
-                    public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
-                        return new PutBlobOnClose(asFqnDoc(request.getLocation()), request.getOwner(), datasafeService);
+                    public PasswordClearingOutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
+                        return new PasswordClearingOutputStream(new PutBlobOnClose(asFqnDoc(request.getLocation()), request.getOwner(), datasafeService), request.getOwner().getReadKeyPassword());
                     }
 
                     @RequiredArgsConstructor

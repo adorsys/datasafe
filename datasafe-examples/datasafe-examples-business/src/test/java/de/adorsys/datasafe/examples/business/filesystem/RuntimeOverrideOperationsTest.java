@@ -4,6 +4,8 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImpl;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
@@ -39,13 +41,13 @@ class RuntimeOverrideOperationsTest {
 
         // Customized service, without creating complete module and building it:
         DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))
                 .storage(new FileSystemStorageService(root))
                 .overridesRegistry(registry)
                 .build();
 
         // registering user
-        UserIDAuth user = new UserIDAuth("user", "passwrd");
+        UserIDAuth user = new UserIDAuth("user", new ReadKeyPassword("passwrd"));
         datasafeServices.userProfile().registerUsingDefaults(user);
         // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
         datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));

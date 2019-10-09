@@ -7,6 +7,8 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -47,7 +49,7 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
         Security.addProvider(new BouncyCastleProvider());
         // this will create all Datasafe files and user documents under <temp dir path>
         defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))
                 .storage(new FileSystemStorageService(root))
                 .build();
         // END_SNIPPET
@@ -64,7 +66,7 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
         IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
         synchronization due to eventual consistency or you need to supply globally unique username on registration
         */
-        defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
+        defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", new ReadKeyPassword("passwrd")));
         // END_SNIPPET
 
         assertThat(defaultDatasafeServices.userProfile().userExists(new UserID("user")));
@@ -294,7 +296,7 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
     }
 
     private UserIDAuth registerUser(String username) {
-        UserIDAuth creds = new UserIDAuth(username, "passwrd" + username);
+        UserIDAuth creds = new UserIDAuth(username, new ReadKeyPassword("passwrd" + username));
         defaultDatasafeServices.userProfile().registerUsingDefaults(creds);
         return creds;
     }

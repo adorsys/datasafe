@@ -49,7 +49,7 @@ public class KeyStoreServiceImplBaseFunctions {
     @SneakyThrows
     public static byte[] toByteArray(KeyStore keystore, String storeId, ReadStorePassword readStorePassword) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        keystore.store(stream, readStorePassword.getValue().toCharArray());
+        keystore.store(stream, readStorePassword.getValue());
         return stream.toByteArray();
     }
 
@@ -68,7 +68,7 @@ public class KeyStoreServiceImplBaseFunctions {
 
         KeyStore ks = KeyStore.getInstance(storeType.getValue());
 
-        ks.load(in, readStorePassword.getValue().toCharArray());
+        ks.load(in, readStorePassword.getValue());
         return ks;
     }
 
@@ -115,7 +115,7 @@ public class KeyStoreServiceImplBaseFunctions {
         chainList.add(V3CertificateUtils.getX509JavaCertificate(subjectCert));
         Certificate[] chain = chainList.toArray(new Certificate[chainList.size()]);
         ks.setKeyEntry(keyPairHolder.getAlias(), keyPairHolder.getKeyPair().getKeyPair().getPrivate(),
-                keyPairHolder.getReadKeyPassword().getValue().toCharArray(), chain);
+                keyPairHolder.getReadKeyPassword().getValue(), chain);
     }
 
     @SneakyThrows
@@ -126,7 +126,7 @@ public class KeyStoreServiceImplBaseFunctions {
     }
 
     private static ProtectionParameter getPasswordProtectionParameter(ReadKeyPassword readKeyPassword) {
-        return new KeyStore.PasswordProtection(readKeyPassword.getValue().toCharArray());
+        return new KeyStore.PasswordProtection(readKeyPassword.getValue());
     }
 }
 

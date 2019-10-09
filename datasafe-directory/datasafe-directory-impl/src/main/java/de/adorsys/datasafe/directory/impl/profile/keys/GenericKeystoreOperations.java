@@ -65,10 +65,10 @@ public class GenericKeystoreOperations {
     @SneakyThrows
     public Key getKey(Supplier<KeyStore> keystore, UserIDAuth forUser, String alias) {
         try {
-            return keystore.get().getKey(alias, forUser.getReadKeyPassword().getValue().toCharArray());
+            return keystore.get().getKey(alias, forUser.getReadKeyPassword().getValue());
         } catch (UnrecoverableKeyException ex) {
             keystoreCache.remove(forUser.getUserID());
-            return keystore.get().getKey(alias, forUser.getReadKeyPassword().getValue().toCharArray());
+            return keystore.get().getKey(alias, forUser.getReadKeyPassword().getValue());
         }
     }
 

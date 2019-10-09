@@ -16,6 +16,7 @@ import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
@@ -36,7 +37,7 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class DatasafeFactory {
 
-    public static DefaultDatasafeServices datasafe(Path fsRoot, String systemPassword) {
+    public static DefaultDatasafeServices datasafe(Path fsRoot, ReadStorePassword systemPassword) {
         OverridesRegistry registry = new BaseOverridesRegistry();
         DefaultDatasafeServices multiDfsDatasafe = DaggerDefaultDatasafeServices
                 .builder()

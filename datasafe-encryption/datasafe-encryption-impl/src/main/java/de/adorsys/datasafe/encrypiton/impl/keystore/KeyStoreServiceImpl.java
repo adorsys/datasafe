@@ -88,11 +88,11 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
-            Key currentKey = current.getKey(alias, currentCredentials.getReadKeyPassword().getValue().toCharArray());
+            Key currentKey = current.getKey(alias, currentCredentials.getReadKeyPassword().getValue());
             newKeystore.setKeyEntry(
                     alias,
                     currentKey,
-                    newCredentials.getReadKeyPassword().getValue().toCharArray(),
+                    newCredentials.getReadKeyPassword().getValue(),
                     current.getCertificateChain(alias)
             );
         }
@@ -126,7 +126,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         ReadKeyPassword readKeyPassword = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword();
         KeyStore keyStore = keyStoreAccess.getKeyStore();
         PrivateKey privateKey;
-        privateKey = (PrivateKey) keyStore.getKey(keyID.getValue(), readKeyPassword.getValue().toCharArray());
+        privateKey = (PrivateKey) keyStore.getKey(keyID.getValue(), readKeyPassword.getValue());
         return privateKey;
     }
 
@@ -134,7 +134,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     @SneakyThrows
     public SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID) {
         KeyStore keyStore = keyStoreAccess.getKeyStore();
-        char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
+        char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue();
         return (SecretKeySpec) keyStore.getKey(keyID.getValue(), password);
     }
 
@@ -148,7 +148,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                 .setKeyEntry(
                         alias,
                         key,
-                        keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray(),
+                        keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue(),
                         new Certificate[0]
                 );
     }

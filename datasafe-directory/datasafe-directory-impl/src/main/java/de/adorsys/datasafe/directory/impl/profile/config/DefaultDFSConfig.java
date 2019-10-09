@@ -38,7 +38,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * to place everything in datasafe/system directory within storage
      * @param systemPassword System password to open keystore
      */
-    public DefaultDFSConfig(String systemRoot, String systemPassword) {
+    public DefaultDFSConfig(String systemRoot, ReadStorePassword systemPassword) {
         this(new Uri(systemRoot), systemPassword);
     }
 
@@ -47,7 +47,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * to place everything in datasafe/system directory within storage
      * @param systemPassword System password to open keystore
      */
-    public DefaultDFSConfig(URI systemRoot, String systemPassword) {
+    public DefaultDFSConfig(URI systemRoot, ReadStorePassword systemPassword) {
         this(new Uri(systemRoot), systemPassword);
     }
 
@@ -56,7 +56,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * to place everything in datasafe/system directory within storage
      * @param systemPassword System password to open keystore
      */
-    public DefaultDFSConfig(Uri systemRoot, String systemPassword) {
+    public DefaultDFSConfig(Uri systemRoot, ReadStorePassword systemPassword) {
         this(systemRoot, systemPassword, new DefaultUserProfileLocationImpl(systemRoot));
     }
 

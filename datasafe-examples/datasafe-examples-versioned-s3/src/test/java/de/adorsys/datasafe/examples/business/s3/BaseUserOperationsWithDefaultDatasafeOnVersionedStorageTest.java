@@ -12,6 +12,8 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -119,7 +121,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
         // this will create all Datasafe files and user documents under S3 bucket root, we assume that
         // S3 versioned bucket was already created
         defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(cephMappedUrl, "secret"))
+                .config(new DefaultDFSConfig(cephMappedUrl, new ReadStorePassword("secret")))
                 .storage(new S3StorageService(
                         cephS3,
                         VERSIONED_BUCKET_NAME,
@@ -231,7 +233,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
     }
 
     private UserIDAuth registerUser(String username) {
-        UserIDAuth creds = new UserIDAuth(username, "passwrd" + username);
+        UserIDAuth creds = new UserIDAuth(username, new ReadKeyPassword("passwrd" + username));
         defaultDatasafeServices.userProfile().registerUsingDefaults(creds);
         return creds;
     }

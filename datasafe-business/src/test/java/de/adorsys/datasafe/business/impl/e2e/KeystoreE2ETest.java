@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
@@ -53,7 +54,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void testDefaultKeystoreHasProperKeys() {
-        UserIDAuth auth = new UserIDAuth("user", "pass");
+        UserIDAuth auth = new UserIDAuth("user", new ReadKeyPassword("pass"));
         datasafeServices.userProfile().registerUsingDefaults(auth);
         URI keystorePath = datasafeServices.userProfile().privateProfile(auth)
                 .getKeystore().location().asURI();
@@ -62,7 +63,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
         KeyStore keyStore = keyStoreService.deserialize(
                 Files.readAllBytes(Paths.get(keystorePath)),
                 "ID",
-                new ReadStorePassword(STORE_PAZZWORD)
+                STORE_PAZZWORD
         );
 
         assertThat(aliases(keyStore)).filteredOn(it -> it.matches(PATH_KEY_ID_PREFIX + ".+")).hasSize(1);

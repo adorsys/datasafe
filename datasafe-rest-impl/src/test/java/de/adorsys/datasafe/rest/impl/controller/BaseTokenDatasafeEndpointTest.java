@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.rest.impl.security.SecurityConstants;
 import de.adorsys.datasafe.rest.impl.security.SecurityProperties;
@@ -14,7 +15,7 @@ public abstract class BaseTokenDatasafeEndpointTest extends BaseDatasafeEndpoint
     static final String PASSWORD_DESCRIPTION = "datasafe user's password";
 
     static final String TEST_USER = "test";
-    static final String TEST_PASS = "test";
+    static final ReadKeyPassword TEST_PASS = new ReadKeyPassword("test");
     String token;
 
     private SecurityProperties securityProperties;
