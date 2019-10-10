@@ -19,7 +19,6 @@ import java.util.Collections;
  * Default DFS folders layout provider, suitable both for s3 and filesystem.
  */
 @Slf4j
-@RequiredArgsConstructor
 public class DefaultDFSConfig implements DFSConfig {
 
     protected static final String USERS_ROOT = "users/";
@@ -66,10 +65,10 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      * @param userProfileLocation Bootstrap for user profile files placement
      */
-    public DefaultDFSConfig(Uri systemRoot, String systemPassword, UserProfileLocation userProfileLocation) {
+    public DefaultDFSConfig(Uri systemRoot, ReadStorePassword systemPassword, UserProfileLocation userProfileLocation) {
         systemRoot = addTrailingSlashIfNeeded(systemRoot);
         this.systemRoot = systemRoot;
-        this.systemPassword = new ReadStorePassword(systemPassword);
+        this.systemPassword = systemPassword;
         this.userProfileLocation = userProfileLocation;
         log.debug("Root is {}", dfsRoot());
     }

@@ -26,10 +26,6 @@ public class DFSConfigWithStorageCreds extends DefaultDFSConfig {
         super(systemRoot, systemPassword);
     }
 
-    public DFSConfigWithStorageCreds(Uri systemRoot, String systemPassword, UserProfileLocation userProfileLocation) {
-        super(systemRoot, systemPassword, userProfileLocation);
-    }
-
     @Override
     public CreateUserPrivateProfile defaultPrivateTemplate(UserIDAuth id) {
         CreateUserPrivateProfile base = super.defaultPrivateTemplate(id);
