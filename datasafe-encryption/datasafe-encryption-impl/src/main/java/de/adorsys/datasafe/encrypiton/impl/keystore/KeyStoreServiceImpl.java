@@ -149,7 +149,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                         alias,
                         key,
                         keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray(),
-                        new Certificate[0]
+                        null
                 );
     }
 
