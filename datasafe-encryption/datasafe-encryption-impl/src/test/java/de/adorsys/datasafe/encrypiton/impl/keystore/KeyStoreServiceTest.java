@@ -25,7 +25,7 @@ import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfi
 
 class KeyStoreServiceTest extends WithBouncyCastle {
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
     private KeyStoreAuth keyStoreAuth;
 
     @BeforeEach
@@ -38,7 +38,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     @Test
     void createKeyStore() throws Exception {
         KeyCreationConfig config = new KeyCreationConfig(0, 1);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, config);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null, config);
 
         Assertions.assertNotNull(keyStore);
 
@@ -52,7 +52,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void createKeyStoreEmptyConfig() throws Exception {
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, null);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null, null);
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
         // One additional secret key being generated for path encryption and one for private doc encryption.
@@ -64,13 +64,13 @@ class KeyStoreServiceTest extends WithBouncyCastle {
         KeyCreationConfig config = new KeyCreationConfig(0, 0);
 
             Assertions.assertThrows(KeyStoreConfigException.class, () ->
-                    keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, config, Collections.emptyMap())
+                    keyStoreService.createKeyStore(keyStoreAuth, null, config, Collections.emptyMap())
             );
     }
 
     @Test
     void getPublicKeys() {
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, null);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(keyStoreAccess);
 
@@ -99,7 +99,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getPrivateKeyException() throws Exception {
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, null);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null, null);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<String> list = Collections.list(keyStore.aliases());
         Assertions.assertThrows(ClassCastException.class, () -> {
@@ -112,7 +112,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     @Test
     void getSecretKey() {
         KeyCreationConfig config = new KeyCreationConfig(0, 1);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, config);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
         KeyID keyID = KeystoreUtil.keyIdByPrefix(keyStore, DOCUMENT_KEY_ID_PREFIX);

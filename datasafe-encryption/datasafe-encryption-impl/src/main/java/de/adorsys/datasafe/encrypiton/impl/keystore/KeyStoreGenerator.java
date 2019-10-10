@@ -62,7 +62,7 @@ public class KeyStoreGenerator {
         Date startTime = new Date();
         try {
             String keyStoreID = serverKeyPairAliasPrefix;
-            KeystoreBuilder keystoreBuilder = new KeystoreBuilder().withStoreType(keyStoreCreationConfig);
+            KeystoreBuilder keystoreBuilder = new KeystoreBuilder().withKeyStoreConfig(keyStoreCreationConfig);
 
             {
                 KeyPairGenerator encKeyPairGenerator = config.getEncKeyPairGenerator(keyStoreID);

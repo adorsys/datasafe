@@ -11,7 +11,7 @@ public class KeystoreBuilder {
 	private KeyStoreCreationConfig keyStoreConfig;
 	private Map<String, KeyEntry> keyEntries = new HashMap<>();
 	
-	public KeystoreBuilder withStoreType(KeyStoreCreationConfig keyStoreConfig) {
+	public KeystoreBuilder withKeyStoreConfig(KeyStoreCreationConfig keyStoreConfig) {
 		this.keyStoreConfig = keyStoreConfig;
 		return this;
 	}

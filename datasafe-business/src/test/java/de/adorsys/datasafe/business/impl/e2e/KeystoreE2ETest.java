@@ -58,7 +58,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
         URI keystorePath = datasafeServices.userProfile().privateProfile(auth)
                 .getKeystore().location().asURI();
 
-        KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
+        KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
         KeyStore keyStore = keyStoreService.deserialize(
                 Files.readAllBytes(Paths.get(keystorePath)),
                 "ID",

@@ -1,12 +1,14 @@
 package de.adorsys.datasafe.business.impl.keystore;
 
 import dagger.Binds;
+import dagger.BindsOptionalOf;
 import dagger.Module;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfigRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImplRuntimeDelegatable;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.PasswordBasedKeyConfig;
 
 /**
@@ -29,4 +31,8 @@ public abstract class DefaultKeyStoreModule {
 
     @Binds
     public abstract PasswordBasedKeyConfig passwordBasedKeyConfig(DefaultPasswordBasedKeyConfigRuntimeDelegatable impl);
+
+    @BindsOptionalOf
+    public abstract KeyStoreCreationConfig keyStoreCreationConfig();
+
 }

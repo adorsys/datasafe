@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.PasswordBasedKeyConfig;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
@@ -17,7 +18,6 @@ import javax.inject.Inject;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
@@ -28,10 +28,13 @@ import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfi
 public class KeyStoreServiceImpl implements KeyStoreService {
 
     private final PasswordBasedKeyConfig passwordBasedKeyConfig;
+    private final Optional<KeyStoreCreationConfig> keyStoreCreationConfig;
 
     @Inject
-    public KeyStoreServiceImpl(PasswordBasedKeyConfig passwordBasedKeyConfig) {
+    public KeyStoreServiceImpl(PasswordBasedKeyConfig passwordBasedKeyConfig,
+                               Optional<KeyStoreCreationConfig> keyStoreCreationConfig) {
         this.passwordBasedKeyConfig = passwordBasedKeyConfig;
+        this.keyStoreCreationConfig = keyStoreCreationConfig;
     }
 
     @Override

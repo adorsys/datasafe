@@ -43,7 +43,7 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
     private static final String TEST_MESSAGE_CONTENT = "message content";
 
     private static KeyStoreAccess keyStoreAccess;
-    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
+    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
 
     private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
 
