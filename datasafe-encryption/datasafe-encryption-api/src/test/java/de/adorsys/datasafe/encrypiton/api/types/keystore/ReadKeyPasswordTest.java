@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ public class ReadKeyPasswordTest {
         assertThat(Arrays.equals(password, copyOfPassword)).isTrue();
         readKeyPassword.clear();
         assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+        assertThat(Arrays.equals(readKeyPassword.getValue(), copyOfPassword)).isFalse();
 
     }
 
@@ -35,6 +37,33 @@ public class ReadKeyPasswordTest {
         assertThat(Arrays.equals(password, copyOfPassword)).isTrue();
         readKeyPassword.clear();
         assertThat(Arrays.equals(password, copyOfPassword)).isTrue();
+        assertThat(Arrays.equals(readKeyPassword.getValue(), copyOfPassword)).isTrue();
 
+    }
+
+
+    @Test
+    public void testWithDeprecatedConstructor() {
+        String passwordString = "that is the password";
+        char[] copyOfPassword = Arrays.copyOf(passwordString.toCharArray(), passwordString.toCharArray().length);
+
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword(passwordString);
+        ReadKeyPassword readKeyPasswordBackup = new ReadKeyPassword(new Supplier<char[]>() {
+            @Override
+            public char[] get() {
+                return readKeyPassword.getValue();
+            }
+        });
+        assertThat(Arrays.equals(passwordString.toCharArray(), copyOfPassword)).isTrue();
+        readKeyPassword.clear();
+        assertThat(Arrays.equals(passwordString.toCharArray(), copyOfPassword)).isTrue();
+        assertThat(Arrays.equals(readKeyPassword.getValue(), copyOfPassword)).isTrue();
+    }
+
+    @Test
+    public void overwriteString() {
+        String s = "peter";
+        s.toCharArray()[0] = 'P';
+        assertThat(s.equals("Peter")).isFalse();
     }
 }

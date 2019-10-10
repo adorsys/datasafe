@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 @ToString
 public class BaseTypePasswordString {
     private char[] value;
+    private boolean toBeCleared = true;
 
     @Deprecated
     /**
@@ -29,6 +30,7 @@ public class BaseTypePasswordString {
      */
     public BaseTypePasswordString(String value) {
         this.value = value.toCharArray();
+        toBeCleared = false;
     }
 
     /**
@@ -42,6 +44,7 @@ public class BaseTypePasswordString {
      */
     public BaseTypePasswordString(char[] value) {
         this.value = value;
+        toBeCleared = true;
     }
 
     /**
@@ -50,14 +53,17 @@ public class BaseTypePasswordString {
      * @param value will stay unchanged
      */
     public BaseTypePasswordString(Supplier<char[]> value) {
-        this.value = Arrays.copyOf(value.get(), value.get().length);
+        this.value = value.get();
+        toBeCleared = false;
     }
 
 
     public void clear() {
-        log.warn("CLEAR PASSWORD {}", this.getClass().getSimpleName());
-        for (int i = 0; i < value.length; i++) {
-            value[i] = '0';
+        if (toBeCleared) {
+            log.debug("CLEAR PASSWORD {}", this.getClass().getSimpleName());
+            for (int i = 0; i < value.length; i++) {
+                value[i] = '0';
+            }
         }
     }
 
