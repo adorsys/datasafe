@@ -81,7 +81,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("url             : " + amazonS3DFSCredentials.getUrl());
             lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
-            lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
             lsf.add("no https        : " + amazonS3DFSCredentials.isNoHttps());
             lsf.add("threadpool size : " + amazonS3DFSCredentials.getThreadPoolSize());
             log.info(lsf.toString());
