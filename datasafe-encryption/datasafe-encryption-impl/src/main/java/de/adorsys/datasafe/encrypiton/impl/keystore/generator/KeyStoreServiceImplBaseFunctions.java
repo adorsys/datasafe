@@ -23,8 +23,6 @@ import java.util.List;
  */
 public class KeyStoreServiceImplBaseFunctions {
 
-    public static final String KEYSTORE_TYPE = "BCFKS";
-
     private KeyStoreServiceImplBaseFunctions() {
         throw new IllegalStateException("Not supported");
     }
@@ -37,7 +35,8 @@ public class KeyStoreServiceImplBaseFunctions {
      */
     @SneakyThrows
     public static KeyStore newKeyStore(KeyStoreCreationConfig keyStoreConfig) {
-        KeyStore ks = KeyStore.getInstance(KEYSTORE_TYPE);
+        if (keyStoreConfig == null) keyStoreConfig = KeyStoreCreationConfig.DEFAULT;
+        KeyStore ks = KeyStore.getInstance(keyStoreConfig.getKeyStoreType());
         ks.load(new BCFKSLoadStoreParameter.Builder()
                 .withStoreEncryptionAlgorithm(keyStoreConfig.getStoreEncryptionAlgorithm())
                 .withStorePBKDFConfig(keyStoreConfig.getStorePBKDFConfig())
@@ -51,7 +50,6 @@ public class KeyStoreServiceImplBaseFunctions {
      * Write this key store into a byte array
      *
      * @param keystore keystore
-     * @param storeId  storeId
      * @return key store byte array
      */
     @SneakyThrows
@@ -65,16 +63,17 @@ public class KeyStoreServiceImplBaseFunctions {
      * Loads a key store. Given the store bytes, the store type
      *
      * @param in        : the inputStream location which to read the keystore
-     * @param storeId   : The store id. This is passed to the callback handler to identify the requested password record.
      * @param keyStoreConfig : the type of this key store. f null, the defaut java keystore type is used.
      * @return KeyStore
      */
     @SneakyThrows
-    public static KeyStore loadKeyStore(InputStream in, String storeId, KeyStoreCreationConfig keyStoreConfig, ReadStorePassword readStorePassword) {
+    public static KeyStore loadKeyStore(InputStream in, String storeId,
+                                        KeyStoreCreationConfig keyStoreConfig,
+                                        ReadStorePassword readStorePassword) {
         // Use default if blank.
         if (keyStoreConfig == null) keyStoreConfig = KeyStoreCreationConfig.DEFAULT;
 
-        KeyStore ks = KeyStore.getInstance(KEYSTORE_TYPE);
+        KeyStore ks = KeyStore.getInstance(keyStoreConfig.getKeyStoreType());
 
         ks.load(in, readStorePassword.getValue().toCharArray());
         return ks;
@@ -82,11 +81,12 @@ public class KeyStoreServiceImplBaseFunctions {
 
     /**
      * @param data         : the byte array containing key store data.
-     * @param storeId      : The store id. This is passed to the callback handler to identify the requested password record.
      * @param keyStoreCreationConfig : the type of this key store. f null, the defaut java keystore type is used.
      * @return KeyStore
      */
-    public static KeyStore loadKeyStore(byte[] data, String storeId, KeyStoreCreationConfig keyStoreCreationConfig, ReadStorePassword readStorePassword) {
+    public static KeyStore loadKeyStore(byte[] data, String storeId,
+                                        KeyStoreCreationConfig keyStoreCreationConfig,
+                                        ReadStorePassword readStorePassword) {
         return loadKeyStore(new ByteArrayInputStream(data), storeId, keyStoreCreationConfig, readStorePassword);
     }
 
