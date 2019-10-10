@@ -14,4 +14,5 @@ public interface RemoveFromPrivate {
      * @param request Resource location (relative or absolute)
      */
     void remove(RemoveRequest<UserIDAuth, PrivateResource> request);
+    void makeSurePasswordClearanceIsDone(); // this abstract method will make sure new implementations dont forget to handle password clearance
 }

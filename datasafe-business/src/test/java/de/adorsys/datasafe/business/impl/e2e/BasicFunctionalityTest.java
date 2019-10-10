@@ -3,15 +3,14 @@ package de.adorsys.datasafe.business.impl.e2e;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.global.Version;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
-import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.resource.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +19,8 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
+import java.security.UnrecoverableKeyException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static de.adorsys.datasafe.business.impl.e2e.Const.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests that validates basic functionality - storing data to inbox, privatespace, listing files, etc.
@@ -38,6 +40,52 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     private StorageService storage;
     private Uri location;
+
+    @ParameterizedTest
+    @MethodSource("fsOnly")
+    void testDFSPasswordClearance(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+        UserID userJohn = new UserID("john");
+        assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
+
+        String passwordString = "a password that should be nullyfied";
+        char[] password = passwordString.toCharArray();
+        char[] copyOfPassword = Arrays.copyOf(password, password.length);
+
+        assertThat(Arrays.equals(password, copyOfPassword)).isTrue();
+
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword(password);
+        john = registerUser(userJohn.getValue(), readKeyPassword);
+        assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
+        assertThat(profileRetrievalService.privateProfile(john).getAppVersion()).isEqualTo(Version.current());
+        assertThat(profileRetrievalService.publicProfile(john.getUserID()).getAppVersion()).isEqualTo(Version.current());
+        writeDataToPrivate(john, "root.txt", MESSAGE_ONE);
+
+        assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+
+        assertThrows(UnrecoverableKeyException.class, () -> profileRemovalService.deregister(john));
+
+        // recover password
+        for (int i = 0; i < copyOfPassword.length; i++) {
+            password[i] = copyOfPassword[i];
+        }
+
+        writeDataToPrivate(john, "root.txt", MESSAGE_ONE);
+        // recover password
+        for (int i = 0; i < copyOfPassword.length; i++) {
+            password[i] = copyOfPassword[i];
+        }
+        removeFromPrivate.remove(RemoveRequest.forDefaultPrivate(john, new Uri("root.txt")));
+        // recover password
+        for (int i = 0; i < copyOfPassword.length; i++) {
+            password[i] = copyOfPassword[i];
+        }
+
+        profileRemovalService.deregister(john);
+        assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+
+        assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
+    }
 
     @ParameterizedTest
     @MethodSource("allStorages")

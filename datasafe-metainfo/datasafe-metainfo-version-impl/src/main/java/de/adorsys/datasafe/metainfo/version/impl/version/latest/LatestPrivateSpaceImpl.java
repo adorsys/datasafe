@@ -73,6 +73,12 @@ public class LatestPrivateSpaceImpl<V extends LatestDFSVersion> implements Versi
     @Override
     public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
         removeService.remove(request);
+        // password clearance is done in removeService
+    }
+
+    @Override
+    public void makeSurePasswordClearanceIsDone() {
+
     }
 
     // Delegate didn't work

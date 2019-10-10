@@ -191,6 +191,13 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         ).filter(Objects::nonNull);
     }
 
+    @ValueSource
+    protected static Stream<StorageDescriptor> fsOnly() {
+        return Stream.of(
+                fs()
+        ).filter(Objects::nonNull);
+    }
+
     protected static StorageDescriptor fs() {
         return new StorageDescriptor(
                 StorageDescriptorName.FILESYSTEM,

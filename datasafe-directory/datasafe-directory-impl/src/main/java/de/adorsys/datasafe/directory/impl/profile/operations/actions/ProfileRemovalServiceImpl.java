@@ -98,6 +98,7 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         keyStoreCache.remove(userID.getUserID());
 
         log.debug("Deregistered user {}", userID);
+        userID.getReadKeyPassword().clear();
     }
 
     protected void removeUserProfileFiles(UserID forUser) {

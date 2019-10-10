@@ -94,6 +94,12 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
                     @Override
                     public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
                         datasafeService.deleteFolder(request.getOwner(), asFqnDir(request.getLocation()));
+                        request.getOwner().getReadKeyPassword().clear();
+                    }
+
+                    @Override
+                    public void makeSurePasswordClearanceIsDone() {
+
                     }
 
                     @Override
