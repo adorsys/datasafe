@@ -12,6 +12,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
@@ -68,6 +69,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
             customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
+                    .keyStoreConfig(KeyStoreCreationConfig.builder().keyStoreType("UBER").build())
                     .storage(getStorageService())
                     .build();
 
@@ -132,6 +134,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
             customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
+                    .keyStoreConfig(KeyStoreCreationConfig.builder().keyStoreType("UBER").build())
                     .storage(getStorageService())
                     .build();
 

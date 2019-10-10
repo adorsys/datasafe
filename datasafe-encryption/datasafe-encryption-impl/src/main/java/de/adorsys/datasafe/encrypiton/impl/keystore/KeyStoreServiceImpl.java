@@ -176,7 +176,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         return KeyStoreServiceImplBaseFunctions.loadKeyStore(
                 payload,
                 storeId,
-                KeyStoreCreationConfig.DEFAULT,
+                keyStoreCreationConfig.orElse(KeyStoreCreationConfig.DEFAULT),
                 readStorePassword
         );
     }
