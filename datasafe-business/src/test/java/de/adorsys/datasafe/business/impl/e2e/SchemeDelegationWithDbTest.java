@@ -17,16 +17,21 @@ import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.Security;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,6 +46,11 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
     private Path fsPath;
     private StorageService db;
     private DefaultDatasafeServices datasafeServices;
+
+    @BeforeAll
+    static void addBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     @BeforeEach
     void initialize(@TempDir Path tempDir) {
@@ -86,28 +96,36 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
             .containsExactly("jdbc://localhost:9999/h2:mem:test/public_profiles/john");
 
         Path path = fsPath.resolve(new Uri("users/john/private/files/").resolve(AES_SIV.asUriRoot()).asString());
-        Path encryptedFile = Files.walk(path).collect(Collectors.toList()).get(1);
+        Path encryptedFile = walk(path).get(1);
         // File and keystore/pub keys are on FS
-        assertThat(Files.walk(fsPath))
-            .extracting(it -> fsPath.relativize(it))
-            .extracting(Path::toString)
+        assertThat(walk(fsPath))
+            .extracting(it -> fsPath.toUri().relativize(it.toUri()))
+            .extracting(URI::toString)
             .containsExactlyInAnyOrder(
                 "",
-                "users",
-                "users/john",
-                "users/john/public",
+                "users/",
+                "users/john/",
+                "users/john/public/",
                 "users/john/public/pubkeys",
-                "users/john/private",
+                "users/john/private/",
                 "users/john/private/keystore",
-                "users/john/private/files",
-                "users/john/private/files/SIV",
-                fsPath.relativize(encryptedFile).toString()
+                "users/john/private/files/",
+                "users/john/private/files/SIV/",
+                fsPath.toUri().relativize(encryptedFile.toUri()).toString()
             );
     }
 
-    private Stream<String> listDb(String path) {
-        return db.list(BasePrivateResource.forAbsolutePrivate(URI.create(path)))
-            .map(it -> it.location().asURI().toString());
+    @SneakyThrows
+    private List<Path> walk(Path at) {
+        try (Stream<Path> ls = Files.walk(at)) {
+            return ls.collect(Collectors.toList());
+        }
+    }
+
+    private List<String> listDb(String path) {
+        try (Stream<AbsoluteLocation<ResolvedResource>> stream = db.list(BasePrivateResource.forAbsolutePrivate(URI.create(path)))){
+            return stream.map(it -> it.location().asURI().toString()).collect(Collectors.toList());
+        }
     }
 
     static class ProfilesOnDbDataOnFs extends DefaultDFSConfig {
