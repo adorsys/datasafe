@@ -5,13 +5,13 @@ import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +36,7 @@ class EncryptedResourceResolverImplTest extends BaseMockitoTest {
     private PrivateResource relative = BasePrivateResource.forPrivate(URI.create("./path"));
     private PrivateResource relativeEncrypted = BasePrivateResource.forPrivate(URI.create("./path/")
             .resolve(ENCRYPTED));
-    private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPassword.getForString(""));
+    private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPasswordTestFactory.getForString(""));
 
     @Mock
     private BucketAccessService accessService;

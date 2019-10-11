@@ -2,7 +2,7 @@ package de.adorsys.datasafe.directory.impl.profile.config;
 
 import de.adorsys.datasafe.directory.api.types.CreateUserPrivateProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.resource.Uri;
 
 import java.net.URI;

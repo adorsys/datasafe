@@ -3,7 +3,7 @@ package de.adorsys.datasafe.directory.api.profile.operations;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 
 /**
  * Updates users' profile in a system.

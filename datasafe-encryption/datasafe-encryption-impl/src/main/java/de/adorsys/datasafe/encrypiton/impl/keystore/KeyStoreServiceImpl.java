@@ -6,6 +6,8 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.PasswordBasedKeyConfig;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 

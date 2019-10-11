@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.encrypiton.api.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.KeyStore;

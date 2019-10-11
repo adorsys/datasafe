@@ -2,7 +2,7 @@ package de.adorsys.datasafe.privatestore.impl.actions;
 
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
 import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;

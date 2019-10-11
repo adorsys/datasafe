@@ -10,6 +10,9 @@ import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathD
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathEncryptor;
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacySymmetricPathEncryptionServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +35,7 @@ class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
     );
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
-    private ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString("readkeypassword");
+    private ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     private KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);

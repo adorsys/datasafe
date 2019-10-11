@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.encrypiton.api.types.keystore;
+package de.adorsys.datasafe.types.api.types;
 
 import java.util.function.Supplier;
 
@@ -25,14 +25,5 @@ public class ReadKeyPassword extends BaseTypePasswordString {
      */
     public ReadKeyPassword(char[] readKeyPassword) {
         super(readKeyPassword);
-    }
-
-    public static ReadKeyPassword getForString(String a) {
-        return new ReadKeyPassword(new Supplier<char[]>() {
-            @Override
-            public char[] get() {
-                return a.toCharArray();
-            }
-        });
     }
 }

@@ -2,7 +2,7 @@ package de.adorsys.datasafe.simple.adapter.api;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 
 import java.io.OutputStream;

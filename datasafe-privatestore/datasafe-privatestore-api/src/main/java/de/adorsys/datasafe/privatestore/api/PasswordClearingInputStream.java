@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.privatestore.api;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;

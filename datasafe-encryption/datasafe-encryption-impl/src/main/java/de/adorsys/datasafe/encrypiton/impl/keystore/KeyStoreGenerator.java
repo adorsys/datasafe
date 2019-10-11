@@ -6,6 +6,7 @@ import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreCreationCo
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeystoreBuilder;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.Builder;
 import lombok.NonNull;

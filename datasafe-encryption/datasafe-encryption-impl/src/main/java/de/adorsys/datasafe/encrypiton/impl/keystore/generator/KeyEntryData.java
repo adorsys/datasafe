@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyEntry;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

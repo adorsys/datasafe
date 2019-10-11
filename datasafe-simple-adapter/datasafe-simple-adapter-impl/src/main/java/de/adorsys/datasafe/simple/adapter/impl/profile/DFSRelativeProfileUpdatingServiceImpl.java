@@ -8,7 +8,7 @@ import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileUpdatingServiceImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 
 import javax.inject.Inject;
 

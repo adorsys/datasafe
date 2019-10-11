@@ -7,7 +7,6 @@ import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.directory.impl.profile.exceptions.UserNotFoundException;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -19,6 +18,7 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.ContentGenerator;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -131,7 +131,7 @@ public class OperationExecutor {
 
     @SneakyThrows
     private void doCreate(Operation oper) {
-        UserIDAuth auth = new UserIDAuth(oper.getUserId(), ReadKeyPassword.getForString(oper.getUserId()));
+        UserIDAuth auth = new UserIDAuth(oper.getUserId(), ReadKeyPasswordTestFactory.getForString(oper.getUserId()));
         registrationService.registerUsingDefaults(auth);
         users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
     }

@@ -6,6 +6,9 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cms.CMSException;
@@ -32,7 +35,7 @@ class SymetricEncryptionTest extends WithBouncyCastle {
 
     private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
-    private ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString("readkeypassword");
+    private ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     private KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 1);

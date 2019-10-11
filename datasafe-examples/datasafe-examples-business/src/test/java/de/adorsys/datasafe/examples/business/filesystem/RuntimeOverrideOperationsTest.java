@@ -4,8 +4,7 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImpl;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
@@ -13,6 +12,7 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ class RuntimeOverrideOperationsTest {
                 .build();
 
         // registering user
-        UserIDAuth user = new UserIDAuth("user", ReadKeyPassword.getForString("passwrd"));
+        UserIDAuth user = new UserIDAuth("user", ReadKeyPasswordTestFactory.getForString("passwrd"));
         datasafeServices.userProfile().registerUsingDefaults(user);
         // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
         datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));

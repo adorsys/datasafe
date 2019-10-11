@@ -8,7 +8,6 @@ import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import lombok.SneakyThrows;
@@ -93,7 +92,7 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
 
         verify(userProfile).updateReadKeyPassword(
                 eq(new UserIDAuth(TEST_USER, TEST_PASS)),
-                eq(ReadKeyPassword.getForString(newPassword))
+                eq(ReadKeyPasswordHelper.getForString(newPassword))
         );
     }
 

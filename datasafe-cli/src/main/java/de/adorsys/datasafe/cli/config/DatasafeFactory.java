@@ -16,7 +16,7 @@ import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;

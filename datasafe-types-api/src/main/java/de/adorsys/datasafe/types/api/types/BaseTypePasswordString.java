@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.encrypiton.api.types.keystore;
+package de.adorsys.datasafe.types.api.types;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

@@ -10,7 +10,7 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalServ
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileUpdatingService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.api.actions.ListInbox;
 import de.adorsys.datasafe.inbox.api.actions.ReadFromInbox;
 import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
@@ -30,6 +30,7 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -206,7 +207,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     }
 
     protected UserIDAuth registerUser(String userName) {
-        return registerUser(userName, ReadKeyPassword.getForString("secure-password " + userName));
+        return registerUser(userName, ReadKeyPasswordTestFactory.getForString("secure-password " + userName));
     }
 
     protected UserIDAuth registerUser(String userName, ReadKeyPassword readKeyPassword) {
@@ -221,7 +222,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
         return new UserIDAuth(
                 userName,
-                ReadKeyPassword.getForString("secure-password " + userName.getValue())
+                ReadKeyPasswordTestFactory.getForString("secure-password " + userName.getValue())
         );
     }
 

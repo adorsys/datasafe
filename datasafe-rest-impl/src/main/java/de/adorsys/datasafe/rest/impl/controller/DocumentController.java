@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.exceptions.UnauthorizedException;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -67,7 +66,7 @@ public class DocumentController {
                              @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                              @PathVariable String path,
                              HttpServletResponse response) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         ReadRequest<UserIDAuth, PrivateResource> request =
             ReadRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         // this is needed for swagger, produces is just a directive:
@@ -94,7 +93,7 @@ public class DocumentController {
                               @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                               @PathVariable String path,
                               @RequestParam("file") MultipartFile file) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         WriteRequest<UserIDAuth, PrivateResource> request =
                 WriteRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         try (OutputStream os = datasafeService.privateService().write(request);
@@ -118,7 +117,7 @@ public class DocumentController {
                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                       @ApiParam(defaultValue = ".")
                                       @PathVariable(required = false) String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");
@@ -146,7 +145,7 @@ public class DocumentController {
                                @RequestHeader String password,
                                @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                @PathVariable String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         RemoveRequest<UserIDAuth, PrivateResource> request =
             RemoveRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         datasafeService.privateService().remove(request);

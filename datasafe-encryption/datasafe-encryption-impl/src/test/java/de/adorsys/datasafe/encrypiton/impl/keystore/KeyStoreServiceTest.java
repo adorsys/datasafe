@@ -9,6 +9,9 @@ import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreCreationCo
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +34,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     @BeforeEach
     void setUp() {
         ReadStorePassword readStorePassword = new ReadStorePassword("keystorepass");
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString("keypass");
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("keypass");
         keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     }
 
@@ -81,7 +84,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     void getPrivateKey() throws Exception {
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreType.DEFAULT); // UBER
 
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString("keypass");
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("keypass");
         KeyStoreCreationConfigImpl keyStoreCreationConfig = new KeyStoreCreationConfigImpl(null);
         KeyPairGenerator encKeyPairGenerator = keyStoreCreationConfig.getEncKeyPairGenerator("KEYSTORE-ID-0");
         String alias = "KEYSTORE-ID-0" + UUID.randomUUID().toString();

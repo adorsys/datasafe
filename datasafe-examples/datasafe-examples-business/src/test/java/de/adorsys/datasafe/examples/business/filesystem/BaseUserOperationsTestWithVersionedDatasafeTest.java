@@ -5,8 +5,7 @@ import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -16,6 +15,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Versioned;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +67,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
         IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
         synchronization due to eventual consistency or you need to supply globally unique username on registration
         */
-        versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", ReadKeyPassword.getForString("passwrd")));
+        versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", ReadKeyPasswordTestFactory.getForString("passwrd")));
         // END_SNIPPET
 
         assertThat(versionedServices.userProfile().userExists(new UserID("user")));
@@ -167,7 +167,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
     }
 
     private UserIDAuth registerUser(String username) {
-        UserIDAuth creds = new UserIDAuth(username, ReadKeyPassword.getForString("passwrd" + username));
+        UserIDAuth creds = new UserIDAuth(username, ReadKeyPasswordTestFactory.getForString("passwrd" + username));
         versionedServices.userProfile().registerUsingDefaults(creds);
         return creds;
     }

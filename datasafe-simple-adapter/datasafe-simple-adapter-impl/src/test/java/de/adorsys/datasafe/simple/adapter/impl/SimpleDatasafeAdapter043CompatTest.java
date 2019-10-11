@@ -2,10 +2,10 @@ package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.types.api.shared.Dirs;
 import de.adorsys.datasafe.types.api.shared.Resources;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SimpleDatasafeAdapter043CompatTest extends WithBouncyCastle {
 
-    private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPassword.getForString("password"));
+    private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPasswordTestFactory.getForString("password"));
     private SimpleDatasafeServiceImpl simpleDatasafeService;
     private Path dfsRoot;
 

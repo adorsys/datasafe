@@ -47,6 +47,13 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-types-api</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <!-- Disable maven-dependency-plugin - that's ok to have undeclared transitive dependencies here-->

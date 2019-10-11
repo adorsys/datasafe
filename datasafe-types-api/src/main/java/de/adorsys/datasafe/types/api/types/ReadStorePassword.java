@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.encrypiton.api.types.keystore;
+package de.adorsys.datasafe.types.api.types;
 
 /**
  * Wrapper for keystore serialization/deserialization password as well as password for reading public keys.

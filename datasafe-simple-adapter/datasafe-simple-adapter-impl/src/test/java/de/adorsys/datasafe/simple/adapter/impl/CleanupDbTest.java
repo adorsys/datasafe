@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
@@ -9,6 +8,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,8 +45,8 @@ class CleanupDbTest extends WithStorageProvider {
         String content = "content of document";
         String path = "a/b/c.txt";
 
-        UserIDAuth user1 = new UserIDAuth("uzr", ReadKeyPassword.getForString("user"));
-        UserIDAuth user2 = new UserIDAuth("other", ReadKeyPassword.getForString("user"));
+        UserIDAuth user1 = new UserIDAuth("uzr", ReadKeyPasswordTestFactory.getForString("user"));
+        UserIDAuth user2 = new UserIDAuth("other", ReadKeyPasswordTestFactory.getForString("user"));
         simpleDatasafeService.createUser(user1);
         simpleDatasafeService.createUser(user2);
 

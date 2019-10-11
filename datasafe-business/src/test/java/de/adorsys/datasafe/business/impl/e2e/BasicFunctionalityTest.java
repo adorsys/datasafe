@@ -3,8 +3,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -18,16 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
-import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.UnrecoverableKeyException;
 import java.util.Arrays;
 import java.util.List;
@@ -151,7 +143,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     @SneakyThrows
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("fsOnly")
     void testUserIsRemovedWithFiles(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");

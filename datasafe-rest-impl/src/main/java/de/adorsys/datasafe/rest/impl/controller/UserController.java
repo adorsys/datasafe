@@ -4,7 +4,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.types.StorageCredentials;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.config.DatasafeProperties;
 import de.adorsys.datasafe.rest.impl.dto.NewPasswordDTO;
 import de.adorsys.datasafe.rest.impl.dto.StorageCredsDTO;
@@ -62,7 +62,7 @@ public class UserController {
             @ApiResponse(code = 400, message = "User already exists")
     })
     public void createUser(@Validated @RequestBody UserDTO userDTO) {
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(userDTO.getPassword());
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(userDTO.getPassword());
         UserIDAuth auth = new UserIDAuth(new UserID(userDTO.getUserName()), readKeyPassword);
         if (dataSafeService.userProfile().userExists(auth.getUserID())) {
             throw new UserExistsException("user '" + auth.getUserID().getValue() + "' already exists");
@@ -75,16 +75,16 @@ public class UserController {
     public void changePassword(@RequestHeader String user,
                                @RequestHeader String password,
                                @Validated @RequestBody NewPasswordDTO newPassword) {
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(password);
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
-        dataSafeService.userProfile().updateReadKeyPassword(auth, ReadKeyPassword.getForString(newPassword.getNewPassword()));
+        dataSafeService.userProfile().updateReadKeyPassword(auth, ReadKeyPasswordHelper.getForString(newPassword.getNewPassword()));
     }
 
     @GetMapping("/publicProfile")
     @ApiOperation("Reads users' public profile")
     public UserPublicProfileDTO getPublicProfile(@RequestHeader String user,
                                                  @RequestHeader String password) {
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(password);
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         return UserPublicProfileDTO.from(dataSafeService.userProfile().publicProfile(auth.getUserID()));
     }
@@ -93,7 +93,7 @@ public class UserController {
     @ApiOperation("Reads users' private profile")
     public UserPrivateProfileDTO getPrivateProfile(@RequestHeader String user,
                                                    @RequestHeader String password) {
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(password);
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         return UserPrivateProfileDTO.from(dataSafeService.userProfile().privateProfile(auth));
     }
@@ -103,7 +103,7 @@ public class UserController {
     public void updatePublicProfile(@RequestHeader String user,
                                     @RequestHeader String password,
                                     @Validated @RequestBody UserPublicProfileDTO profileDto) {
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(password);
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         dataSafeService.userProfile().updatePublicProfile(auth, profileDto.toProfile());
     }
@@ -113,7 +113,7 @@ public class UserController {
     public void updatePrivateProfile(@RequestHeader String user,
                                      @RequestHeader String password,
                                      @Validated @RequestBody UserPrivateProfileDTO profileDto) {
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(password);
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         dataSafeService.userProfile().updatePrivateProfile(auth, profileDto.toProfile());
     }
@@ -123,7 +123,7 @@ public class UserController {
     public void addStorageCredentials(@RequestHeader String user,
                                       @RequestHeader String password,
                                       @Validated @RequestBody StorageCredsDTO creds) {
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(password);
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         dataSafeService.userProfile().registerStorageCredentials(
                 auth,
@@ -137,7 +137,7 @@ public class UserController {
     public void removeStorageCredentials(@RequestHeader String user,
                                          @RequestHeader String password,
                                          @RequestHeader String storageId) {
-        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(password);
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         dataSafeService.userProfile().deregisterStorageCredentials(auth, new StorageIdentifier(storageId));
     }
@@ -156,7 +156,7 @@ public class UserController {
     })
     public void deleteUser(@RequestHeader String user,
                            @RequestHeader String password) {
-        UserIDAuth auth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
+        UserIDAuth auth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         if (!dataSafeService.userProfile().userExists(auth.getUserID())) {
             throw new UserDoesNotExistsException("user '" + auth.getUserID().getValue() + "' does not exists");
         }

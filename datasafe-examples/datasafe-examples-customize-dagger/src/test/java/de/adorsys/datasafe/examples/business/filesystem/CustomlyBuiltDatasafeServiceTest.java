@@ -2,10 +2,10 @@ package de.adorsys.datasafe.examples.business.filesystem;
 
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -33,7 +33,7 @@ class CustomlyBuiltDatasafeServiceTest {
                 .build();
 
         // registering user
-        UserIDAuth user = new UserIDAuth("user", ReadKeyPassword.getForString("passwrd"));
+        UserIDAuth user = new UserIDAuth("user", ReadKeyPasswordTestFactory.getForString("passwrd"));
         datasafeServices.userProfile().registerUsingDefaults(user);
         // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
         datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));
