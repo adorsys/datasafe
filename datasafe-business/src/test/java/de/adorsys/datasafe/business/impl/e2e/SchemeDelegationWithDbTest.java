@@ -70,7 +70,7 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
     @Test
     @SneakyThrows
     void testProfileOnDbDataOnFsWorks() {
-        UserIDAuth userJohn = new UserIDAuth("john", new ReadKeyPassword("doe"));
+        UserIDAuth userJohn = new UserIDAuth("john", ReadKeyPassword.getForString("doe"));
 
         // John's profile will be saved to Database
         datasafeServices.userProfile().registerUsingDefaults(userJohn);

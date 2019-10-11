@@ -16,7 +16,7 @@ class DFSConfigWithStorageCredsTest extends BaseMockitoTest {
 
     @Test
     void defaultPrivateTemplate() {
-        UserIDAuth user = new UserIDAuth("", new ReadKeyPassword(""));
+        UserIDAuth user = new UserIDAuth("", ReadKeyPassword.getForString(""));
 
         CreateUserPrivateProfile profile = tested.defaultPrivateTemplate(user);
 

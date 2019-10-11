@@ -36,7 +36,7 @@ class DFSRelativeToRootProfileTest extends WithStorageProvider {
         simpleDatasafeService =
                 null != credentials ? new SimpleDatasafeServiceImpl(credentials) : new SimpleDatasafeServiceImpl();
 
-        userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
+        userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPassword.getForString("password"));
         simpleDatasafeService.createUser(userIDAuth);
     }
 

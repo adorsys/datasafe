@@ -93,7 +93,7 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
 
         verify(userProfile).updateReadKeyPassword(
                 eq(new UserIDAuth(TEST_USER, TEST_PASS)),
-                eq(new ReadKeyPassword(newPassword))
+                eq(ReadKeyPassword.getForString(newPassword))
         );
     }
 

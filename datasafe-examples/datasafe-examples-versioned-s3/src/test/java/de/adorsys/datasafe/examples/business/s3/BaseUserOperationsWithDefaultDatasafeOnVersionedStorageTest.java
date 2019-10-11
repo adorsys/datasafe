@@ -233,7 +233,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
     }
 
     private UserIDAuth registerUser(String username) {
-        UserIDAuth creds = new UserIDAuth(username, new ReadKeyPassword("passwrd" + username));
+        UserIDAuth creds = new UserIDAuth(username, ReadKeyPassword.getForString("passwrd" + username));
         defaultDatasafeServices.userProfile().registerUsingDefaults(creds);
         return creds;
     }

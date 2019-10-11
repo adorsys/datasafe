@@ -36,7 +36,7 @@ class EncryptedResourceResolverImplTest extends BaseMockitoTest {
     private PrivateResource relative = BasePrivateResource.forPrivate(URI.create("./path"));
     private PrivateResource relativeEncrypted = BasePrivateResource.forPrivate(URI.create("./path/")
             .resolve(ENCRYPTED));
-    private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
+    private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPassword.getForString(""));
 
     @Mock
     private BucketAccessService accessService;

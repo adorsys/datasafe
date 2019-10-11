@@ -27,7 +27,7 @@ class ReadFromPrivateImplTest extends BaseMockitoTest {
     private static final String BYTES = "Hello";
     private static final URI ABSOLUTE_PATH = URI.create("s3://absolute");
 
-    private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
+    private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPassword.getForString(""));
 
     @Mock
     private EncryptedResourceResolver resolver;

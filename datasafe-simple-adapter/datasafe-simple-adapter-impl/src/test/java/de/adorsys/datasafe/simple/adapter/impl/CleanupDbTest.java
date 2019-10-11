@@ -45,8 +45,8 @@ class CleanupDbTest extends WithStorageProvider {
         String content = "content of document";
         String path = "a/b/c.txt";
 
-        UserIDAuth user1 = new UserIDAuth("uzr", new ReadKeyPassword("user"));
-        UserIDAuth user2 = new UserIDAuth("other", new ReadKeyPassword("user"));
+        UserIDAuth user1 = new UserIDAuth("uzr", ReadKeyPassword.getForString("user"));
+        UserIDAuth user2 = new UserIDAuth("other", ReadKeyPassword.getForString("user"));
         simpleDatasafeService.createUser(user1);
         simpleDatasafeService.createUser(user2);
 

@@ -92,7 +92,7 @@ public class Cli implements Runnable {
         }
 
         ReadKeyPassword getPassword() {
-            return new ReadKeyPassword(credentials().getPassword());
+            return ReadKeyPassword.getForString(credentials().getPassword());
         }
 
         ReadStorePassword getSystemPassword() {

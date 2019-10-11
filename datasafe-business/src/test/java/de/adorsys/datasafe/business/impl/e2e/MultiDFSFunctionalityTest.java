@@ -167,7 +167,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @Test
     void testWriteToPrivateListPrivateReadPrivate() {
-        UserIDAuth john = new UserIDAuth("john", new ReadKeyPassword("my-passwd"));
+        UserIDAuth john = new UserIDAuth("john", ReadKeyPassword.getForString("my-passwd"));
         registerUser(john);
 
         validateBasicOperationsAndContent(john);
@@ -177,12 +177,12 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @Test
     void testWriteToPrivateListPrivateReadPrivateWithPasswordChange() {
-        UserIDAuth john = new UserIDAuth("john", new ReadKeyPassword("my-passwd"));
+        UserIDAuth john = new UserIDAuth("john", ReadKeyPassword.getForString("my-passwd"));
         registerUser(john);
 
         validateBasicOperationsAndContent(john);
 
-        ReadKeyPassword newPasswd = new ReadKeyPassword("ANOTHER");
+        ReadKeyPassword newPasswd = ReadKeyPassword.getForString("ANOTHER");
         datasafeServices.userProfile().updateReadKeyPassword(john, newPasswd);
         UserIDAuth newJohn = new UserIDAuth("john", newPasswd);
 

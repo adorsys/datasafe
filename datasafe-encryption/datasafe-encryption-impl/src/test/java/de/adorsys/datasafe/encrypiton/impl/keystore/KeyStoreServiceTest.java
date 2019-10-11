@@ -31,7 +31,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     @BeforeEach
     void setUp() {
         ReadStorePassword readStorePassword = new ReadStorePassword("keystorepass");
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
+        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString("keypass");
         keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     }
 
@@ -81,7 +81,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     void getPrivateKey() throws Exception {
         KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreType.DEFAULT); // UBER
 
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
+        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString("keypass");
         KeyStoreCreationConfigImpl keyStoreCreationConfig = new KeyStoreCreationConfigImpl(null);
         KeyPairGenerator encKeyPairGenerator = keyStoreCreationConfig.getEncKeyPairGenerator("KEYSTORE-ID-0");
         String alias = "KEYSTORE-ID-0" + UUID.randomUUID().toString();

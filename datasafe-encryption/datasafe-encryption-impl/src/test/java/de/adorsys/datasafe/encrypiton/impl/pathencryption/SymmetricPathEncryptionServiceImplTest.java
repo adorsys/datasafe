@@ -30,7 +30,7 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
     );
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
-    private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
+    private ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     private KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);

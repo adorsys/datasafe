@@ -59,7 +59,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
     @Test
     @SneakyThrows
     void testProfileOnFsDataOnMinioWorks() {
-        UserIDAuth userJohn = new UserIDAuth("john", new ReadKeyPassword("doe"));
+        UserIDAuth userJohn = new UserIDAuth("john", ReadKeyPassword.getForString("doe"));
 
         // John's profile will be saved to filesystem
         datasafeServices.userProfile().registerUsingDefaults(userJohn);

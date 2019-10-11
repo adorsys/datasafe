@@ -15,7 +15,7 @@ class BucketAccessServiceImplTest extends BaseMockitoTest {
 
     private static final String ABSOLUTE_BUCKET = "s3://bucket";
 
-    private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
+    private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPassword.getForString(""));
 
     @InjectMocks
     private BucketAccessServiceImpl bucketAccessService;

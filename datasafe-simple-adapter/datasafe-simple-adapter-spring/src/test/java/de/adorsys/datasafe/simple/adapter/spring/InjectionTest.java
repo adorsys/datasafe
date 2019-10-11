@@ -24,7 +24,7 @@ public class InjectionTest extends WithStorageProvider {
     public void testCreateUser(SimpleDatasafeService datasafeService) {
         assertThat(datasafeService).isNotNull();
         UserID userid = new UserID("peter");
-        ReadKeyPassword password = new ReadKeyPassword("password");
+        ReadKeyPassword password = ReadKeyPassword.getForString("password");
         UserIDAuth userIDAuth = new UserIDAuth(userid, password);
         assertThat(datasafeService.userExists(userid)).isFalse();
         datasafeService.createUser(userIDAuth);

@@ -20,6 +20,6 @@ public class TestUser {
     public TestUser(String username, String password) {
         this.username = username;
         this.password = password;
-        this.auth = new UserIDAuth(new UserID(username), new ReadKeyPassword(password));
+        this.auth = new UserIDAuth(new UserID(username), ReadKeyPassword.getForString(password));
     }
 }

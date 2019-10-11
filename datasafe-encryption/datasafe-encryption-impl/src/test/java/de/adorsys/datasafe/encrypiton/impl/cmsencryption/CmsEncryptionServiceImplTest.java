@@ -198,7 +198,7 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
     }
 
     private static KeyStoreAccess getKeyStoreAccess(String label) {
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword(label);
+        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(label);
         ReadStorePassword readStorePassword = new ReadStorePassword(label);
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
 

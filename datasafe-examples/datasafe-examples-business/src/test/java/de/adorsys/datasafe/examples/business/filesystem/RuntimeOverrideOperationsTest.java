@@ -47,7 +47,7 @@ class RuntimeOverrideOperationsTest {
                 .build();
 
         // registering user
-        UserIDAuth user = new UserIDAuth("user", new ReadKeyPassword("passwrd"));
+        UserIDAuth user = new UserIDAuth("user", ReadKeyPassword.getForString("passwrd"));
         datasafeServices.userProfile().registerUsingDefaults(user);
         // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
         datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));

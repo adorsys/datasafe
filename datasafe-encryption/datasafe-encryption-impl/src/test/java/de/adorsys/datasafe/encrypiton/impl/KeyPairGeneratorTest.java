@@ -11,7 +11,7 @@ class KeyPairGeneratorTest extends WithBouncyCastle {
 
     @Test
     void testKeyPairGenerationWithCA() {
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword("read");
+        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString("read");
         TestableKeyPairGeneratorImpl i = new TestableKeyPairGeneratorImpl("RSA", 2048, "SHA256withRSA", "enc");
         i.setDayAfter(40);
         i.setWithCA(true);

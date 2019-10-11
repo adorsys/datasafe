@@ -206,7 +206,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     }
 
     protected UserIDAuth registerUser(String userName) {
-        return registerUser(userName, new ReadKeyPassword("secure-password " + userName));
+        return registerUser(userName, ReadKeyPassword.getForString("secure-password " + userName));
     }
 
     protected UserIDAuth registerUser(String userName, ReadKeyPassword readKeyPassword) {
@@ -221,7 +221,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
         return new UserIDAuth(
                 userName,
-                new ReadKeyPassword("secure-password " + userName.getValue())
+                ReadKeyPassword.getForString("secure-password " + userName.getValue())
         );
     }
 

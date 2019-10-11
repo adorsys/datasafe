@@ -54,7 +54,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void testDefaultKeystoreHasProperKeys() {
-        UserIDAuth auth = new UserIDAuth("user", new ReadKeyPassword("pass"));
+        UserIDAuth auth = new UserIDAuth("user", ReadKeyPassword.getForString("pass"));
         datasafeServices.userProfile().registerUsingDefaults(auth);
         URI keystorePath = datasafeServices.userProfile().privateProfile(auth)
                 .getKeystore().location().asURI();

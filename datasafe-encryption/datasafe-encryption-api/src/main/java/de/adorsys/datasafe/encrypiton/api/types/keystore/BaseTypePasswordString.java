@@ -18,14 +18,13 @@ public class BaseTypePasswordString {
     private char[] value;
     private boolean toBeCleared = true;
 
-    @Deprecated
     /**
      *
-     * @param this string stays in memory
+     * @param value string stays in memory
      *             until gc is called.
      *             please user other constructor.
      */
-    public BaseTypePasswordString(String value) {
+    protected BaseTypePasswordString(String value) {
         this.value = value.toCharArray();
         toBeCleared = false;
     }

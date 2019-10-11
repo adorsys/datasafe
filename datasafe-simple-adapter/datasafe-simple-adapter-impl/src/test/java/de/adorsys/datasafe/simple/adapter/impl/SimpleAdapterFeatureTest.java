@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 class SimpleAdapterFeatureTest extends WithBouncyCastle {
     
-    private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
+    private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPassword.getForString("password"));
     private String content = "content of document";
     private String path = "a/b/c.txt";
     private DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));

@@ -25,7 +25,7 @@ class RemoveFromInboxImplTest extends BaseMockitoTest {
     private static final String PATH = "./";
     private static final URI ABSOLUTE_PATH = URI.create("s3://absolute");
 
-    private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
+    private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPassword.getForString(""));
 
     @Mock
     private PrivateKeyService privateKeyService;

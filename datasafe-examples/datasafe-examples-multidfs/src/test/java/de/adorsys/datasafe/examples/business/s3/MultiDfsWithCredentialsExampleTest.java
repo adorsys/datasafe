@@ -156,7 +156,7 @@ class MultiDfsWithCredentialsExampleTest {
         // Depending on path of file - filesBucketOne or filesBucketTwo - requests will be routed to proper bucket.
         // I.e. path filesBucketOne/path/to/file will end up in `filesBucketOne` with key path/to/file
         // his profile and access credentials for `filesBucketOne`  will be in `configBucket`
-        UserIDAuth john = new UserIDAuth("john", new ReadKeyPassword("secret"));
+        UserIDAuth john = new UserIDAuth("john", ReadKeyPassword.getForString("secret"));
         // Here, nothing expects John has own storage credentials:
         multiDfsDatasafe.userProfile().registerUsingDefaults(john);
 

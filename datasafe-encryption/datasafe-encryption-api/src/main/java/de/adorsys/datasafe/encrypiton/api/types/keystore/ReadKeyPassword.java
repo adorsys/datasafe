@@ -7,11 +7,6 @@ import java.util.function.Supplier;
  */
 public class ReadKeyPassword extends BaseTypePasswordString {
 
-    @Deprecated
-    public ReadKeyPassword(String readKeyPassword) {
-        super(readKeyPassword);
-    }
-
     /**
      * caller of method makes sure, supplied char[] is deleted asap
      * @param readKeyPassword will stay unchanged
@@ -30,5 +25,14 @@ public class ReadKeyPassword extends BaseTypePasswordString {
      */
     public ReadKeyPassword(char[] readKeyPassword) {
         super(readKeyPassword);
+    }
+
+    public static ReadKeyPassword getForString(String a) {
+        return new ReadKeyPassword(new Supplier<char[]>() {
+            @Override
+            public char[] get() {
+                return a.toCharArray();
+            }
+        });
     }
 }

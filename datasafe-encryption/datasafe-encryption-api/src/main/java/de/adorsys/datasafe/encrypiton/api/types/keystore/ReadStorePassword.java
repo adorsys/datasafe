@@ -5,7 +5,6 @@ package de.adorsys.datasafe.encrypiton.api.types.keystore;
  */
 public class ReadStorePassword extends BaseTypePasswordString {
 
-    @Deprecated
     public ReadStorePassword(String readStorePassword) {
         super(readStorePassword);
     }

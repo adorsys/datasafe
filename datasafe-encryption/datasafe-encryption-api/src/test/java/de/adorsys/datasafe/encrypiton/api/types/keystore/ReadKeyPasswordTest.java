@@ -46,7 +46,7 @@ public class ReadKeyPasswordTest {
         String passwordString = "that is the password";
         char[] copyOfPassword = Arrays.copyOf(passwordString.toCharArray(), passwordString.toCharArray().length);
 
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword(passwordString);
+        ReadKeyPassword readKeyPassword = ReadKeyPassword.getForString(passwordString);
         ReadKeyPassword readKeyPasswordBackup = new ReadKeyPassword(new Supplier<char[]>() {
             @Override
             public char[] get() {

@@ -131,7 +131,7 @@ public class OperationExecutor {
 
     @SneakyThrows
     private void doCreate(Operation oper) {
-        UserIDAuth auth = new UserIDAuth(oper.getUserId(), new ReadKeyPassword(oper.getUserId()));
+        UserIDAuth auth = new UserIDAuth(oper.getUserId(), ReadKeyPassword.getForString(oper.getUserId()));
         registrationService.registerUsingDefaults(auth);
         users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
     }

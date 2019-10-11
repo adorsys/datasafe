@@ -51,7 +51,7 @@ public class VersionController {
                                                @RequestHeader String password,
                                                @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                                @PathVariable(required = false) String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
         path = Optional.ofNullable(path).orElse("./");
         try {
             List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(
@@ -81,7 +81,7 @@ public class VersionController {
                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                       @PathVariable String path,
                                       HttpServletResponse response) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
         ReadRequest<UserIDAuth, PrivateResource> request =
                 ReadRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         // this is needed for swagger, produces is just a directive:
@@ -108,7 +108,7 @@ public class VersionController {
                                        @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                        @PathVariable String path,
                                        @RequestParam("file") MultipartFile file) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
         WriteRequest<UserIDAuth, PrivateResource> request =
                 WriteRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         try (OutputStream os = versionedDatasafeServices.latestPrivate().write(request);
@@ -130,7 +130,7 @@ public class VersionController {
                                         @RequestHeader String password,
                                         @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                         @PathVariable String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
         RemoveRequest<UserIDAuth, PrivateResource> request =
                 RemoveRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         versionedDatasafeServices.latestPrivate().remove(request);
@@ -151,7 +151,7 @@ public class VersionController {
                                    @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                    @ApiParam(defaultValue = ".")
                                    @PathVariable(required = false) String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");

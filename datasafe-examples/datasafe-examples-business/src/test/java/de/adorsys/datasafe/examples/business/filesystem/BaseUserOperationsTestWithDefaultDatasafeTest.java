@@ -66,7 +66,7 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
         IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
         synchronization due to eventual consistency or you need to supply globally unique username on registration
         */
-        defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", new ReadKeyPassword("passwrd")));
+        defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", ReadKeyPassword.getForString("passwrd")));
         // END_SNIPPET
 
         assertThat(defaultDatasafeServices.userProfile().userExists(new UserID("user")));
@@ -296,7 +296,7 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
     }
 
     private UserIDAuth registerUser(String username) {
-        UserIDAuth creds = new UserIDAuth(username, new ReadKeyPassword("passwrd" + username));
+        UserIDAuth creds = new UserIDAuth(username, ReadKeyPassword.getForString("passwrd" + username));
         defaultDatasafeServices.userProfile().registerUsingDefaults(creds);
         return creds;
     }

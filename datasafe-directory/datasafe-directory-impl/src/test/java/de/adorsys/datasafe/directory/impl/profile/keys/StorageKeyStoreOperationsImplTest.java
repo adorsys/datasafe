@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 class StorageKeyStoreOperationsImplTest extends BaseMockitoTest {
 
     private static final String STORAGE_ID = "id";
-    private static final ReadKeyPassword SECRET = new ReadKeyPassword("secret");
+    private static final ReadKeyPassword SECRET = ReadKeyPassword.getForString("secret");
     private static final AbsoluteLocation<PrivateResource> STORAGE_KEYSTORE =
             BasePrivateResource.forAbsolutePrivate("file://path");
 

@@ -37,14 +37,14 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
         writeDataToPrivate(john, "root.txt", MESSAGE_ONE);
         writeDataToPrivate(john, "some/some.txt", MESSAGE_ONE);
 
-        john = checkUpdatedCredsWorkAndOldDont(john, new ReadKeyPassword("Some other"), auth -> {
+        john = checkUpdatedCredsWorkAndOldDont(john, ReadKeyPassword.getForString("Some other"), auth -> {
             writeDataToPrivate(auth, "some/other/other.txt", MESSAGE_ONE);
             writeDataToPrivate(auth, "different/data.txt", MESSAGE_ONE);
         });
 
         john = checkUpdatedCredsWorkAndOldDont(
                 john,
-                new ReadKeyPassword("Some another"),
+                ReadKeyPassword.getForString("Some another"),
                 auth -> profileRemovalService.deregister(auth)
         );
 
@@ -67,7 +67,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
         Stream.of(john, jane, jamie).forEach(
                 it -> checkUpdatedCredsWorkAndOldDont(
                         it,
-                        new ReadKeyPassword(UUID.randomUUID().toString()),
+                        ReadKeyPassword.getForString(UUID.randomUUID().toString()),
                         auth -> assertThat(readFromInbox.read(ReadRequest.forDefaultPrivate(auth, multiShareFile)))
                                 .hasContent(MESSAGE_ONE))
         );
@@ -85,7 +85,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
         jane = checkUpdatedCredsWorkAndOldDont(
                 jane,
-                new ReadKeyPassword("Another passwd1"),
+                ReadKeyPassword.getForString("Another passwd1"),
                 this::getFirstFileInPrivate
         );
 
@@ -93,7 +93,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
         jane = checkUpdatedCredsWorkAndOldDont(
                 jane,
-                new ReadKeyPassword("Another passwd2"),
+                ReadKeyPassword.getForString("Another passwd2"),
                 auth -> readPrivateUsingPrivateKey(auth, privateJane.getResource().asPrivate())
         );
 
@@ -105,7 +105,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
         john = checkUpdatedCredsWorkAndOldDont(
                 john,
-                new ReadKeyPassword("Another passwd4"),
+                ReadKeyPassword.getForString("Another passwd4"),
                 auth -> readInboxUsingPrivateKey(auth, inboxJohn.getResource().asPrivate())
         );
 
@@ -131,13 +131,13 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
         jane = checkUpdatedCredsWorkAndOldDont(
                 jane,
-                new ReadKeyPassword("Another passwd1"),
+                ReadKeyPassword.getForString("Another passwd1"),
                 auth -> writeDataToPrivate(auth, "level1/level2/file", MESSAGE_ONE)
         );
 
         jane = checkUpdatedCredsWorkAndOldDont(
                 jane,
-                new ReadKeyPassword("Another passwd2"),
+                ReadKeyPassword.getForString("Another passwd2"),
                 auth -> {
                     assertPrivateSpaceList(auth, "", "root.file", "level1/file", "level1/level2/file");
                     assertPrivateSpaceList(auth, "./", "root.file", "level1/file", "level1/level2/file");
@@ -147,7 +147,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
         jane = checkUpdatedCredsWorkAndOldDont(
                 jane,
-                new ReadKeyPassword("Another passwd3"),
+                ReadKeyPassword.getForString("Another passwd3"),
                 auth -> {
                     assertPrivateSpaceList(auth, "root.file", "root.file");
                     assertPrivateSpaceList(auth, "./root.file", "root.file");
@@ -156,7 +156,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
         jane = checkUpdatedCredsWorkAndOldDont(
                 jane,
-                new ReadKeyPassword("Another passwd4"),
+                ReadKeyPassword.getForString("Another passwd4"),
                 auth -> {
                     assertPrivateSpaceList(auth, "level1", "level1/file", "level1/level2/file");
                     assertPrivateSpaceList(auth, "level1/", "level1/file", "level1/level2/file");
@@ -165,7 +165,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
         jane = checkUpdatedCredsWorkAndOldDont(
                 jane,
-                new ReadKeyPassword("Another passwd5"),
+                ReadKeyPassword.getForString("Another passwd5"),
                 auth -> {
                     assertPrivateSpaceList(auth, "./level1", "level1/file", "level1/level2/file");
                     assertPrivateSpaceList(auth, "./level1/", "level1/file", "level1/level2/file");
@@ -174,7 +174,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
         jane = checkUpdatedCredsWorkAndOldDont(
                 jane,
-                new ReadKeyPassword("Another passwd6"),
+                ReadKeyPassword.getForString("Another passwd6"),
                 auth -> {
                     assertPrivateSpaceList(auth, "./level1/level2", "level1/level2/file");
                     assertPrivateSpaceList(auth, "./level1/level2/", "level1/level2/file");

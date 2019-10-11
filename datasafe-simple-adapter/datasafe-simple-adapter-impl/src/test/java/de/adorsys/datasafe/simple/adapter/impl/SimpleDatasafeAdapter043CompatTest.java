@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SimpleDatasafeAdapter043CompatTest extends WithBouncyCastle {
 
-    private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
+    private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPassword.getForString("password"));
     private SimpleDatasafeServiceImpl simpleDatasafeService;
     private Path dfsRoot;
 

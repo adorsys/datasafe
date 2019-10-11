@@ -77,7 +77,7 @@ public class InboxController {
                               @RequestHeader String password,
                               @PathVariable String path,
                               HttpServletResponse response) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         // this is needed for swagger, produces is just a directive:
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
@@ -100,7 +100,7 @@ public class InboxController {
     public void deleteFromInbox(@RequestHeader String user,
                                 @RequestHeader String password,
                                 @PathVariable String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         dataSafeService.inboxService().remove(request);
@@ -120,7 +120,7 @@ public class InboxController {
                                   @RequestHeader String password,
                                   @ApiParam(defaultValue = ".")
                                   @PathVariable(required = false) String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPassword.getForString(password));
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");
