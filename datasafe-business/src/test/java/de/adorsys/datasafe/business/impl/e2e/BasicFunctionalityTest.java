@@ -48,8 +48,10 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
         john = registerUser(userJohn.getValue());
         assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
-        assertThat(profileRetrievalService.privateProfile(john).getAppVersion()).isEqualTo(Version.current());
-        assertThat(profileRetrievalService.publicProfile(john.getUserID()).getAppVersion()).isEqualTo(Version.current());
+        assertThat(profileRetrievalService.privateProfile(john).getAppVersion().getId())
+                .isEqualTo(Version.current().getId());
+        assertThat(profileRetrievalService.publicProfile(john.getUserID()).getAppVersion().getId())
+                .isEqualTo(Version.current().getId());
 
         profileRemovalService.deregister(john);
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();

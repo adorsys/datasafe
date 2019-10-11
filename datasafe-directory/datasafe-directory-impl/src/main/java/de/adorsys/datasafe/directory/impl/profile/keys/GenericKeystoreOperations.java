@@ -26,6 +26,7 @@ import java.security.KeyStore;
 import java.security.UnrecoverableKeyException;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -41,21 +42,27 @@ public class GenericKeystoreOperations {
     private final StorageReadService readService;
     private final KeyStoreCache keystoreCache;
     private final KeyStoreService keyStoreService;
+    private final Optional<KeyStoreCreationConfig> keyStoreCreationConfig;
 
     @Inject
     public GenericKeystoreOperations(DFSConfig dfsConfig, StorageWriteService writeService,
                                      StorageReadService readService, KeyStoreCache keystoreCache,
-                                     KeyStoreService keyStoreService) {
+                                     KeyStoreService keyStoreService,
+                                     Optional<KeyStoreCreationConfig> keyStoreCreationConfig) {
         this.dfsConfig = dfsConfig;
         this.writeService = writeService;
         this.readService = readService;
         this.keystoreCache = keystoreCache;
         this.keyStoreService = keyStoreService;
+        this.keyStoreCreationConfig = keyStoreCreationConfig;
     }
 
     public KeyStore createEmptyKeystore(UserIDAuth auth) {
         return keyStoreService
-            .createKeyStore(keystoreAuth(auth), KeyStoreCreationConfig.DEFAULT, new KeyCreationConfig(0, 0));
+            .createKeyStore(keystoreAuth(auth),
+                    keyStoreCreationConfig.orElse(KeyStoreCreationConfig.DEFAULT),
+                    new KeyCreationConfig(0, 0)
+            );
     }
 
     /**

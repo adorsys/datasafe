@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -38,12 +39,14 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
     private final StorageWriteService writeService;
     private final KeyStoreCache keystoreCache;
     private final KeyStoreService keyStoreService;
+    private final Optional<KeyStoreCreationConfig> keyStoreCreationConfig;
 
     @Inject
     public DocumentKeyStoreOperationsImpl(GenericKeystoreOperations genericOper, DFSConfig dfsConfig,
                                           BucketAccessService access, ProfileRetrievalService profile,
                                           StorageWriteService writeService, KeyStoreCache keystoreCache,
-                                          KeyStoreService keyStoreService) {
+                                          KeyStoreService keyStoreService,
+                                          Optional<KeyStoreCreationConfig> keyStoreCreationConfig) {
         this.genericOper = genericOper;
         this.dfsConfig = dfsConfig;
         this.access = access;
@@ -51,6 +54,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
         this.writeService = writeService;
         this.keystoreCache = keystoreCache;
         this.keyStoreService = keyStoreService;
+        this.keyStoreCreationConfig = keyStoreCreationConfig;
     }
 
     /**
@@ -77,7 +81,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
         KeyStoreAuth auth = keystoreAuth(forUser, forUser.getReadKeyPassword());
         KeyStore keystoreBlob = keyStoreService.createKeyStore(
                 auth,
-                KeyStoreCreationConfig.DEFAULT,
+                keyStoreCreationConfig.orElse(KeyStoreCreationConfig.DEFAULT),
                 new KeyCreationConfig(1, 1)
         );
 

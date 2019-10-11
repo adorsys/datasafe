@@ -37,12 +37,16 @@ public class KeyStoreServiceImplBaseFunctions {
     public static KeyStore newKeyStore(KeyStoreCreationConfig keyStoreConfig) {
         if (keyStoreConfig == null) keyStoreConfig = KeyStoreCreationConfig.DEFAULT;
         KeyStore ks = KeyStore.getInstance(keyStoreConfig.getKeyStoreType());
-        ks.load(new BCFKSLoadStoreParameter.Builder()
-                .withStoreEncryptionAlgorithm(keyStoreConfig.getStoreEncryptionAlgorithm())
-                .withStorePBKDFConfig(keyStoreConfig.getStorePBKDFConfig())
-                .withStoreMacAlgorithm(keyStoreConfig.getStoreMacAlgorithm())
-                .build()
-        );
+        if ("BCFKS".equals(keyStoreConfig.getKeyStoreType())) {
+            ks.load(new BCFKSLoadStoreParameter.Builder()
+                    .withStoreEncryptionAlgorithm(keyStoreConfig.getStoreEncryptionAlgorithm())
+                    .withStorePBKDFConfig(keyStoreConfig.getStorePBKDFConfig())
+                    .withStoreMacAlgorithm(keyStoreConfig.getStoreMacAlgorithm())
+                    .build()
+            );
+        } else {
+            ks.load(null, null);
+        }
         return ks;
     }
 
