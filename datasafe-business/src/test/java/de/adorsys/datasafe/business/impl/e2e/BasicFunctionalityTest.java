@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.UnrecoverableKeyException;
 import java.util.Arrays;
@@ -311,7 +312,9 @@ class BasicFunctionalityTest extends BaseE2ETest {
         // no path encryption for inbox:
         assertThat(foundResource.location().getPath()).asString().contains(SHARED_FILE);
         // validate encryption on high-level:
-        assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
+        try (InputStream read = storage.read(foundResource)) {
+            assertThat(read).asString().doesNotContain(MESSAGE_ONE);
+        }
     }
 
     @SneakyThrows
@@ -326,15 +329,19 @@ class BasicFunctionalityTest extends BaseE2ETest {
         // validate encryption on high-level:
         assertThat(foundResource.toString()).doesNotContain(PRIVATE_FILE);
         assertThat(foundResource.toString()).doesNotContain(FOLDER);
-        assertThat(storage.read(foundResource)).asString().doesNotContain(MESSAGE_ONE);
+        try (InputStream read = storage.read(foundResource)) {
+            assertThat(read).asString().doesNotContain(MESSAGE_ONE);
+        }
     }
 
     @SneakyThrows
     private List<AbsoluteLocation<ResolvedResource>> listFiles(Predicate<String> pattern) {
-        return storage.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(location)))
-                .filter(it -> !it.location().toASCIIString().startsWith("."))
-                .filter(it -> pattern.test(it.location().toASCIIString()))
-                .collect(Collectors.toList());
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls = storage.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(location)))) {
+            return ls
+                    .filter(it -> !it.location().toASCIIString().startsWith("."))
+                    .filter(it -> pattern.test(it.location().toASCIIString()))
+                    .collect(Collectors.toList());
+        }
     }
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {

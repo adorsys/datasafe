@@ -7,16 +7,19 @@ import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.security.Security;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CleanupDbTest extends WithStorageProvider {
 
@@ -56,18 +59,20 @@ class CleanupDbTest extends WithStorageProvider {
                 new DocumentContent(content.getBytes())));
 
         // (1 keystore + 1 pub key + 1 file) * 2
-        assertEquals(6,
-                descriptor.getStorageService().get().list(
-                        BasePrivateResource.forAbsolutePrivate(descriptor.getLocation())
-                ).count()
-        );
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls =
+                     descriptor.getStorageService().get()
+                             .list(BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
+        ) {
+            assertThat(ls).hasSize(6);
+        }
 
         simpleDatasafeService.cleanupDb();
 
-        assertEquals(0,
-                descriptor.getStorageService().get().list(
-                        BasePrivateResource.forAbsolutePrivate(descriptor.getLocation())
-                ).count()
-        );
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls =
+                     descriptor.getStorageService().get()
+                             .list(BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
+        ) {
+            assertThat(ls).isEmpty();
+        }
     }
 }

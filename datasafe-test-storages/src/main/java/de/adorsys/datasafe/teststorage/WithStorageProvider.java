@@ -43,6 +43,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
+
 
 /**
  * Provides different storage types - filesystem, minio, etc. to be used in tests.
@@ -62,14 +64,14 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
     private static String minioRegion = "eu-central-1";
-    private static String minioUrl = "http://localhost";
+    private static String minioUrl = getDockerUri("http://localhost");
     private static String minioMappedUrl;
 
     // Note that CEPH is used to test bucket-level versioning, so you will get versioned bucket:
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
     private static String cephRegion = "eu-central-1";
-    private static String cephUrl = "http://0.0.0.0"; // not localhost!
+    private static String cephUrl = getDockerUri("http://0.0.0.0");// not localhost!
     private static String cephMappedUrl;
 
     private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
@@ -198,6 +200,13 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         ).filter(Objects::nonNull);
     }
 
+    @ValueSource
+    protected static Stream<StorageDescriptor> minioOnly() {
+        return Stream.of(
+                minio()
+        ).filter(Objects::nonNull);
+    }
+
     protected static StorageDescriptor fs() {
         return new StorageDescriptor(
                 StorageDescriptorName.FILESYSTEM,
@@ -227,6 +236,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         if (skipCeph()) {
             return null;
         }
+
         return new StorageDescriptor(
                 StorageDescriptorName.CEPH,
                 () -> {

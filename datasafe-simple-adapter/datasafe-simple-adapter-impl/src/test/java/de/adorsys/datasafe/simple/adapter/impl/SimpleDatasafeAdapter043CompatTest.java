@@ -61,16 +61,16 @@ class SimpleDatasafeAdapter043CompatTest extends WithBouncyCastle {
                 .containsExactlyInAnyOrder(newPath, oldPath);
 
         // validate folder structure
-        assertThat(Dirs.walk(dfsRoot, 1)).containsExactlyInAnyOrder("profiles", "users");
+        assertThat(Dirs.walk(dfsRoot, 1)).containsExactlyInAnyOrder("profiles/", "users/");
         assertThat(Dirs.walk(dfsRoot.resolve("profiles")))
-                .containsExactlyInAnyOrder("private", "public", "private/peter", "public/peter");
+                .containsExactlyInAnyOrder("private/", "public/", "private/peter", "public/peter");
         assertThat(Dirs.walk(dfsRoot.resolve("users"), 3))
                 .containsExactlyInAnyOrder(
-                        "peter",
-                        "peter/private",
-                        "peter/public",
+                        "peter/",
+                        "peter/private/",
+                        "peter/public/",
                         "peter/private/keystore",
-                        "peter/private/files",
+                        "peter/private/files/",
                         "peter/public/pubkeys"
                 );
     }
