@@ -5,9 +5,8 @@ import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
@@ -26,7 +25,6 @@ import java.security.KeyStore;
 import java.security.UnrecoverableKeyException;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -42,27 +40,20 @@ public class GenericKeystoreOperations {
     private final StorageReadService readService;
     private final KeyStoreCache keystoreCache;
     private final KeyStoreService keyStoreService;
-    private final Optional<KeyStoreCreationConfig> keyStoreCreationConfig;
 
     @Inject
     public GenericKeystoreOperations(DFSConfig dfsConfig, StorageWriteService writeService,
                                      StorageReadService readService, KeyStoreCache keystoreCache,
-                                     KeyStoreService keyStoreService,
-                                     Optional<KeyStoreCreationConfig> keyStoreCreationConfig) {
+                                     KeyStoreService keyStoreService) {
         this.dfsConfig = dfsConfig;
         this.writeService = writeService;
         this.readService = readService;
         this.keystoreCache = keystoreCache;
         this.keyStoreService = keyStoreService;
-        this.keyStoreCreationConfig = keyStoreCreationConfig;
     }
 
     public KeyStore createEmptyKeystore(UserIDAuth auth) {
-        return keyStoreService
-            .createKeyStore(keystoreAuth(auth),
-                    keyStoreCreationConfig.orElse(KeyStoreCreationConfig.DEFAULT),
-                    new KeyCreationConfig(0, 0)
-            );
+        return keyStoreService.createKeyStore(keystoreAuth(auth), new KeyCreationConfig(0, 0));
     }
 
     /**

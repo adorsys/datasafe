@@ -37,7 +37,7 @@ class SymetricEncryptionTest extends WithBouncyCastle {
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     private KeyCreationConfig config = new KeyCreationConfig(1, 1);
-    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null, config);
+    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
     @Test
@@ -65,7 +65,7 @@ class SymetricEncryptionTest extends WithBouncyCastle {
     @SneakyThrows
     void symetricNegativeStreamEncryptAndDecryptTest() {
         // This is the keystore we use to encrypt, it has SYMM_KEY_ID and PATH_KEY_ID symm. keys.
-        keyStoreService.createKeyStore(keyStoreAuth, null, config);
+        keyStoreService.createKeyStore(keyStoreAuth, config);
         SecretKey realSecretKey = keyStoreService.getSecretKey(keyStoreAccess, keyIdByPrefix(DOCUMENT_KEY_ID_PREFIX));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         // Test consist in encrypting with real secret key, but use fake secretKeyId - PATH_KEY_ID

@@ -20,7 +20,7 @@ import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -37,9 +37,6 @@ import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.crypto.util.PBKDF2Config;
-import org.bouncycastle.jcajce.BCFKSLoadStoreParameter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -258,12 +255,7 @@ public class DatasafeConfig {
     @Bean
     @SneakyThrows
     KeyStoreCreationConfig keystoreConfig(KeystoreProperties kp) {
-        AlgorithmIdentifier prf = (AlgorithmIdentifier) PBKDF2Config.class.getDeclaredField(kp.getPrfAlgorithm()).get(PBKDF2Config.class);
-        return KeyStoreCreationConfig.builder()
-                .storeEncryptionAlgorithm(BCFKSLoadStoreParameter.EncryptionAlgorithm.valueOf(kp.getEncAlgorithm()))
-                .storePBKDFConfig(new PBKDF2Config.Builder().withPRF(prf).build())
-                .storeMacAlgorithm(BCFKSLoadStoreParameter.MacAlgorithm.valueOf(kp.getMacAlgorithm()))
-                .build();
+        return new KeyStoreCreationConfig(kp.getType(), kp.getEncAlgorithm(), kp.getPrfAlgorithm(), kp.getMacAlgorithm());
     }
 
     private static class WithAccessCredentials extends BucketAccessServiceImpl {

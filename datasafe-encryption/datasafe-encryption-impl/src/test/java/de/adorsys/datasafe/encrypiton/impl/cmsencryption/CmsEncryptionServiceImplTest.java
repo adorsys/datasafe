@@ -204,7 +204,7 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
 
         KeyCreationConfig config = new KeyCreationConfig(1, 1);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, config);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
 
         return new KeyStoreAccess(keyStore, keyStoreAuth);
     }

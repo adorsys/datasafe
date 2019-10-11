@@ -1,9 +1,15 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
+import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import lombok.SneakyThrows;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.crypto.util.PBKDF2Config;
 import org.bouncycastle.jcajce.BCFKSLoadStoreParameter;
 
 import java.io.ByteArrayInputStream;
@@ -38,10 +44,12 @@ public class KeyStoreServiceImplBaseFunctions {
         if (keyStoreConfig == null) keyStoreConfig = KeyStoreCreationConfig.DEFAULT;
         KeyStore ks = KeyStore.getInstance(keyStoreConfig.getKeyStoreType());
         if ("BCFKS".equals(keyStoreConfig.getKeyStoreType())) {
+            AlgorithmIdentifier prf = (AlgorithmIdentifier) PBKDF2Config.class.getDeclaredField(keyStoreConfig.getStorePBKDFConfig()).get(PBKDF2Config.class);
+
             ks.load(new BCFKSLoadStoreParameter.Builder()
-                    .withStoreEncryptionAlgorithm(keyStoreConfig.getStoreEncryptionAlgorithm())
-                    .withStorePBKDFConfig(keyStoreConfig.getStorePBKDFConfig())
-                    .withStoreMacAlgorithm(keyStoreConfig.getStoreMacAlgorithm())
+                    .withStoreEncryptionAlgorithm(BCFKSLoadStoreParameter.EncryptionAlgorithm.valueOf(keyStoreConfig.getStoreEncryptionAlgorithm()))
+                    .withStorePBKDFConfig(new PBKDF2Config.Builder().withPRF(prf).build())
+                    .withStoreMacAlgorithm(BCFKSLoadStoreParameter.MacAlgorithm.valueOf(keyStoreConfig.getStoreMacAlgorithm()))
                     .build()
             );
         } else {

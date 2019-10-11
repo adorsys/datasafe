@@ -175,6 +175,7 @@
                                 <ignoredUsedUndeclaredDependency>org.kie:kie-api</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>org.kie:kie-internal</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>com.amazonaws</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.bouncycastle</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                         </configuration>
                     </execution>

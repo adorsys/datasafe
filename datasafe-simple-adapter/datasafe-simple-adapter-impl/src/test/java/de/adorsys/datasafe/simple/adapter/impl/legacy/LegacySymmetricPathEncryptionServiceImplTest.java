@@ -37,7 +37,7 @@ class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     private KeyCreationConfig config = new KeyCreationConfig(0, 1);
-    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreCreationConfig.DEFAULT, config);
+    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
     @Test

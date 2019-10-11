@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.PasswordBasedKeyConfig;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
@@ -39,12 +38,10 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     @Override
     public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
-                                   KeyStoreCreationConfig keyStoreCreationConfig,
                                    KeyCreationConfig config) {
 
         return createKeyStore(
                 keyStoreAuth,
-                keyStoreCreationConfig,
                 config,
                 ImmutableMap.of(
                         new KeyID(PATH_KEY_ID_PREFIX + UUID.randomUUID().toString()), Optional.empty(),
@@ -56,7 +53,6 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     @Override
     public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
-                                   KeyStoreCreationConfig keyStoreCreationConfig,
                                    KeyCreationConfig config,
                                    Map<KeyID, Optional<SecretKeyEntry>> secretKeys) {
 
@@ -69,7 +65,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
         KeyStoreGenerator keyStoreGenerator = KeyStoreGenerator.builder()
                 .keyCreationConfig(config)
-                .keyStoreCreationConfig(keyStoreCreationConfig)
+                .keyStoreCreationConfig(keyStoreCreationConfig.orElse(KeyStoreCreationConfig.DEFAULT))
                 .serverKeyPairAliasPrefix(serverKeyPairAliasPrefix)
                 .readKeyPassword(keyStoreAuth.getReadKeyPassword())
                 .secretKeys(secretKeys)
