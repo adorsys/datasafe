@@ -1,9 +1,6 @@
 package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -58,12 +55,16 @@ public class BaseTypePasswordString {
     }
 
 
+    /**
+     * Hi Valentyn, dont understand synchronized in this context.
+     * Java synchronized is too expensive, as there may run several threads
+     * all using a password. synchronizing with user not possible as
+     * user is not known here. So how should I synchronize ?
+     */
     public void clear() {
         if (toBeCleared) {
-            log.debug("CLEAR PASSWORD {}", this.getClass().getSimpleName());
-            for (int i = 0; i < value.length; i++) {
-                value[i] = '0';
-            }
+            log.warn("CLEAR PASSWORD {}", this.getClass().getSimpleName());
+            Arrays.fill(value, '0');
         }
     }
 

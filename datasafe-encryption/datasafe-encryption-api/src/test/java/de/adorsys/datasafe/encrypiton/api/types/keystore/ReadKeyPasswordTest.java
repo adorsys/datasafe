@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
