@@ -30,6 +30,7 @@ import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.getKeys;
@@ -43,7 +44,7 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
     private static final String TEST_MESSAGE_CONTENT = "message content";
 
     private static KeyStoreAccess keyStoreAccess;
-    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
+    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
 
     private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
 

@@ -23,6 +23,7 @@ import java.security.KeyStore;
 import java.security.Security;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.adorsys.datasafe.business.impl.e2e.DatasafeServicesProvider.STORE_PAZZWORD;
@@ -58,7 +59,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
         URI keystorePath = datasafeServices.userProfile().privateProfile(auth)
                 .getKeystore().location().asURI();
 
-        KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
+        KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
         KeyStore keyStore = keyStoreService.deserialize(
                 Files.readAllBytes(Paths.get(keystorePath)),
                 "ID",

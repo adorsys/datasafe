@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 import java.util.Enumeration;
+import java.util.Optional;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX;
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
@@ -31,7 +32,7 @@ class SymetricEncryptionTest extends WithBouncyCastle {
     private static final String MESSAGE_CONTENT = "message content";
 
     private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
     private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);

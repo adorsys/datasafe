@@ -16,6 +16,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.security.KeyStore;
+import java.util.Optional;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +30,7 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
             new DefaultPathEncryptorDecryptor(new SivMode())
     );
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
     private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);

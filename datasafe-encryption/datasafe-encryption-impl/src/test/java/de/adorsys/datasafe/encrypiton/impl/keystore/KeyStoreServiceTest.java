@@ -19,13 +19,14 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
 class KeyStoreServiceTest extends WithBouncyCastle {
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
     private KeyStoreAuth keyStoreAuth;
 
     @BeforeEach
@@ -79,7 +80,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getPrivateKey() throws Exception {
-        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreCreationConfig.DEFAULT); // UBER
+        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreCreationConfig.DEFAULT); // BCFKS
 
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
         KeyCreationConfigImpl keyStoreCreationConfig = new KeyCreationConfigImpl(null);

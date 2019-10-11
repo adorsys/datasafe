@@ -19,6 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyStore;
+import java.util.Optional;
 
 import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +32,7 @@ class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
             new LegacyPathEncryptor(new LegacyPathDigestConfig())
     );
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), null);
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
     private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
