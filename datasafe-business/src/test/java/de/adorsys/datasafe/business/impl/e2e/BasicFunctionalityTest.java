@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
+import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -12,6 +13,7 @@ import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.adorsys.datasafe.business.impl.e2e.Const.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,6 +48,16 @@ class BasicFunctionalityTest extends BaseE2ETest {
     private StorageService storage;
     private Uri location;
 
+
+    /**
+     *
+     * Hi Valentyn,
+     * I cant get it to run. But this has nothing to do with the new ReadKeyPassword.
+     * Even if I uncomment line 70, the reading always fails and I dont know why.
+     * I am doing it like I am doing it in the SimpleDatasafeAdapter. Here seems to be
+     * something really creepy.
+     *
+     */
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("fsOnly")
@@ -57,6 +70,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
         char[] password = passwordString.toCharArray();
         char[] copyOfPassword = Arrays.copyOf(password, password.length);
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(password);
+        // readKeyPassword = ReadKeyPasswordTestFactory.getForString(passwordString);
 
 
         john = registerUser(userJohn.getValue(), readKeyPassword);
@@ -64,27 +78,35 @@ class BasicFunctionalityTest extends BaseE2ETest {
         assertThat(profileRetrievalService.privateProfile(john).getAppVersion()).isEqualTo(Version.current());
         assertThat(profileRetrievalService.publicProfile(john.getUserID()).getAppVersion()).isEqualTo(Version.current());
 
+        String filename = "root.txt";
+        String content = "affe";
 
         /**
          * Test clearance after write of file
          */
         log.info("1. write file");
         assertThat(Arrays.equals(password, copyOfPassword)).isTrue();
-        writeDataToPrivate(john, "root.txt", MESSAGE_ONE);
+        try (OutputStream os = writeToPrivate
+                .write(WriteRequest.forDefaultPrivate(john, filename))) {
+            os.write(content.getBytes());
+        }
         assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
 
         /**
          * Test clearance after read of file
          */
         // recover password
-/*
         System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
         log.info("password recovered");
         log.info("2. read file");
-        try (InputStream is = readFromPrivate.read(ReadRequest.forDefaultPrivate(john, "root.txt"))) {
+        /*
+        try (InputStream is = readFromPrivate
+                .read(ReadRequest.forDefaultPrivate(john, filename))) {
         }
         assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
-*/
+        */
+
+
         /**
          * Test clearance after list of files
          */
