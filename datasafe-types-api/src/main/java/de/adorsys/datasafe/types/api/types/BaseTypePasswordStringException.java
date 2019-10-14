@@ -1,7 +1,9 @@
 package de.adorsys.datasafe.types.api.types;
 
 
-public class BaseTypePasswordStringException extends RuntimeException {
+import java.security.UnrecoverableKeyException;
+
+public class BaseTypePasswordStringException extends UnrecoverableKeyException {
     public BaseTypePasswordStringException(String message) {
         super(message);
     }

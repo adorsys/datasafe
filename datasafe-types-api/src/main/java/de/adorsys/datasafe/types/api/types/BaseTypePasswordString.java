@@ -3,6 +3,7 @@ package de.adorsys.datasafe.types.api.types;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,6 +63,7 @@ public class BaseTypePasswordString {
         }
     }
 
+    @SneakyThrows
     public char[] getValue() {
         synchronized (value) {
             if (cleared.get()) {

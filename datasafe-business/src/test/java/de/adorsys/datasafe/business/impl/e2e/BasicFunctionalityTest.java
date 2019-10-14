@@ -137,8 +137,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
         /**
          * Test clearance after removal of user
          */
-//        profileRemovalService.deregister(john);
-//        assertThrows(UnrecoverableKeyException.class, () -> profileRemovalService.deregister(john));
+        assertThrows(UnrecoverableKeyException.class, () -> profileRemovalService.deregister(john));
         // recover password
         System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
         john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
