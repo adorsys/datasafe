@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class ReadKeyPasswordTest {
     String passwordString = "a password that should be nullyfied";
@@ -66,4 +68,13 @@ public class ReadKeyPasswordTest {
         s.toCharArray()[0] = 'P';
         Assertions.assertThat(s.equals("Peter")).isFalse();
     }
+
+
+    @Test
+    public void useOnceOnly() {
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword("peter".toCharArray());
+        readKeyPassword.clear();
+        assertThrows(BaseTypePasswordStringException.class, () -> readKeyPassword.getValue());
+    }
+
 }

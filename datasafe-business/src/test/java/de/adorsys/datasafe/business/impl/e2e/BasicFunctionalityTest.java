@@ -4,6 +4,7 @@ import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.types.BaseTypePasswordStringException;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
@@ -93,6 +94,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
          */
         // recover password
         System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
+        john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
         log.info("password recovered");
         log.info("2. read file");
         try (InputStream is = readFromPrivate
@@ -107,6 +109,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
          */
         // recover password
         System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
+        john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
         log.info("password recovered");
         log.info("3. list files");
         try (Stream<AbsoluteLocation<ResolvedResource>> list = listPrivate.list(ListRequest.forDefaultPrivate(john, new Uri("/")))) {
@@ -123,18 +126,22 @@ class BasicFunctionalityTest extends BaseE2ETest {
          */
         // recover password
         System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
+        john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
         log.info("password recovered");
         log.info("4. remove file");
         removeFromPrivate.remove(RemoveRequest.forDefaultPrivate(john, new Uri(filename)));
         assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+        assertThrows(BaseTypePasswordStringException.class, () -> john.getReadKeyPassword().getValue());
 
 
         /**
          * Test clearance after removal of user
          */
-        assertThrows(UnrecoverableKeyException.class, () -> profileRemovalService.deregister(john));
+//        profileRemovalService.deregister(john);
+//        assertThrows(UnrecoverableKeyException.class, () -> profileRemovalService.deregister(john));
         // recover password
         System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
+        john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
         log.info("password recovered");
         log.info("5. remove user");
         profileRemovalService.deregister(john);

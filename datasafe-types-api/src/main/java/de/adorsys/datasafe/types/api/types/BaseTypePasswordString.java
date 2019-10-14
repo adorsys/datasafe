@@ -1,33 +1,26 @@
 package de.adorsys.datasafe.types.api.types;
 
-import lombok.*;
+import de.adorsys.datasafe.types.api.utils.Obfuscate;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
  * Wrapper for password sensitive data.
  */
 @Slf4j
-@Getter
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class BaseTypePasswordString {
     private char[] value;
-    private boolean toBeCleared = true;
-
-    /**
-     *
-     * @param value string stays in memory
-     *             until gc is called.
-     *             please user other constructor.
-     */
-    protected BaseTypePasswordString(String value) {
-        this.value = value.toCharArray();
-        toBeCleared = false;
-    }
+    private AtomicBoolean toBeCleared = new AtomicBoolean(true);
+    private AtomicBoolean cleared = new AtomicBoolean(false);
 
     /**
      * ATTENTION
@@ -40,7 +33,8 @@ public class BaseTypePasswordString {
      */
     public BaseTypePasswordString(char[] value) {
         this.value = value;
-        toBeCleared = true;
+        toBeCleared.set(true);
+        cleared.set(false);
     }
 
     /**
@@ -50,26 +44,35 @@ public class BaseTypePasswordString {
      */
     public BaseTypePasswordString(Supplier<char[]> value) {
         this.value = value.get();
-        toBeCleared = false;
+        toBeCleared.set(false);
+        cleared.set(false);
     }
 
 
     /**
-     * Hi Valentyn, dont understand synchronized in this context.
-     * Java synchronized is too expensive, as there may run several threads
-     * all using a password. synchronizing with user not possible as
-     * user is not known here. So how should I synchronize ?
+     * clears the char array
      */
     public void clear() {
-        if (toBeCleared) {
-            log.warn("CLEAR PASSWORD {}", this.getClass().getSimpleName());
-            Arrays.fill(value, '0');
+        synchronized (value) {
+            if (toBeCleared.get()) {
+                cleared.set(true);
+                log.debug("CLEAR PASSWORD {}", this.getClass().getSimpleName());
+                Arrays.fill(value, '0');
+            }
+        }
+    }
+
+    public char[] getValue() {
+        synchronized (value) {
+            if (cleared.get()) {
+                throw new BaseTypePasswordStringException("Password was cleared before and must not be reused");
+            }
+            return value;
         }
     }
 
     @Override
     public String toString() {
-        return "BaseTypePasswordString{-not-supported-yet}";
-        // return "BaseTypePasswordString{" + Obfuscate.secureSensitive(getValue()) + "}";
+        return "BaseTypePasswordString{" + Obfuscate.secureSensitiveChar(getValue()) + "}";
     }
 }
