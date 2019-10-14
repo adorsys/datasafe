@@ -51,11 +51,9 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     /**
      *
-     * Hi Valentyn,
-     * I cant get it to run. But this has nothing to do with the new ReadKeyPassword.
-     * Even if I uncomment line 70, the reading always fails and I dont know why.
-     * I am doing it like I am doing it in the SimpleDatasafeAdapter. Here seems to be
-     * something really creepy.
+     * In this test, password is provided as char[].
+     * This means after every operation, the password in cleared.
+     * This is tested for read/write/list/remove
      *
      */
     @SneakyThrows
@@ -70,8 +68,6 @@ class BasicFunctionalityTest extends BaseE2ETest {
         char[] password = passwordString.toCharArray();
         char[] copyOfPassword = Arrays.copyOf(password, password.length);
         ReadKeyPassword readKeyPassword = new ReadKeyPassword(password);
-        // readKeyPassword = ReadKeyPasswordTestFactory.getForString(passwordString);
-
 
         john = registerUser(userJohn.getValue(), readKeyPassword);
         assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
@@ -99,12 +95,11 @@ class BasicFunctionalityTest extends BaseE2ETest {
         System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
         log.info("password recovered");
         log.info("2. read file");
-        /*
         try (InputStream is = readFromPrivate
                 .read(ReadRequest.forDefaultPrivate(john, filename))) {
+            assertThat(is).hasContent(content);
         }
         assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
-        */
 
 
         /**
@@ -130,7 +125,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
         System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
         log.info("password recovered");
         log.info("4. remove file");
-        removeFromPrivate.remove(RemoveRequest.forDefaultPrivate(john, new Uri("root.txt")));
+        removeFromPrivate.remove(RemoveRequest.forDefaultPrivate(john, new Uri(filename)));
         assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
 
 
