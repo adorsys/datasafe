@@ -433,6 +433,15 @@
     ]
   },
   {
+    "name": "org.bouncycastle.jcajce.provider.asymmetric.EdEC$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "org.bouncycastle.jcajce.provider.asymmetric.ElGamal$Mappings",
     "methods": [
       {
@@ -492,6 +501,15 @@
   },
   {
     "name": "org.bouncycastle.jcajce.provider.digest.Blake2b$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "org.bouncycastle.jcajce.provider.digest.Blake2s$Mappings",
     "methods": [
       {
         "name": "<init>",
@@ -824,6 +842,15 @@
     ]
   },
   {
+    "name": "org.bouncycastle.jcajce.provider.symmetric.GOST3412_2015$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "org.bouncycastle.jcajce.provider.symmetric.Grain128$Mappings",
     "methods": [
       {
@@ -951,6 +978,15 @@
   },
   {
     "name": "org.bouncycastle.jcajce.provider.symmetric.Rijndael$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "org.bouncycastle.jcajce.provider.symmetric.SCRYPT$Mappings",
     "methods": [
       {
         "name": "<init>",
@@ -1094,6 +1130,15 @@
     ]
   },
   {
+    "name": "org.bouncycastle.jcajce.provider.symmetric.Zuc$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "java.security.AlgorithmParameterGeneratorSpi",
     "methods": [
       {
@@ -1116,15 +1161,6 @@
   },
   {
     "name": "java.security.KeyStoreSpi",
-    "methods": [
-      {
-        "name": "<init>",
-        "parameterTypes": []
-      }
-    ]
-  },
-  {
-    "name": "sun.security.provider.SecureRandom",
     "methods": [
       {
         "name": "<init>",
