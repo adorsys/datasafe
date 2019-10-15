@@ -166,9 +166,10 @@
                                 --initialize-at-build-time=org.apache.http.pool.ConnPoolControl
 
                                 --initialize-at-run-time=org.bouncycastle.crypto.prng.SP800SecureRandom
-                                --initialize-at-run-time=org.bouncycastle.crypto.CryptoServicesRegistrar
                                 --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$Default
                                 --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$NonceAndIV
+
+                                --delay-class-initialization-at-runtime=sun.security.provider.NativePRNG
                             </buildArgs>
                         </configuration>
                     </plugin>
