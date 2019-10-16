@@ -20,12 +20,12 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.*;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -50,7 +50,7 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
         StatisticService statisticService = new StatisticService();
 
         executeTest(
-                smallSimpleDocusafeAdapterFixture(),
+                getSimpleDatasafeAdapterFixture(),
                 descriptor.getName(),
                 filesizeInKb,
                 threadCount,
@@ -81,11 +81,10 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
 
                     @Override
                     public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
-                        return new ByteArrayInputStream(
-                                datasafeService.readDocument(
-                                        request.getOwner(),
-                                        asFqnDoc(request.getLocation())).getDocumentContent().getValue()
-                        );
+                        return datasafeService.readDocumentStream(
+                                request.getOwner(),
+                                asFqnDoc(request.getLocation())
+                        ).getDocumentStream();
                     }
 
                     @Override
@@ -95,24 +94,10 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
 
                     @Override
                     public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
-                        return new PutBlobOnClose(asFqnDoc(request.getLocation()), request.getOwner(), datasafeService);
-                    }
-
-                    @RequiredArgsConstructor
-                    final class PutBlobOnClose extends ByteArrayOutputStream {
-
-                        private final DocumentFQN documentFQN;
-                        private final UserIDAuth userIDAuth;
-                        private final SimpleDatasafeService datasafeService;
-
-                        @Override
-                        public void close() throws IOException {
-                            super.close();
-                            datasafeService.storeDocument(
-                                    userIDAuth,
-                                    new DSDocument(documentFQN, new DocumentContent(super.toByteArray()))
-                            );
-                        }
+                        return datasafeService.storeDocumentStream(
+                                request.getOwner(),
+                                asFqnDoc(request.getLocation())
+                        );
                     }
                 };
             }
