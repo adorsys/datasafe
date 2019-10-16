@@ -11,7 +11,7 @@
     <artifactId>datasafe-cli</artifactId>
 
     <properties>
-        <cli.main.class>de.adorsys.datasafe.cli.CliOld</cli.main.class>
+        <cli.main.class>de.adorsys.datasafe.cli.Cli</cli.main.class>
     </properties>
 
     <dependencies>
