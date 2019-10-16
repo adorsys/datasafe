@@ -284,13 +284,10 @@
     "allDeclaredFields": true
   },
   {
-    "name": "java.lang.String"
-  },
-  {
-    "name": "java.lang.Thread",
+    "name": "java.util.ArrayList",
     "methods": [
       {
-        "name": "getContextClassLoader",
+        "name": "<init>",
         "parameterTypes": []
       }
     ]
