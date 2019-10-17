@@ -8,6 +8,7 @@ import de.adorsys.datasafe.cli.commands.privatespace.Privatespace;
 import de.adorsys.datasafe.cli.commands.profile.Profile;
 import de.adorsys.datasafe.cli.config.DatasafeFactory;
 import de.adorsys.datasafe.cli.dto.Credentials;
+import de.adorsys.datasafe.cli.hacks.graalfeature.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -114,6 +115,9 @@ public class Cli implements Runnable {
         }
     }
 
+    /**
+     * See {@link GraalCompileFixNpeOnMissingServiceTypeInKnownProviders} for details.
+     */
     @SneakyThrows
     private static void reInitializeRandomAgain() {
         Field secureRandom = CryptoServicesRegistrar.class.getDeclaredField("defaultSecureRandom");
