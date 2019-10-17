@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.cli.hacks.graalfeature;
+package de.adorsys.datasafe.cli.hacks;
 
 import com.oracle.svm.core.annotate.AutomaticFeature;
 import lombok.RequiredArgsConstructor;
