@@ -299,6 +299,18 @@
     ]
   },
   {
+    "name": "java.lang.String"
+  },
+  {
+    "name": "java.lang.Thread",
+    "methods": [
+      {
+        "name": "getContextClassLoader",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "java.text.DateFormatSymbols",
     "methods": [
       {
