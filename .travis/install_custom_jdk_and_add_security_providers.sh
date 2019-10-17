@@ -18,10 +18,10 @@ BC_VERSION=`grep "<bouncycastle\.version>.*</bouncycastle\.version>" pom.xml | c
 
 # 2.2 Download BC jars needed
 # We need special provider JAR (https://www.bouncycastle.org/latest_releases.html):
-curl "https://www.bouncycastle.org/download/bcprov-ext-jdk15to18-${BC_VERSION//\./}.jar" \
+curl -L "https://www.bouncycastle.org/download/bcprov-ext-jdk15to18-${BC_VERSION//\./}.jar" \
     --output "$JAVA_HOME/jre/lib/ext/bcprov-jdk15on-${BC_VERSION}.jar"
 
-curl "https://repo1.maven.org/maven2/org/bouncycastle/bctls-jdk15on/${BC_VERSION}/bctls-jdk15on-${BC_VERSION}.jar" \
+curl -L "https://repo1.maven.org/maven2/org/bouncycastle/bctls-jdk15on/${BC_VERSION}/bctls-jdk15on-${BC_VERSION}.jar" \
     --output "$JAVA_HOME/jre/lib/ext/bctls-jdk15on-${BC_VERSION}.jar"
 
 # Windows does not have Graal Updater (gu) tool, so we install native-image manually
