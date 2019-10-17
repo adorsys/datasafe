@@ -145,10 +145,11 @@
     "name": "de.adorsys.datasafe.types.api.global.Version",
     "allDeclaredFields": true,
     "fields": [
-      {
-        "name": "id",
-        "allowWrite": true
-      }
+        {
+          "name": "id",
+          "allowWrite": true
+        }
+      ]
   },
   {
     "name": "de.adorsys.datasafe.directory.api.types.StorageCredentials",
