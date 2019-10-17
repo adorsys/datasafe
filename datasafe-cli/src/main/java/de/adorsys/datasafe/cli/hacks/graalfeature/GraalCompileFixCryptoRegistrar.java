@@ -8,18 +8,15 @@ import org.graalvm.nativeimage.hosted.Feature;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.security.Provider;
+import java.security.SecureRandom;
 
 /**
- * This class fixes NPE exception in Graal-compilator - when it tries to get non-existing engines from
- * {@link Provider}
- * <p>
- * Additionally can log access to null service types using property PROVIDER_ACCESS_LOGGER,
- * so you can add necessary fields to extra_engines.hack. (This will break build later, so you will need
- * to remove this property when you detected all nulls in Provider).
- * <p>
- * Override string example:
- * X509Store=false,null
+ * Bouncy Castle attempts to access SecureRandom in {@link CryptoServicesRegistrar} class, during CLI
+ * generation. Because it is not allowed to have NativePRNG in image heap this breaks compilation.
+ * We fix this by setting {@code CryptoServicesRegistrar#defaultSecureRandom} to {@link NoOpRandom} that
+ * is simply stub class. Then, in runtime in main() CLI simply sets {@code defaultSecureRandom} to null
+ * before doing any useful work and such trick forces CryptoServicesRegistrar to get correct {@link SecureRandom}
+ * implementation, because when it is null BC initializes the field.
  */
 @AutomaticFeature
 public class GraalCompileFixCryptoRegistrar implements Feature {
