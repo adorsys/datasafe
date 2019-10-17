@@ -145,11 +145,11 @@
     "name": "de.adorsys.datasafe.types.api.global.Version",
     "allDeclaredFields": true,
     "fields": [
-        {
-          "name": "id",
-          "allowWrite": true
-        }
-      ]
+      {
+        "name": "id",
+        "allowWrite": true
+      }
+    ]
   },
   {
     "name": "de.adorsys.datasafe.directory.api.types.StorageCredentials",
@@ -434,6 +434,10 @@
         "parameterTypes": []
       }
     ]
+  },
+  {
+    "name": "org.bouncycastle.crypto.util.PBKDF2Config",
+    "allDeclaredFields": true
   },
   {
     "name": "org.bouncycastle.jcajce.provider.asymmetric.EdEC$Mappings",
