@@ -17,7 +17,8 @@ cd "$REPO_ROOT" || exit 1
 BC_VERSION=`grep "<bouncycastle\.version>.*</bouncycastle\.version>" pom.xml | cut -d">" -f2 | cut -d"<" -f1`
 
 # 2.2 Download BC jars needed
-curl "https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/${BC_VERSION}/bcprov-jdk15on-${BC_VERSION}.jar" \
+# We need special provider JAR (https://www.bouncycastle.org/latest_releases.html):
+curl "https://www.bouncycastle.org/download/bcprov-ext-jdk15to18-${BC_VERSION//\./}.jar" \
     --output "$JAVA_HOME/jre/lib/ext/bcprov-jdk15on-${BC_VERSION}.jar"
 
 curl "https://repo1.maven.org/maven2/org/bouncycastle/bctls-jdk15on/${BC_VERSION}/bctls-jdk15on-${BC_VERSION}.jar" \

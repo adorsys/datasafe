@@ -31,10 +31,10 @@
       "pattern": "lib/aws-java-sdk-s3-1.11.538.jar"
     },
     {
-      "pattern": "lib/bcpkix-jdk15on-1.63.jar"
+      "pattern": "lib/bcpkix-jdk15on-1.64.jar"
     },
     {
-      "pattern": "lib/bcprov-jdk15on-1.63.jar"
+      "pattern": "lib/bcprov-jdk15on-1.64.jar"
     },
     {
       "pattern": "lib/checker-qual-2.5.2.jar"
@@ -52,49 +52,49 @@
       "pattern": "lib/dagger-2.17.jar"
     },
     {
-      "pattern": "lib/datasafe-business-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-business.jar"
     },
     {
-      "pattern": "lib/datasafe-directory-api-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-directory-api.jar"
     },
     {
-      "pattern": "lib/datasafe-directory-impl-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-directory-impl.jar"
     },
     {
-      "pattern": "lib/datasafe-encryption-api-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-encryption-api.jar"
     },
     {
-      "pattern": "lib/datasafe-encryption-impl-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-encryption-impl.jar"
     },
     {
-      "pattern": "lib/datasafe-inbox-api-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-inbox-api.jar"
     },
     {
-      "pattern": "lib/datasafe-inbox-impl-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-inbox-impl.jar"
     },
     {
-      "pattern": "lib/datasafe-metainfo-version-api-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-metainfo-version-api.jar"
     },
     {
-      "pattern": "lib/datasafe-metainfo-version-impl-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-metainfo-version-impl.jar"
     },
     {
-      "pattern": "lib/datasafe-privatestore-api-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-privatestore-api.jar"
     },
     {
-      "pattern": "lib/datasafe-privatestore-impl-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-privatestore-impl.jar"
     },
     {
-      "pattern": "lib/datasafe-storage-api-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-storage-api.jar"
     },
     {
-      "pattern": "lib/datasafe-storage-impl-fs-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-storage-impl-fs.jar"
     },
     {
-      "pattern": "lib/datasafe-storage-impl-s3-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-storage-impl-s3.jar"
     },
     {
-      "pattern": "lib/datasafe-types-api-0.6.3-SNAPSHOT.jar"
+      "pattern": "lib/datasafe-types-api.jar"
     },
     {
       "pattern": "lib/error_prone_annotations-2.2.0.jar"
@@ -163,6 +163,12 @@
       "pattern": "lib/slf4j-simple-1.7.25.jar"
     },
     {
+      "pattern": "mozilla/public-suffix-list.txt"
+    },
+    {
+      "pattern": "org/apache/http/client/version.properties"
+    },
+    {
       "pattern": "org/bouncycastle/asn1/ASN1ApplicationSpecific.class"
     },
     {
@@ -220,6 +226,9 @@
       "pattern": "org/bouncycastle/asn1/ASN1OctetStringParser.class"
     },
     {
+      "pattern": "org/bouncycastle/asn1/ASN1OutputStream$ImplicitOutputStream.class"
+    },
+    {
       "pattern": "org/bouncycastle/asn1/ASN1OutputStream.class"
     },
     {
@@ -274,6 +283,9 @@
       "pattern": "org/bouncycastle/asn1/BEROctetStringParser.class"
     },
     {
+      "pattern": "org/bouncycastle/asn1/BEROutputStream.class"
+    },
+    {
       "pattern": "org/bouncycastle/asn1/BERSequence.class"
     },
     {
@@ -298,10 +310,19 @@
       "pattern": "org/bouncycastle/asn1/ConstructedOctetStream.class"
     },
     {
+      "pattern": "org/bouncycastle/asn1/DERApplicationSpecific.class"
+    },
+    {
       "pattern": "org/bouncycastle/asn1/DERBMPString.class"
     },
     {
       "pattern": "org/bouncycastle/asn1/DERBitString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERExternal.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERFactory.class"
     },
     {
       "pattern": "org/bouncycastle/asn1/DERGeneralString.class"
@@ -587,6 +608,213 @@
     },
     {
       "pattern": "org/bouncycastle/asn1/x9/X9ObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/CertException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/CertIOException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/CertRuntimeException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/CertUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/X509CRLHolder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/X509CertificateHolder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/X509ExtensionUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/X509v3CertificateBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/CertHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/DefaultCertHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509CertificateConverter$ExCertificateException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509CertificateConverter$ExCertificateParsingException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509CertificateConverter.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509CertificateHolder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509ExtensionUtils$SHA1DigestCalculator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509ExtensionUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509v3CertificateBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/NamedCertHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/ProviderCertHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/selector/X509CertificateHolderSelector.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSAlgorithm.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSContentInfoParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedDataParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedDataStreamGenerator$CmsEnvelopedDataOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedDataStreamGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedHelper$CMSEnvelopedSecureReadable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSProcessable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSProcessableInputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSReadable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSSecureReadable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSTypedStream$FullReaderStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSTypedStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KEKRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KEKRecipientId.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KEKRecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KEKRecipientInformation.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KeyTransRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KeyTransRecipientId.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KeyTransRecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KeyTransRecipientInformation.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/NullOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/PasswordRecipient$PRF.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/Recipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientId.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientInformation.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientInformationStore.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientOperator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/CMSUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/DefaultJcaJceExtHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/EnvelopedDataHelper$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/EnvelopedDataHelper$JCECallback.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/EnvelopedDataHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JcaJceExtHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceCMSContentEncryptorBuilder$CMSOutputEncryptor.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceCMSContentEncryptorBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKEKEnvelopedRecipient$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKEKEnvelopedRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKEKRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKEKRecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKeyTransEnvelopedRecipient$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKeyTransEnvelopedRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKeyTransRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKeyTransRecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/ProviderJcaJceExtHelper.class"
     },
     {
       "pattern": "org/bouncycastle/crypto/CipherParameters.class"
@@ -1060,6 +1288,96 @@
       "pattern": "org/bouncycastle/jce/provider/BouncyCastleProviderConfiguration.class"
     },
     {
+      "pattern": "org/bouncycastle/operator/AsymmetricKeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/AsymmetricKeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/ContentSigner.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/DefaultSecretKeySizeProvider.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/DefaultSignatureAlgorithmIdentifierFinder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/DigestCalculator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/GenericKey.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/InputDecryptor.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/KeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/KeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/OperatorCreationException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/OperatorException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/OperatorStreamException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/OutputEncryptor.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/RuntimeOperatorException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/SecretKeySizeProvider.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/SignatureAlgorithmIdentifierFinder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/SymmetricKeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/SymmetricKeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JcaContentSignerBuilder$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JcaContentSignerBuilder$SignatureOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JcaContentSignerBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceAsymmetricKeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceAsymmetricKeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceGenericKey.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceSymmetricKeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceSymmetricKeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/OperatorHelper$OpCertificateException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/OperatorHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/OperatorUtils.class"
+    },
+    {
       "pattern": "org/bouncycastle/pqc/asn1/PQCObjectIdentifiers.class"
     },
     {
@@ -1142,6 +1460,9 @@
     },
     {
       "pattern": "org/bouncycastle/util/io/TeeOutputStream.class"
+    },
+    {
+      "pattern": "org/joda/time/tz/data/.+"
     },
     {
       "pattern": "org/slf4j/impl/StaticLoggerBinder.class"

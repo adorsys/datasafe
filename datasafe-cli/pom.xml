@@ -156,7 +156,7 @@
                                 --no-server
                                 --no-fallback
                                 --enable-all-security-services
-                                --features=de.adorsys.datasafe.cli.hacks.graalfeature.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders,de.adorsys.datasafe.cli.hacks.graalfeature.GraalCompileFixRegistrar
+                                --features=de.adorsys.datasafe.cli.hacks.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders
 
                                 --initialize-at-build-time=org.apache.http.conn.routing.HttpRoute
                                 --initialize-at-build-time=org.apache.http.conn.HttpClientConnectionManager
@@ -164,8 +164,6 @@
                                 --initialize-at-build-time=org.apache.http.conn.ConnectionRequest
                                 --initialize-at-build-time=org.apache.http.protocol.HttpContext
                                 --initialize-at-build-time=org.apache.http.pool.ConnPoolControl
-                                --initialize-at-build-time=de.adorsys.datasafe.cli.hacks.HackSecureRandom
-                                --initialize-at-build-time=de.adorsys.datasafe.cli.hacks.HackSecureRandom$NoopSecureRandom
 
                                 --initialize-at-run-time=org.bouncycastle.crypto.prng.SP800SecureRandom
                                 --initialize-at-run-time=org.bouncycastle.jcajce.provider.drbg.DRBG$Default
