@@ -17,6 +17,10 @@ import java.util.Map;
 @RuntimeDelegate
 public class ASNCmsEncryptionConfig {
 
+    /**
+     * These are recommended mappings, one can override this static map by RuntimeDelegate to
+     * ASNCmsEncryptionConfig.
+     */
     private static final Map<String, ASN1ObjectIdentifier> MAPPINGS =
             ImmutableMap.<String, ASN1ObjectIdentifier>builder()
                     .put("AES128_CBC", NISTObjectIdentifiers.id_aes128_CBC)
@@ -31,7 +35,7 @@ public class ASNCmsEncryptionConfig {
                     .put("AES128_WRAP", NISTObjectIdentifiers.id_aes128_wrap)
                     .put("AES192_WRAP", NISTObjectIdentifiers.id_aes192_wrap)
                     .put("AES256_WRAP", NISTObjectIdentifiers.id_aes256_wrap)
-                    .put("CHACHA20-POLY1305", PKCSObjectIdentifiers.id_alg_AEADChaCha20Poly1305)
+                    .put("CHACHA20_POLY1305", PKCSObjectIdentifiers.id_alg_AEADChaCha20Poly1305)
                     .build();
 
     @Getter
