@@ -2,6 +2,7 @@ package de.adorsys.datasafe.rest.impl.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @ConfigurationProperties(prefix = "keystore")
 @Data
+@Validated
 public class KeystoreProperties {
 
     /**
@@ -27,8 +29,9 @@ public class KeystoreProperties {
     /**
      * Password key derivation configuration.
      */
-    @NotNull
-    private PBKDF pbkdf;
+    private PBKDF2 pbkdf2;
+
+    private Scrypt scrypt;
 
     /**
      * KeyStore authentication algorithm, for BCFKS refer to {@link org.bouncycastle.jcajce.BCFKSLoadStoreParameter}
@@ -39,22 +42,9 @@ public class KeystoreProperties {
     /**
      * Password key derivation configuration.
      */
-    @Data
-    public static class PBKDF {
-
-        /**
-         * This is non null if we should use PBKDF2 based routines.
-         */
-        private PBKDF2 pbkdf2;
-
-        /**
-         * This is non null if we should use Scrypt-based routines.
-         */
-        private Scrypt scrypt;
-    }
 
     @Data
-    public class PBKDF2 {
+    public static class PBKDF2 {
 
         /**
          * Password derivation algorithm, for BCFKS refer to {@link org.bouncycastle.crypto.util.PBKDF2Config}
@@ -76,7 +66,7 @@ public class KeystoreProperties {
     }
 
     @Data
-    public class Scrypt {
+    public static class Scrypt {
 
         /**
          * Password derivation cost, for BCFKS refer to {@link org.bouncycastle.crypto.util.ScryptConfig}

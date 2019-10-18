@@ -262,10 +262,11 @@ public class DatasafeConfig {
         builder.macAlgo(kp.getMacAlgo());
         KeyStoreConfig.PBKDF.PBKDFBuilder pbkdf = KeyStoreConfig.PBKDF.builder();
 
-        if (null != kp.getPbkdf().getPbkdf2()) {
-            pbkdf.pbkdf2(buildPBDF2(kp.getPbkdf().getPbkdf2()));
+        if (null != kp.getPbkdf2()) {
+            pbkdf.pbkdf2(buildPBDF2(kp.getPbkdf2()));
         } else {
-            pbkdf.scrypt(buildScrypt(kp.getPbkdf().getScrypt()));
+            pbkdf.pbkdf2(null);
+            pbkdf.scrypt(buildScrypt(kp.getScrypt()));
         }
 
         builder.pbkdf(pbkdf.build());
@@ -273,7 +274,8 @@ public class DatasafeConfig {
     }
 
     private Scrypt buildScrypt(KeystoreProperties.Scrypt kp) {
-        return Scrypt.builder().cost(kp.getCost())
+        return Scrypt.builder()
+                .cost(kp.getCost())
                 .blockSize(kp.getBlockSize())
                 .parallelization(kp.getParallelization())
                 .saltLength(kp.getSaltLength())

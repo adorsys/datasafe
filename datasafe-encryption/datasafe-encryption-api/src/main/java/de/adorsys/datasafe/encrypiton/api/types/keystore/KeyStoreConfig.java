@@ -43,18 +43,30 @@ public class KeyStoreConfig {
      * Password key derivation configuration.
      */
     @Getter
-    @Builder
     public static class PBKDF {
 
         /**
          * This is non null if we should use PBKDF2 based routines.
          */
-        @Builder.Default
-        private final PBKDF2 pbkdf2 = PBKDF2.builder().build();
+        private final PBKDF2 pbkdf2;
 
         /**
          * This is non null if we should use Scrypt-based routines.
          */
         private final Scrypt scrypt;
+
+        @Builder
+        public PBKDF(PBKDF2 pbkdf2, Scrypt scrypt) {
+            if (null != pbkdf2 && null != scrypt) {
+                throw new IllegalArgumentException("Ambiguous PBKDF - both scrypt and pbkdf2 are set");
+            }
+
+            if (null == pbkdf2 && null == scrypt) {
+                pbkdf2 = PBKDF2.builder().build();
+            }
+
+            this.pbkdf2 = pbkdf2;
+            this.scrypt = scrypt;
+        }
     }
 }
