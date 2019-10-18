@@ -80,7 +80,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getPrivateKey() throws Exception {
-        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreCreationConfig.DEFAULT); // BCFKS
+        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreConfig.DEFAULT); // BCFKS
 
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
         KeyCreationConfigImpl keyStoreCreationConfig = new KeyCreationConfigImpl(null);

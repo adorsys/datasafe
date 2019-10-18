@@ -1,17 +1,17 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyEntry;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreConfig;
 
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 
 public class KeystoreBuilder {
-	private KeyStoreCreationConfig keyStoreConfig;
+	private KeyStoreConfig keyStoreConfig;
 	private Map<String, KeyEntry> keyEntries = new HashMap<>();
 	
-	public KeystoreBuilder withKeyStoreConfig(KeyStoreCreationConfig keyStoreConfig) {
+	public KeystoreBuilder withKeyStoreConfig(KeyStoreConfig keyStoreConfig) {
 		this.keyStoreConfig = keyStoreConfig;
 		return this;
 	}

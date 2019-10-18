@@ -22,7 +22,7 @@ import java.util.UUID;
 public class KeyStoreGenerator {
 
     @NonNull
-    private final KeyStoreCreationConfig keyStoreCreationConfig;
+    private final KeyStoreConfig keyStoreConfig;
 
     @NonNull
     private final String serverKeyPairAliasPrefix;
@@ -39,13 +39,13 @@ public class KeyStoreGenerator {
     @Builder
     protected KeyStoreGenerator(
             KeyCreationConfig keyCreationConfig,
-            KeyStoreCreationConfig keyStoreCreationConfig,
+            KeyStoreConfig keyStoreConfig,
             String serverKeyPairAliasPrefix,
             ReadKeyPassword readKeyPassword,
             Map<KeyID, Optional<SecretKeyEntry>> secretKeys
     ) {
         this.config = new KeyCreationConfigImpl(keyCreationConfig);
-        this.keyStoreCreationConfig = keyStoreCreationConfig;
+        this.keyStoreConfig = keyStoreConfig;
         this.serverKeyPairAliasPrefix = "KEYSTORE-ID-0";
         this.readKeyPassword = readKeyPassword;
         this.secretKeys = secretKeys;
@@ -62,7 +62,7 @@ public class KeyStoreGenerator {
         Date startTime = new Date();
         try {
             String keyStoreID = serverKeyPairAliasPrefix;
-            KeystoreBuilder keystoreBuilder = new KeystoreBuilder().withKeyStoreConfig(keyStoreCreationConfig);
+            KeystoreBuilder keystoreBuilder = new KeystoreBuilder().withKeyStoreConfig(keyStoreConfig);
 
             {
                 KeyPairGenerator encKeyPairGenerator = config.getEncKeyPairGenerator(keyStoreID);

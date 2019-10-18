@@ -27,11 +27,11 @@ import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfi
 public class KeyStoreServiceImpl implements KeyStoreService {
 
     private final PasswordBasedKeyConfig passwordBasedKeyConfig;
-    private final Optional<KeyStoreCreationConfig> keyStoreCreationConfig;
+    private final Optional<KeyStoreConfig> keyStoreCreationConfig;
 
     @Inject
     public KeyStoreServiceImpl(PasswordBasedKeyConfig passwordBasedKeyConfig,
-                               Optional<KeyStoreCreationConfig> keyStoreCreationConfig) {
+                               Optional<KeyStoreConfig> keyStoreCreationConfig) {
         this.passwordBasedKeyConfig = passwordBasedKeyConfig;
         this.keyStoreCreationConfig = keyStoreCreationConfig;
     }
@@ -65,7 +65,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
         KeyStoreGenerator keyStoreGenerator = KeyStoreGenerator.builder()
                 .keyCreationConfig(config)
-                .keyStoreCreationConfig(keyStoreCreationConfig.orElse(KeyStoreCreationConfig.DEFAULT))
+                .keyStoreConfig(keyStoreCreationConfig.orElse(KeyStoreConfig.DEFAULT))
                 .serverKeyPairAliasPrefix(serverKeyPairAliasPrefix)
                 .readKeyPassword(keyStoreAuth.getReadKeyPassword())
                 .secretKeys(secretKeys)
@@ -172,7 +172,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         return KeyStoreServiceImplBaseFunctions.loadKeyStore(
                 payload,
                 storeId,
-                keyStoreCreationConfig.orElse(KeyStoreCreationConfig.DEFAULT),
+                keyStoreCreationConfig.orElse(KeyStoreConfig.DEFAULT),
                 readStorePassword
         );
     }

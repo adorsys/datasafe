@@ -20,7 +20,9 @@ import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.PBKDF2;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.Scrypt;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -254,8 +256,36 @@ public class DatasafeConfig {
 
     @Bean
     @SneakyThrows
-    KeyStoreCreationConfig keystoreConfig(KeystoreProperties kp) {
-        return new KeyStoreCreationConfig(kp.getType(), kp.getEncAlgorithm(), kp.getPrfAlgorithm(), kp.getMacAlgorithm());
+    KeyStoreConfig keystoreConfig(KeystoreProperties kp) {
+        KeyStoreConfig.KeyStoreConfigBuilder builder = KeyStoreConfig.builder();
+        builder.encryptionAlgo(kp.getEncryptionAlgo());
+        builder.macAlgo(kp.getMacAlgo());
+        KeyStoreConfig.PBKDF.PBKDFBuilder pbkdf = KeyStoreConfig.PBKDF.builder();
+
+        if (null != kp.getPbkdf().getPbkdf2()) {
+            pbkdf.pbkdf2(buildPBDF2(kp.getPbkdf().getPbkdf2()));
+        } else {
+            pbkdf.scrypt(buildScrypt(kp.getPbkdf().getScrypt()));
+        }
+
+        builder.pbkdf(pbkdf.build());
+        return builder.build();
+    }
+
+    private Scrypt buildScrypt(KeystoreProperties.Scrypt kp) {
+        return Scrypt.builder().cost(kp.getCost())
+                .blockSize(kp.getBlockSize())
+                .parallelization(kp.getParallelization())
+                .saltLength(kp.getSaltLength())
+                .build();
+    }
+
+    private PBKDF2 buildPBDF2(KeystoreProperties.PBKDF2 kp) {
+                return PBKDF2.builder()
+                        .algo(kp.getAlgo())
+                        .iterCount(kp.getIterCount())
+                        .saltLength(kp.getSaltLength())
+                        .build();
     }
 
     private static class WithAccessCredentials extends BucketAccessServiceImpl {

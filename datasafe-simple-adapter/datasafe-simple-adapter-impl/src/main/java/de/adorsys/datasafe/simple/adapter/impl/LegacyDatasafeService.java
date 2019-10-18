@@ -9,7 +9,7 @@ import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActi
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreConfig;
 import de.adorsys.datasafe.simple.adapter.impl.cmsencryption.SwitchableCMSEncryptionModule;
 import de.adorsys.datasafe.simple.adapter.impl.pathencryption.LegacyCredentialsModule;
 import de.adorsys.datasafe.simple.adapter.impl.pathencryption.LegacyPathEncryptionModule;
@@ -62,7 +62,7 @@ public interface LegacyDatasafeService extends DefaultDatasafeServices {
         Builder overridesRegistry(@Nullable OverridesRegistry overridesRegistry);
 
         @BindsInstance
-        Builder keyStoreConfig(KeyStoreCreationConfig keyStoreCreationConfig);
+        Builder keyStoreConfig(KeyStoreConfig keyStoreConfig);
         /**
          * @return Provide NEW instance of <b>Legacy Datasafe</b> services. All dependencies except
          * annotated with {@code @Singleton} will have scope analogous to Spring {code @Prototype}.
