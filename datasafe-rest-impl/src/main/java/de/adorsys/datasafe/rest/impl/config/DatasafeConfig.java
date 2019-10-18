@@ -20,10 +20,6 @@ import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.PBKDF2;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.Scrypt;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -37,7 +33,6 @@ import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
-import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -107,7 +102,7 @@ public class DatasafeConfig {
     @Bean
     DefaultDatasafeServices datasafeService(StorageService storageService, DFSConfig dfsConfig,
                                             Optional<OverridesRegistry> registry,
-                                            KeyStoreConfig keyStoreConfig) {
+                                            DatasafeProperties properties) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -116,14 +111,14 @@ public class DatasafeConfig {
                 .config(dfsConfig)
                 .storage(storageService)
                 .overridesRegistry(registry.orElse(null))
-                .encryption(EncryptionConfig.builder().keystore(keyStoreConfig).build())
+                .encryption(properties.getEncryption().toEncryptionConfig())
                 .build();
     }
 
     @Bean
     VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig,
                                                         Optional<OverridesRegistry> registry,
-                                                        KeyStoreConfig keyStoreConfig) {
+                                                        DatasafeProperties properties) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -132,7 +127,7 @@ public class DatasafeConfig {
                 .config(dfsConfig)
                 .storage(storageService)
                 .overridesRegistry(registry.orElse(null))
-                .encryption(EncryptionConfig.builder().keystore(keyStoreConfig).build())
+                .encryption(properties.getEncryption().toEncryptionConfig())
                 .build();
     }
 
@@ -257,43 +252,6 @@ public class DatasafeConfig {
         }
 
         return amazonS3;
-    }
-
-    @Bean
-    @SneakyThrows
-    KeyStoreConfig keystoreConfig(KeystoreProperties kp) {
-        KeyStoreConfig.KeyStoreConfigBuilder builder = KeyStoreConfig.builder();
-        builder.encryptionAlgo(kp.getEncryptionAlgo());
-        builder.macAlgo(kp.getMacAlgo());
-        builder.passwordKeysAlgo(kp.getPasswordKeyAlgo());
-        KeyStoreConfig.PBKDF.PBKDFBuilder pbkdf = KeyStoreConfig.PBKDF.builder();
-
-        if (null != kp.getPbkdf2()) {
-            pbkdf.pbkdf2(buildPBDF2(kp.getPbkdf2()));
-        } else {
-            pbkdf.pbkdf2(null);
-            pbkdf.scrypt(buildScrypt(kp.getScrypt()));
-        }
-
-        builder.pbkdf(pbkdf.build());
-        return builder.build();
-    }
-
-    private Scrypt buildScrypt(KeystoreProperties.Scrypt kp) {
-        return Scrypt.builder()
-                .cost(kp.getCost())
-                .blockSize(kp.getBlockSize())
-                .parallelization(kp.getParallelization())
-                .saltLength(kp.getSaltLength())
-                .build();
-    }
-
-    private PBKDF2 buildPBDF2(KeystoreProperties.PBKDF2 kp) {
-                return PBKDF2.builder()
-                        .algo(kp.getAlgo())
-                        .iterCount(kp.getIterCount())
-                        .saltLength(kp.getSaltLength())
-                        .build();
     }
 
     private static class WithAccessCredentials extends BucketAccessServiceImpl {

@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.rest.impl.config;
 
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -39,4 +40,6 @@ public class DatasafeProperties {
      * From where to serve static resources.
      */
     private String staticResources;
+
+    private MutableEncryptionConfig encryption = new MutableEncryptionConfig();
 }
