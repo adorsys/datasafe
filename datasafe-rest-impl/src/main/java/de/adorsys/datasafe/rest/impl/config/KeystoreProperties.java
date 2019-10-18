@@ -40,8 +40,10 @@ public class KeystoreProperties {
     private String macAlgo = "HmacSHA3_512";
 
     /**
-     * Password key derivation configuration.
+     * Algorithm to use when encrypting password-like keys to be stored in keystore (i.e. storage credentials).
      */
+    @NotBlank
+    private String passwordKeyAlgo = "PBEWithHmacSHA256AndAES_256";
 
     @Data
     public static class PBKDF2 {

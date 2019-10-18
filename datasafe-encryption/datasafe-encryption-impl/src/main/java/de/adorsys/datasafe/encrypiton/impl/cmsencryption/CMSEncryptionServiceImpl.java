@@ -38,15 +38,15 @@ import java.util.stream.Collectors;
 @RuntimeDelegate
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
-    private CMSEncryptionConfig encryptionConfig;
+    private ASNCmsEncryptionConfig encryptionConfig;
 
     @Inject
-    public CMSEncryptionServiceImpl(CMSEncryptionConfig encryptionConfig) {
+    public CMSEncryptionServiceImpl(ASNCmsEncryptionConfig encryptionConfig) {
         this.encryptionConfig = encryptionConfig;
     }
 
     /**
-     * Asymmetrical encryption-based stream, algorithm is provided by {@link CMSEncryptionConfig#getAlgorithm()}
+     * Asymmetrical encryption-based stream, algorithm is provided by {@link ASNCmsEncryptionConfig#getAlgorithm()}
      * Uses {@link RecipientId#keyTrans} recipient id.
      */
     @Override
@@ -65,7 +65,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     }
 
     /**
-     * Symmetrical encryption-based stream, algorithm is provided by {@link CMSEncryptionConfig#getAlgorithm()}
+     * Symmetrical encryption-based stream, algorithm is provided by {@link ASNCmsEncryptionConfig#getAlgorithm()}
      * Uses {@link RecipientId#kek} recipient id.
      */
     @Override

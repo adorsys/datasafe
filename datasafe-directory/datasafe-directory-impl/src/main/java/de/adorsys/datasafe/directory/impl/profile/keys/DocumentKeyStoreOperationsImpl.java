@@ -7,6 +7,7 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalServ
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -31,6 +32,7 @@ import java.util.Set;
 @RuntimeDelegate
 public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperations {
 
+    private final KeyCreationConfig config;
     private final GenericKeystoreOperations genericOper;
     private final DFSConfig dfsConfig;
     private final BucketAccessService access;
@@ -40,10 +42,16 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
     private final KeyStoreService keyStoreService;
 
     @Inject
-    public DocumentKeyStoreOperationsImpl(GenericKeystoreOperations genericOper, DFSConfig dfsConfig,
-                                          BucketAccessService access, ProfileRetrievalService profile,
-                                          StorageWriteService writeService, KeyStoreCache keystoreCache,
-                                          KeyStoreService keyStoreService) {
+    public DocumentKeyStoreOperationsImpl(
+            KeyCreationConfig config,
+            GenericKeystoreOperations genericOper,
+            DFSConfig dfsConfig,
+            BucketAccessService access,
+            ProfileRetrievalService profile,
+            StorageWriteService writeService,
+            KeyStoreCache keystoreCache,
+            KeyStoreService keyStoreService) {
+        this.config = config;
         this.genericOper = genericOper;
         this.dfsConfig = dfsConfig;
         this.access = access;
@@ -75,7 +83,10 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
     @SneakyThrows
     public List<PublicKeyIDWithPublicKey> createAndWriteKeyStore(UserIDAuth forUser) {
         KeyStoreAuth auth = keystoreAuth(forUser, forUser.getReadKeyPassword());
-        KeyStore keystoreBlob = keyStoreService.createKeyStore(auth, new KeyCreationConfig(1, 1));
+        KeyStore keystoreBlob = keyStoreService.createKeyStore(
+                auth,
+                config
+        );
 
         writeKeystore(forUser.getUserID(), auth, keystoreLocationWithAccess(forUser), keystoreBlob);
         return keyStoreService.getPublicKeys(new KeyStoreAccess(keystoreBlob, auth));

@@ -15,6 +15,8 @@ import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.*;
 import de.adorsys.datasafe.directory.impl.profile.resource.ResourceResolverImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 
 import javax.annotation.Nullable;
@@ -26,6 +28,15 @@ import java.util.concurrent.TimeUnit;
  */
 @Module
 public abstract class DefaultProfileModule {
+
+    @Provides
+    static KeyCreationConfig cmsEncryptionConfig(@Nullable EncryptionConfig config) {
+        if (null == config) {
+            return EncryptionConfig.builder().build().getKeys();
+        }
+
+        return config.getKeys();
+    }
 
     /**
      * Default Guava-based user profile cache for public and private profile.

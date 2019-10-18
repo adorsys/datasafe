@@ -1,6 +1,9 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
@@ -19,14 +22,13 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
 class KeyStoreServiceTest extends WithBouncyCastle {
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
     private KeyStoreAuth keyStoreAuth;
 
     @BeforeEach
@@ -38,7 +40,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void createKeyStore() throws Exception {
-        KeyCreationConfig config = new KeyCreationConfig(0, 1);
+        KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(0).encKeyNumber(1).build();
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
 
         Assertions.assertNotNull(keyStore);
@@ -53,16 +55,16 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void createKeyStoreEmptyConfig() throws Exception {
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
         // One additional secret key being generated for path encryption and one for private doc encryption.
-        Assertions.assertEquals(13, list.size());
+        Assertions.assertEquals(5, list.size());
     }
 
     @Test
     void createKeyStoreException() {
-        KeyCreationConfig config = new KeyCreationConfig(0, 0);
+        KeyCreationConfig config = KeyCreationConfig.builder().encKeyNumber(0).signKeyNumber(0).build();
 
             Assertions.assertThrows(KeyStoreConfigException.class, () ->
                     keyStoreService.createKeyStore(keyStoreAuth, config, Collections.emptyMap())
@@ -71,19 +73,19 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getPublicKeys() {
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(keyStoreAccess);
 
-        Assertions.assertEquals(5, publicKeys.size());
+        Assertions.assertEquals(1, publicKeys.size());
     }
 
     @Test
     void getPrivateKey() throws Exception {
-        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreConfig.DEFAULT); // BCFKS
+        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreConfig.builder().build()); // BCFKS
 
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass");
-        KeyCreationConfigImpl keyStoreCreationConfig = new KeyCreationConfigImpl(null);
+        KeyCreationConfigImpl keyStoreCreationConfig = new KeyCreationConfigImpl(KeyCreationConfig.builder().build());
         KeyPairGenerator encKeyPairGenerator = keyStoreCreationConfig.getEncKeyPairGenerator("KEYSTORE-ID-0");
         String alias = "KEYSTORE-ID-0" + UUID.randomUUID().toString();
         KeyPairEntry keyPairEntry = encKeyPairGenerator.generateEncryptionKey(alias, readKeyPassword);
@@ -100,7 +102,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getPrivateKeyException() throws Exception {
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, null);
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<String> list = Collections.list(keyStore.aliases());
         Assertions.assertThrows(ClassCastException.class, () -> {
@@ -112,7 +114,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getSecretKey() {
-        KeyCreationConfig config = new KeyCreationConfig(0, 1);
+        KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(1).encKeyNumber(0).build();
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 

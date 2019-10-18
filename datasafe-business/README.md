@@ -18,8 +18,7 @@ package de.adorsys.datasafe.business.impl.pathencryption;
 
 import dagger.Module;
 import dagger.Provides;
-import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.*;
+import PathEncryption;
 
 /**
  * This module is responsible for providing No-op pathencryption of document.

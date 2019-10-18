@@ -20,7 +20,8 @@ import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.PBKDF2;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.Scrypt;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
@@ -105,7 +106,8 @@ public class DatasafeConfig {
      */
     @Bean
     DefaultDatasafeServices datasafeService(StorageService storageService, DFSConfig dfsConfig,
-                                            Optional<OverridesRegistry> registry) {
+                                            Optional<OverridesRegistry> registry,
+                                            KeyStoreConfig keyStoreConfig) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -114,12 +116,14 @@ public class DatasafeConfig {
                 .config(dfsConfig)
                 .storage(storageService)
                 .overridesRegistry(registry.orElse(null))
+                .encryption(EncryptionConfig.builder().keystore(keyStoreConfig).build())
                 .build();
     }
 
     @Bean
     VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig,
-                                                        Optional<OverridesRegistry> registry) {
+                                                        Optional<OverridesRegistry> registry,
+                                                        KeyStoreConfig keyStoreConfig) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -128,6 +132,7 @@ public class DatasafeConfig {
                 .config(dfsConfig)
                 .storage(storageService)
                 .overridesRegistry(registry.orElse(null))
+                .encryption(EncryptionConfig.builder().keystore(keyStoreConfig).build())
                 .build();
     }
 
@@ -260,6 +265,7 @@ public class DatasafeConfig {
         KeyStoreConfig.KeyStoreConfigBuilder builder = KeyStoreConfig.builder();
         builder.encryptionAlgo(kp.getEncryptionAlgo());
         builder.macAlgo(kp.getMacAlgo());
+        builder.passwordKeysAlgo(kp.getPasswordKeyAlgo());
         KeyStoreConfig.PBKDF.PBKDFBuilder pbkdf = KeyStoreConfig.PBKDF.builder();
 
         if (null != kp.getPbkdf2()) {

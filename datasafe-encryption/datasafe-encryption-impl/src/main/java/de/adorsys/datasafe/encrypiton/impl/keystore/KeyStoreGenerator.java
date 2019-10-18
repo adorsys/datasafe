@@ -1,6 +1,11 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyGenerator;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyCreationConfigImpl;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeystoreBuilder;
@@ -89,7 +94,7 @@ public class KeyStoreGenerator {
                 }
             }
             {
-                SecretKeyGenerator secretKeyGenerator = config.getSecretKeyGenerator(keyStoreID);
+                SecretKeyGenerator secretKeyGenerator = config.getSecretKeyGenerator();
 
                 for (Map.Entry<KeyID, Optional<SecretKeyEntry>> keyEntry : secretKeys.entrySet()) {
                     keystoreBuilder = buildSecretKey(

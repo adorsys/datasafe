@@ -5,7 +5,7 @@ import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 @RuntimeDelegate
 public class GenericKeystoreOperations {
 
+    private final KeyCreationConfig config;
     private final DFSConfig dfsConfig;
     private final StorageWriteService writeService;
     private final StorageReadService readService;
@@ -42,9 +43,14 @@ public class GenericKeystoreOperations {
     private final KeyStoreService keyStoreService;
 
     @Inject
-    public GenericKeystoreOperations(DFSConfig dfsConfig, StorageWriteService writeService,
-                                     StorageReadService readService, KeyStoreCache keystoreCache,
-                                     KeyStoreService keyStoreService) {
+    public GenericKeystoreOperations(
+            KeyCreationConfig config,
+            DFSConfig dfsConfig,
+            StorageWriteService writeService,
+            StorageReadService readService,
+            KeyStoreCache keystoreCache,
+            KeyStoreService keyStoreService) {
+        this.config = config;
         this.dfsConfig = dfsConfig;
         this.writeService = writeService;
         this.readService = readService;
@@ -53,7 +59,10 @@ public class GenericKeystoreOperations {
     }
 
     public KeyStore createEmptyKeystore(UserIDAuth auth) {
-        return keyStoreService.createKeyStore(keystoreAuth(auth), new KeyCreationConfig(0, 0));
+        return keyStoreService.createKeyStore(
+                keystoreAuth(auth),
+                config.toBuilder().signKeyNumber(0).encKeyNumber(0).build()
+        );
     }
 
     /**

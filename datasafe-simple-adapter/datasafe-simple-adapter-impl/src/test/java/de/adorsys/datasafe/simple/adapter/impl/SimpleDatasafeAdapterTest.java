@@ -3,6 +3,7 @@ package de.adorsys.datasafe.simple.adapter.impl;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
@@ -61,7 +62,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     void mystart() {
         if (dfsCredentials != null) {
-            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials);
+            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials, new MutableEncryptionConfig());
         } else {
             simpleDatasafeService = new SimpleDatasafeServiceImpl();
         }

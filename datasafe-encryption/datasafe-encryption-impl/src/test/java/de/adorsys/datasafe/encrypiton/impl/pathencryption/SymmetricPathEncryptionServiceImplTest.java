@@ -1,10 +1,11 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
-import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +17,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.security.KeyStore;
-import java.util.Optional;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX_CTR;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,11 +30,11 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
             new DefaultPathEncryptorDecryptor(new SivMode())
     );
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
     private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-    private KeyCreationConfig config = new KeyCreationConfig(0, 1);
+    private KeyCreationConfig config = KeyCreationConfig.builder().encKeyNumber(0).signKeyNumber(1).build();
     private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 

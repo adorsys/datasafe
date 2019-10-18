@@ -2,8 +2,8 @@ package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
-import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -23,12 +23,11 @@ import java.security.KeyStore;
 import java.security.Security;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static de.adorsys.datasafe.business.impl.e2e.DatasafeServicesProvider.STORE_PAZZWORD;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX_CTR;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -59,7 +58,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
         URI keystorePath = datasafeServices.userProfile().privateProfile(auth)
                 .getKeystore().location().asURI();
 
-        KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
+        KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl(KeyStoreConfig.builder().build());
         KeyStore keyStore = keyStoreService.deserialize(
                 Files.readAllBytes(Paths.get(keystorePath)),
                 "ID",

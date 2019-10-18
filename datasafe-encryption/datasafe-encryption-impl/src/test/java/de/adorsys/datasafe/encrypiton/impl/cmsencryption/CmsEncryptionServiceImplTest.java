@@ -3,10 +3,12 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.CmsEncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
-import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +32,6 @@ import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.getKeys;
@@ -44,9 +45,12 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
     private static final String TEST_MESSAGE_CONTENT = "message content";
 
     private static KeyStoreAccess keyStoreAccess;
-    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
-
-    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
+    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(
+            EncryptionConfig.builder().build().getKeystore()
+    );
+    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(
+            new ASNCmsEncryptionConfig(CmsEncryptionConfig.builder().build())
+    );
 
     @BeforeAll
     static void setUp() {
@@ -203,7 +207,7 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
         ReadStorePassword readStorePassword = new ReadStorePassword(label);
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
 
-        KeyCreationConfig config = new KeyCreationConfig(1, 1);
+        KeyCreationConfig config = KeyCreationConfig.builder().encKeyNumber(1).signKeyNumber(1).build();
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
 
         return new KeyStoreAccess(keyStore, keyStoreAuth);

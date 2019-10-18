@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.encrypiton.api.types.keystore;
+package de.adorsys.datasafe.encrypiton.api.types.encryption;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.PBKDF2;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.Scrypt;
@@ -9,10 +9,8 @@ import lombok.Getter;
  * Wrapper for keystore config.
  */
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class KeyStoreConfig {
-
-    public static final KeyStoreConfig DEFAULT = KeyStoreConfig.builder().build();
 
     /**
      * Which type of keystore to use i.e. BCFKS or UBER, etc.
@@ -38,6 +36,12 @@ public class KeyStoreConfig {
      */
     @Builder.Default
     private final String macAlgo = "HmacSHA3_512";
+
+    /**
+     * Algorithm to use when encrypting password-like keys to be stored in keystore (i.e. storage credentials).
+     */
+    @Builder.Default
+    private final String passwordKeysAlgo = "PBEWithHmacSHA256AndAES_256";
 
     /**
      * Password key derivation configuration.

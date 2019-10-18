@@ -2,9 +2,11 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.CmsEncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
-import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +21,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 import java.util.Enumeration;
-import java.util.Optional;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.PATH_KEY_ID_PREFIX;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.PATH_KEY_ID_PREFIX;
 import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.getKeys;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,12 +32,15 @@ class SymetricEncryptionTest extends WithBouncyCastle {
 
     private static final String MESSAGE_CONTENT = "message content";
 
-    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig(), Optional.empty());
+    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(
+            new ASNCmsEncryptionConfig(CmsEncryptionConfig.builder().build())
+    );
+
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
     private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-    private KeyCreationConfig config = new KeyCreationConfig(1, 1);
+    private KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(1).encKeyNumber(1).build();
     private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 

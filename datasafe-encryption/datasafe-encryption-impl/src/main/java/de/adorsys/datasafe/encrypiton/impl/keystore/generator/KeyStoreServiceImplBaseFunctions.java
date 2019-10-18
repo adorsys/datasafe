@@ -4,7 +4,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyEntry;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import lombok.SneakyThrows;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -43,10 +43,6 @@ public class KeyStoreServiceImplBaseFunctions {
      */
     @SneakyThrows
     public static KeyStore newKeyStore(KeyStoreConfig config) {
-        if (config == null) {
-            config = KeyStoreConfig.DEFAULT;
-        }
-
         KeyStore ks = KeyStore.getInstance(config.getType());
 
         if ("BCFKS".equals(config.getType())) {
@@ -81,11 +77,6 @@ public class KeyStoreServiceImplBaseFunctions {
     public static KeyStore loadKeyStore(InputStream in, String storeId,
                                         KeyStoreConfig keyStoreConfig,
                                         ReadStorePassword readStorePassword) {
-        // Use default if blank.
-        if (keyStoreConfig == null) {
-            keyStoreConfig = KeyStoreConfig.DEFAULT;
-        }
-
         KeyStore ks = KeyStore.getInstance(keyStoreConfig.getType());
 
         ks.load(in, readStorePassword.getValue().toCharArray());
