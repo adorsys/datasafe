@@ -5,7 +5,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "6525b867-77a1-4070-870f-9ec5a2de8dec"
+        "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
       },
       "location": "balance.xlsx"
     },
@@ -14,7 +14,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "6612de12-3a82-4213-b3f9-2a618003c1b0"
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
       },
       "location": "important/presentation.ppt"
     },
@@ -34,7 +34,7 @@
       "location": "balance.xlsx",
       "result": {
         "content": {
-          "id": "6525b867-77a1-4070-870f-9ec5a2de8dec"
+          "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
         }
       }
     },
@@ -45,7 +45,7 @@
       "location": "important/presentation.ppt",
       "result": {
         "content": {
-          "id": "6612de12-3a82-4213-b3f9-2a618003c1b0"
+          "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
         }
       }
     },
@@ -54,7 +54,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "e1bb97b1-085e-486e-be5e-670d5b3a777a"
+        "id": "90f6c20b-569f-48c3-a522-765b743e12d8"
       },
       "location": "home/home/balance.xlsx"
     },
@@ -63,7 +63,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
       },
       "location": "important/important/presentation.ppt"
     },
@@ -83,7 +83,7 @@
       "location": "important/presentation.ppt",
       "result": {
         "content": {
-          "id": "6612de12-3a82-4213-b3f9-2a618003c1b0"
+          "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
         }
       }
     },
@@ -94,7 +94,7 @@
       "location": "home/home/balance.xlsx",
       "result": {
         "content": {
-          "id": "e1bb97b1-085e-486e-be5e-670d5b3a777a"
+          "id": "90f6c20b-569f-48c3-a522-765b743e12d8"
         }
       }
     },
@@ -109,7 +109,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
       },
       "location": "documents/home/balance.xlsx"
     },
@@ -118,7 +118,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+        "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
       },
       "location": "documents/home/file.txt"
     },
@@ -127,7 +127,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "cd6a2a0b-28ee-473b-a4bd-4236fb2cef71"
+        "id": "bc5e34c3-bb57-4343-8709-a9fc9be0ef15"
       },
       "location": "important/documents/file.txt"
     },
@@ -178,7 +178,7 @@
       "location": "important/important/presentation.ppt",
       "result": {
         "content": {
-          "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
         }
       }
     },
@@ -189,7 +189,7 @@
       "location": "documents/home/file.txt",
       "result": {
         "content": {
-          "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+          "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
         }
       }
     },
@@ -200,7 +200,7 @@
       "location": "important/documents/file.txt",
       "result": {
         "content": {
-          "id": "cd6a2a0b-28ee-473b-a4bd-4236fb2cef71"
+          "id": "bc5e34c3-bb57-4343-8709-a9fc9be0ef15"
         }
       }
     },
@@ -221,7 +221,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "cd6a2a0b-28ee-473b-a4bd-4236fb2cef71"
+        "id": "bc5e34c3-bb57-4343-8709-a9fc9be0ef15"
       },
       "location": "important/balance.xlsx"
     },
@@ -259,7 +259,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "e1bb97b1-085e-486e-be5e-670d5b3a777a"
+        "id": "90f6c20b-569f-48c3-a522-765b743e12d8"
       },
       "location": "home/presentation.ppt"
     },
@@ -268,7 +268,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "943b276b-a073-4141-9e5e-cad489d1f65b"
+        "id": "bddf3814-1bc9-442b-82fa-4bed9cbf8ef2"
       },
       "location": "balance.xlsx"
     },
@@ -277,7 +277,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
       },
       "location": "documents/presentation.ppt"
     },
@@ -286,7 +286,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
       },
       "location": "file.txt"
     },
@@ -295,7 +295,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+        "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
       },
       "location": "documents/documents/presentation.ppt"
     },
@@ -315,7 +315,7 @@
       "location": "file.txt",
       "result": {
         "content": {
-          "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
         }
       }
     },
@@ -330,7 +330,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
       },
       "location": "documents/home/file.txt"
     },
@@ -352,7 +352,7 @@
       "location": "home/presentation.ppt",
       "result": {
         "content": {
-          "id": "e1bb97b1-085e-486e-be5e-670d5b3a777a"
+          "id": "90f6c20b-569f-48c3-a522-765b743e12d8"
         }
       }
     },
@@ -363,7 +363,7 @@
       "location": "file.txt",
       "result": {
         "content": {
-          "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
         }
       }
     },
@@ -378,7 +378,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
       },
       "location": "document.pdf"
     },
@@ -393,7 +393,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "943b276b-a073-4141-9e5e-cad489d1f65b"
+        "id": "bddf3814-1bc9-442b-82fa-4bed9cbf8ef2"
       },
       "location": "balance.xlsx"
     },
@@ -417,7 +417,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "943b276b-a073-4141-9e5e-cad489d1f65b"
+        "id": "bddf3814-1bc9-442b-82fa-4bed9cbf8ef2"
       },
       "location": "home/file.txt"
     },
@@ -426,7 +426,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
       },
       "location": "documents/file.txt"
     },
@@ -448,7 +448,7 @@
       "location": "document.pdf",
       "result": {
         "content": {
-          "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+          "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
         }
       }
     },
@@ -459,7 +459,7 @@
       "location": "documents/documents/presentation.ppt",
       "result": {
         "content": {
-          "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+          "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
         }
       }
     },
@@ -474,7 +474,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "cd6a2a0b-28ee-473b-a4bd-4236fb2cef71"
+        "id": "bc5e34c3-bb57-4343-8709-a9fc9be0ef15"
       },
       "location": "document.pdf"
     },
@@ -483,7 +483,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "6525b867-77a1-4070-870f-9ec5a2de8dec"
+        "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
       },
       "location": "documents/home/balance.xlsx"
     },
@@ -492,7 +492,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+        "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
       },
       "location": "presentation.ppt"
     },
@@ -501,7 +501,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "6612de12-3a82-4213-b3f9-2a618003c1b0"
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
       },
       "location": "home/important/document.pdf"
     },
@@ -510,7 +510,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "943b276b-a073-4141-9e5e-cad489d1f65b"
+        "id": "bddf3814-1bc9-442b-82fa-4bed9cbf8ef2"
       },
       "location": "balance.xlsx"
     },
@@ -519,7 +519,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
       },
       "location": "presentation.ppt"
     },
@@ -528,7 +528,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
       },
       "location": "presentation.ppt"
     },
@@ -550,7 +550,7 @@
       "location": "important/important/presentation.ppt",
       "result": {
         "content": {
-          "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
         }
       }
     },
@@ -561,7 +561,7 @@
       "location": "file.txt",
       "result": {
         "content": {
-          "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
         }
       }
     },
@@ -572,7 +572,7 @@
       "location": "document.pdf",
       "result": {
         "content": {
-          "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+          "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
         }
       }
     },
@@ -583,7 +583,7 @@
       "location": "presentation.ppt",
       "result": {
         "content": {
-          "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
         }
       }
     },
@@ -598,7 +598,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "6525b867-77a1-4070-870f-9ec5a2de8dec"
+        "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
       },
       "location": "documents/document.pdf"
     },
@@ -609,7 +609,7 @@
       "location": "documents/document.pdf",
       "result": {
         "content": {
-          "id": "6525b867-77a1-4070-870f-9ec5a2de8dec"
+          "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
         }
       }
     },
@@ -630,7 +630,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+        "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
       },
       "location": "document.pdf"
     },
@@ -639,7 +639,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
       },
       "location": "file.txt"
     },
@@ -648,7 +648,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
       },
       "location": "file.txt"
     },
@@ -657,7 +657,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+        "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
       },
       "location": "documents/documents/document.pdf"
     },
@@ -692,7 +692,7 @@
       "location": "presentation.ppt",
       "result": {
         "content": {
-          "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+          "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
         }
       }
     },
@@ -703,7 +703,7 @@
       "location": "file.txt",
       "result": {
         "content": {
-          "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+          "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
         }
       }
     },
@@ -720,7 +720,7 @@
       "location": "important/important/presentation.ppt",
       "result": {
         "content": {
-          "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
         }
       }
     },
@@ -729,7 +729,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
       },
       "location": "documents/documents/balance.xlsx"
     },
@@ -738,7 +738,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
       },
       "location": "documents/home/document.pdf"
     },
@@ -747,7 +747,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
       },
       "location": "important/important/file.txt"
     },
@@ -756,7 +756,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
       },
       "location": "home/file.txt"
     },
@@ -765,7 +765,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
       },
       "location": "important/documents/document.pdf"
     },
@@ -818,7 +818,7 @@
       "location": "documents/documents/presentation.ppt",
       "result": {
         "content": {
-          "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+          "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
         }
       }
     },
@@ -833,7 +833,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
       },
       "location": "home/balance.xlsx"
     },
@@ -844,7 +844,7 @@
       "location": "home/balance.xlsx",
       "result": {
         "content": {
-          "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+          "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
         }
       }
     },
@@ -861,7 +861,7 @@
       "location": "important/documents/document.pdf",
       "result": {
         "content": {
-          "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+          "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
         }
       }
     },
@@ -870,7 +870,7 @@
       "type": "WRITE",
       "storageType": "PRIVATE",
       "contentId": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
       },
       "location": "home/documents/presentation.ppt"
     },
@@ -912,7 +912,7 @@
       "location": "home/balance.xlsx",
       "result": {
         "content": {
-          "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+          "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
         }
       }
     },
@@ -923,7 +923,7 @@
       "location": "documents/home/document.pdf",
       "result": {
         "content": {
-          "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+          "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
         }
       }
     },
@@ -934,7 +934,7 @@
       "location": "home/file.txt",
       "result": {
         "content": {
-          "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
         }
       }
     },
@@ -945,7 +945,7 @@
       "location": "important/documents/document.pdf",
       "result": {
         "content": {
-          "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+          "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
         }
       }
     },
@@ -956,87 +956,1036 @@
       "location": "documents/documents/"
     },
     {
+      "userId": "user-8",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
+      },
+      "location": "important/documents/file.txt"
+    },
+    {
       "userId": "user-5",
       "type": "DELETE",
       "storageType": "PRIVATE",
       "location": "important/important/"
     },
     {
+      "userId": "user-5",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "home/important/document.pdf",
+      "result": {
+        "content": {
+          "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+        }
+      }
+    },
+    {
       "userId": "user-1",
       "type": "DELETE",
       "storageType": "PRIVATE",
       "location": "important/documents/"
+    },
+    {
+      "userId": "user-8",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "important/important/"
+    },
+    {
+      "userId": "user-8",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "important/document.pdf",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-8",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "location": "important/documents/presentation.ppt"
+    },
+    {
+      "userId": "user-9",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
+      },
+      "location": "documents/document.pdf"
+    },
+    {
+      "userId": "user-4",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
+      },
+      "location": "presentation.ppt"
+    },
+    {
+      "userId": "user-7",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "home/",
+      "result": {
+        "dirContent": [
+          "home/balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-0",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": [
+          "presentation.ppt",
+          "home/file.txt"
+        ]
+      }
+    },
+    {
+      "userId": "user-3",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "home/documents/presentation.ppt",
+      "result": {
+        "content": {
+          "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
+        }
+      }
+    },
+    {
+      "userId": "user-5",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "balance.xlsx",
+      "result": {
+        "content": {
+          "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
+        }
+      }
+    },
+    {
+      "userId": "user-4",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "documents/home/document.pdf",
+      "result": {
+        "content": {
+          "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
+        }
+      }
+    },
+    {
+      "userId": "user-7",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "home/"
+    },
+    {
+      "userId": "user-3",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "home/documents/"
+    },
+    {
+      "userId": "user-2",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": ""
+    },
+    {
+      "userId": "user-2",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-8",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "important/documents/"
+    },
+    {
+      "userId": "user-8",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "document.pdf",
+      "result": {
+        "content": {
+          "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
+        }
+      }
+    },
+    {
+      "userId": "user-3",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
+      },
+      "location": "presentation.ppt"
+    },
+    {
+      "userId": "user-5",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
+      },
+      "location": "home/documents/document.pdf"
+    },
+    {
+      "userId": "user-6",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
+      },
+      "location": "documents/important/file.txt"
+    },
+    {
+      "userId": "user-0",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "location": "important/presentation.ppt"
+    },
+    {
+      "userId": "user-0",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "home/file.txt",
+      "result": {
+        "content": {
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+        }
+      }
+    },
+    {
+      "userId": "user-8",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": ""
+    },
+    {
+      "userId": "user-8",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "bc5e34c3-bb57-4343-8709-a9fc9be0ef15"
+      },
+      "location": "home/balance.xlsx"
+    },
+    {
+      "userId": "user-8",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "documents/home/document.pdf",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-9",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": ""
+    },
+    {
+      "userId": "user-6",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": ""
+    },
+    {
+      "userId": "user-5",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "bddf3814-1bc9-442b-82fa-4bed9cbf8ef2"
+      },
+      "location": "document.pdf"
+    },
+    {
+      "userId": "user-8",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "home/balance.xlsx",
+      "result": {
+        "dirContent": [
+          "home/balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-0",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "important/presentation.ppt",
+      "result": {
+        "dirContent": [
+          "important/presentation.ppt"
+        ]
+      }
+    },
+    {
+      "userId": "user-2",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "balance.xlsx",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-8",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "home/"
+    },
+    {
+      "userId": "user-8",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "5bcdb1dd-4aed-4048-bf1a-738f389ef31a"
+      },
+      "location": "important/presentation.ppt"
+    },
+    {
+      "userId": "user-4",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "documents/home/"
+    },
+    {
+      "userId": "user-4",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
+      },
+      "location": "documents/home/presentation.ppt"
+    },
+    {
+      "userId": "user-4",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "file.txt",
+      "result": {
+        "dirContent": [
+          "file.txt"
+        ]
+      }
+    },
+    {
+      "userId": "user-0",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "home/"
+    },
+    {
+      "userId": "user-0",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "documents/balance.xlsx",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-7",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
+      },
+      "location": "presentation.ppt"
+    },
+    {
+      "userId": "user-8",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "90f6c20b-569f-48c3-a522-765b743e12d8"
+      },
+      "location": "home/balance.xlsx"
+    },
+    {
+      "userId": "user-4",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "location": "documents/document.pdf"
+    },
+    {
+      "userId": "user-5",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": [
+          "document.pdf",
+          "documents/documents/document.pdf",
+          "home/documents/document.pdf",
+          "home/important/document.pdf",
+          "balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-1",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-7",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": [
+          "presentation.ppt"
+        ]
+      }
+    },
+    {
+      "userId": "user-8",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "important/presentation.ppt",
+      "result": {
+        "content": {
+          "id": "5bcdb1dd-4aed-4048-bf1a-738f389ef31a"
+        }
+      }
+    },
+    {
+      "userId": "user-0",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "important/presentation.ppt",
+      "result": {
+        "content": {
+          "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+        }
+      }
+    },
+    {
+      "userId": "user-7",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "presentation.ppt",
+      "result": {
+        "content": {
+          "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
+        }
+      }
+    },
+    {
+      "userId": "user-5",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": ""
+    },
+    {
+      "userId": "user-7",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": ""
+    },
+    {
+      "userId": "user-7",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "5bcdb1dd-4aed-4048-bf1a-738f389ef31a"
+      },
+      "location": "home/documents/balance.xlsx"
+    },
+    {
+      "userId": "user-5",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "5bcdb1dd-4aed-4048-bf1a-738f389ef31a"
+      },
+      "location": "document.pdf"
+    },
+    {
+      "userId": "user-0",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "location": "home/file.txt"
+    },
+    {
+      "userId": "user-4",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "important/document.pdf",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-3",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "presentation.ppt",
+      "result": {
+        "content": {
+          "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
+        }
+      }
+    },
+    {
+      "userId": "user-4",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "documents/document.pdf",
+      "result": {
+        "content": {
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+        }
+      }
+    },
+    {
+      "userId": "user-7",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "home/documents/balance.xlsx",
+      "result": {
+        "content": {
+          "id": "5bcdb1dd-4aed-4048-bf1a-738f389ef31a"
+        }
+      }
+    },
+    {
+      "userId": "user-7",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "home/documents/"
+    },
+    {
+      "userId": "user-7",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "5bcdb1dd-4aed-4048-bf1a-738f389ef31a"
+      },
+      "location": "balance.xlsx"
+    },
+    {
+      "userId": "user-5",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": ""
+    },
+    {
+      "userId": "user-8",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "location": "balance.xlsx"
+    },
+    {
+      "userId": "user-3",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "location": "important/balance.xlsx"
+    },
+    {
+      "userId": "user-4",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "documents/file.txt",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-5",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-0",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "important/documents/presentation.ppt",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-3",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "file.txt",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-0",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "important/presentation.ppt",
+      "result": {
+        "content": {
+          "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+        }
+      }
+    },
+    {
+      "userId": "user-8",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "balance.xlsx",
+      "result": {
+        "content": {
+          "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+        }
+      }
+    },
+    {
+      "userId": "user-4",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "documents/home/"
+    },
+    {
+      "userId": "user-4",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
+      },
+      "location": "document.pdf"
+    },
+    {
+      "userId": "user-0",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "location": "home/important/file.txt"
+    },
+    {
+      "userId": "user-1",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "location": "home/home/presentation.ppt"
+    },
+    {
+      "userId": "user-3",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "documents/presentation.ppt",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-2",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-0",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "presentation.ppt",
+      "result": {
+        "dirContent": [
+          "presentation.ppt"
+        ]
+      }
+    },
+    {
+      "userId": "user-1",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "documents/file.txt",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-4",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "documents/document.pdf",
+      "result": {
+        "content": {
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+        }
+      }
+    },
+    {
+      "userId": "user-8",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "location": "balance.xlsx"
+    },
+    {
+      "userId": "user-5",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
+      },
+      "location": "balance.xlsx"
+    },
+    {
+      "userId": "user-1",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "location": "balance.xlsx"
+    },
+    {
+      "userId": "user-2",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "location": "file.txt"
+    },
+    {
+      "userId": "user-3",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "documents/presentation.ppt",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-4",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "presentation.ppt",
+      "result": {
+        "dirContent": [
+          "presentation.ppt"
+        ]
+      }
+    },
+    {
+      "userId": "user-6",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-5",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": [
+          "balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-2",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": ""
+    },
+    {
+      "userId": "user-7",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "location": "document.pdf"
+    },
+    {
+      "userId": "user-6",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "bc5e34c3-bb57-4343-8709-a9fc9be0ef15"
+      },
+      "location": "balance.xlsx"
+    },
+    {
+      "userId": "user-8",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": [
+          "important/presentation.ppt",
+          "home/balance.xlsx",
+          "balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-1",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": [
+          "home/home/presentation.ppt",
+          "balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-6",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "balance.xlsx",
+      "result": {
+        "dirContent": [
+          "balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-4",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "file.txt",
+      "result": {
+        "content": {
+          "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
+        }
+      }
+    },
+    {
+      "userId": "user-5",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "balance.xlsx",
+      "result": {
+        "content": {
+          "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
+        }
+      }
+    },
+    {
+      "userId": "user-0",
+      "type": "DELETE",
+      "storageType": "PRIVATE",
+      "location": "home/important/"
+    },
+    {
+      "userId": "user-0",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "home/file.txt",
+      "result": {
+        "content": {
+          "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+        }
+      }
+    },
+    {
+      "userId": "user-8",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "location": "presentation.ppt"
+    },
+    {
+      "userId": "user-1",
+      "type": "WRITE",
+      "storageType": "PRIVATE",
+      "contentId": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "location": "home/documents/document.pdf"
+    },
+    {
+      "userId": "user-7",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": [
+          "document.pdf",
+          "balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-9",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "important/home/file.txt",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-5",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": [
+          "balance.xlsx"
+        ]
+      }
+    },
+    {
+      "userId": "user-2",
+      "type": "LIST",
+      "storageType": "PRIVATE",
+      "location": "",
+      "result": {
+        "dirContent": []
+      }
+    },
+    {
+      "userId": "user-6",
+      "type": "READ",
+      "storageType": "PRIVATE",
+      "location": "balance.xlsx",
+      "result": {
+        "content": {
+          "id": "bc5e34c3-bb57-4343-8709-a9fc9be0ef15"
+        }
+      }
     }
   ],
   "userPrivateSpace": {
-    "user-1": {},
+    "user-1": {
+      "home/home/presentation.ppt": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "home/documents/document.pdf": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "balance.xlsx": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      }
+    },
     "user-0": {
+      "important/presentation.ppt": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
       "presentation.ppt": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
       },
       "home/file.txt": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
       }
     },
     "user-5": {
-      "documents/documents/document.pdf": {
-        "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
-      },
-      "home/important/document.pdf": {
-        "id": "6612de12-3a82-4213-b3f9-2a618003c1b0"
-      },
       "balance.xlsx": {
-        "id": "6525b867-77a1-4070-870f-9ec5a2de8dec"
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
       }
     },
     "user-4": {
-      "file.txt": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+      "document.pdf": {
+        "id": "f0b369bf-5800-4413-8c8d-efeb6f01dfef"
       },
-      "documents/home/document.pdf": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
+      "presentation.ppt": {
+        "id": "0da90c49-ee7d-4711-bdd9-3c27693c2739"
+      },
+      "documents/document.pdf": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "file.txt": {
+        "id": "65d8cada-2213-4f2b-94b3-c542f8f0cad4"
       }
     },
     "user-3": {
-      "home/documents/presentation.ppt": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
-      }
-    },
-    "user-2": {
+      "important/balance.xlsx": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
       "presentation.ppt": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+        "id": "5bcdf706-bc73-4b1c-bc2d-0eaaa7b794f1"
       }
     },
-    "user-9": {
-      "document.pdf": {
-        "id": "bb004a4e-b5fa-4e91-8103-a9cca394565d"
-      },
-      "file.txt": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
-      },
-      "documents/home/balance.xlsx": {
-        "id": "6525b867-77a1-4070-870f-9ec5a2de8dec"
-      }
-    },
+    "user-2": {},
+    "user-9": {},
     "user-8": {
-      "document.pdf": {
-        "id": "768f827b-2b68-4580-8fd2-9c94ef825574"
+      "important/presentation.ppt": {
+        "id": "5bcdb1dd-4aed-4048-bf1a-738f389ef31a"
       },
-      "important/important/presentation.ppt": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
+      "home/balance.xlsx": {
+        "id": "90f6c20b-569f-48c3-a522-765b743e12d8"
+      },
+      "presentation.ppt": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
+      },
+      "balance.xlsx": {
+        "id": "a67411e3-1e0e-4729-869d-b99b66fde9fd"
       }
     },
     "user-7": {
-      "home/balance.xlsx": {
-        "id": "521b937b-c355-4c96-85d8-d0e8be3bf069"
+      "document.pdf": {
+        "id": "aac4d0d0-efb1-49bb-9759-90550cef00d2"
+      },
+      "balance.xlsx": {
+        "id": "5bcdb1dd-4aed-4048-bf1a-738f389ef31a"
       }
     },
     "user-6": {
-      "file.txt": {
-        "id": "7b486508-4e09-4dcb-b8f0-14020ab44c15"
-      },
       "balance.xlsx": {
-        "id": "943b276b-a073-4141-9e5e-cad489d1f65b"
+        "id": "bc5e34c3-bb57-4343-8709-a9fc9be0ef15"
       }
     }
   },

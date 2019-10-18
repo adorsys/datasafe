@@ -1,8 +1,11 @@
 package de.adorsys.datasafe.types.api.shared;
 
+import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.junit.jupiter.api.condition.OS;
 
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -23,8 +26,17 @@ public class Dirs {
             return walk
                     .filter(it -> !(it.getFileName().startsWith(".") || it.getFileName().startsWith("..")))
                     .filter(it -> !it.equals(root))
-                    .map(it -> root.relativize(it).toString().replaceFirst("\\./", ""))
+                    .map(it -> root.toUri().relativize(it.toUri()).toString().replaceFirst("\\./", ""))
                     .collect(Collectors.toList());
         }
+    }
+
+    public String computeRelativePreventingDoubleUrlEncode(Path root, Path child) {
+        if (!OS.WINDOWS.isCurrentOs()) {
+            return URI.create(root.relativize(child).toString()).getPath();
+        }
+
+        // Windows causes double-encoding of URI
+        return new Uri(URI.create(root.relativize(child).toString().replace('\\', '/'))).asString();
     }
 }
