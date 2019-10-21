@@ -212,6 +212,8 @@ inbox and private space virtual folders - you get similar actions available from
 Additionally, for file versioning purposes like reading only last file version, there is [versioned privatespace](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/VersionedDatasafeServices.java)
 that supports versioned and encrypted private file storage (for storage providers that do not support versioning).
 
+Details about used encryption algorithms can be found in [security whitepaper](SECURITY.WHITEPAPER.md).
+
 # How it works
 
 ## Library modules
