@@ -18,10 +18,10 @@ package de.adorsys.datasafe.business.impl.pathencryption;
 
 import dagger.Module;
 import dagger.Provides;
-import PathEncryption;
+import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 
 /**
- * This module is responsible for providing No-op pathencryption of document.
+ * This module is responsible for providing No-op path encryption of document.
  */
 @Module
 public abstract class NoOpPathEncryptionModule {
@@ -43,7 +43,7 @@ public abstract class NoOpPathEncryptionModule {
 }
 ```
 
-And create DatasafeService like this:
+And create DatasafeService that has PathEncryptionModule overridden with NoOpPathEncryptionModule:
 
 ```java
 package de.adorsys.datasafe.business.impl.service;

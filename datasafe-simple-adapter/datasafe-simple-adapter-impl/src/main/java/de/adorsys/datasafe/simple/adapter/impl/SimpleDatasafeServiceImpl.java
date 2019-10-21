@@ -7,6 +7,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
@@ -72,7 +73,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .encryption(
                             config.toEncryptionConfig().toBuilder()
-                                    .keystore(KeyStoreConfig.builder().type("UBER").build()) // FIXME: It is legacy keystore, Release 1.1 should fix it
+                                    .keystore(extractKeystoreType(config))
                                     .build()
                     )
                     .storage(getStorageService())
@@ -141,7 +142,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
                     .encryption(
                             config.toEncryptionConfig().toBuilder()
-                                    .keystore(KeyStoreConfig.builder().type("UBER").build()) // FIXME: It is legacy keystore, Release 1.1 should fix it
+                                    .keystore(extractKeystoreType(config))
                                     .build()
                     )
                     .storage(getStorageService())
@@ -149,6 +150,17 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
             log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
         }
+    }
+
+    private KeyStoreConfig extractKeystoreType(MutableEncryptionConfig config) {
+        String keystoreType = null == config.getKeystore() || Strings.isNullOrEmpty(config.getKeystore().getType()) ?
+                        "UBER" : config.getKeystore().getType();
+
+        // FIXME: It is legacy keystore default - UBER, Release 1.1 should fix it
+        if (keystoreType.equals("UBER")) {
+            log.warn("Using UBER keystore type, consider switching to BCFKS");
+        }
+        return KeyStoreConfig.builder().type(keystoreType).build();
     }
 
     public StorageService getStorageService() {

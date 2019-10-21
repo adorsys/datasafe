@@ -8,7 +8,7 @@ Datasafe is a cross-platform library that allows sharing and storing data and do
 your data using **AES-GCM** algorithm and uses **CMS-envelopes** as encrypted content wrapper. CMS-envelope
 wraps and encrypts document encryption key using key encryption key that provides additional level of security.
 For user private files, Datasafe uses CMS-envelope with symmetric encryption of data encryption key. For files
-that are shared with other users (sent to their INBOX folder), Datasafe uses asymmetric encryption for 
+that are shared with other users (sent to their INBOX folder), Datasafe uses asymmetric encryption for
 data encryption key, so only recipient (or multiple recipients) can read it.
 
 Datasafe is built with the idea to be as configurable as possible - it uses Dagger2 for dependency injection and modular
@@ -27,7 +27,7 @@ capability too.
 -  Proprietary software **friendly license**
 -  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
 -  AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
--  Secure file sharing with other users 
+-  Secure file sharing with other users
 -  **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
 -  **Client side encryption** - you own your data
 -  Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
@@ -36,16 +36,16 @@ capability too.
 
 ## Performance
 
-Datasafe was tested for performance in Amazon cloud. 
-In short, on m5.xlarge amazon instance with Datasafe library can have write throughput of 50 MiB/s and 80 MiB/s of 
+Datasafe was tested for performance in Amazon cloud.
+In short, on m5.xlarge amazon instance with Datasafe library can have write throughput of 50 MiB/s and 80 MiB/s of
 read throughput, when using **Amazon S3 bucket** as backing storage (performance is CPU-bound and network-bound).
 
-Detailed performance report is here: 
+Detailed performance report is here:
 [Datasafe performance results](datasafe-long-run-tests/README.md)
 
 ## Quick demo
 ### Datasafe-CLI
-You can try Datasafe as a CLI (command-line-interface) executable for encryption of your own sensitive files. 
+You can try Datasafe as a CLI (command-line-interface) executable for encryption of your own sensitive files.
 Your encrypted files can be saved either in S3 bucket or local filesystem safely, because encryption will happen
 locally - on your machine (See [CLI-README](datasafe-cli/README.md) for details).
 
@@ -53,7 +53,7 @@ locally - on your machine (See [CLI-README](datasafe-cli/README.md) for details)
 
 1. [MacOS native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
 1. [Linux native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
-1. Windows executable (N/A yet), please use java version below 
+1. Windows executable (N/A yet), please use java version below
 1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
 
 #### Example actions:
@@ -71,7 +71,7 @@ curl -L https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cl
 ```bash
 echo '{"username": "john", "password": "Doe", "systemPassword": "password"}' > john.credentials
 ```
-- Create your new user profile (credentials come from john.credentials). You can enter value or click enter to accept 
+- Create your new user profile (credentials come from john.credentials). You can enter value or click enter to accept
 the default value when prompted.
 
 ```bash
@@ -86,7 +86,7 @@ secure than having credentials file, but is fine for demo purposes):
 ```bash
 ./datasafe-cli -u=MeHappyUser -p=MyCoolPassword -sp=greatSystemPassword private cat secret.txt
 ```
-Command above will show private file `secret.txt` content for user `MeHappyUser` who has password `MyCoolPassword` and 
+Command above will show private file `secret.txt` content for user `MeHappyUser` who has password `MyCoolPassword` and
 system password `greatSystemPassword`
 
 ##### Encrypt and decrypt some secret data for our user:
@@ -143,7 +143,7 @@ cat private/encrypted_file_name_from_above
 ![list_actions](docs/demo/list_actions.gif)
 
 ### REST based demo
-[Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo of project capabilities with 
+[Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo of project capabilities with
 instructions of how to use it (REST-api based to show how to deploy as encryption server).
 
 
@@ -166,7 +166,7 @@ Datasafe is available from maven-central repository, you can add it to your proj
     <artifactId>datasafe-business</artifactId>
     <version>0.5.0</version>
 </dependency>
-``` 
+```
 
 To add filesystem storage provider:
 ```xml
@@ -175,7 +175,7 @@ To add filesystem storage provider:
     <artifactId>datasafe-storage-impl-fs</artifactId>
     <version>0.5.0</version>
 </dependency>
-``` 
+```
 
 To add S3 storage provider:
 ```xml
@@ -184,7 +184,7 @@ To add S3 storage provider:
     <artifactId>datasafe-storage-impl-s3</artifactId>
     <version>0.5.0</version>
 </dependency>
-``` 
+```
 
 
 # Project overview
@@ -406,7 +406,7 @@ we can use storage provider that supports versioning. But if we have storage pro
 (i.e. minio) we can turn-on software versioning, here is its usage examples;
 
 First, we will obtain versioned Datasafe services that uses filesystem storage adapter:
-[Example:Create versioned Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L48-L55)
+[Example:Create versioned Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L47-L54)
 ```groovy
 Security.addProvider(new BouncyCastleProvider());
 // this will create all Datasafe files and user documents under <temp dir path>
@@ -417,7 +417,7 @@ versionedServices = DaggerVersionedDatasafeServices.builder()
 ```
 
 Next we will create user, this is same as in non-versioned services:
-[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L63-L70)
+[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L62-L69)
 ```groovy
 // Creating new user:
 /*
@@ -428,7 +428,7 @@ versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "pa
 ```
 
 This is how file versioning works when saving file multiple times:
-[Example:Saving file couple of times - versioned](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L82-L106)
+[Example:Saving file couple of times - versioned](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L81-L105)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -456,7 +456,7 @@ assertThat(versionedServices.latestPrivate().list(ListRequest.forDefaultPrivate(
 ```
 
 And we can work with file versions too, of course, everything is encrypted:
-[Example:Lets check how to read oldest file version](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L108-L124)
+[Example:Lets check how to read oldest file version](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L107-L123)
 ```groovy
 // so lets collect all versions
 List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> withVersions =
@@ -476,7 +476,7 @@ assertThat(versionedServices.privateService()
 ```
 
 Another important case to mention  is how to determine if file has changed on storage compared to some copy we have:
-[Example:Check if we have latest file locally](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L134-L165)
+[Example:Check if we have latest file locally](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L133-L164)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -513,8 +513,9 @@ assertThat(savedOnPC).isAfter(savedOnMobile);
 ## Datasafe on versioned storage
 If you have storage for user files on **versioned S3 bucket** and want to get object version when you write
 object or to read some older version encrypted object, you can follow this example of how to do that:
-[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L137-L171)
+[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L138-L173)
 ```groovy
+Security.addProvider(new BouncyCastleProvider());
 // creating new user
 UserIDAuth user = registerUser("john");
 
@@ -551,7 +552,7 @@ assertThat(defaultDatasafeServices.privateService().read(
 ```
 Removing old file version can be done by [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#non-current-days-calculations)
 or manually, using this snippet:
-[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L187-L214)
+[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L189-L216)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -651,7 +652,7 @@ assertThat(walk(root)).asString().contains("file.txt");
 ### Customizing Datasafe to store dynamic and user-provided credentials
 In case user wants to register storage credentials himself or place keystore within credentials-protected
 location one can use this example:
-[Example:Datasafe with multi-dfs setup](datasafe-examples/datasafe-examples-multidfs/src/test/java/de/adorsys/datasafe/examples/business/s3/MultiDfsWithCredentialsExampleTest.java#L103-L217)
+[Example:Datasafe with multi-dfs setup](datasafe-examples/datasafe-examples-multidfs/src/test/java/de/adorsys/datasafe/examples/business/s3/MultiDfsWithCredentialsExampleTest.java#L107-L222)
 ```groovy
 Security.addProvider(new BouncyCastleProvider());
 String directoryBucketS3Uri = "s3://" + DIRECTORY_BUCKET.getBucketName() + "/";
@@ -676,12 +677,13 @@ DefaultDatasafeServices multiDfsDatasafe = DaggerDefaultDatasafeServices
                             // bind URI that contains `directoryBucket` to directoryStorage
                             .put(Pattern.compile(directoryBucketS3Uri + ".+"), directoryStorage)
                             .put(
-                                Pattern.compile("http://127.0.0.1.+"),
+                                Pattern.compile(getDockerUri("http://127.0.0.1") + ".+"),
                                 // Dynamically creates S3 client with bucket name equal to host value
                                 new UriBasedAuthStorageService(
                                     acc -> new S3StorageService(
                                         S3ClientFactory.getClient(
-                                            acc.getOnlyHostPart().toString(),
+                                            acc.getEndpoint(),
+                                            acc.getRegion(),
                                             acc.getAccessKey(),
                                             acc.getSecretKey()
                                         ),
