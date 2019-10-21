@@ -1,0 +1,14 @@
+---
+keystore:
+  type: store-type
+  encryptionAlgo: store-enc
+  pbkdf:
+    scrypt:
+      cost: 1
+      blockSize: 2
+      parallelization: 3
+      saltLength: 4
+  macAlgo: store-mac
+  passwordKeysAlgo: store-pwd-keys
+cms:
+  algo: cms-algo1

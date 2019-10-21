@@ -102,7 +102,8 @@ public class DatasafeConfig {
      */
     @Bean
     DefaultDatasafeServices datasafeService(StorageService storageService, DFSConfig dfsConfig,
-                                            Optional<OverridesRegistry> registry) {
+                                            Optional<OverridesRegistry> registry,
+                                            DatasafeProperties properties) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -111,12 +112,14 @@ public class DatasafeConfig {
                 .config(dfsConfig)
                 .storage(storageService)
                 .overridesRegistry(registry.orElse(null))
+                .encryption(properties.getEncryption().toEncryptionConfig())
                 .build();
     }
 
     @Bean
     VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig,
-                                                        Optional<OverridesRegistry> registry) {
+                                                        Optional<OverridesRegistry> registry,
+                                                        DatasafeProperties properties) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -125,6 +128,7 @@ public class DatasafeConfig {
                 .config(dfsConfig)
                 .storage(storageService)
                 .overridesRegistry(registry.orElse(null))
+                .encryption(properties.getEncryption().toEncryptionConfig())
                 .build();
     }
 

@@ -15,10 +15,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.crypto.CryptoServicesRegistrar;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import picocli.CommandLine;
 
 import java.io.Reader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,6 +53,8 @@ public class Cli implements Runnable {
 
     @SneakyThrows
     public static void main(String[] args) {
+        // Restoring correct SecureRandom implementation
+        reInitializeRandomAgain();
         // Only needed when running using JRE, unnecessary for CLI:
         Security.addProvider(new BouncyCastleProvider());
         // silencing AWS SDK:
@@ -115,5 +120,19 @@ public class Cli implements Runnable {
                 return new Gson().fromJson(is, Credentials.class);
             }
         }
+    }
+
+    /**
+     * See {@link de.adorsys.datasafe.cli.hacks.graalfeature.GraalCompileFixCryptoRegistrar} for details.
+     */
+    @SneakyThrows
+    private static void reInitializeRandomAgain() {
+        Field secureRandom = CryptoServicesRegistrar.class.getDeclaredField("defaultSecureRandom");
+        secureRandom.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(secureRandom, secureRandom.getModifiers() & ~Modifier.FINAL);
+
+        secureRandom.set(CryptoServicesRegistrar.class, null);
     }
 }

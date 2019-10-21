@@ -18,7 +18,7 @@ class ProfileContainsDatasafeVersionTest extends BaseE2ETest {
         UserIDAuth bob = registerUser("bob");
 
         Version version = profileRetrievalService.privateProfile(bob).getAppVersion();
-        assertThat(version).isEqualTo(Version.current());
+        assertThat(version.getId()).isEqualTo(Version.current().getId());
     }
 
     private void init() {

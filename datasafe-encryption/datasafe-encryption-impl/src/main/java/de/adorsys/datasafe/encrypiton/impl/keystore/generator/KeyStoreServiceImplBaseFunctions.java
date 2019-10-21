@@ -1,11 +1,18 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import lombok.SneakyThrows;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.crypto.util.PBKDF2Config;
+import org.bouncycastle.crypto.util.PBKDFConfig;
+import org.bouncycastle.crypto.util.ScryptConfig;
+import org.bouncycastle.jcajce.BCFKSLoadStoreParameter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,13 +38,18 @@ public class KeyStoreServiceImplBaseFunctions {
     /**
      * Create an initializes a new key store. The key store is not yet password protected.
      *
-     * @param keyStoreType storeType
+     * @param config storeType
      * @return KeyStore keyStore
      */
     @SneakyThrows
-    public static KeyStore newKeyStore(KeyStoreType keyStoreType) {
-        KeyStore ks = KeyStore.getInstance(keyStoreType.getValue());
-        ks.load(null, null);
+    public static KeyStore newKeyStore(KeyStoreConfig config) {
+        KeyStore ks = KeyStore.getInstance(config.getType());
+
+        if ("BCFKS".equals(config.getType())) {
+            createBCFKSKeystore(config, ks);
+        } else {
+            ks.load(null, null);
+        }
         return ks;
     }
 
@@ -45,7 +57,6 @@ public class KeyStoreServiceImplBaseFunctions {
      * Write this key store into a byte array
      *
      * @param keystore keystore
-     * @param storeId  storeId
      * @return key store byte array
      */
     @SneakyThrows
@@ -59,16 +70,14 @@ public class KeyStoreServiceImplBaseFunctions {
      * Loads a key store. Given the store bytes, the store type
      *
      * @param in        : the inputStream location which to read the keystore
-     * @param storeId   : The store id. This is passed to the callback handler to identify the requested password record.
-     * @param storeType : the type of this key store. f null, the defaut java keystore type is used.
+     * @param keyStoreConfig : the type of this key store. f null, the defaut java keystore type is used.
      * @return KeyStore
      */
     @SneakyThrows
-    public static KeyStore loadKeyStore(InputStream in, String storeId, KeyStoreType storeType, ReadStorePassword readStorePassword) {
-        // Use default type if blank.
-        if (storeType == null) storeType = KeyStoreType.DEFAULT;
-
-        KeyStore ks = KeyStore.getInstance(storeType.getValue());
+    public static KeyStore loadKeyStore(InputStream in, String storeId,
+                                        KeyStoreConfig keyStoreConfig,
+                                        ReadStorePassword readStorePassword) {
+        KeyStore ks = KeyStore.getInstance(keyStoreConfig.getType());
 
         ks.load(in, readStorePassword.getValue());
         return ks;
@@ -76,12 +85,13 @@ public class KeyStoreServiceImplBaseFunctions {
 
     /**
      * @param data         : the byte array containing key store data.
-     * @param storeId      : The store id. This is passed to the callback handler to identify the requested password record.
-     * @param keyStoreType : the type of this key store. f null, the defaut java keystore type is used.
+     * @param keyStoreConfig : the type of this key store. f null, the defaut java keystore type is used.
      * @return KeyStore
      */
-    public static KeyStore loadKeyStore(byte[] data, String storeId, KeyStoreType keyStoreType, ReadStorePassword readStorePassword) {
-        return loadKeyStore(new ByteArrayInputStream(data), storeId, keyStoreType, readStorePassword);
+    public static KeyStore loadKeyStore(byte[] data, String storeId,
+                                        KeyStoreConfig keyStoreConfig,
+                                        ReadStorePassword readStorePassword) {
+        return loadKeyStore(new ByteArrayInputStream(data), storeId, keyStoreConfig, readStorePassword);
     }
 
     /**
@@ -108,6 +118,49 @@ public class KeyStoreServiceImplBaseFunctions {
         } else if (keyEntry instanceof SecretKeyEntry) {
             addToKeyStore(ks, (SecretKeyEntry) keyEntry);
         }
+    }
+
+    @SneakyThrows
+    private static void createBCFKSKeystore(KeyStoreConfig config, KeyStore ks) {
+        BCFKSLoadStoreParameter.EncryptionAlgorithm encAlgo =
+                BCFKSLoadStoreParameter.EncryptionAlgorithm.valueOf(config.getEncryptionAlgo());
+
+        BCFKSLoadStoreParameter.MacAlgorithm macAlgo =
+                BCFKSLoadStoreParameter.MacAlgorithm.valueOf(config.getMacAlgo());
+
+        ks.load(new BCFKSLoadStoreParameter.Builder()
+                .withStoreEncryptionAlgorithm(encAlgo)
+                .withStorePBKDFConfig(pbkdfConfig(config.getPbkdf()))
+                .withStoreMacAlgorithm(macAlgo)
+                .build()
+        );
+    }
+
+    @SneakyThrows
+    private static PBKDFConfig pbkdfConfig(KeyStoreConfig.PBKDF config) {
+        if (null != config.getPbkdf2()) {
+            AlgorithmIdentifier prf = (AlgorithmIdentifier) PBKDF2Config.class.getDeclaredField(
+                    config.getPbkdf2().getAlgo()
+            ).get(PBKDF2Config.class);
+
+            return new PBKDF2Config.Builder()
+                    .withIterationCount(config.getPbkdf2().getIterCount())
+                    .withSaltLength(config.getPbkdf2().getSaltLength())
+                    .withPRF(prf)
+                    .build();
+
+        } else if (config.getScrypt() != null) {
+
+            return new ScryptConfig.Builder(
+                    config.getScrypt().getCost(),
+                    config.getScrypt().getBlockSize(),
+                    config.getScrypt().getParallelization()
+            )
+                    .withSaltLength(config.getScrypt().getSaltLength())
+                    .build();
+        }
+
+        throw new IllegalArgumentException("Unknown PBKDF type");
     }
 
     @SneakyThrows

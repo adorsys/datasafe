@@ -116,11 +116,11 @@ public class DatasafeFactory {
                 )
                 .enablePathStyleAccess();
 
-            AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
-                    url,
-                    region
-            );
-            amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
+        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
+                url,
+                region
+        );
+        amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
 
         if (! url.toLowerCase().startsWith("https")) {
             log.info("Creating S3 client without https");

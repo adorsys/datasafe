@@ -6,15 +6,16 @@ import lombok.RequiredArgsConstructor;
 /**
  * This class carries logical Datasafe version (i.e. dictates user profile structure) so that application can
  * detect incompatibilities between old data and new code and act accordingly.
+ * Can be extended and used by Datasafe client for identifying different profiles/keystores configurations
  */
 @Getter
 @RequiredArgsConstructor
-public enum Version {
+public class Version {
 
     /**
      * The first version before major changes happened.
      */
-    BASELINE("v0");
+    public static Version BASELINE = new Version("v0");
 
     private final String id;
 

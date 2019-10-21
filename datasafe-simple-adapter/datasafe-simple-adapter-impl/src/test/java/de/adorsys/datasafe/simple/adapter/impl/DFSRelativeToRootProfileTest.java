@@ -2,6 +2,7 @@ package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
@@ -37,7 +38,9 @@ class DFSRelativeToRootProfileTest extends WithStorageProvider {
         DFSCredentials credentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
 
         simpleDatasafeService =
-                null != credentials ? new SimpleDatasafeServiceImpl(credentials) : new SimpleDatasafeServiceImpl();
+                null != credentials ?
+                        new SimpleDatasafeServiceImpl(credentials, new MutableEncryptionConfig())
+                        : new SimpleDatasafeServiceImpl();
 
         userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPasswordTestFactory.getForString("password"));
         simpleDatasafeService.createUser(userIDAuth);

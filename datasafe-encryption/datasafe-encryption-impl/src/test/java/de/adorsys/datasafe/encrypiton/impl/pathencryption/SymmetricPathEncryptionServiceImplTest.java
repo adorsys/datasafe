@@ -1,10 +1,11 @@
 package de.adorsys.datasafe.encrypiton.impl.pathencryption;
 
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
-import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
@@ -20,7 +21,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.security.KeyStore;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX_CTR;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,12 +33,12 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
             new DefaultPathEncryptorDecryptor(new SivMode())
     );
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
     private ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
-    private KeyStoreCreationConfig config = new KeyStoreCreationConfig(0, 1);
-    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+    private KeyCreationConfig config = KeyCreationConfig.builder().encKeyNumber(0).signKeyNumber(1).build();
+    private KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
     private KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
     @Test
@@ -90,7 +91,7 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
     }
 
     private AuthPathEncryptionSecretKey pathEncryptionSecretKey() {
-        KeyID secretKeyId = KeystoreUtil.keyIdByPrefix(keyStore, KeyStoreCreationConfig.PATH_KEY_ID_PREFIX);
+        KeyID secretKeyId = KeystoreUtil.keyIdByPrefix(keyStore, KeyCreationConfig.PATH_KEY_ID_PREFIX);
         SecretKeySpec secretKey = keyStoreService.getSecretKey(
                 keyStoreAccess,
                 secretKeyId

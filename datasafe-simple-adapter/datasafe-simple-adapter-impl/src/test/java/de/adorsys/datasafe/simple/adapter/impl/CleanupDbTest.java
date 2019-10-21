@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
@@ -34,7 +35,7 @@ class CleanupDbTest extends WithStorageProvider {
     private void createSimpleService(WithStorageProvider.StorageDescriptor descriptor) {
         dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
         if (dfsCredentials != null) {
-            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials);
+            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials, new MutableEncryptionConfig());
         } else {
             simpleDatasafeService = new SimpleDatasafeServiceImpl();
         }

@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.encrypiton.api.keystore;
 
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 
@@ -20,25 +21,21 @@ public interface KeyStoreService {
     /**
      * Creates keystore.
      * @param keyStoreAuth Keys for opening keystore and reading key from it
-     * @param keyStoreType Keystore type, example: PKCS or PKCS12 or JKS
      * @param config Keystore will be pre-populated with keys according to it
      * @return Built keystore that is ready to use
      */
     KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
-                            KeyStoreType keyStoreType,
-                            KeyStoreCreationConfig config);
+                            KeyCreationConfig config);
 
     /**
      * Creates keystore that has additional secret keys in it.
      * @param keyStoreAuth Keys for opening keystore and reading key from it
-     * @param keyStoreType Keystore type, example: PKCS12 or UBER or JKS
      * @param config Keystore will be pre-populated with keys according to it
      * @param secretKeys Secret keys to store in keystore, if value is empty - key will be generated
      * @return Built keystore that is ready to use
      */
     KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
-                            KeyStoreType keyStoreType,
-                            KeyStoreCreationConfig config,
+                            KeyCreationConfig config,
                             Map<KeyID, Optional<SecretKeyEntry>> secretKeys);
 
     /**

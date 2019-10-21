@@ -5,7 +5,7 @@ if [[ -z "$1" ]] ; then
   exit 1
 fi
 
-# Docker not available on MacOS, allow to pass
+# Docker not available on TravisCI-provided MacOS, allow to pass
 if ! [ -x "$(command -v docker)" ]; then
   echo 'Error: docker is not installed. Will exit with code 0 not to fail pipeline'
   exit 0

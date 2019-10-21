@@ -1,5 +1,8 @@
-package de.adorsys.datasafe.encrypiton.api.types.keystore;
+package de.adorsys.datasafe.encrypiton.api;
 
+import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecretKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
