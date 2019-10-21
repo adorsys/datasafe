@@ -20,6 +20,7 @@ import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -65,19 +66,19 @@ public class DatasafeConfig {
     @Bean
     @ConditionalOnProperty(name = DATASAFE_S3_STORAGE, havingValue = "true")
     DFSConfig singleDfsConfigS3(DatasafeProperties properties) {
-        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
+        return new DefaultDFSConfig(properties.getSystemRoot(), new ReadStorePassword(properties.getKeystorePassword()));
     }
 
     @Bean
     @ConditionalOnProperty(FILESYSTEM_ENV)
     DFSConfig singleDfsConfigFilesystem(DatasafeProperties properties) {
-        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
+        return new DefaultDFSConfig(properties.getSystemRoot(), new ReadStorePassword(properties.getKeystorePassword()));
     }
 
     @Bean
     @ConditionalOnProperty(name = CLIENT_CREDENTIALS, havingValue = "true")
     DFSConfig withClientCredentials(DatasafeProperties properties) {
-        return new DFSConfigWithStorageCreds(properties.getSystemRoot(), properties.getKeystorePassword());
+        return new DFSConfigWithStorageCreds(properties.getSystemRoot(), new ReadStorePassword(properties.getKeystorePassword()));
     }
 
     @Bean
@@ -93,7 +94,7 @@ public class DatasafeConfig {
     @ConditionalOnMissingBean(DFSConfig.class)
     DFSConfig multiDfsConfig(DatasafeProperties properties) {
         return new MultiDFSConfig(URI.create(properties.getS3Path()), URI.create(properties.getDbProfilePath()),
-                properties.getKeystorePassword());
+                new ReadStorePassword(properties.getKeystorePassword()));
     }
 
     /**

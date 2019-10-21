@@ -1,17 +1,20 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
+import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.types.BaseTypePasswordStringException;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.global.Version;
-import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
-import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
-import de.adorsys.datasafe.types.api.resource.ResolvedResource;
-import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,6 +24,8 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.UnrecoverableKeyException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
@@ -28,7 +33,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.adorsys.datasafe.business.impl.e2e.Const.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests that validates basic functionality - storing data to inbox, privatespace, listing files, etc.
@@ -40,6 +48,104 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     private StorageService storage;
     private Uri location;
+
+
+    /**
+     *
+     * In this test, password is provided as char[].
+     * This means after every operation, the password in cleared.
+     * This is tested for read/write/list/remove
+     *
+     */
+    @SneakyThrows
+    @ParameterizedTest
+    @MethodSource("fsOnly")
+    void testDFSPasswordClearance(WithStorageProvider.StorageDescriptor descriptor) {
+        init(descriptor);
+        UserID userJohn = new UserID("john");
+        assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
+
+        String passwordString = "a password that should be nullyfied";
+        char[] password = passwordString.toCharArray();
+        char[] copyOfPassword = Arrays.copyOf(password, password.length);
+        ReadKeyPassword readKeyPassword = new ReadKeyPassword(password);
+
+        john = registerUser(userJohn.getValue(), readKeyPassword);
+        assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
+
+        String filename = "root.txt";
+        String content = "affe";
+
+        /**
+         * Test clearance after write of file
+         */
+        log.info("1. write file");
+        assertThat(Arrays.equals(password, copyOfPassword)).isTrue();
+        try (OutputStream os = writeToPrivate
+                .write(WriteRequest.forDefaultPrivate(john, filename))) {
+            os.write(content.getBytes());
+        }
+        assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+
+        /**
+         * Test clearance after read of file
+         */
+        // recover password
+        System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
+        john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
+        log.info("password recovered");
+        log.info("2. read file");
+        try (InputStream is = readFromPrivate
+                .read(ReadRequest.forDefaultPrivate(john, filename))) {
+            assertThat(is).hasContent(content);
+        }
+        assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+
+
+        /**
+         * Test clearance after list of files
+         */
+        // recover password
+        System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
+        john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
+        log.info("password recovered");
+        log.info("3. list files");
+        try (Stream<AbsoluteLocation<ResolvedResource>> list = listPrivate.list(ListRequest.forDefaultPrivate(john, new Uri("/")))) {
+            assertEquals(list
+                    .map(it -> it.getResource().asPrivate().decryptedPath().asString())
+                    .collect(Collectors.toList())
+                    .size(), 1);
+        }
+        assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+
+
+        /**
+         * Test clearance after removal of file
+         */
+        // recover password
+        System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
+        john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
+        log.info("password recovered");
+        log.info("4. remove file");
+        removeFromPrivate.remove(RemoveRequest.forDefaultPrivate(john, new Uri(filename)));
+        assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+        assertThrows(BaseTypePasswordStringException.class, () -> john.getReadKeyPassword().getValue());
+
+
+        /**
+         * Test clearance after removal of user
+         */
+        assertThrows(UnrecoverableKeyException.class, () -> profileRemovalService.deregister(john));
+        // recover password
+        System.arraycopy(copyOfPassword, 0, password, 0, copyOfPassword.length);
+        john = new UserIDAuth(john.getUserID(), new ReadKeyPassword(password));
+        log.info("password recovered");
+        log.info("5. remove user");
+        profileRemovalService.deregister(john);
+        assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
+
+        assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
+    }
 
     @ParameterizedTest
     @MethodSource("allStorages")
@@ -61,7 +167,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     @SneakyThrows
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("fsOnly")
     void testUserIsRemovedWithFiles(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");

@@ -3,7 +3,6 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyGenerator;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
@@ -11,6 +10,7 @@ import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyCreationConfigI
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeystoreBuilder;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.Builder;
 import lombok.NonNull;

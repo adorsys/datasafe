@@ -15,7 +15,8 @@ import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
@@ -28,6 +29,7 @@ import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
@@ -138,7 +140,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
         OverridesRegistry registry = new BaseOverridesRegistry();
         this.datasafeServices = DaggerDefaultDatasafeServices.builder()
-            .config(new DefaultDFSConfig(endpointsByHost.get(CREDENTIALS), "PAZZWORT"))
+            .config(new DefaultDFSConfig(endpointsByHost.get(CREDENTIALS), new ReadStorePassword("PAZZWORT")))
             .overridesRegistry(registry)
             .storage(new RegexDelegatingStorage(
                 ImmutableMap.<Pattern, StorageService>builder()
@@ -167,7 +169,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @Test
     void testWriteToPrivateListPrivateReadPrivate() {
-        UserIDAuth john = new UserIDAuth("john", "my-passwd");
+        UserIDAuth john = new UserIDAuth("john", ReadKeyPasswordTestFactory.getForString("my-passwd"));
         registerUser(john);
 
         validateBasicOperationsAndContent(john);
@@ -177,14 +179,14 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @Test
     void testWriteToPrivateListPrivateReadPrivateWithPasswordChange() {
-        UserIDAuth john = new UserIDAuth("john", "my-passwd");
+        UserIDAuth john = new UserIDAuth("john", ReadKeyPasswordTestFactory.getForString("my-passwd"));
         registerUser(john);
 
         validateBasicOperationsAndContent(john);
 
-        ReadKeyPassword newPasswd = new ReadKeyPassword("ANOTHER");
+        ReadKeyPassword newPasswd = ReadKeyPasswordTestFactory.getForString("ANOTHER");
         datasafeServices.userProfile().updateReadKeyPassword(john, newPasswd);
-        UserIDAuth newJohn = new UserIDAuth("john", newPasswd.getValue());
+        UserIDAuth newJohn = new UserIDAuth("john", newPasswd);
 
         assertThrows(UnrecoverableKeyException.class, () -> doBasicOperations(john));
         validateBasicOperationsAndContent(newJohn);

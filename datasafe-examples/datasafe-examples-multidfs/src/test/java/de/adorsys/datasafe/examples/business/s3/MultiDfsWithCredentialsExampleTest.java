@@ -12,6 +12,7 @@ import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
@@ -24,6 +25,7 @@ import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
@@ -117,7 +119,7 @@ class MultiDfsWithCredentialsExampleTest {
         OverridesRegistry registry = new BaseOverridesRegistry();
         DefaultDatasafeServices multiDfsDatasafe = DaggerDefaultDatasafeServices
                 .builder()
-                .config(new DFSConfigWithStorageCreds(directoryBucketS3Uri, "PAZZWORT"))
+                .config(new DFSConfigWithStorageCreds(directoryBucketS3Uri, new ReadStorePassword("PAZZWORT")))
                 // This storage service will route requests to proper bucket based on URI content:
                 // URI with directoryBucket to `directoryStorage`
                 // URI with filesBucketOne will get dynamically generated S3Storage
@@ -158,7 +160,8 @@ class MultiDfsWithCredentialsExampleTest {
         // Depending on path of file - filesBucketOne or filesBucketTwo - requests will be routed to proper bucket.
         // I.e. path filesBucketOne/path/to/file will end up in `filesBucketOne` with key path/to/file
         // his profile and access credentials for `filesBucketOne`  will be in `configBucket`
-        UserIDAuth john = new UserIDAuth("john", "secret");
+        UserIDAuth john = new UserIDAuth("john",
+                ReadKeyPasswordTestFactory.getForString("secret"));
         // Here, nothing expects John has own storage credentials:
         multiDfsDatasafe.userProfile().registerUsingDefaults(john);
 

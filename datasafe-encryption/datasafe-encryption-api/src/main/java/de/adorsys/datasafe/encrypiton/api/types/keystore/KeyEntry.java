@@ -1,5 +1,7 @@
 package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+
 /**
  * Wrapper for key entry within keystore.
  */

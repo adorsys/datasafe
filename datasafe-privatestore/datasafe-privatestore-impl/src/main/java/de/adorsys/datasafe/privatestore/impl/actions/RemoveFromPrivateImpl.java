@@ -33,5 +33,11 @@ public class RemoveFromPrivateImpl implements RemoveFromPrivate {
             request.getLocation(),
             request.getStorageIdentifier())
         );
+        request.getOwner().getReadKeyPassword().clear();
+    }
+
+    @Override
+    public void makeSurePasswordClearanceIsDone() {
+
     }
 }

@@ -10,6 +10,9 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Sets;
@@ -203,7 +206,7 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
     }
 
     private static KeyStoreAccess getKeyStoreAccess(String label) {
-        ReadKeyPassword readKeyPassword = new ReadKeyPassword(label);
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString(label);
         ReadStorePassword readStorePassword = new ReadStorePassword(label);
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
 

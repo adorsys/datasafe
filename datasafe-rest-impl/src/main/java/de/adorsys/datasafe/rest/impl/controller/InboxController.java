@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.exceptions.UnauthorizedException;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -77,7 +76,7 @@ public class InboxController {
                               @RequestHeader String password,
                               @PathVariable String path,
                               HttpServletResponse response) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         // this is needed for swagger, produces is just a directive:
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
@@ -100,7 +99,7 @@ public class InboxController {
     public void deleteFromInbox(@RequestHeader String user,
                                 @RequestHeader String password,
                                 @PathVariable String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
         dataSafeService.inboxService().remove(request);
@@ -120,7 +119,7 @@ public class InboxController {
                                   @RequestHeader String password,
                                   @ApiParam(defaultValue = ".")
                                   @PathVariable(required = false) String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");

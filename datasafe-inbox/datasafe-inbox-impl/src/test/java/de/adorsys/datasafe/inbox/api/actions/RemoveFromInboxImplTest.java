@@ -4,12 +4,12 @@ import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.impl.actions.RemoveFromInboxImpl;
 import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,7 +25,7 @@ class RemoveFromInboxImplTest extends BaseMockitoTest {
     private static final String PATH = "./";
     private static final URI ABSOLUTE_PATH = URI.create("s3://absolute");
 
-    private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
+    private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPasswordTestFactory.getForString(""));
 
     @Mock
     private PrivateKeyService privateKeyService;

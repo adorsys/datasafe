@@ -3,11 +3,11 @@ package de.adorsys.datasafe.business.impl.e2e;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
@@ -53,7 +53,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void testDefaultKeystoreHasProperKeys() {
-        UserIDAuth auth = new UserIDAuth("user", "pass");
+        UserIDAuth auth = new UserIDAuth("user", ReadKeyPasswordTestFactory.getForString("pass"));
         datasafeServices.userProfile().registerUsingDefaults(auth);
         URI keystorePath = datasafeServices.userProfile().privateProfile(auth)
                 .getKeystore().location().asURI();
@@ -62,7 +62,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
         KeyStore keyStore = keyStoreService.deserialize(
                 Files.readAllBytes(Paths.get(keystorePath)),
                 "ID",
-                new ReadStorePassword(STORE_PAZZWORD)
+                STORE_PAZZWORD
         );
 
         assertThat(aliases(keyStore)).filteredOn(it -> it.matches(PATH_KEY_ID_PREFIX + ".+")).hasSize(1);

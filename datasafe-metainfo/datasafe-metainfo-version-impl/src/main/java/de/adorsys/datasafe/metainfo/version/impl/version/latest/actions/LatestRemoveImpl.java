@@ -49,5 +49,11 @@ public class LatestRemoveImpl<V extends LatestDFSVersion> implements VersionedRe
                 .location(latestSnapshotLink.getResource())
                 .build()
         );
+        request.getOwner().getReadKeyPassword().clear();
+    }
+
+    @Override
+    public void makeSurePasswordClearanceIsDone() {
+
     }
 }

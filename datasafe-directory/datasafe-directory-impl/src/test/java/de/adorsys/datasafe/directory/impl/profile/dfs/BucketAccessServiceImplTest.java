@@ -2,10 +2,10 @@ package de.adorsys.datasafe.directory.impl.profile.dfs;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
@@ -15,7 +15,7 @@ class BucketAccessServiceImplTest extends BaseMockitoTest {
 
     private static final String ABSOLUTE_BUCKET = "s3://bucket";
 
-    private UserIDAuth auth = new UserIDAuth(new UserID(""), new ReadKeyPassword(""));
+    private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPasswordTestFactory.getForString(""));
 
     @InjectMocks
     private BucketAccessServiceImpl bucketAccessService;

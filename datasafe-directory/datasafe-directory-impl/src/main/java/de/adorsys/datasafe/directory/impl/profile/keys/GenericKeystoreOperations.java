@@ -7,8 +7,8 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -72,10 +72,10 @@ public class GenericKeystoreOperations {
     @SneakyThrows
     public Key getKey(Supplier<KeyStore> keystore, UserIDAuth forUser, String alias) {
         try {
-            return keystore.get().getKey(alias, forUser.getReadKeyPassword().getValue().toCharArray());
+            return keystore.get().getKey(alias, forUser.getReadKeyPassword().getValue());
         } catch (UnrecoverableKeyException ex) {
             keystoreCache.remove(forUser.getUserID());
-            return keystore.get().getKey(alias, forUser.getReadKeyPassword().getValue().toCharArray());
+            return keystore.get().getKey(alias, forUser.getReadKeyPassword().getValue());
         }
     }
 

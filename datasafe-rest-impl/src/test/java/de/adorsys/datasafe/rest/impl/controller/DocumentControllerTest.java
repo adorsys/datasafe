@@ -1,6 +1,9 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
 import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImpl;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.SneakyThrows;
@@ -48,7 +51,7 @@ class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
     @SneakyThrows
     @Test
     void readDocumentTest() {
-        when(dataSafeService.privateService().read(any())).thenReturn(new ByteArrayInputStream("file content".getBytes()));
+        when(dataSafeService.privateService().read(any())).thenReturn(new PasswordClearingInputStream(new ByteArrayInputStream("file content".getBytes()), null));
 
         RestDocumentationResultHandler document = document("document-read-success",
                 pathParameters(
@@ -76,7 +79,7 @@ class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
     @SneakyThrows
     @Test
     void writeDocumentTest() {
-        when(dataSafeService.privateService().write(any())).thenReturn(new ByteArrayOutputStream());
+        when(dataSafeService.privateService().write(any())).thenReturn(new PasswordClearingOutputStream(new ByteArrayOutputStream(), null));
 
         RestDocumentationResultHandler document = document("document-write-success",
                 pathParameters(
@@ -106,7 +109,7 @@ class DocumentControllerTest extends BaseTokenDatasafeEndpointTest {
         Uri location = new Uri("s3://bucket/user/path/to/file.txt");
         PrivateResource privateResource = new BasePrivateResource(location).resolve(new Uri("/path/to/file.txt"), new Uri("/path/to/file.txt"));
         AbsoluteLocation<ResolvedResource> resolvedPrivate = new AbsoluteLocation<>(new BaseResolvedResource(privateResource, Instant.now()));
-        when(dataSafeService.privateService().list(any())).thenReturn(Stream.of(resolvedPrivate));
+        when(dataSafeService.privateService().list(any())).thenReturn(new PasswordClearingStream<>(Stream.of(resolvedPrivate), null));
 
         RestDocumentationResultHandler document = document("document-list-success",
                 pathParameters(

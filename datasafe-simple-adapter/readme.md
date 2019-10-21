@@ -15,9 +15,9 @@ As this project must not have any dependencies to the docusafe-project all used 
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 
 # parameter classes of service methods
-import UserID;
-import UserIDAuth;
-import ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;

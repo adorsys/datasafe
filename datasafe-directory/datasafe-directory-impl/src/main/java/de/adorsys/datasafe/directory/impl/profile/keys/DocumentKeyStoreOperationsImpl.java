@@ -15,6 +15,8 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 

@@ -10,6 +10,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
@@ -48,8 +49,8 @@ class CleanupDbTest extends WithStorageProvider {
         String content = "content of document";
         String path = "a/b/c.txt";
 
-        UserIDAuth user1 = new UserIDAuth("uzr", "user");
-        UserIDAuth user2 = new UserIDAuth("other", "user");
+        UserIDAuth user1 = new UserIDAuth("uzr", ReadKeyPasswordTestFactory.getForString("user"));
+        UserIDAuth user2 = new UserIDAuth("other", ReadKeyPasswordTestFactory.getForString("user"));
         simpleDatasafeService.createUser(user1);
         simpleDatasafeService.createUser(user2);
 

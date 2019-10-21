@@ -5,6 +5,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
@@ -14,6 +15,7 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +71,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
     @Test
     @SneakyThrows
     void testProfileOnFsDataOnMinioWorks() {
-        UserIDAuth userJohn = new UserIDAuth("john", "doe");
+        UserIDAuth userJohn = new UserIDAuth("john", ReadKeyPasswordTestFactory.getForString("doe"));
 
         // John's profile will be saved to filesystem
         datasafeServices.userProfile().registerUsingDefaults(userJohn);
@@ -124,7 +126,7 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         private final Uri profilesPath;
 
         ProfilesOnFsDataOnMinio(Uri minioBucketPath, Uri profilesPath) {
-            super(minioBucketPath, "PAZZWORT");
+            super(minioBucketPath, new ReadStorePassword("PAZZWORT"));
             this.profilesPath = profilesPath;
         }
 

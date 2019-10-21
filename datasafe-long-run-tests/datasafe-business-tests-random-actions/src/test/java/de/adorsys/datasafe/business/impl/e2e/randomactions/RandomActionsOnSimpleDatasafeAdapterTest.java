@@ -8,8 +8,10 @@ import de.adorsys.datasafe.directory.api.types.*;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.api.InboxService;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
@@ -21,12 +23,13 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -72,33 +75,54 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
             public PrivateSpaceService privateService() {
                 return new PrivateSpaceService() {
                     @Override
-                    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
-                        return datasafeService.list(
+                    public PasswordClearingStream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+                        return new PasswordClearingStream<>(datasafeService.list(
                                 request.getOwner(),
                                 asFqnDir(request.getLocation()),
                                 ListRecursiveFlag.TRUE
-                        ).stream().map(it -> new AbsoluteLocation<>(asResolved(descriptor.getLocation(), it)));
+                        ).stream().map(it -> new AbsoluteLocation<>(asResolved(descriptor.getLocation(), it))), request.getOwner().getReadKeyPassword());
                     }
 
                     @Override
-                    public InputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
-                        return datasafeService.readDocumentStream(
-                                request.getOwner(),
-                                asFqnDoc(request.getLocation())
-                        ).getDocumentStream();
+                    public PasswordClearingInputStream read(ReadRequest<UserIDAuth, PrivateResource> request) {
+                        return new PasswordClearingInputStream(new ByteArrayInputStream(
+                                datasafeService.readDocument(
+                                        request.getOwner(),
+                                        asFqnDoc(request.getLocation())).getDocumentContent().getValue()
+                        ), request.getOwner().getReadKeyPassword());
                     }
 
                     @Override
                     public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
                         datasafeService.deleteFolder(request.getOwner(), asFqnDir(request.getLocation()));
+                        request.getOwner().getReadKeyPassword().clear();
                     }
 
                     @Override
-                    public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
-                        return datasafeService.storeDocumentStream(
-                                request.getOwner(),
-                                asFqnDoc(request.getLocation())
-                        );
+                    public void makeSurePasswordClearanceIsDone() {
+
+                    }
+
+                    @Override
+                    public PasswordClearingOutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
+                        return new PasswordClearingOutputStream(new PutBlobOnClose(asFqnDoc(request.getLocation()), request.getOwner(), datasafeService), request.getOwner().getReadKeyPassword());
+                    }
+
+                    @RequiredArgsConstructor
+                    final class PutBlobOnClose extends ByteArrayOutputStream {
+
+                        private final DocumentFQN documentFQN;
+                        private final UserIDAuth userIDAuth;
+                        private final SimpleDatasafeService datasafeService;
+
+                        @Override
+                        public void close() throws IOException {
+                            super.close();
+                            datasafeService.storeDocument(
+                                    userIDAuth,
+                                    new DSDocument(documentFQN, new DocumentContent(super.toByteArray()))
+                            );
+                        }
                     }
                 };
             }

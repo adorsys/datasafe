@@ -5,6 +5,8 @@ import de.adorsys.datasafe.metainfo.version.api.actions.VersionedWrite;
 import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkService;
 import de.adorsys.datasafe.metainfo.version.impl.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
@@ -51,7 +53,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
     }
 
     @Override
-    public OutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
+    public PasswordClearingOutputStream write(WriteRequest<UserIDAuth, PrivateResource> request) {
         AbsoluteLocation<PrivateResource> latestSnapshotLink =
                 latestVersionLinkLocator.resolveLatestLinkLocation(
                         request.getOwner(), request.getLocation(), request.getStorageIdentifier()
@@ -67,7 +69,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
                 request.getStorageIdentifier()
         );
 
-        return new VersionCommittingStream(
+        return new PasswordClearingOutputStream(new VersionCommittingStream(
                 decryptedPathWithVersion.getVersion(),
                 writeToPrivate.write(
                         request.toBuilder().location(BasePrivateResource.forPrivate(decryptedPath)).build()
@@ -75,7 +77,7 @@ public class LatestWriteImpl<V extends LatestDFSVersion> implements VersionedWri
                 writeToPrivate,
                 request.toBuilder().location(latestSnapshotLink.getResource()).build(),
                 resourceRelativeToPrivate
-        );
+        ), request.getOwner().getReadKeyPassword());
     }
 
     private PrivateResource encryptPath(UserIDAuth auth, Uri uri, PrivateResource base, StorageIdentifier identifier) {

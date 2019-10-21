@@ -4,6 +4,8 @@ import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.metainfo.version.api.version.VersionedPrivateSpaceService;
 import de.adorsys.datasafe.metainfo.version.impl.version.latest.DefaultVersionInfoServiceImpl;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +53,7 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
     @SneakyThrows
     @Test
     void readVersionedDocumentTest() {
-        when(versionedDatasafeServices.latestPrivate().read(any())).thenReturn(new ByteArrayInputStream("hello".getBytes()));
+        when(versionedDatasafeServices.latestPrivate().read(any())).thenReturn(new PasswordClearingInputStream(new ByteArrayInputStream("hello".getBytes()), null));
 
         RestDocumentationResultHandler document = document("versioned-read-success",
                 pathParameters(
@@ -79,7 +81,7 @@ public class VersionControllerTest extends BaseTokenDatasafeEndpointTest {
     @SneakyThrows
     @Test
     void writeVersionedDocumentTest() {
-        when(versionedDatasafeServices.latestPrivate().write(any())).thenReturn(new ByteArrayOutputStream());
+        when(versionedDatasafeServices.latestPrivate().write(any())).thenReturn(new PasswordClearingOutputStream(new ByteArrayOutputStream(), null));
 
         RestDocumentationResultHandler document = document("versioned-write-success",
                 pathParameters(

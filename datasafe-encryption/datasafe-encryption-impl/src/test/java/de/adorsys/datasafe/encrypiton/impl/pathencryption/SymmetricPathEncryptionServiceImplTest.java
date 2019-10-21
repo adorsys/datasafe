@@ -8,6 +8,9 @@ import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.cryptomator.siv.SivMode;
 import org.junit.jupiter.api.Test;
@@ -31,7 +34,7 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
     );
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
-    private ReadKeyPassword readKeyPassword = new ReadKeyPassword("readkeypassword");
+    private ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
     private KeyCreationConfig config = KeyCreationConfig.builder().encKeyNumber(0).signKeyNumber(1).build();

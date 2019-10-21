@@ -13,10 +13,10 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
@@ -70,7 +70,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             this.systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
             storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
             customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
-                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
+                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword))
                     .encryption(
                             config.toEncryptionConfig().toBuilder()
                                     .keystore(extractKeystoreType(config))
@@ -89,7 +89,6 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("url             : " + amazonS3DFSCredentials.getUrl());
             lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
             lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
-            lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
             lsf.add("no https        : " + amazonS3DFSCredentials.isNoHttps());
             lsf.add("threadpool size : " + amazonS3DFSCredentials.getThreadPoolSize());
             log.info(lsf.toString());
@@ -139,7 +138,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
 
             customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
-                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword.getValue()))
+                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword))
                     .encryption(
                             config.toEncryptionConfig().toBuilder()
                                     .keystore(extractKeystoreType(config))
