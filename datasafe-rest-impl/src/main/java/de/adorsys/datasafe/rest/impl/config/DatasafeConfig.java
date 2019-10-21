@@ -93,7 +93,7 @@ public class DatasafeConfig {
     @Bean
     @ConditionalOnMissingBean(DFSConfig.class)
     DFSConfig multiDfsConfig(DatasafeProperties properties) {
-        return new MultiDFSConfig(URI.create(properties.getS3Path()), URI.create(properties.getDbProfilePath()),
+        return new MultiDFSConfig(URI.create(properties.getSystemRoot()), URI.create(properties.getDbProfilePath()),
                 new ReadStorePassword(properties.getKeystorePassword()));
     }
 
