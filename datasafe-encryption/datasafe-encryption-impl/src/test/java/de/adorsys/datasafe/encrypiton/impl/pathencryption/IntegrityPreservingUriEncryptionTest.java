@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
+class IntegrityPreservingUriEncryptionTest extends WithBouncyCastle {
 
-    private SymmetricPathEncryptionServiceImpl bucketPathEncryptionService = new SymmetricPathEncryptionServiceImpl(
-            new DefaultPathEncryptorDecryptor(new SivMode())
+    private IntegrityPreservingUriEncryption symmetricPathEncryptionService = new IntegrityPreservingUriEncryption(
+            new PathSegmentEncryptorDecryptor(new SivMode())
     );
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
@@ -48,7 +48,7 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
         Uri testURI = new Uri(testPath);
         AuthPathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
-        Uri encrypted = bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
+        Uri encrypted = symmetricPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
 
         String[] encryptedSegments = encrypted.asString().split("/");
         assertThat(encryptedSegments[1]).isNotEqualTo(encryptedSegments[3]);
@@ -62,10 +62,10 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
         Uri testURI = new Uri(testPath);
         AuthPathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
-        Uri encrypted = bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
+        Uri encrypted = symmetricPathEncryptionService.encrypt(pathEncryptionSecretKey, testURI);
         log.debug("Encrypted path: {}", encrypted);
 
-        Uri decrypted = bucketPathEncryptionService.decrypt(pathEncryptionSecretKey, encrypted);
+        Uri decrypted = symmetricPathEncryptionService.decrypt(pathEncryptionSecretKey, encrypted);
         log.debug("Decrypted path: {}", decrypted);
 
         assertEquals(testPath, decrypted.toASCIIString());
@@ -76,7 +76,7 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
         AuthPathEncryptionSecretKey pathEncryptionSecretKey = pathEncryptionSecretKey();
 
         assertThrows(BadPaddingException.class,
-                () -> bucketPathEncryptionService.decrypt(pathEncryptionSecretKey,
+                () -> symmetricPathEncryptionService.decrypt(pathEncryptionSecretKey,
                         new Uri(URI.create("bRQiW8qLNPEy5tO7shfV0w==/k0HooCVlmhHkQFw8mc=="))));
     }
 
@@ -86,7 +86,7 @@ class SymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
 
         assertThrows(
                 IllegalBlockSizeException.class,
-                () -> bucketPathEncryptionService.decrypt(pathEncryptionSecretKey, new Uri("simple/text/path/"))
+                () -> symmetricPathEncryptionService.decrypt(pathEncryptionSecretKey, new Uri("simple/text/path/"))
         );
     }
 

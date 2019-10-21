@@ -29,7 +29,7 @@ import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
  */
 @Slf4j
 @RuntimeDelegate
-public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncryptionService {
+public class IntegrityPreservingUriEncryption implements SymmetricPathEncryptionService {
 
     private static final int DOT_SLASH_PREFIX_LENGTH = 2;
     private static final String DOT_SLASH_PREFIX = "./";
@@ -39,7 +39,7 @@ public class SymmetricPathEncryptionServiceImpl implements SymmetricPathEncrypti
     private final Function<PathSegmentWithSecretKeyWith, String> decryptAndDecode;
 
     @Inject
-    public SymmetricPathEncryptionServiceImpl(PathEncryptorDecryptor pathEncryptorDecryptor) {
+    public IntegrityPreservingUriEncryption(PathEncryptorDecryptor pathEncryptorDecryptor) {
         encryptAndEncode = keyAndSegment -> encryptorAndEncoder(keyAndSegment, pathEncryptorDecryptor);
         decryptAndDecode = keyAndSegment -> decryptorAndDecoder(keyAndSegment, pathEncryptorDecryptor);
     }

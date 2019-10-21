@@ -17,12 +17,12 @@ import javax.inject.Inject;
  */
 @Slf4j
 @RuntimeDelegate
-public class DefaultPathEncryptorDecryptor implements PathEncryptorDecryptor {
+public class PathSegmentEncryptorDecryptor implements PathEncryptorDecryptor {
 
     private final SivMode sivMode;
 
     @Inject
-    public DefaultPathEncryptorDecryptor(SivMode sivMode) {
+    public PathSegmentEncryptorDecryptor(SivMode sivMode) {
         this.sivMode = sivMode;
     }
 
