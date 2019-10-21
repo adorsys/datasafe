@@ -92,10 +92,11 @@
             <artifactId>logback-elasticsearch-appender</artifactId>
             <version>1.6</version>
         </dependency>
+        <!-- Not using one from Parent-POM because Spring has problems with it -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.8</version>
+            <version>2.9.10</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

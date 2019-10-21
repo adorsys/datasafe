@@ -143,7 +143,13 @@
   },
   {
     "name": "de.adorsys.datasafe.types.api.global.Version",
-    "allDeclaredFields": true
+    "allDeclaredFields": true,
+    "fields": [
+      {
+        "name": "id",
+        "allowWrite": true
+      }
+    ]
   },
   {
     "name": "de.adorsys.datasafe.directory.api.types.StorageCredentials",
@@ -282,6 +288,15 @@
   {
     "name": "de.adorsys.datasafe.types.api.resource.Uri",
     "allDeclaredFields": true
+  },
+  {
+    "name": "java.util.ArrayList",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   },
   {
     "name": "java.lang.String"
@@ -433,6 +448,19 @@
     ]
   },
   {
+    "name": "org.bouncycastle.crypto.util.PBKDF2Config",
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.bouncycastle.jcajce.provider.asymmetric.EdEC$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "org.bouncycastle.jcajce.provider.asymmetric.ElGamal$Mappings",
     "methods": [
       {
@@ -492,6 +520,15 @@
   },
   {
     "name": "org.bouncycastle.jcajce.provider.digest.Blake2b$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "org.bouncycastle.jcajce.provider.digest.Blake2s$Mappings",
     "methods": [
       {
         "name": "<init>",
@@ -824,6 +861,15 @@
     ]
   },
   {
+    "name": "org.bouncycastle.jcajce.provider.symmetric.GOST3412_2015$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "org.bouncycastle.jcajce.provider.symmetric.Grain128$Mappings",
     "methods": [
       {
@@ -959,6 +1005,15 @@
     ]
   },
   {
+    "name": "org.bouncycastle.jcajce.provider.symmetric.SCRYPT$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "org.bouncycastle.jcajce.provider.symmetric.SEED$Mappings",
     "methods": [
       {
@@ -1086,6 +1141,15 @@
   },
   {
     "name": "org.bouncycastle.jcajce.provider.symmetric.XTEA$Mappings",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "org.bouncycastle.jcajce.provider.symmetric.Zuc$Mappings",
     "methods": [
       {
         "name": "<init>",

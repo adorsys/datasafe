@@ -2,6 +2,7 @@ package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.types.api.shared.Dirs;
@@ -31,7 +32,8 @@ class SimpleDatasafeAdapter043CompatTest extends WithBouncyCastle {
         dfsRoot = tempDir;
         Resources.copyResourceDir("compat-0.4.3", tempDir);
         simpleDatasafeService = new SimpleDatasafeServiceImpl(
-                FilesystemDFSCredentials.builder().root(tempDir.toString()).build()
+                FilesystemDFSCredentials.builder().root(tempDir.toString()).build(),
+                new MutableEncryptionConfig()
         );
     }
 

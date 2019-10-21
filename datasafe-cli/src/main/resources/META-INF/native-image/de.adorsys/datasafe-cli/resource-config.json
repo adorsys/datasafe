@@ -31,10 +31,10 @@
       "pattern": "lib/aws-java-sdk-s3-1.11.538.jar"
     },
     {
-      "pattern": "lib/bcpkix-jdk15on-1.58.jar"
+      "pattern": "lib/bcpkix-jdk15on-1.64.jar"
     },
     {
-      "pattern": "lib/bcprov-jdk15on-1.58.jar"
+      "pattern": "lib/bcprov-jdk15on-1.64.jar"
     },
     {
       "pattern": "lib/checker-qual-2.5.2.jar"
@@ -151,6 +151,12 @@
       "pattern": "lib/lombok-1.18.6.jar"
     },
     {
+      "pattern": "lib/picocli-4.0.3.jar"
+    },
+    {
+      "pattern": "lib/siv-mode-1.3.1.jar"
+    },
+    {
       "pattern": "lib/slf4j-api-1.7.25.jar"
     },
     {
@@ -185,6 +191,9 @@
     },
     {
       "pattern": "org/bouncycastle/asn1/ASN1Exception.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1External.class"
     },
     {
       "pattern": "org/bouncycastle/asn1/ASN1GeneralizedTime.class"
@@ -227,6 +236,9 @@
     },
     {
       "pattern": "org/bouncycastle/asn1/ASN1Primitive.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Sequence$1.class"
     },
     {
       "pattern": "org/bouncycastle/asn1/ASN1Sequence.class"
@@ -376,7 +388,16 @@
       "pattern": "org/bouncycastle/asn1/DERVisibleString.class"
     },
     {
+      "pattern": "org/bouncycastle/asn1/DLApplicationSpecific.class"
+    },
+    {
       "pattern": "org/bouncycastle/asn1/DLBitString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLExternal.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLFactory.class"
     },
     {
       "pattern": "org/bouncycastle/asn1/DLOutputStream.class"
@@ -385,10 +406,19 @@
       "pattern": "org/bouncycastle/asn1/DLSequence.class"
     },
     {
+      "pattern": "org/bouncycastle/asn1/DLSequenceParser.class"
+    },
+    {
       "pattern": "org/bouncycastle/asn1/DLSet.class"
     },
     {
+      "pattern": "org/bouncycastle/asn1/DLSetParser.class"
+    },
+    {
       "pattern": "org/bouncycastle/asn1/DLTaggedObject.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DateUtil.class"
     },
     {
       "pattern": "org/bouncycastle/asn1/DefiniteLengthInputStream.class"
@@ -457,6 +487,9 @@
       "pattern": "org/bouncycastle/asn1/eac/EACObjectIdentifiers.class"
     },
     {
+      "pattern": "org/bouncycastle/asn1/edec/EdECObjectIdentifiers.class"
+    },
+    {
       "pattern": "org/bouncycastle/asn1/gm/GMObjectIdentifiers.class"
     },
     {
@@ -464,6 +497,9 @@
     },
     {
       "pattern": "org/bouncycastle/asn1/iana/IANAObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/iso/ISOIECObjectIdentifiers.class"
     },
     {
       "pattern": "org/bouncycastle/asn1/kisa/KISAObjectIdentifiers.class"
@@ -566,6 +602,9 @@
     },
     {
       "pattern": "org/bouncycastle/asn1/x509/X509ObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x9/X9ECParameters.class"
     },
     {
       "pattern": "org/bouncycastle/asn1/x9/X9ObjectIdentifiers.class"
@@ -781,6 +820,15 @@
       "pattern": "org/bouncycastle/crypto/CipherParameters.class"
     },
     {
+      "pattern": "org/bouncycastle/crypto/CryptoServicesPermission.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/CryptoServicesRegistrar$Property.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/CryptoServicesRegistrar.class"
+    },
+    {
       "pattern": "org/bouncycastle/crypto/Digest.class"
     },
     {
@@ -793,13 +841,37 @@
       "pattern": "org/bouncycastle/crypto/params/AsymmetricKeyParameter.class"
     },
     {
+      "pattern": "org/bouncycastle/crypto/params/DHParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DHValidationParameters.class"
+    },
+    {
       "pattern": "org/bouncycastle/crypto/params/DSAKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DSAParameters.class"
     },
     {
       "pattern": "org/bouncycastle/crypto/params/DSAPrivateKeyParameters.class"
     },
     {
       "pattern": "org/bouncycastle/crypto/params/DSAPublicKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DSAValidationParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/ECKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/ECPublicKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/Ed25519PrivateKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/Ed25519PublicKeyParameters.class"
     },
     {
       "pattern": "org/bouncycastle/crypto/params/RSAKeyParameters.class"
@@ -812,6 +884,21 @@
     },
     {
       "pattern": "org/bouncycastle/jcajce/io/CipherInputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/CipherOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/DigestUpdatingOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/MacUpdatingOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/OutputStreamFactory.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/SignatureUpdatingOutputStream.class"
     },
     {
       "pattern": "org/bouncycastle/jcajce/provider/asymmetric/DH$Mappings.class"
@@ -833,6 +920,9 @@
     },
     {
       "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ECGOST$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/EdEC$Mappings.class"
     },
     {
       "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ElGamal$Mappings.class"
@@ -886,6 +976,21 @@
       "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ecgost12/KeyFactorySpi.class"
     },
     {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi$ED25519.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi$ED448.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi$X25519.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi$X448.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi.class"
+    },
+    {
       "pattern": "org/bouncycastle/jcajce/provider/asymmetric/elgamal/KeyFactorySpi.class"
     },
     {
@@ -917,6 +1022,9 @@
     },
     {
       "pattern": "org/bouncycastle/jcajce/provider/digest/Blake2b$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/Blake2s$Mappings.class"
     },
     {
       "pattern": "org/bouncycastle/jcajce/provider/digest/DSTU7564$Mappings.class"
@@ -991,6 +1099,9 @@
       "pattern": "org/bouncycastle/jcajce/provider/drbg/DRBG$Mappings.class"
     },
     {
+      "pattern": "org/bouncycastle/jcajce/provider/drbg/DRBG$URLSeededSecureRandom.class"
+    },
+    {
       "pattern": "org/bouncycastle/jcajce/provider/drbg/DRBG.class"
     },
     {
@@ -1039,6 +1150,9 @@
       "pattern": "org/bouncycastle/jcajce/provider/symmetric/GOST28147$Mappings.class"
     },
     {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/GOST3412_2015$Mappings.class"
+    },
+    {
       "pattern": "org/bouncycastle/jcajce/provider/symmetric/Grain128$Mappings.class"
     },
     {
@@ -1082,6 +1196,9 @@
     },
     {
       "pattern": "org/bouncycastle/jcajce/provider/symmetric/Rijndael$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/SCRYPT$Mappings.class"
     },
     {
       "pattern": "org/bouncycastle/jcajce/provider/symmetric/SEED$Mappings.class"
@@ -1132,6 +1249,9 @@
       "pattern": "org/bouncycastle/jcajce/provider/symmetric/XTEA$Mappings.class"
     },
     {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Zuc$Mappings.class"
+    },
+    {
       "pattern": "org/bouncycastle/jcajce/provider/symmetric/util/ClassUtil.class"
     },
     {
@@ -1144,7 +1264,13 @@
       "pattern": "org/bouncycastle/jcajce/provider/util/AsymmetricKeyInfoConverter.class"
     },
     {
+      "pattern": "org/bouncycastle/jcajce/spec/DHDomainParameterSpec.class"
+    },
+    {
       "pattern": "org/bouncycastle/jcajce/util/AlgorithmParametersUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/util/AnnotatedPrivateKey.class"
     },
     {
       "pattern": "org/bouncycastle/jcajce/util/DefaultJcaJceHelper.class"
@@ -1264,6 +1390,9 @@
       "pattern": "org/bouncycastle/pqc/jcajce/provider/newhope/NHKeyFactorySpi.class"
     },
     {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/qtesla/QTESLAKeyFactorySpi.class"
+    },
+    {
       "pattern": "org/bouncycastle/pqc/jcajce/provider/rainbow/RainbowKeyFactorySpi.class"
     },
     {
@@ -1304,6 +1433,21 @@
     },
     {
       "pattern": "org/bouncycastle/util/Strings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/DecoderException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/Encoder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/EncoderException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/Hex.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/HexEncoder.class"
     },
     {
       "pattern": "org/bouncycastle/util/io/StreamOverflowException.class"

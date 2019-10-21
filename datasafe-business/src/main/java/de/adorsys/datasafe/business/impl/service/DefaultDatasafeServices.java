@@ -13,6 +13,7 @@ import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActi
 import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -81,6 +82,16 @@ public interface DefaultDatasafeServices {
          */
         @BindsInstance
         Builder overridesRegistry(@Nullable OverridesRegistry overridesRegistry);
+
+        /**
+         * All encryption stuff configuration
+         * - which keystore to use
+         * - how to encrypt keys in keystore
+         * - which types of keys to create
+         * - what kind of encryption to use when encrypting document content
+         */
+        @BindsInstance
+        Builder encryption(@Nullable EncryptionConfig encryptionConfig);
 
         /**
          * @return Provide NEW instance of <b>Standard Datasafe</b> services. All dependencies except

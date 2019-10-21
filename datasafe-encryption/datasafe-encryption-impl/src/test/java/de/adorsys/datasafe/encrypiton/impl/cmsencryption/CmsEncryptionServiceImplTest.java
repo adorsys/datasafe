@@ -3,10 +3,12 @@ package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.CmsEncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
-import de.adorsys.datasafe.encrypiton.impl.keystore.DefaultPasswordBasedKeyConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +45,12 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
     private static final String TEST_MESSAGE_CONTENT = "message content";
 
     private static KeyStoreAccess keyStoreAccess;
-    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(new DefaultPasswordBasedKeyConfig());
-
-    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(new DefaultCMSEncryptionConfig());
+    private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(
+            EncryptionConfig.builder().build().getKeystore()
+    );
+    private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(
+            new ASNCmsEncryptionConfig(CmsEncryptionConfig.builder().build())
+    );
 
     @BeforeAll
     static void setUp() {
@@ -202,8 +207,8 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
         ReadStorePassword readStorePassword = new ReadStorePassword(label);
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
 
-        KeyStoreCreationConfig config = new KeyStoreCreationConfig(1, 1);
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyStoreType.DEFAULT, config);
+        KeyCreationConfig config = KeyCreationConfig.builder().encKeyNumber(1).signKeyNumber(1).build();
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
 
         return new KeyStoreAccess(keyStore, keyStoreAuth);
     }

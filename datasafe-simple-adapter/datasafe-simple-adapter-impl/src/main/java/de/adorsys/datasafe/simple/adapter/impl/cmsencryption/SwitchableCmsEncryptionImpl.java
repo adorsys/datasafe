@@ -2,7 +2,7 @@ package de.adorsys.datasafe.simple.adapter.impl.cmsencryption;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
-import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionConfig;
+import de.adorsys.datasafe.encrypiton.impl.cmsencryption.ASNCmsEncryptionConfig;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.CMSEncryptionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +22,7 @@ public class SwitchableCmsEncryptionImpl extends CMSEncryptionServiceImpl {
     private boolean withCmsEncryption = checkCmsEnccryptionToUse();
 
     @Inject
-    public SwitchableCmsEncryptionImpl(CMSEncryptionConfig encryptionConfig) {
+    public SwitchableCmsEncryptionImpl(ASNCmsEncryptionConfig encryptionConfig) {
         super(encryptionConfig);
     }
 

@@ -78,7 +78,7 @@
                 <version>${maven.jar.plugin}</version>
                 <configuration>
                     <excludes>
-                        <exclude>de.adorsys.datasafe.cli.hacks</exclude>
+                        <exclude>de.adorsys.datasafe.cli.hacks.graalfeature</exclude>
                     </excludes>
                     <archive>
                         <manifest>
@@ -156,7 +156,8 @@
                                 --no-server
                                 --no-fallback
                                 --enable-all-security-services
-                                --features=de.adorsys.datasafe.cli.hacks.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders
+                                --features=de.adorsys.datasafe.cli.hacks.graalfeature.GraalCompileFixNpeOnMissingServiceTypeInKnownProviders,de.adorsys.datasafe.cli.hacks.graalfeature.GraalCompileFixCryptoRegistrar
+                                --initialize-at-build-time=de.adorsys.datasafe.cli.hacks.NoOpRandom
 
                                 --initialize-at-build-time=org.apache.http.conn.routing.HttpRoute
                                 --initialize-at-build-time=org.apache.http.conn.HttpClientConnectionManager
