@@ -7,11 +7,7 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
 import de.adorsys.datasafe.directory.api.types.*;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-<<<<<<< HEAD
-=======
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
->>>>>>> develop
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
 import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;

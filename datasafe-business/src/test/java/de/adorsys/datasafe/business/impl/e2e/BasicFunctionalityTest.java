@@ -72,8 +72,6 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
         john = registerUser(userJohn.getValue(), readKeyPassword);
         assertThat(profileRetrievalService.userExists(userJohn)).isTrue();
-        assertThat(profileRetrievalService.privateProfile(john).getAppVersion()).isEqualTo(Version.current());
-        assertThat(profileRetrievalService.publicProfile(john.getUserID()).getAppVersion()).isEqualTo(Version.current());
 
         String filename = "root.txt";
         String content = "affe";
