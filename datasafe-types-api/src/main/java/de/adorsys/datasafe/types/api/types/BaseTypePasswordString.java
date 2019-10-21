@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  */
 @Slf4j
 @RequiredArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"toBeCleared", "cleared"} )
 @ToString
 public class BaseTypePasswordString {
     private char[] value;

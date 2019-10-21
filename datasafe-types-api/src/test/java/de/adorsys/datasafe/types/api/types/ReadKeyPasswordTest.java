@@ -21,7 +21,7 @@ public class ReadKeyPasswordTest {
         Assertions.assertThat(Arrays.equals(password, copyOfPassword)).isTrue();
         readKeyPassword.clear();
         Assertions.assertThat(Arrays.equals(password, copyOfPassword)).isFalse();
-        Assertions.assertThat(Arrays.equals(readKeyPassword.getValue(), copyOfPassword)).isFalse();
+        assertThrows(BaseTypePasswordStringException.class, () -> readKeyPassword.getValue());
 
     }
 

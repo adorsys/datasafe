@@ -1,9 +1,7 @@
 package de.adorsys.datasafe.types.api.utils;
 
-import com.sun.xml.internal.ws.policy.AssertionSet;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.types.ReadKeyPasswordTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -92,7 +90,7 @@ class ObfuscateTest {
 
     @Test
     void disabledHidingSecretRequiresSecureLogsOff() {
-        Obfuscate.secureSensitive = "OFF";
+        Obfuscate.secureSensitive = "TRUE";
         assertThat(Obfuscate.secureSensitive(TEST_STRING)).isEqualTo("****");
 
         Obfuscate.secureSensitive = "OFF";

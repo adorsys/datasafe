@@ -7,7 +7,6 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileOperations;
 import de.adorsys.datasafe.directory.api.types.*;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
 import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;
@@ -23,6 +22,7 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,7 +53,7 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
         StatisticService statisticService = new StatisticService();
 
         executeTest(
-                smallSimpleDocusafeAdapterFixture(),
+                getSimpleDatasafeAdapterFixture(),
                 descriptor.getName(),
                 filesizeInKb,
                 threadCount,
