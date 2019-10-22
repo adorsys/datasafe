@@ -14,7 +14,6 @@ profile: private and public
 <details>
   <summary>Default location within system dfs</summary>
   
-    ```
         /profiles
             /private
                 /username - user's private profile 
@@ -27,13 +26,11 @@ profile: private and public
             /private
                 /keystore - keystore consists user's private key
                 /files/SIV - location of private files. SIV is 3 symbol path encryption algorithm identifier.
-    ```
 </details>
       
 <details>             
   <summary>Example private profile:</summary>
   
-```
     {
         "keystore": {
             "resource": "s3://bucketname/users/username/private/keystore"
@@ -55,13 +52,11 @@ profile: private and public
         },
         "appVersion": "BASELINE"
     }
-```
 </details>
          
 <details>   
   <summary>Example public profile:</summary>
   
-```
     {
         "publicKeys": {
             "resource": "s3://bucketname/users/username/public/pubkeys"
@@ -71,27 +66,29 @@ profile: private and public
         },
         "appVersion": "BASELINE"
     }   
-```
 </details>
 
 ## Keystore encryption
 System wide password is used to open keystore and users' personal password to read users' keys. Password can be changed 
 without the need of changing keystore content.
-By default used:
--  BCFKS keystore type to store on disk and UBER to cache keys in memory;
+By default used BCFKS keystore type to store on disk with:
 -  keystore encryption algorithm is AES256_KWP;
 -  password key derivation algorithm PRF_SHA512;
 -  salt length 32 bytes;
 -  iteration count 20480;
--  keystore authentication algorithm HmacSHA3_512;
+-  keystore authentication algorithm HmacSHA3_512 (protects keystore from tampering);
 -  password-like keys encryption algorithm is PBEWithHmacSHA256AndAES_256.
 
+UBER is used to cache keys in memory. Despite UBER keystore protected worse than BCFKS it has better performance and 
+is a good choice to cache keys in memory. Anyway if someone gets to memory dump of machine there is really not that 
+much can be done to protect application.
+[UBER algorithms decription](https://cryptosense.com/blog/bouncycastle-keystore-security/).
+
+
 All this parameters can be changed by setting keystore config. For example instead of BCFKS keystore can be used UBER, 
-instead of PBKDF2 based routines can be used Scrypt based.
+instead of PBKDF2 (Password-Based Key Derivation Function) ) based routines can be used Scrypt based.
 
 Keystore contains secret keys for private files and path encryption, public/private key pairs for sharing files. 
-
-Default keystore prefix for generated keys is "KEYSTORE-ID-0". 
 
 Each signing and encryption key has unique alias which is formed from keystore prefix plus UUID.
 
@@ -104,7 +101,6 @@ encryption modes such as CCM or GCM in preference to CBC. It prevent attacks com
 Can be configured to use another encryption algorithm. Datasafe supports AES algorithms with 128, 192 and 256 key size 
 in operation modes CBC (Cipher-block chaining), CCM (CBC-MAC), GCM or WRAP (Key Wrap). For the cases when 
 large amounts of data (> 300GB) are going to be stored one should prefer CHACHA20_POLY1305 that is also available.
-Default key prefix is "PRIVATE_SECRET"
 Encrypted data wrapped into CMS standard envelope which contents information about key ID and algorithm used for encryption.
 [RFC5652 section-6.2.3](http://tools.ietf.org/html/rfc5652#section-6.2.3)
 
@@ -112,8 +108,7 @@ Encrypted data wrapped into CMS standard envelope which contents information abo
 Datasafe uses CMS for exchanging and sharing files. Public key is used to encrypt content-encryption key which is then 
 stored inside cms envelope with other meta information like key alias and date. Receiver decrypts content-encryption 
 key with his private key. By default used RSA public keys with key size 2048 "SHA256withRSA". For data encryption used 
-AES GCM 256 symmetric key. Prefix in keystore "enc-" + keystoreID + UUID. Files can be shared with other clients of 
-library whose inbox location is known.
+AES GCM 256 symmetric key. Files can be shared with other clients of library whose inbox location is known.
 
 Files can be shared simultaneously with any number of recipients. And it doesn't require repeating encryption for each recipient
 due to support of multiple recipients from CMS standard. Anyone can send file to user's inbox if his inbox location is known.
@@ -125,9 +120,9 @@ Files can be stored in subdirectories. Each part of path encrypted separately us
 Default implementation of symmetric path encryption is integrity preserving which means that each segment is 
 authenticated against its parent path hash (SHA-256 digest), so attacker can't move a/file to b/file without being detected. 
 
-It requires 2 secret keys for path encryption/decryption. They stored inside keystore with prefixes "PATH_SECRET" for 
-S2V AES key used in Cipher-based Message Authentication Code(CMAC) mode and "PATH_CTR_SECRET_" for CTR AES key used in 
-counter mode. Both 256 bit size by default.
+It requires 2 secret keys for path encryption/decryption (both 256 bit size by default): 
+-  S2V AES key used in CMAC (Cipher-based Message Authentication Code) mode
+-  CTR AES key used in counter mode.
 
 After encryption each path part concatenated to result encrypted path.
 
