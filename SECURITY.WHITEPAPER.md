@@ -8,25 +8,31 @@ CMS (Cryptographic Message Syntax) standard [RFC5652](https://tools.ietf.org/htm
 files encrypted with symmetric keys as well as for sharing files with other users using asymmetric key pairs. 
 
 ## Default locations
-By default on system start have to be configured one system dfs (distributed file system).
-It is used for storing users' private profile, public profile, keystore with public keys, keystore with private keys.
+To maintain information where user data resides, Datasafe uses concept of user profile. There are two types of user 
+profile: private and public
 
-Default location within system dfs:
-```
-    /profiles
-        /private
-            /username - user's private profile 
-        /public
-            /username - user's public profile   
-    /users
-        /public
-            /pubkeys - keystore consists user's public key
-            /inbox - location of shared with user files    
-        /private
-            /keystore - keystore consists user's private key
-            /files/SIV - location of private files. SIV is 3 symbol path encryption algorithm identifier.
-```                   
-Example private profile:
+<details>
+  <summary>Default location within system dfs</summary>
+  
+    ```
+        /profiles
+            /private
+                /username - user's private profile 
+            /public
+                /username - user's public profile   
+        /users
+            /public
+                /pubkeys - keystore consists user's public key
+                /inbox - location of shared with user files    
+            /private
+                /keystore - keystore consists user's private key
+                /files/SIV - location of private files. SIV is 3 symbol path encryption algorithm identifier.
+    ```
+</details>
+      
+<details>             
+  <summary>Example private profile:</summary>
+  
 ```
     {
         "keystore": {
@@ -50,8 +56,11 @@ Example private profile:
         "appVersion": "BASELINE"
     }
 ```
-            
-Example public profile:
+</details>
+         
+<details>   
+  <summary>Example public profile:</summary>
+  
 ```
     {
         "publicKeys": {
@@ -63,7 +72,8 @@ Example public profile:
         "appVersion": "BASELINE"
     }   
 ```
-    
+</details>
+
 ## Keystore encryption
 System wide password is used to open keystore and users' personal password to read users' keys. Password can be changed 
 without the need of changing keystore content.
