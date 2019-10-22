@@ -2,12 +2,12 @@
 
 ## General information
 Datasafe is a flexible encryption library. It uses different encryption algorithms. Some of them can be 
-configured by client application. It uses encryption algorithms provided by Bouncy Castle library by default.
-CMS (crypto message syntax) standard [RFC5652](https://tools.ietf.org/html/rfc5652.html) employed for storing private 
+configured by client application. Under the hood Datasafe uses BouncyCastle library to perform encryption.
+CMS (Cryptographic Message Syntax) standard [RFC5652](https://tools.ietf.org/html/rfc5652.html) employed for storing private 
 files encrypted with symmetric keys as well as for sharing files with other users using asymmetric key pairs. 
 
 ## Default storage configuration
-Datasafe library can operate with different type of storages: filesystem, datasabe, s3 compatible(amazon aws, ceph, minio).
+Datasafe library can operate with different type of storages: filesystem, database, s3 compatible(amazon aws, ceph, minio).
 Other storage types can be added by implementing storage api interface. 
 Each library user can use more then one storage. All user storages form users dfs (distributed file system)
 By default on system start have to be configured one system dfs where users profiles will be stored.
@@ -67,14 +67,20 @@ Example public profile:
 ```
     
 ## Keystore encryption
-User personal password is used to access keystore. Password can be changed without the need of changing keystore content.
-By default BCFKS keystore type is used. Keystore encryption algorithm is AES256_KWP. Password key derivation algorithm 
-PRF_SHA512 with salt length 32 and iteration count 20480, KeyStore authentication algorithm HmacSHA3_512, password-like 
-keys encryption algorithm is PBEWithHmacSHA256AndAES_256.
+System wide password is used to open keystore and users' personal password to read users' keys. Password can be changed 
+without the need of changing keystore content.
+By default used:
+-  BCFKS keystore type to store on disk and UBER to cache keys in memory;
+-  keystore encryption algorithm is AES256_KWP;
+-  password key derivation algorithm PRF_SHA512;
+-  salt length 32 bytes;
+-  iteration count 20480;
+-  keystore authentication algorithm HmacSHA3_512;
+-  password-like keys encryption algorithm is PBEWithHmacSHA256AndAES_256.
+
 All this parameters can be changed by setting keystore config. For example instead of BCFKS keystore can be used UBER, 
 instead of PBKDF2 based routines can be used Scrypt based.
-Keystore contains secret keys for private files and path encryption, public/private key pairs for sharing files and 
-certificates for sign/verify files. 
+Keystore contains secret keys for private files and path encryption, public/private key pairs for sharing files. 
 Default keystore prefix for generated keys is "KEYSTORE-ID-0". Each signing and encryption key has unique alias which 
 is formed from keystore prefix plus UUID.
 
@@ -82,7 +88,8 @@ is formed from keystore prefix plus UUID.
 Datasafe files uploaded by users in private area are encrypted using symmetric key 256-bit Advanced Encryption Standard (AES).
 By default GCM operation mode is used.
 Can be configured to use another encryption algorithm. Datasafe supports AES algorithms with 128, 192 and 256 key size 
-in operation modes CBC, CCM, GCM or WRAP. Also supported CHACHA20_POLY1305 algorithm.
+in operation modes CBC, CCM, GCM or WRAP. For the cases when large amounts of data (> 300GB) are going to be stored one 
+should prefer CHACHA20_POLY1305 that is also available.
 Default key prefix is "PRIVATE_SECRET"
 Encrypted data wrapped into CMS standard envelope which contents information about key ID and algorithm used for encryption.
 [RFC5652 section-6.2.3](http://tools.ietf.org/html/rfc5652#section-6.2.3)
@@ -98,9 +105,8 @@ due to support of multiple recipients from CMS standard. Anyone can send file to
 ## File location encryption
 Files can be stored in subdirectories. Each part of path encrypted separately using AES-GCM-SIV algorithm. 
 (Synthetic Initialization Vector) [RFC-845]("https://tools.ietf.org/html/rfc845").
-Default implementation of symmetric path encryption is integrity preserving which means that each invocation of 
-cipher(segment) yields same result. Additionally each segment is authenticated against its parent path hash (SHA-256 digest), so 
-attacker can't move a/file to b/file without being detected 
+Default implementation of symmetric path encryption is integrity preserving which means that each segment is 
+authenticated against its parent path hash (SHA-256 digest), so attacker can't move a/file to b/file without being detected. 
 
 It requires 2 secret keys for path encryption/decryption. They stored inside keystore with prefixes "PATH_SECRET" for 
 S2V AES key used in Cipher-based Message Authentication Code(CMAC) mode and "PATH_CTR_SECRET_" for CTR AES key used in 
