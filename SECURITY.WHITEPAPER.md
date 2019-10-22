@@ -79,11 +79,15 @@ By default used BCFKS keystore type to store on disk with:
 -  keystore authentication algorithm HmacSHA3_512 (protects keystore from tampering);
 -  password-like keys encryption algorithm is PBEWithHmacSHA256AndAES_256.
 
-UBER is used to cache keys in memory. Despite UBER keystore protected worse than BCFKS it has better performance and 
-is a good choice to cache keys in memory. Anyway if someone gets to memory dump of machine there is really not that 
-much can be done to protect application.
-[UBER algorithms decription](https://cryptosense.com/blog/bouncycastle-keystore-security/).
+UBER keystore type is used to cache keys in memory 
+([algorithms details](https://cryptosense.com/blog/bouncycastle-keystore-security/)).
+Despite UBER keystore protected worse than BCFKS it has better performance and still a good choice to cache keys in memory. 
+Anyway if someone gets to memory dump of machine there is really not that much can be done to protect application.
 
+UBER parameters:
+-  keys encryption algorithm is PBEWithSHAAnd3-KeyTripleDES-CBC;
+-  salt length 20 bytes;
+-  iteration count random(1024, 2047).
 
 All this parameters can be changed by setting keystore config. For example instead of BCFKS keystore can be used UBER, 
 instead of PBKDF2 (Password-Based Key Derivation Function) ) based routines can be used Scrypt based.
