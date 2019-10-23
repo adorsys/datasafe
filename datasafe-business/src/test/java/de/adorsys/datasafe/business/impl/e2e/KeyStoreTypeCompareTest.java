@@ -13,6 +13,7 @@ import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -34,6 +35,8 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
         long t2 = test(descriptor, "johnBCFKS", "BCFKS");
         log.info("UBER  test took:" + t1);
         log.info("BCFKS test took:" + t2);
+        // We make sure, that with BCFKS it does not take longer than three times of UBER
+        Assert.assertTrue(t1 * 3 > t2);
     }
 
 
