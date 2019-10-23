@@ -80,8 +80,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     public KeyStore updateKeyStoreReadKeyPassword(KeyStore current,
                                                   KeyStoreAuth currentCredentials,
                                                   KeyStoreAuth newCredentials) {
-        KeyStore newKeystore = KeyStore.getInstance(current.getType());
-        newKeystore.load(null, null);
+        KeyStore newKeystore = KeyStoreServiceImplBaseFunctions.newKeyStore(config);
         Enumeration<String> aliases = current.aliases();
 
         while (aliases.hasMoreElements()) {
