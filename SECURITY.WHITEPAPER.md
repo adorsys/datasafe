@@ -11,7 +11,8 @@ Path encryption
 
 CMS Encryption
 
-*  [AES256_GCM, CHACHA20_POLY1305, PBKDF2, SHA256withRSA](#Private-files-encryption-algoritm)
+*  [AES256_GCM, CHACHA20_POLY1305, AES256-WRAP](#Private-files-encryption-algoritm) - for private files
+*  [RSAES-PKCS1-v1_5, SHA256withRSA](#Encryption-used-for-file-sharing) - for sharing files
 
 ## General information
 Datasafe is a flexible encryption library. It uses different encryption algorithms. They can be 
@@ -120,12 +121,14 @@ encryption modes such as CCM or GCM in preference to CBC. It prevent attacks com
 Can be configured to use another encryption algorithm. Datasafe supports AES algorithms with 128, 192 and 256 key size 
 in operation modes CBC (Cipher-block chaining), CCM (CBC-MAC), GCM or WRAP (Key Wrap). For the cases when 
 large amounts of data (> 300GB) are going to be stored one should prefer CHACHA20_POLY1305 that is also available.
-Encrypted data wrapped into CMS standard envelope which contents information about key ID and algorithm used for encryption.
+Encrypted data wrapped into CMS standard envelope which contents information about key ID and algorithm used for encryption. 
+Key derivation algorithm is AES256-WRAP (OID 2.16.840.1.101.3.4.1.45)
 [RFC5652 section-6.2.3](http://tools.ietf.org/html/rfc5652#section-6.2.3)
 
 ## Encryption used for file sharing
-Datasafe uses CMS for exchanging and sharing files. Public key is used to encrypt content-encryption key which is then 
-stored inside cms envelope with other meta information like key alias and date. Receiver decrypts content-encryption 
+Datasafe uses CMS for exchanging and sharing files. Public key is used to create content-encryption key using 
+RSAES-PKCS1-v1_5 (OID 1.2.840.113549.1.1.1) algorithm. Public key then stored inside cms envelope with other meta 
+information like key alias and date. Receiver decrypts content-encryption 
 key with his private key. By default used RSA public keys with key size 2048 "SHA256withRSA". For data encryption used 
 AES GCM 256 symmetric key. Files can be shared with other clients of library whose inbox location is known.
 
