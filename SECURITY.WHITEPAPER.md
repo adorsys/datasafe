@@ -7,14 +7,14 @@ Keystore
 
 Path encryption
 
-*  [AES-GCM-SIV](#File-location-encryption)
+*  [AES-SIV](#File-location-encryption)
 
 CMS Encryption
 
-*  [AES256_GCM, CHACHA20_POLY1305, SHA256withRSA](#Private-files-encryption-algoritm)
+*  [AES256_GCM, CHACHA20_POLY1305, PBKDF2, SHA256withRSA](#Private-files-encryption-algoritm)
 
 ## General information
-Datasafe is a flexible encryption library. It uses different encryption algorithms. Some of them can be 
+Datasafe is a flexible encryption library. It uses different encryption algorithms. They can be 
 configured by client application. Under the hood Datasafe uses BouncyCastle library to perform encryption.
 
 CMS (Cryptographic Message Syntax) standard [RFC5652](https://tools.ietf.org/html/rfc5652.html) employed for storing private 
@@ -133,13 +133,13 @@ Files can be shared simultaneously with any number of recipients. And it doesn't
 due to support of multiple recipients from CMS standard. Anyone can send file to user's inbox if his inbox location is known.
 
 ## File location encryption
-Files can be stored in subdirectories. Each part of path encrypted separately using AES-GCM-SIV algorithm. 
+Files can be stored in subdirectories. Each part of path encrypted separately using AES-SIV algorithm. 
 (Synthetic Initialization Vector) [RFC-845](https://tools.ietf.org/html/rfc845).
 
 Default implementation of symmetric path encryption is integrity preserving which means that each segment is 
 authenticated against its parent path hash (SHA-256 digest), so attacker can't move a/file to b/file without being detected. 
 
-It requires 2 secret keys for path encryption/decryption (both 256 bit size by default): 
+It requires 2 secret keys for path encryption/decryption (both 256 bit key size by default, block size 128 bit): 
 -  S2V AES key used in CMAC (Cipher-based Message Authentication Code) mode
 -  CTR AES key used in counter mode.
 
