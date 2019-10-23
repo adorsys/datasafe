@@ -12,13 +12,13 @@ import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,7 +51,7 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
         String filename = "root.txt";
         String content = "affe";
 
-        DateTime start = new DateTime();
+        Date start = new Date();
 
         for (int i = 0; i < NUMBER_WRITES; i++) {
             log.debug("write file for the {} time", i);
@@ -69,8 +69,8 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
             }
         }
 
-        DateTime stop = new DateTime();
-        long diff = stop.getMillis() - start.getMillis();
+        Date stop = new Date();
+        long diff = stop.getTime() - start.getTime();
 
         log.info("TIME TOOK {} MILLISECS",diff);
         return diff;
