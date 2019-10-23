@@ -1,11 +1,27 @@
 # Datasafe Security Whitepaper
 
+Keystore
+ 
+*  [BCFKS](#Keystore-encryption) - to store keystores (AES256_KWP, PRF_SHA512, PBEWithHmacSHA256AndAES_256)
+*  [UBER](#Keystore-encryption) - to cache keys in memory (PBEWithSHAAnd3-KeyTripleDES-CBC)
+
+Path encryption
+
+*  [AES-GCM-SIV](#File-location-encryption)
+
+CMS Encryption
+
+*  [AES256_GCM, CHACHA20_POLY1305, SHA256withRSA](#Private-files-encryption-algoritm)
+
 ## General information
 Datasafe is a flexible encryption library. It uses different encryption algorithms. Some of them can be 
 configured by client application. Under the hood Datasafe uses BouncyCastle library to perform encryption.
 
 CMS (Cryptographic Message Syntax) standard [RFC5652](https://tools.ietf.org/html/rfc5652.html) employed for storing private 
-files encrypted with symmetric keys as well as for sharing files with other users using asymmetric key pairs. 
+files encrypted with symmetric keys as well as for sharing files with other users using asymmetric key pairs.
+
+Encryption algorithms are customizable by [Encryption config](datasafe-encryption/datasafe-encryption-api/src/main/java/de/adorsys/datasafe/encrypiton/api/types/encryption/EncryptionConfig.java).
+It combines configs which describe parameters of keystore, keys inside keystore and cms.
 
 ## Default locations
 To maintain information where user data resides, Datasafe uses concept of user profile. There are two types of user 
@@ -89,12 +105,11 @@ UBER parameters:
 -  salt length 20 bytes;
 -  iteration count random(1024, 2047).
 
-All this parameters can be changed by setting keystore config. For example instead of BCFKS keystore can be used UBER, 
-instead of PBKDF2 (Password-Based Key Derivation Function) ) based routines can be used Scrypt based.
+All this parameters can be changed by setting [keystore config](datasafe-encryption/datasafe-encryption-api/src/main/java/de/adorsys/datasafe/encrypiton/api/types/encryption/KeyStoreConfig.java). 
+For example instead of BCFKS keystore can be used UBER, instead of PBKDF2 (Password-Based Key Derivation Function) 
+based routines can be used Scrypt based.
 
 Keystore contains secret keys for private files and path encryption, public/private key pairs for sharing files. 
-
-Each signing and encryption key has unique alias which is formed from keystore prefix plus UUID.
 
 ## Private files encryption algoritm 
 Datasafe files uploaded by users in private area are encrypted using symmetric key 256-bit Advanced Encryption Standard (AES).
