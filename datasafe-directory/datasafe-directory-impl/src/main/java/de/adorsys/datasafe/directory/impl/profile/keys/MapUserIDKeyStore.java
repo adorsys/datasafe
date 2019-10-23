@@ -20,20 +20,23 @@ public class MapUserIDKeyStore {
     private final Map<UserID, KeyStore> map;
 
 
-    /**
-     * This method must not be called. It is task of the DefaultKeyStoreCache
-     * to generate a new Uber Key Store. For that the password is needed which is
-     * not provided in this method here.
-     */
     /*
-    public KeyStore computeIfAbsent(UserID key, Function<? super UserID, ? extends KeyStore> mappingFunction) {
+      The original Map.computeIfAbsent method must not be called and thus is not provided
+      by this class! It is task of the DefaultKeyStoreCache to generate a new Uber Key Store
+      for the cache only. For that the password needed, which is
+      not provided in this method here, is expected too. See next method.
 
-        RuntimeException e = new RuntimeException("Must not be called");
-        log.error(e.getMessage(), e);
-        throw e;
-    }
+      public KeyStore computeIfAbsent(UserID key, Function<? super UserID, ? extends KeyStore> mappingFunction) {}
      */
 
+    /**
+     * If the keyStore provided is a not a UBER KeyStore, a new UBER KeyStore without a
+     * ReadStorePassword is created. This store is returned and stored in the map.
+     *
+     * @param userIDAuth
+     * @param mappingFunction
+     * @return always a UBER KeyStore
+     */
     public KeyStore computeIfAbsent(UserIDAuth userIDAuth, Function<? super UserID, ? extends KeyStore> mappingFunction) {
         if (map.containsKey(userIDAuth.getUserID())) {
             return map.get(userIDAuth.getUserID());
@@ -47,9 +50,16 @@ public class MapUserIDKeyStore {
 
     }
 
+    /**
+     *  Does the conversion of any keyStore to a UBER KeyStore.
+     *
+     * @param currentCredentials
+     * @param current
+     * @return
+     */
     @SneakyThrows
     private KeyStore convertKeyStoreToUberKeyStore(UserIDAuth currentCredentials, KeyStore current) {
-        log.warn("the keystore is of type {} and will be converted to uber in cache", current.getType() );
+        log.debug("the keystore for user {} is of type {} and will be converted to uber in cache", currentCredentials.getUserID(), current.getType() );
 
         KeyStore newKeystore = KeyStore.getInstance("UBER");
         newKeystore.load(null, null);
