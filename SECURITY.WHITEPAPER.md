@@ -2,17 +2,17 @@
 
 Keystore
  
-*  [BCFKS](#Keystore-encryption) - to store keystores (AES256_KWP, PRF_SHA512, PBEWithHmacSHA256AndAES_256)
-*  [UBER](#Keystore-encryption) - to cache keys in memory (PBEWithSHAAnd3-KeyTripleDES-CBC)
+*   [BCFKS](#Keystore-encryption) - to store keystores (AES256_KWP, PRF_SHA512, PBEWithHmacSHA256AndAES_256)
+*   [UBER](#Keystore-encryption) - to cache keys in memory (PBEWithSHAAnd3-KeyTripleDES-CBC)
 
 Path encryption
 
-*  [AES-SIV](#File-location-encryption)
+*   [AES-SIV](#File-location-encryption)
 
 CMS Encryption
 
-*  [AES256_GCM, CHACHA20_POLY1305, AES256-WRAP](#Private-files-encryption-algoritm) - for private files
-*  [RSAES-PKCS1-v1_5, SHA256withRSA](#Encryption-used-for-file-sharing) - for sharing files
+*   [AES256_GCM, CHACHA20_POLY1305, AES256-WRAP](#Private-files-encryption-algoritm) - for private files
+*   [RSAES-PKCS1-v1_5, SHA256withRSA](#Encryption-used-for-file-sharing) - for sharing files
 
 ## General information
 Datasafe is a flexible encryption library. It uses different encryption algorithms. They can be 
@@ -89,12 +89,12 @@ profile: private and public
 System wide password is used to open keystore and users' personal password to read users' keys. Password can be changed 
 without the need of changing keystore content.
 By default used BCFKS keystore type to store on disk with:
--  keystore encryption algorithm is AES256_KWP;
--  password key derivation algorithm PRF_SHA512;
--  salt length 32 bytes;
--  iteration count 20480;
--  keystore authentication algorithm HmacSHA3_512 (protects keystore from tampering);
--  password-like keys encryption algorithm is PBEWithHmacSHA256AndAES_256.
+*   keystore encryption algorithm is AES256_KWP;
+*   password key derivation algorithm PRF_SHA512;
+*   salt length 32 bytes;
+*   iteration count 20480;
+*   keystore authentication algorithm HmacSHA3_512 (protects keystore from tampering);
+*   password-like keys encryption algorithm is PBEWithHmacSHA256AndAES_256.
 
 UBER keystore type is used to cache keys in memory 
 ([algorithms details](https://cryptosense.com/blog/bouncycastle-keystore-security/)).
@@ -102,9 +102,9 @@ Despite UBER keystore protected worse than BCFKS it has better performance and s
 Anyway if someone gets to memory dump of machine there is really not that much can be done to protect application.
 
 UBER parameters:
--  keys encryption algorithm is PBEWithSHAAnd3-KeyTripleDES-CBC;
--  salt length 20 bytes;
--  iteration count random(1024, 2047).
+*   keys encryption algorithm is PBEWithSHAAnd3-KeyTripleDES-CBC;
+*   salt length 20 bytes;
+*   iteration count random(1024, 2047).
 
 All this parameters can be changed by setting [keystore config](datasafe-encryption/datasafe-encryption-api/src/main/java/de/adorsys/datasafe/encrypiton/api/types/encryption/KeyStoreConfig.java). 
 For example instead of BCFKS keystore can be used UBER, instead of PBKDF2 (Password-Based Key Derivation Function) 
@@ -143,14 +143,14 @@ Default implementation of symmetric path encryption is integrity preserving whic
 authenticated against its parent path hash (SHA-256 digest), so attacker can't move a/file to b/file without being detected. 
 
 It requires 2 secret keys for path encryption/decryption (both 256 bit key size by default, block size 128 bit): 
--  S2V AES key used in CMAC (Cipher-based Message Authentication Code) mode
--  CTR AES key used in counter mode.
+*   S2V AES key used in CMAC (Cipher-based Message Authentication Code) mode
+*   CTR AES key used in counter mode.
 
 After encryption each path part concatenated to result encrypted path.
 
 Example:
--  unencrypted file location: /path/to/file/document.pdf
--  encrypted location:        /cipher(path)/cipher(to)/cipher(file)/cipher(document.pdf)
+*   unencrypted file location: /path/to/file/document.pdf
+*   encrypted location:        /cipher(path)/cipher(to)/cipher(file)/cipher(document.pdf)
 
 Such approach gives ability to list any directory without the need of decryption all files location.
 Resulting encrypted path string is Base64-urlsafe.
