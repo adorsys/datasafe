@@ -60,7 +60,7 @@ class RuntimeOverrideOperationsTest {
     class PathEncryptionImplOverridden extends PathEncryptionImpl {
 
         PathEncryptionImplOverridden(PathEncryptionImplRuntimeDelegatable.ArgumentsCaptor captor) {
-            super(captor.getBucketPathEncryptionService(), captor.getPrivateKeyService());
+            super(captor.getSymmetricPathEncryptionService(), captor.getPrivateKeyService());
         }
 
         @Override

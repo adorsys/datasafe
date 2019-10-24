@@ -9,7 +9,7 @@ import org.cryptomator.siv.SivMode;
 import javax.inject.Inject;
 
 /**
- * Default path encryption/decryption that uses AES-GCM-SIV mode.
+ * Default path encryption/decryption that uses AES-SIV mode.
  *
  * @see <a href="https://tools.ietf.org/html/rfc845">RFC-845</a>
  * Using @see <a href="https://github.com/cryptomator/siv-mode">SIV-MODE</a> library for encryption and decryption
@@ -17,12 +17,12 @@ import javax.inject.Inject;
  */
 @Slf4j
 @RuntimeDelegate
-public class DefaultPathEncryptorDecryptor implements PathEncryptorDecryptor {
+public class PathSegmentEncryptorDecryptor implements PathEncryptorDecryptor {
 
     private final SivMode sivMode;
 
     @Inject
-    public DefaultPathEncryptorDecryptor(SivMode sivMode) {
+    public PathSegmentEncryptorDecryptor(SivMode sivMode) {
         this.sivMode = sivMode;
     }
 

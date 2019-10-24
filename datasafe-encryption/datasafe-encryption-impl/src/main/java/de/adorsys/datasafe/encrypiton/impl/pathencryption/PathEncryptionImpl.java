@@ -20,13 +20,13 @@ import java.util.function.Function;
 @RuntimeDelegate
 public class PathEncryptionImpl implements PathEncryption {
 
-    private final SymmetricPathEncryptionService bucketPathEncryptionService;
+    private final SymmetricPathEncryptionService symmetricPathEncryptionService;
     private final PrivateKeyService privateKeyService;
 
     @Inject
-    public PathEncryptionImpl(SymmetricPathEncryptionService bucketPathEncryptionService,
+    public PathEncryptionImpl(SymmetricPathEncryptionService symmetricPathEncryptionService,
                               PrivateKeyService privateKeyService) {
-        this.bucketPathEncryptionService = bucketPathEncryptionService;
+        this.symmetricPathEncryptionService = symmetricPathEncryptionService;
         this.privateKeyService = privateKeyService;
     }
 
@@ -36,7 +36,7 @@ public class PathEncryptionImpl implements PathEncryption {
     @Override
     public Uri encrypt(UserIDAuth forUser, Uri path) {
         AuthPathEncryptionSecretKey pathEncryptionSecretKey = privateKeyService.pathEncryptionSecretKey(forUser);
-        Uri encrypt = bucketPathEncryptionService.encrypt(pathEncryptionSecretKey, path);
+        Uri encrypt = symmetricPathEncryptionService.encrypt(pathEncryptionSecretKey, path);
         log.debug("encrypted path {} for user {} path {}", encrypt, forUser.getUserID(), path);
         return encrypt;
     }
@@ -48,7 +48,7 @@ public class PathEncryptionImpl implements PathEncryption {
     public Function<Uri, Uri> decryptor(UserIDAuth forUser) {
         AuthPathEncryptionSecretKey pathEncryptionSecretKey = privateKeyService.pathEncryptionSecretKey(forUser);
         return encryptedPath -> {
-            Uri decrypt = bucketPathEncryptionService.decrypt(pathEncryptionSecretKey, encryptedPath);
+            Uri decrypt = symmetricPathEncryptionService.decrypt(pathEncryptionSecretKey, encryptedPath);
             log.debug("decrypted path {} for user {} path {}", decrypt, forUser.getUserID(), encryptedPath);
             return decrypt;
         };

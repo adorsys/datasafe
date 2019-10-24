@@ -22,14 +22,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * cipher(path) will yield same string.
  */
 @Slf4j
-public class LegacySymmetricPathEncryptionServiceImpl implements LegacySymmetricPathEncryptionService {
+public class LegacyIntegrityPreservingUriEncryption implements LegacySymmetricPathEncryptionService {
 
     private static final String PATH_SEPARATOR = "/";
 
     private final LegacyPathEncryptionConfig encryptionConfig;
 
     @Inject
-    public LegacySymmetricPathEncryptionServiceImpl(LegacyPathEncryptionConfig encryptionConfig) {
+    public LegacyIntegrityPreservingUriEncryption(LegacyPathEncryptionConfig encryptionConfig) {
         this.encryptionConfig = encryptionConfig;
     }
 

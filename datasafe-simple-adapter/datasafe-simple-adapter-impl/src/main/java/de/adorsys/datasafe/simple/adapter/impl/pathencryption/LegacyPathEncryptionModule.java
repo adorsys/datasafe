@@ -8,7 +8,7 @@ import de.adorsys.datasafe.simple.adapter.api.legacy.pathencryption.LegacyPathEn
 import de.adorsys.datasafe.simple.adapter.api.legacy.pathencryption.LegacySymmetricPathEncryptionService;
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathDigestConfig;
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathEncryptor;
-import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacySymmetricPathEncryptionServiceImpl;
+import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyIntegrityPreservingUriEncryption;
 
 /**
  * This module is responsible for providing pathencryption of document.
@@ -42,5 +42,5 @@ public abstract class LegacyPathEncryptionModule {
      * Default symmetric path encryption that encrypts URI segment-by-segment.
      */
     @Binds
-    abstract LegacySymmetricPathEncryptionService bucketPathEncryptionService(LegacySymmetricPathEncryptionServiceImpl impl);
+    abstract LegacySymmetricPathEncryptionService legacySymmetricPathEncryptionService(LegacyIntegrityPreservingUriEncryption impl);
 }

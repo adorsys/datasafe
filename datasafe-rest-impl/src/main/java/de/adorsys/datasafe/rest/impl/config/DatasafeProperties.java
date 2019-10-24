@@ -24,9 +24,6 @@ public class DatasafeProperties {
      */
     private String keystorePassword;
 
-    private String s3Path;
-    private String dbProfilePath;
-
     private String amazonUrl;
     private String amazonAccessKeyID;
     private String amazonSecretAccessKey;
