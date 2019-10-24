@@ -5,10 +5,10 @@ import dagger.Module;
 import dagger.Provides;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.DefaultPathEncryptorDecryptorRuntimeDelegatable;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.IntegrityPreservingUriEncryptionRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptorDecryptor;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.SymmetricPathEncryptionServiceImplRuntimeDelegatable;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathSegmentEncryptorDecryptorRuntimeDelegatable;
 import org.cryptomator.siv.SivMode;
 
 /**
@@ -30,7 +30,7 @@ public abstract class DefaultPathEncryptionModule {
      * Default path encryption that uses Base64-urlsafe path serialization and AES-CGM-SIV mode for encryption
      */
     @Binds
-    abstract PathEncryptorDecryptor pathEncryptorDecryptor(DefaultPathEncryptorDecryptorRuntimeDelegatable impl);
+    abstract PathEncryptorDecryptor pathEncryptorDecryptor(PathSegmentEncryptorDecryptorRuntimeDelegatable impl);
 
     /**
      * By default simply use
@@ -44,5 +44,5 @@ public abstract class DefaultPathEncryptionModule {
      * Default symmetric path encryption that encrypts URI segment-by-segment.
      */
     @Binds
-    abstract SymmetricPathEncryptionService bucketPathEncryptionService(SymmetricPathEncryptionServiceImplRuntimeDelegatable impl);
+    abstract SymmetricPathEncryptionService symmetricPathEncryptionService(IntegrityPreservingUriEncryptionRuntimeDelegatable impl);
 }

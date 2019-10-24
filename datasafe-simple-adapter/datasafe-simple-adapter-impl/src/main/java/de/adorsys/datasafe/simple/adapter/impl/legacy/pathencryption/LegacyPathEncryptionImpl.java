@@ -18,13 +18,13 @@ import java.util.function.Function;
 @Slf4j
 public class LegacyPathEncryptionImpl implements PathEncryption {
 
-    private final LegacySymmetricPathEncryptionService bucketPathEncryptionService;
+    private final LegacySymmetricPathEncryptionService symmetricPathEncryptionService;
     private final PrivateKeyService privateKeyService;
 
     @Inject
-    public LegacyPathEncryptionImpl(LegacySymmetricPathEncryptionService bucketPathEncryptionService,
+    public LegacyPathEncryptionImpl(LegacySymmetricPathEncryptionService symmetricPathEncryptionService,
                                     PrivateKeyService privateKeyService) {
-        this.bucketPathEncryptionService = bucketPathEncryptionService;
+        this.symmetricPathEncryptionService = symmetricPathEncryptionService;
         this.privateKeyService = privateKeyService;
     }
 
@@ -34,7 +34,7 @@ public class LegacyPathEncryptionImpl implements PathEncryption {
     @Override
     public Uri encrypt(UserIDAuth forUser, Uri path) {
         AuthPathEncryptionSecretKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);
-        Uri encrypt = bucketPathEncryptionService.encrypt(keySpec.getSecretKey().getSecretKey(), path);
+        Uri encrypt = symmetricPathEncryptionService.encrypt(keySpec.getSecretKey().getSecretKey(), path);
         log.debug("encrypted path {} for user {} path {}", encrypt, forUser.getUserID(), path);
         return encrypt;
     }
@@ -46,7 +46,7 @@ public class LegacyPathEncryptionImpl implements PathEncryption {
     public Function<Uri, Uri> decryptor(UserIDAuth forUser) {
         AuthPathEncryptionSecretKey keySpec = privateKeyService.pathEncryptionSecretKey(forUser);
         return encryptedPath -> {
-            Uri decrypt = bucketPathEncryptionService.decrypt(keySpec.getSecretKey().getSecretKey(), encryptedPath);
+            Uri decrypt = symmetricPathEncryptionService.decrypt(keySpec.getSecretKey().getSecretKey(), encryptedPath);
             log.debug("decrypted path {} for user {} path {}", decrypt, forUser.getUserID(), encryptedPath);
             return decrypt;
         };

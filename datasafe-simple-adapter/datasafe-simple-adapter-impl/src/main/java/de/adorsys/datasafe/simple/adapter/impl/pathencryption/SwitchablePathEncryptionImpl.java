@@ -18,8 +18,9 @@ public class SwitchablePathEncryptionImpl extends LegacyPathEncryptionImpl {
     private boolean withPathEncryption = checkIsPathEncryptionToUse();
 
     @Inject
-    public SwitchablePathEncryptionImpl(LegacySymmetricPathEncryptionService bucketPathEncryptionService, PrivateKeyService privateKeyService) {
-        super(bucketPathEncryptionService, privateKeyService);
+    public SwitchablePathEncryptionImpl(LegacySymmetricPathEncryptionService legacySymmetricPathEncryptionService,
+                                        PrivateKeyService privateKeyService) {
+        super(legacySymmetricPathEncryptionService, privateKeyService);
     }
 
     @Override

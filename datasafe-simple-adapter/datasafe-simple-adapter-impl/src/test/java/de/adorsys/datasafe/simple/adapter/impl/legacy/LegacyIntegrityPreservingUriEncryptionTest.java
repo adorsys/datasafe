@@ -9,7 +9,7 @@ import de.adorsys.datasafe.simple.adapter.api.legacy.pathencryption.LegacySymmet
 import de.adorsys.datasafe.simple.adapter.impl.WithBouncyCastle;
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathDigestConfig;
 import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyPathEncryptor;
-import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacySymmetricPathEncryptionServiceImpl;
+import de.adorsys.datasafe.simple.adapter.impl.legacy.pathencryption.LegacyIntegrityPreservingUriEncryption;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
@@ -29,9 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
+class LegacyIntegrityPreservingUriEncryptionTest extends WithBouncyCastle {
 
-    private LegacySymmetricPathEncryptionService bucketPathEncryptionService = new LegacySymmetricPathEncryptionServiceImpl(
+    private LegacySymmetricPathEncryptionService legacySymmetricPathEncryptionService = new LegacyIntegrityPreservingUriEncryption(
             new LegacyPathEncryptor(new LegacyPathDigestConfig())
     );
 
@@ -55,8 +55,8 @@ class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
                 keyStoreAccess,
                 KeystoreUtil.keyIdByPrefix(keyStore, PATH_KEY_ID_PREFIX)
         );
-        Uri encrypted = bucketPathEncryptionService.encrypt(secretKey, testURI);
-        Uri decrypted = bucketPathEncryptionService.decrypt(secretKey, encrypted);
+        Uri encrypted = legacySymmetricPathEncryptionService.encrypt(secretKey, testURI);
+        Uri decrypted = legacySymmetricPathEncryptionService.decrypt(secretKey, encrypted);
 
         log.debug("Encrypted path: {}", encrypted);
 
@@ -73,8 +73,8 @@ class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
 
         SecretKeySpec secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID("Invalid key"));
         // secret keys is null, because during key obtain was used incorrect KeyID,
-        // so bucketPathEncryptionService#encrypt throw BaseException(was handled NullPointerException)
-        assertThrows(IllegalArgumentException.class, () -> bucketPathEncryptionService.encrypt(secretKey, testURI));
+        // so symmetricPathEncryptionService#encrypt throw BaseException(was handled NullPointerException)
+        assertThrows(IllegalArgumentException.class, () -> legacySymmetricPathEncryptionService.encrypt(secretKey, testURI));
     }
 
     @Test
@@ -85,7 +85,7 @@ class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
         );
 
         assertThrows(BadPaddingException.class,
-                () -> bucketPathEncryptionService.decrypt(secretKey,
+                () -> legacySymmetricPathEncryptionService.decrypt(secretKey,
                         new Uri(URI.create("bRQiW8qLNPEy5tO7shfV0w==/k0HooCVlmhHkQFw8mc=="))));
     }
 
@@ -97,7 +97,7 @@ class LegacySymmetricPathEncryptionServiceImplTest extends WithBouncyCastle {
         );
 
         assertThrows(IllegalBlockSizeException.class,
-                () -> bucketPathEncryptionService.decrypt(secretKey,
+                () -> legacySymmetricPathEncryptionService.decrypt(secretKey,
                         new Uri("/simple/text/path/")));
     }
 }

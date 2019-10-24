@@ -22,6 +22,8 @@ wants to share into users' inbox space using the recipients' public key so that 
 - For storage systems that do not support file versioning natively (i.e. minio) this library provides versioning
 capability too.
 
+Details about used encryption algorithms can be found in [security whitepaper](SECURITY.WHITEPAPER.md).
+
 ## Features
 
 -  Proprietary software **friendly license**
