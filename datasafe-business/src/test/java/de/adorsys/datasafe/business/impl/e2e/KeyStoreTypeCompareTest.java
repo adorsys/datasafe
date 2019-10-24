@@ -4,7 +4,8 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
@@ -15,10 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.testcontainers.shaded.org.apache.commons.lang.time.StopWatch;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,12 +32,12 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
     @ParameterizedTest
     @MethodSource("fsOnly")
     void compareKeyStoreTypes(WithStorageProvider.StorageDescriptor descriptor) {
-        long t1 = test(descriptor, "johnUber", "UBER");
-        long t2 = test(descriptor, "johnBCFKS", "BCFKS");
-        log.info("UBER  test took:" + t1);
-        log.info("BCFKS test took:" + t2);
+        long tUBER = test(descriptor, "johnUber", "UBER");
+        long tBCFKS = test(descriptor, "johnBCFKS", "BCFKS");
+        log.info("UBER  test took: {}", tUBER);
+        log.info("BCFKS test took: {}", tBCFKS);
         // We make sure, that with BCFKS it does not take longer than three times of UBER
-        Assertions.assertTrue(t1 * 3 > t2);
+        Assertions.assertTrue(tUBER * 3 > tBCFKS);
     }
 
 
@@ -51,7 +52,8 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
         String filename = "root.txt";
         String content = "affe";
 
-        Date start = new Date();
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         for (int i = 0; i < NUMBER_WRITES; i++) {
             log.debug("write file for the {} time", i);
@@ -69,25 +71,20 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
             }
         }
 
-        Date stop = new Date();
-        long diff = stop.getTime() - start.getTime();
+        timer.stop();
 
-        log.info("TIME TOOK {} MILLISECS",diff);
+        long diff = timer.getTime();
+
+        log.info("TIME TOOK {} MILLISECS", diff);
         return diff;
     }
 
     private void init(StorageDescriptor descriptor, String keystoreType) {
-
-        MutableEncryptionConfig mutableEncryptionConfig = new MutableEncryptionConfig();
-        MutableEncryptionConfig.MutableKeyStoreCreationConfig mutableKeyStoreCreationConfig = new MutableEncryptionConfig.MutableKeyStoreCreationConfig();
-        mutableKeyStoreCreationConfig.setType(keystoreType);
-        mutableEncryptionConfig.setKeystore(mutableKeyStoreCreationConfig);
-        mutableEncryptionConfig.getKeystore();
-
         DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
                 .config(new DefaultDFSConfig(descriptor.getLocation(), new ReadStorePassword("PAZZWORT")))
                 .encryption(
-                        mutableEncryptionConfig.toEncryptionConfig().toBuilder()
+                        EncryptionConfig.builder()
+                                .keystore(KeyStoreConfig.builder().type(keystoreType).build())
                                 .build()
                 )
                 .storage(descriptor.getStorageService().get())
@@ -95,3 +92,4 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
         initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);
     }
 }
+

@@ -20,7 +20,7 @@ public interface KeyStoreCache {
     /**
      * Cache for users' private/secret keys
      */
-    MapUserIDKeyStore getKeystore();
+    UserKeyStoreCache getKeystore();
 
     /**
      * Cache for users' storage access

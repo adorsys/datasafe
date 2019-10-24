@@ -15,8 +15,8 @@ import java.util.function.Function;
 
 @Slf4j
 @AllArgsConstructor
-public class MapUserIDKeyStore {
-    @Delegate(types=LombokGemericMap.class, excludes = LombokComputeIfAbsent.class)
+public class UserKeyStoreCache {
+    @Delegate (excludes = ExcludeComputeIfAbsent.class)
     private final Map<UserID, KeyStore> map;
 
 
@@ -79,17 +79,7 @@ public class MapUserIDKeyStore {
         return newKeystore;
     }
 
-
-
-    private interface ComputeIfAbsent<K,V> {
-        V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction);
+    private interface ExcludeComputeIfAbsent<K,V> {
+        KeyStore computeIfAbsent(UserID key, Function<? super UserID, ? extends KeyStore> mappingFunction);
     }
-
-    private abstract class LombokGemericMap implements Map<UserID, KeyStore> {
-    }
-
-    private abstract class LombokComputeIfAbsent implements ComputeIfAbsent<UserID, KeyStore> {
-    }
-
-
 }
