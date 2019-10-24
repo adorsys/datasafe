@@ -95,7 +95,7 @@ function snippet_position_end() # expects 2 args - filename and snippet beginnin
 
 CLEANED=$(cleanup_embedded)
 
-while read -r line; do
+while IFS= read -r line; do
     if [[ $line =~ $ANCHOR_PATTERN ]]; then
         filename="${BASH_REMATCH[2]}"
         snippet_name="${BASH_REMATCH[1]}"
