@@ -125,7 +125,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
 
     private KeyStore keyStore(UserIDAuth forUser) {
         return keystoreCache.getKeystore().computeIfAbsent(
-                forUser.getUserID(),
+                forUser,
                 userId -> {
                     AbsoluteLocation<PrivateResource> location = keystoreLocationWithAccess(forUser);
                     return genericOper.readKeyStore(forUser, location);

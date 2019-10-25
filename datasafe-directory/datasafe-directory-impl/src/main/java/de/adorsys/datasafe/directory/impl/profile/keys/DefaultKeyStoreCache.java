@@ -18,7 +18,7 @@ import java.util.Map;
 public class DefaultKeyStoreCache implements KeyStoreCache {
 
     private final Map<UserID, List<PublicKeyIDWithPublicKey>> publicKeys;
-    private final Map<UserID, KeyStore> keystore;
+    private final UserKeyStoreCache keystore;
     private final Map<UserID, KeyStore> storageAccess;
 
     @Inject
@@ -27,7 +27,7 @@ public class DefaultKeyStoreCache implements KeyStoreCache {
             Map<UserID, KeyStore> keystore,
             Map<UserID, KeyStore> storageAccess) {
         this.publicKeys = publicKeys;
-        this.keystore = keystore;
+        this.keystore = new UserKeyStoreCache(keystore);
         this.storageAccess = storageAccess;
     }
 
