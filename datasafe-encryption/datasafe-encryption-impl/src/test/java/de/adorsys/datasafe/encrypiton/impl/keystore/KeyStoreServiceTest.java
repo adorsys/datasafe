@@ -3,18 +3,21 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
-import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyCreationConfigImpl;
-import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
-import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
-import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.keymanagement.api.types.KeySetTemplate;
+import de.adorsys.keymanagement.api.types.source.KeySet;
+import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
+import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.KeyStoreConfig;
+import de.adorsys.keymanagement.juggler.services.DaggerJuggler;
+import de.adorsys.keymanagement.juggler.services.Juggler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +28,6 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
@@ -66,15 +68,6 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     }
 
     @Test
-    void createKeyStoreException() {
-        KeyCreationConfig config = KeyCreationConfig.builder().encKeyNumber(0).signKeyNumber(0).build();
-
-            Assertions.assertThrows(KeyStoreConfigException.class, () ->
-                    keyStoreService.createKeyStore(keyStoreAuth, config, Collections.emptyMap())
-            );
-    }
-
-    @Test
     void getPublicKeys() {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
@@ -85,22 +78,21 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getPrivateKey() throws Exception {
-        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreConfig.builder().build()); // BCFKS
-
-        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("keypass");
-        KeyCreationConfigImpl keyStoreCreationConfig = new KeyCreationConfigImpl(KeyCreationConfig.builder().build());
-        KeyPairGenerator encKeyPairGenerator = keyStoreCreationConfig.getEncKeyPairGenerator("KEYSTORE-ID-0");
-        String alias = "KEYSTORE-ID-0" + UUID.randomUUID().toString();
-        KeyPairEntry keyPairEntry = encKeyPairGenerator.generateEncryptionKey(alias, readKeyPassword);
-        KeyStoreServiceImplBaseFunctions.addToKeyStore(keyStore, keyPairEntry);
+        Juggler juggler = DaggerJuggler.builder().keyStoreConfig(KeyStoreConfig.builder().build()).build();
+        KeySetTemplate template = KeySetTemplate.builder()
+                .generatedEncryptionKeys(Encrypting.with().prefix("KEYSTORE-ID-0").password("keypass"::toCharArray).build().repeat(1))
+                .build();
+        KeySet keySet = juggler.generateKeys().fromTemplate(template);
+        PrivateKey privateKey1 = keySet.getKeyPairs().get(0).getPair().getPrivate();
+        KeyStore keyStore = juggler.toKeystore().generate(keySet, () -> keyStoreAuth.getReadStorePassword().getValue());
 
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
         String keyID = keyStore.aliases().nextElement();
-        PrivateKey privateKey = keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(keyID));
-        System.out.println(privateKey);
-        System.out.println(keyID);
-        Assertions.assertEquals(alias, keyID);
+        PrivateKey privateKey2 = keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(keyID));
+        System.out.println(privateKey1);
+        System.out.println(privateKey2);
+        Assertions.assertEquals(privateKey1, privateKey2);
     }
 
     @Test

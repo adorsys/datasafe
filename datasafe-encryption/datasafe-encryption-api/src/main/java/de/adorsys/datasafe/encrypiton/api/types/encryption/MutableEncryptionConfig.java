@@ -1,7 +1,8 @@
 package de.adorsys.datasafe.encrypiton.api.types.encryption;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.PBKDF2;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.pbkdf.Scrypt;
+import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.KeyStoreConfig;
+import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.pbkdf.PBKDF2;
+import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.pbkdf.Scrypt;
 import lombok.Data;
 
 /**
@@ -153,7 +154,7 @@ public class MutableEncryptionConfig {
         private Integer signKeyNumber;
         private MutableSecretKeyCreationCfg secret;
         private MutableEncryptingKeyCreationCfg encrypting;
-        private MutableSigningKeyCreationCfg singing;
+        private MutableSigningKeyCreationCfg signing;
 
         @Data
         public static class MutableSecretKeyCreationCfg {
@@ -246,8 +247,8 @@ public class MutableEncryptionConfig {
                 builder.encrypting(encrypting.toEncryptingKeyCreationCfg());
             }
 
-            if (null != singing) {
-                builder.singing(singing.toSigningKeyCreationCfg());
+            if (null != signing) {
+                builder.signing(signing.toSigningKeyCreationCfg());
             }
 
             return builder.build();
