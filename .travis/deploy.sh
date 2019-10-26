@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 echo "$GPG_SECRET_KEY" | base64 --decode | "$GPG_EXECUTABLE" --import
 echo "$GPG_OWNERTRUST" | base64 --decode | "$GPG_EXECUTABLE" --import-ownertrust
 

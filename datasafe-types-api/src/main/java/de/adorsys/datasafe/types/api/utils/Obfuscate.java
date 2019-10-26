@@ -3,6 +3,7 @@ package de.adorsys.datasafe.types.api.utils;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
@@ -74,6 +75,32 @@ public class Obfuscate {
     }
 
     /**
+     * Method has slightly other name as secureSensitive,
+     * because is call sometimes with null and thus can not
+     * be clearly assigned.
+     *
+     * By default, protects highly sensitive data, but allows to log it using SECURE_SENSITIVE property.
+     * @param value Its toString() result will get encrypted.
+     * @return Secured string value that is safe to log.
+     *
+     */
+    public static String secureSensitiveChar(char[] value) {
+        if (value == null) {
+            return null;
+        }
+
+        if (isDisabled(secureLogs) && isDisabled(secureSensitive)) {
+            return new String(value);
+        }
+
+        if ("hash".equalsIgnoreCase(secureSensitive)) {
+            return "hash:" + computeShaChar(value).substring(0, 4);
+        }
+
+        return "****";
+    }
+
+    /**
      * By default, protects highly sensitive data, but allows to log it using SECURE_SENSITIVE property.
      * @param value Its toString() result will get encrypted.
      * @return Secured string value that is safe to log.
@@ -96,6 +123,15 @@ public class Obfuscate {
 
     private static String computeSha(String s) {
         byte[] originalBytes = s.getBytes(StandardCharsets.UTF_8);
+        byte[] hash = getDigest().digest(originalBytes);
+        return encoder.encodeToString(hash);
+    }
+
+    private static String computeShaChar(char[] s) {
+        byte[] originalBytes = new byte[s.length];
+        for (int i = 0; i < s.length; i++) {
+            originalBytes[i] = (byte) s[i];
+        }
         byte[] hash = getDigest().digest(originalBytes);
         return encoder.encodeToString(hash);
     }

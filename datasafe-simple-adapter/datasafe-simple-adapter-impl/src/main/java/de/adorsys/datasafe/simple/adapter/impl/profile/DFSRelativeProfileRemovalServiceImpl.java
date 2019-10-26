@@ -10,12 +10,15 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.storage.api.actions.StorageListService;
 import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
 
+import javax.inject.Inject;
+
 /**
  * This service cleans up all users' files except profile json files. It assumes that user profile files does not
  * exist.
  */
 public class DFSRelativeProfileRemovalServiceImpl extends ProfileRemovalServiceImpl {
 
+    @Inject
     public DFSRelativeProfileRemovalServiceImpl(
             PrivateKeyService privateKeyService,
             KeyStoreCache keyStoreCache,

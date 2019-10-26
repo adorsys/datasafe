@@ -1,0 +1,1471 @@
+{
+  "resources": [
+    {
+      "pattern": "META-INF/MANIFEST.MF"
+    },
+    {
+      "pattern": "com/amazonaws/internal/config/awssdk_config_default.json"
+    },
+    {
+      "pattern": "com/amazonaws/partitions/endpoints.json"
+    },
+    {
+      "pattern": "com/amazonaws/sdk/versionInfo.properties"
+    },
+    {
+      "pattern": "de/adorsys/datasafe/cli/Cli$DataOnS3.class"
+    },
+    {
+      "pattern": "javax/crypto/Cipher.class"
+    },
+    {
+      "pattern": "lib/animal-sniffer-annotations-1.17.jar"
+    },
+    {
+      "pattern": "lib/aws-java-sdk-core-1.11.538.jar"
+    },
+    {
+      "pattern": "lib/aws-java-sdk-kms-1.11.538.jar"
+    },
+    {
+      "pattern": "lib/aws-java-sdk-s3-1.11.538.jar"
+    },
+    {
+      "pattern": "lib/bcpkix-jdk15on-1.64.jar"
+    },
+    {
+      "pattern": "lib/bcprov-jdk15on-1.64.jar"
+    },
+    {
+      "pattern": "lib/checker-qual-2.5.2.jar"
+    },
+    {
+      "pattern": "lib/commons-codec-1.10.jar"
+    },
+    {
+      "pattern": "lib/commons-lang3-3.5.jar"
+    },
+    {
+      "pattern": "lib/commons-logging-1.1.3.jar"
+    },
+    {
+      "pattern": "lib/dagger-2.17.jar"
+    },
+    {
+      "pattern": "lib/datasafe-business.jar"
+    },
+    {
+      "pattern": "lib/datasafe-directory-api.jar"
+    },
+    {
+      "pattern": "lib/datasafe-directory-impl.jar"
+    },
+    {
+      "pattern": "lib/datasafe-encryption-api.jar"
+    },
+    {
+      "pattern": "lib/datasafe-encryption-impl.jar"
+    },
+    {
+      "pattern": "lib/datasafe-inbox-api.jar"
+    },
+    {
+      "pattern": "lib/datasafe-inbox-impl.jar"
+    },
+    {
+      "pattern": "lib/datasafe-metainfo-version-api.jar"
+    },
+    {
+      "pattern": "lib/datasafe-metainfo-version-impl.jar"
+    },
+    {
+      "pattern": "lib/datasafe-privatestore-api.jar"
+    },
+    {
+      "pattern": "lib/datasafe-privatestore-impl.jar"
+    },
+    {
+      "pattern": "lib/datasafe-storage-api.jar"
+    },
+    {
+      "pattern": "lib/datasafe-storage-impl-fs.jar"
+    },
+    {
+      "pattern": "lib/datasafe-storage-impl-s3.jar"
+    },
+    {
+      "pattern": "lib/datasafe-types-api.jar"
+    },
+    {
+      "pattern": "lib/error_prone_annotations-2.2.0.jar"
+    },
+    {
+      "pattern": "lib/failureaccess-1.0.1.jar"
+    },
+    {
+      "pattern": "lib/gson-2.8.5.jar"
+    },
+    {
+      "pattern": "lib/guava-27.0.1-jre.jar"
+    },
+    {
+      "pattern": "lib/httpclient-4.5.5.jar"
+    },
+    {
+      "pattern": "lib/httpcore-4.4.9.jar"
+    },
+    {
+      "pattern": "lib/ion-java-1.0.2.jar"
+    },
+    {
+      "pattern": "lib/j2objc-annotations-1.1.jar"
+    },
+    {
+      "pattern": "lib/jackson-annotations-2.6.0.jar"
+    },
+    {
+      "pattern": "lib/jackson-core-2.6.7.jar"
+    },
+    {
+      "pattern": "lib/jackson-databind-2.6.7.2.jar"
+    },
+    {
+      "pattern": "lib/jackson-dataformat-cbor-2.6.7.jar"
+    },
+    {
+      "pattern": "lib/javax.inject-1.jar"
+    },
+    {
+      "pattern": "lib/jmespath-java-1.11.538.jar"
+    },
+    {
+      "pattern": "lib/joda-time-2.8.1.jar"
+    },
+    {
+      "pattern": "lib/jsr305-3.0.0.jar"
+    },
+    {
+      "pattern": "lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar"
+    },
+    {
+      "pattern": "lib/lombok-1.18.6.jar"
+    },
+    {
+      "pattern": "lib/picocli-4.0.3.jar"
+    },
+    {
+      "pattern": "lib/siv-mode-1.3.1.jar"
+    },
+    {
+      "pattern": "lib/slf4j-api-1.7.25.jar"
+    },
+    {
+      "pattern": "lib/slf4j-simple-1.7.25.jar"
+    },
+    {
+      "pattern": "mozilla/public-suffix-list.txt"
+    },
+    {
+      "pattern": "org/apache/http/client/version.properties"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1ApplicationSpecific.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1BitString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Boolean.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Choice.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Encodable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1EncodableVector.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Enumerated.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Exception.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1External.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1GeneralizedTime.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Generator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1InputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Integer.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Null.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Object.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1ObjectIdentifier$OidHandle.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1ObjectIdentifier.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1OctetString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1OctetStringParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1OutputStream$ImplicitOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1OutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1ParsingException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Primitive.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Sequence$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Sequence.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1SequenceParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1Set.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1SetParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1StreamParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1String.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1TaggedObject.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1TaggedObjectParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ASN1UTCTime.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BERGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BEROctetString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BEROctetStringGenerator$BufferedBEROctetStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BEROctetStringGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BEROctetStringParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BEROutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BERSequence.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BERSequenceGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BERSequenceParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BERSet.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BERTaggedObject.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BERTaggedObjectParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/BERTags.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ConstructedOctetStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERApplicationSpecific.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERBMPString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERBitString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERExternal.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERFactory.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERGeneralString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERGeneralizedTime.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERGraphicString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERIA5String.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERNull.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERNumericString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DEROctetString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DEROctetStringParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DEROutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERPrintableString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERSequence.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERSequenceParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERSet.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERSetParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERT61String.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERTaggedObject.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERUTCTime.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERUTF8String.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERUniversalString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERVideotexString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DERVisibleString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLApplicationSpecific.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLBitString.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLExternal.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLFactory.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLSequence.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLSequenceParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLSet.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLSetParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DLTaggedObject.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DateUtil.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/DefiniteLengthInputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/InMemoryRepresentable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/IndefiniteLengthInputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/LazyEncodedSequence.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/LimitedInputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/OIDTokenizer.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/StreamUtil.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/bc/BCObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/bsi/BSIObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/CMSObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/ContentInfoParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/EncryptedContentInfoParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/EnvelopedDataParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/IssuerAndSerialNumber.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/KEKIdentifier.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/KEKRecipientInfo.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/KeyTransRecipientInfo.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/OtherRevocationInfoFormat.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/RecipientIdentifier.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cms/RecipientInfo.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/cryptopro/CryptoProObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/eac/EACObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/edec/EdECObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/gm/GMObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/gnu/GNUObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/iana/IANAObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/iso/ISOIECObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/kisa/KISAObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/misc/MiscObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/nist/NISTObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/nsri/NSRIObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ntt/NTTObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/oiw/OIWObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/pkcs/PKCSObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/pkcs/RSAPublicKey.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/pkcs/RSASSAPSSparams.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/rosstandart/RosstandartObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/sec/SECObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/teletrust/TeleTrusTObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/ua/UAObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x500/RDN.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x500/X500Name.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x500/X500NameBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x500/X500NameStyle.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x500/style/AbstractX500NameStyle.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x500/style/BCStyle.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/AlgorithmIdentifier.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/AuthorityKeyIdentifier.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/BasicConstraints.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/Certificate.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/Extension.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/Extensions.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/ExtensionsGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/KeyUsage.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/SubjectKeyIdentifier.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/SubjectPublicKeyInfo.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/TBSCertificate.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/Time.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/V3TBSCertificateGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/X509Extension.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x509/X509ObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x9/X9ECParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/asn1/x9/X9ObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/CertException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/CertIOException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/CertRuntimeException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/CertUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/X509CRLHolder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/X509CertificateHolder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/X509ExtensionUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/X509v3CertificateBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/CertHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/DefaultCertHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509CertificateConverter$ExCertificateException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509CertificateConverter$ExCertificateParsingException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509CertificateConverter.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509CertificateHolder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509ExtensionUtils$SHA1DigestCalculator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509ExtensionUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/JcaX509v3CertificateBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/NamedCertHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/jcajce/ProviderCertHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cert/selector/X509CertificateHolderSelector.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSAlgorithm.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSContentInfoParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedDataParser.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedDataStreamGenerator$CmsEnvelopedDataOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedDataStreamGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedHelper$CMSEnvelopedSecureReadable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSEnvelopedHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSProcessable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSProcessableInputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSReadable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSSecureReadable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSTypedStream$FullReaderStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSTypedStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/CMSUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KEKRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KEKRecipientId.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KEKRecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KEKRecipientInformation.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KeyTransRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KeyTransRecipientId.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KeyTransRecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/KeyTransRecipientInformation.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/NullOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/PasswordRecipient$PRF.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/Recipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientId.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientInformation.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientInformationStore.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/RecipientOperator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/CMSUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/DefaultJcaJceExtHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/EnvelopedDataHelper$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/EnvelopedDataHelper$JCECallback.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/EnvelopedDataHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JcaJceExtHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceCMSContentEncryptorBuilder$CMSOutputEncryptor.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceCMSContentEncryptorBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKEKEnvelopedRecipient$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKEKEnvelopedRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKEKRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKEKRecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKeyTransEnvelopedRecipient$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKeyTransEnvelopedRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKeyTransRecipient.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/JceKeyTransRecipientInfoGenerator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/cms/jcajce/ProviderJcaJceExtHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/CipherParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/CryptoServicesPermission.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/CryptoServicesRegistrar$Property.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/CryptoServicesRegistrar.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/Digest.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/io/CipherIOException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/io/InvalidCipherTextIOException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/AsymmetricKeyParameter.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DHParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DHValidationParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DSAKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DSAParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DSAPrivateKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DSAPublicKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/DSAValidationParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/ECKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/ECPublicKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/Ed25519PrivateKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/Ed25519PublicKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/RSAKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/params/RSAPrivateCrtKeyParameters.class"
+    },
+    {
+      "pattern": "org/bouncycastle/crypto/prng/SP800SecureRandom.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/CipherInputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/CipherOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/DigestUpdatingOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/MacUpdatingOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/OutputStreamFactory.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/io/SignatureUpdatingOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/DH$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/DH.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/DSA$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/DSTU4145$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/EC$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/EC.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ECGOST$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/EdEC$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ElGamal$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/GM$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/GOST$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/IES$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/RSA$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/RSA.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/X509$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/dh/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/dsa/DSAUtil.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/dsa/KeyFactorySpi$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/dsa/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/dstu/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ec/KeyFactorySpi$EC.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ec/KeyFactorySpi$ECMQV.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ec/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ecgost/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/ecgost12/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi$ED25519.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi$ED448.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi$X25519.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi$X448.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/edec/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/elgamal/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/gost/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/rsa/BCRSAPublicKey.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/rsa/KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/rsa/RSAUtil.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/util/BaseKeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/util/ExtendedInvalidKeySpecException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/asymmetric/util/KeyUtil.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/config/ProviderConfiguration.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/config/ProviderConfigurationPermission.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/Blake2b$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/Blake2s$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/DSTU7564$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/DigestAlgorithmProvider.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/GOST3411$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/Keccak$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/MD2$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/MD4$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/MD5$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/RIPEMD128$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/RIPEMD160$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/RIPEMD256$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/RIPEMD320$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/SHA1$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/SHA224$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/SHA256$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/SHA3$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/SHA384$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/SHA512$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/SM3$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/Skein$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/Tiger$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/digest/Whirlpool$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/drbg/DRBG$CoreSecureRandom.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/drbg/DRBG$HybridSecureRandom.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/drbg/DRBG$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/drbg/DRBG$URLSeededSecureRandom.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/drbg/DRBG.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/keystore/BC$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/keystore/BCFKS$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/keystore/PKCS12$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/AES$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/ARC4$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/ARIA$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Blowfish$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/CAST5$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/CAST6$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Camellia$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/ChaCha$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/DES$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/DESede$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/DSTU7624$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/GOST28147$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/GOST3412_2015$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Grain128$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Grainv1$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/HC128$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/HC256$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/IDEA$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Noekeon$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/OpenSSLPBKDF$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/PBEPBKDF1$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/PBEPBKDF2$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/PBEPKCS12$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Poly1305$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/RC2$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/RC5$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/RC6$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Rijndael$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/SCRYPT$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/SEED$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/SM4$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Salsa20$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Serpent$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Shacal2$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/SipHash$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Skipjack$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/SymmetricAlgorithmProvider.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/TEA$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/TLSKDF$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Threefish$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Twofish$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/VMPC$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/VMPCKSA3$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/XSalsa20$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/XTEA$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/Zuc$Mappings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/symmetric/util/ClassUtil.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/util/AlgorithmProvider.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/util/AsymmetricAlgorithmProvider.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/provider/util/AsymmetricKeyInfoConverter.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/spec/DHDomainParameterSpec.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/util/AlgorithmParametersUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/util/AnnotatedPrivateKey.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/util/DefaultJcaJceHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/util/JcaJceHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jcajce/util/ProviderJcaJceHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jce/provider/BouncyCastleProvider$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/jce/provider/BouncyCastleProviderConfiguration.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/AsymmetricKeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/AsymmetricKeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/ContentSigner.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/DefaultSecretKeySizeProvider.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/DefaultSignatureAlgorithmIdentifierFinder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/DigestCalculator.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/GenericKey.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/InputDecryptor.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/KeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/KeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/OperatorCreationException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/OperatorException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/OperatorStreamException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/OutputEncryptor.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/RuntimeOperatorException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/SecretKeySizeProvider.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/SignatureAlgorithmIdentifierFinder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/SymmetricKeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/SymmetricKeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JcaContentSignerBuilder$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JcaContentSignerBuilder$SignatureOutputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JcaContentSignerBuilder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceAsymmetricKeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceAsymmetricKeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceGenericKey.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceSymmetricKeyUnwrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/JceSymmetricKeyWrapper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/OperatorHelper$OpCertificateException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/OperatorHelper.class"
+    },
+    {
+      "pattern": "org/bouncycastle/operator/jcajce/OperatorUtils.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/asn1/PQCObjectIdentifiers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/mceliece/McElieceCCA2KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/mceliece/McElieceKeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/newhope/NHKeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/qtesla/QTESLAKeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/rainbow/RainbowKeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/sphincs/Sphincs256KeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/xmss/XMSSKeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/pqc/jcajce/provider/xmss/XMSSMTKeyFactorySpi.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Arrays.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Encodable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Integers.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Iterable.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Properties$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Properties.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Selector.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/StringList.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Strings$1.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/Strings.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/DecoderException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/Encoder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/EncoderException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/Hex.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/encoders/HexEncoder.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/io/StreamOverflowException.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/io/Streams.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/io/TeeInputStream.class"
+    },
+    {
+      "pattern": "org/bouncycastle/util/io/TeeOutputStream.class"
+    },
+    {
+      "pattern": "org/joda/time/tz/data/.+"
+    },
+    {
+      "pattern": "org/slf4j/impl/StaticLoggerBinder.class"
+    }
+  ]
+}

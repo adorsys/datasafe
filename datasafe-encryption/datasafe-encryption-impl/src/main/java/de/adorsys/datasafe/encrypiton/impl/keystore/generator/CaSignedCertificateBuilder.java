@@ -16,7 +16,6 @@ import org.bouncycastle.operator.ContentSigner;
 import java.math.BigInteger;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,8 +35,6 @@ public class CaSignedCertificateBuilder {
 
     private X500Name subjectDN;
 
-    private boolean subjectOnlyInAlternativeName;
-
     private Integer notAfterInDays;
     private Integer notBeforeInDays = 0;
 
@@ -55,15 +52,7 @@ public class CaSignedCertificateBuilder {
         if (dirty) throw new IllegalStateException("Builder can not be reused");
         dirty = true;
 
-        // AUtoselect algorithm
-        if (StringUtils.isBlank(signatureAlgo)) {
-            String algorithm = issuerPrivatekey.getAlgorithm();
-            if (StringUtils.equalsAnyIgnoreCase("DSA", algorithm)) {
-                signatureAlgo = "SHA256withDSA";
-            } else if (StringUtils.equals("RSA", algorithm)) {
-                signatureAlgo = "SHA256WithRSA";
-            }
-        }
+        signatureAlgo = autodetectAlgorithm(issuerPrivatekey);
 
         Date now = new Date();
         Date notAfter = notAfterInDays != null ? DateUtils.addDays(now, notAfterInDays) : null;
@@ -77,7 +66,10 @@ public class CaSignedCertificateBuilder {
                 .build();
 
         List<String> errorKeys = BatchValidator.filterNull(notNullCheckList);
-        if (errorKeys == null) errorKeys = new ArrayList<>();
+
+        if (errorKeys != null && !errorKeys.isEmpty()) {
+            throw new IllegalArgumentException("Fields can not be null: " + errorKeys);
+        }
 
         X500Name issuerDN = null;
         BasicConstraints basicConstraints = null;
@@ -86,8 +78,6 @@ public class CaSignedCertificateBuilder {
         if (createCaCert) {
             // self signed ca certificate
             basicConstraints = new BasicConstraints(true);
-            // in ca case, subject must subject must be set
-            subjectOnlyInAlternativeName = false;
         } else {
             // not a ca certificate
             basicConstraints = new BasicConstraints(false);
@@ -95,11 +85,7 @@ public class CaSignedCertificateBuilder {
 
         BigInteger serial = SerialNumberGenerator.uniqueSerial();
 
-        X509v3CertificateBuilder v3CertGen = null;
-
-        if (!errorKeys.isEmpty()) {
-            throw new IllegalArgumentException("Fields can not be null: " + errorKeys);
-        }
+        X509v3CertificateBuilder v3CertGen;
 
         v3CertGen = new JcaX509v3CertificateBuilder(issuerDN, serial, notBefore, notAfter, subjectDN, subjectPublicKey);
         JcaX509ExtensionUtils extUtils = V3CertificateUtils.getJcaX509ExtensionUtils();
@@ -121,6 +107,19 @@ public class CaSignedCertificateBuilder {
 
         return v3CertGen.build(signer);
 
+    }
+
+    private String autodetectAlgorithm(PrivateKey issuerPrivatekey) {
+        if (null == signatureAlgo || signatureAlgo.isEmpty()) {
+            String algorithm = issuerPrivatekey.getAlgorithm();
+            if (StringUtils.equalsAnyIgnoreCase("DSA", algorithm)) {
+                return "SHA256withDSA";
+            } else if (StringUtils.equals("RSA", algorithm)) {
+                return "SHA256WithRSA";
+            }
+        }
+
+        return null;
     }
 
     public CaSignedCertificateBuilder withCa(boolean ca) {

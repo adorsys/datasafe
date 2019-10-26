@@ -3,17 +3,22 @@ package de.adorsys.datasafe.simple.adapter.impl;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.*;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -38,12 +43,17 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     private UserIDAuth userIDAuth;
     private DFSCredentials dfsCredentials;
 
+    @BeforeAll
+    static void setupBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     void myinit(StorageDescriptor descriptor) {
         dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
     }
 
     private static Stream<StorageDescriptor> storages() {
-            return allDefaultStorages();
+        return allDefaultStorages();
     }
 
     @BeforeEach
@@ -53,11 +63,11 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     void mystart() {
         if (dfsCredentials != null) {
-            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials);
+            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials, new MutableEncryptionConfig());
         } else {
             simpleDatasafeService = new SimpleDatasafeServiceImpl();
         }
-        userIDAuth = new UserIDAuth(new UserID("peter"), new ReadKeyPassword("password"));
+        userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPasswordTestFactory.getForString("password"));
         simpleDatasafeService.createUser(userIDAuth);
     }
 
@@ -68,6 +78,26 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
+    @MethodSource("minioOnly")
+    @SneakyThrows
+    void justCreateAndDeleteUserForMinioOnly(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
+        mystart();
+
+        // SimpleDatasafeAdapter does not use user profile json files, so only keystore and pubkeys should exist:
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls = descriptor.getStorageService().get()
+                .list(BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
+        ) {
+            assertThat(ls).extracting(it -> descriptor.getLocation().relativize(it.location()).asString())
+                    .containsExactlyInAnyOrder(
+                            "users/peter/public/pubkeys",
+                            "users/peter/private/keystore"
+                    );
+        }
+        log.info("test create user and delete user with  {}", descriptor.getName());
+    }
+
+    @ParameterizedTest
     @MethodSource("storages")
     @SneakyThrows
     void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
@@ -75,15 +105,16 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
         mystart();
 
         // SimpleDatasafeAdapter does not use user profile json files, so only keystore and pubkeys should exist:
-        assertThat(descriptor.getStorageService().get().list(
-                BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
-        ).extracting(it -> descriptor.getLocation().relativize(it.location()).asString())
-                .containsExactlyInAnyOrder(
-                        "users/peter/public/pubkeys",
-                        "users/peter/private/keystore"
-                );
-
-        log.info("test create user and delete user with " + descriptor.getName());
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls = descriptor.getStorageService().get()
+                .list(BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
+        ) {
+            assertThat(ls).extracting(it -> descriptor.getLocation().relativize(it.location()).asString())
+                    .containsExactlyInAnyOrder(
+                            "users/peter/public/pubkeys",
+                            "users/peter/private/keystore"
+                    );
+        }
+        log.info("test create user and delete user with {}", descriptor.getName());
     }
 
     @ParameterizedTest
@@ -113,7 +144,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
         String path = "a/b/c.txt";
         DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
         simpleDatasafeService.storeDocument(userIDAuth, document);
-        ReadKeyPassword newPassword = new ReadKeyPassword("AAAAAAHHH!");
+        ReadKeyPassword newPassword = ReadKeyPasswordTestFactory.getForString("AAAAAAHHH!");
 
         simpleDatasafeService.changeKeystorePassword(userIDAuth, newPassword);
         assertThrows(
@@ -158,7 +189,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
         List<DSDocument> list = TestHelper.createDocuments(root, 2, 2, 3);
         List<DocumentFQN> created = new ArrayList<>();
         for (DSDocument dsDocument : list) {
-            log.debug("store " + dsDocument.getDocumentFQN().toString());
+            log.debug("store {}", dsDocument.getDocumentFQN());
             simpleDatasafeService.storeDocument(userIDAuth, dsDocument);
             created.add(dsDocument.getDocumentFQN());
             assertTrue(simpleDatasafeService.documentExists(userIDAuth, dsDocument.getDocumentFQN()));
@@ -227,7 +258,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     void testTwoUsers(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
-        UserIDAuth userIDAuth2 = new UserIDAuth(new UserID("peter2"), new ReadKeyPassword("password2"));
+        UserIDAuth userIDAuth2 = new UserIDAuth(new UserID("peter2"), ReadKeyPasswordTestFactory.getForString("password2"));
         simpleDatasafeService.createUser(userIDAuth2);
 
         String content = "content of document";
@@ -238,10 +269,10 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
         simpleDatasafeService.storeDocument(userIDAuth2, document);
 
         // tiny checks, that the password is important
-        UserIDAuth wrongPasswordUser1 = new UserIDAuth(userIDAuth.getUserID(), new ReadKeyPassword(UUID.randomUUID().toString()));
+        UserIDAuth wrongPasswordUser1 = new UserIDAuth(userIDAuth.getUserID(), ReadKeyPasswordTestFactory.getForString(UUID.randomUUID().toString()));
         assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser1, new DocumentFQN(path)));
 
-        UserIDAuth wrongPasswordUser2 = new UserIDAuth(userIDAuth2.getUserID(), new ReadKeyPassword(UUID.randomUUID().toString()));
+        UserIDAuth wrongPasswordUser2 = new UserIDAuth(userIDAuth2.getUserID(), ReadKeyPasswordTestFactory.getForString(UUID.randomUUID().toString()));
         assertThrows(UnrecoverableKeyException.class, () -> simpleDatasafeService.readDocument(wrongPasswordUser2, new DocumentFQN(path)));
 
         // now read the docs with the correct password
@@ -277,7 +308,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
         log.debug("---------------------------------");
         log.debug(message);
         for (DocumentFQN doc : listFound) {
-            log.debug("found:" + doc);
+            log.debug("found: {}", doc);
         }
     }
 

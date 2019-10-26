@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Specifies how to access desired user resource (example: private bucket). Reads credentials that are associated
@@ -74,9 +75,15 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
 
     private Optional<StorageIdentifier> getStorageAccessCredentials(UserIDAuth user, PrivateResource resource) {
         String uri = resource.location().asString();
-        return storageKeyStoreOperations.get().readAliases(user)
+        Set<StorageIdentifier> aliases = storageKeyStoreOperations.get().readAliases(user);
+
+        Optional<StorageIdentifier> directMatch = aliases
                 .stream()
                 .filter(it -> uri.matches(it.getId()))
                 .findFirst();
+
+        return directMatch.isPresent()
+                ? directMatch
+                : aliases.stream().filter(it -> StorageIdentifier.DEFAULT.getId().equals(it.getId())).findFirst();
     }
 }

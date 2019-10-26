@@ -15,11 +15,11 @@ import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -29,9 +29,12 @@ import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.*;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,6 +46,7 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,6 +57,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -64,7 +69,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
-    private static final String LOCALHOST = "http://127.0.0.1";
+    private static final String REGION = "eu-central-1";
+    private static final String LOCALHOST = getDockerUri("http://127.0.0.1");
 
     private static final String CREDENTIALS = "credentialsbucket";
     private static final String KEYSTORE = "keystorebucket";
@@ -83,6 +89,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @BeforeAll
     static void initDistributedMinios() {
+        Security.addProvider(new BouncyCastleProvider());
         // Create all required minio-backed S3 buckets:
         Stream.of(CREDENTIALS, KEYSTORE, FILES_ONE, FILES_TWO, INBOX).forEach(it -> {
             GenericContainer minio = new GenericContainer("minio/minio")
@@ -98,13 +105,15 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
             log.info("Minio `{}` with endpoint `{}` and keys `{}`/`{}` has started",
                 it, endpoint, accessKey(it), secretKey(it));
 
-            endpointsByHost.put(it, endpoint + it + "/");
+            // http://localhost:1234/eu-central-1/bucket/
+            endpointsByHost.put(it, endpoint + REGION + "/" + it + "/");
             endpointsByHostNoBucket.put(it, endpoint);
 
             AmazonS3 client = S3ClientFactory.getClient(
-                endpoint,
-                accessKey(it),
-                secretKey(it)
+                    endpoint,
+                    REGION,
+                    accessKey(it),
+                    secretKey(it)
             );
 
             client.createBucket(it);
@@ -121,6 +130,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
         StorageService directoryStorage = new S3StorageService(
             S3ClientFactory.getClient(
                 endpointsByHostNoBucket.get(CREDENTIALS),
+                REGION,
                 accessKey(CREDENTIALS),
                 secretKey(CREDENTIALS)
             ),
@@ -130,7 +140,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
         OverridesRegistry registry = new BaseOverridesRegistry();
         this.datasafeServices = DaggerDefaultDatasafeServices.builder()
-            .config(new DefaultDFSConfig(endpointsByHost.get(CREDENTIALS), "PAZZWORT"))
+            .config(new DefaultDFSConfig(endpointsByHost.get(CREDENTIALS), new ReadStorePassword("PAZZWORT")))
             .overridesRegistry(registry)
             .storage(new RegexDelegatingStorage(
                 ImmutableMap.<Pattern, StorageService>builder()
@@ -140,7 +150,8 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
                         new UriBasedAuthStorageService(
                             acc -> new S3StorageService(
                                 S3ClientFactory.getClient(
-                                    acc.getOnlyHostPart().toString(),
+                                    acc.getEndpoint(),
+                                    acc.getRegion(),
                                     acc.getAccessKey(),
                                     acc.getSecretKey()
                                 ),
@@ -158,7 +169,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @Test
     void testWriteToPrivateListPrivateReadPrivate() {
-        UserIDAuth john = new UserIDAuth("john", "my-passwd");
+        UserIDAuth john = new UserIDAuth("john", ReadKeyPasswordTestFactory.getForString("my-passwd"));
         registerUser(john);
 
         validateBasicOperationsAndContent(john);
@@ -168,14 +179,14 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @Test
     void testWriteToPrivateListPrivateReadPrivateWithPasswordChange() {
-        UserIDAuth john = new UserIDAuth("john", "my-passwd");
+        UserIDAuth john = new UserIDAuth("john", ReadKeyPasswordTestFactory.getForString("my-passwd"));
         registerUser(john);
 
         validateBasicOperationsAndContent(john);
 
-        ReadKeyPassword newPasswd = new ReadKeyPassword("ANOTHER");
+        ReadKeyPassword newPasswd = ReadKeyPasswordTestFactory.getForString("ANOTHER");
         datasafeServices.userProfile().updateReadKeyPassword(john, newPasswd);
-        UserIDAuth newJohn = new UserIDAuth("john", newPasswd.getValue());
+        UserIDAuth newJohn = new UserIDAuth("john", newPasswd);
 
         assertThrows(UnrecoverableKeyException.class, () -> doBasicOperations(john));
         validateBasicOperationsAndContent(newJohn);
@@ -205,10 +216,10 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
         assertThat(listInBucket(FILES_TWO)).hasSize(1);
         assertThat(listInBucket(KEYSTORE)).hasSize(1);
         assertThat(listInBucket(CREDENTIALS)).containsExactlyInAnyOrder(
-            "credentialsbucket/profiles/private/john",
-            "credentialsbucket/profiles/public/john",
-            "credentialsbucket/pubkeys",
-            "credentialsbucket/storagecreds");
+            "profiles/private/john",
+            "profiles/public/john",
+            "pubkeys",
+            "storagecreds");
     }
 
     private void deregisterAndValidateEmpty(UserIDAuth john) {
@@ -276,7 +287,12 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     }
 
     private List<String> listInBucket(String bucket) {
-        return S3ClientFactory.getClient(endpointsByHostNoBucket.get(bucket), accessKey(bucket), secretKey(bucket))
+        return S3ClientFactory.getClient(
+                endpointsByHostNoBucket.get(bucket),
+                REGION,
+                accessKey(bucket),
+                secretKey(bucket)
+        )
                 .listObjects(bucket, "")
                 .getObjectSummaries()
                 .stream()

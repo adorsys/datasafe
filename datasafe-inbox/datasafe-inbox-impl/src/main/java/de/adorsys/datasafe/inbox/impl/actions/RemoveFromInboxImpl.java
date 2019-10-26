@@ -31,7 +31,7 @@ public class RemoveFromInboxImpl implements RemoveFromInbox {
 
     @Override
     public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
-        keyService.documentEncryptionSecretKey(request.getOwner()); // Just checking user has access
+        keyService.validateUserHasAccessOrThrow(request.getOwner());
         remover.remove(resolver.resolveRelativeToPrivateInbox(request.getOwner(), request.getLocation()));
     }
 }

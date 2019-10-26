@@ -6,6 +6,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKe
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.Decryptor;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.DecryptorFactory;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
+import de.adorsys.datasafe.encrypiton.impl.keystore.generator.ProviderUtils;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,6 @@ import org.bouncycastle.cms.*;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKEKRecipientInfoGenerator;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
@@ -38,15 +38,15 @@ import java.util.stream.Collectors;
 @RuntimeDelegate
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
-    private CMSEncryptionConfig encryptionConfig;
+    private ASNCmsEncryptionConfig encryptionConfig;
 
     @Inject
-    public CMSEncryptionServiceImpl(CMSEncryptionConfig encryptionConfig) {
+    public CMSEncryptionServiceImpl(ASNCmsEncryptionConfig encryptionConfig) {
         this.encryptionConfig = encryptionConfig;
     }
 
     /**
-     * Asymmetrical encryption-based stream, algorithm is provided by {@link CMSEncryptionConfig#getAlgorithm()}
+     * Asymmetrical encryption-based stream, algorithm is provided by {@link ASNCmsEncryptionConfig#getAlgorithm()}
      * Uses {@link RecipientId#keyTrans} recipient id.
      */
     @Override
@@ -65,7 +65,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     }
 
     /**
-     * Symmetrical encryption-based stream, algorithm is provided by {@link CMSEncryptionConfig#getAlgorithm()}
+     * Symmetrical encryption-based stream, algorithm is provided by {@link ASNCmsEncryptionConfig#getAlgorithm()}
      * Uses {@link RecipientId#kek} recipient id.
      */
     @Override
@@ -119,7 +119,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
         return generator.open(
                 dataContentStream,
-                new JceCMSContentEncryptorBuilder(algorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME).build()
+                new JceCMSContentEncryptorBuilder(algorithm).setProvider(ProviderUtils.bcProvider).build()
         );
     }
 }

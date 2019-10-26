@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.types.api.utils;
 
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,7 +56,7 @@ class ObfuscateTest {
     @Test
     void securePath() {
         Obfuscate.secureLogs = "STARS";
-        assertThat(new Uri(Paths.get(TEST_STRING).toUri()).toString())
+        assertThat(new Uri("file:///path/to/file").toString())
                 .isEqualTo("Uri{uri=fi****e:///****/****/****}");
     }
 
@@ -90,7 +90,7 @@ class ObfuscateTest {
 
     @Test
     void disabledHidingSecretRequiresSecureLogsOff() {
-        Obfuscate.secureSensitive = "OFF";
+        Obfuscate.secureSensitive = "TRUE";
         assertThat(Obfuscate.secureSensitive(TEST_STRING)).isEqualTo("****");
 
         Obfuscate.secureSensitive = "OFF";
@@ -122,5 +122,22 @@ class ObfuscateTest {
     void hidingSecretEmpty() {
         Obfuscate.secureSensitive = "";
         assertThat(Obfuscate.secureSensitive(TEST_STRING)).isEqualTo("****");
+    }
+
+    @Test
+    void obfuscateCharOn() {
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString(TEST_STRING);
+        Obfuscate.secureSensitive = "";
+        Assertions.assertTrue(readKeyPassword.toString().contains("****"));
+        Assertions.assertFalse(readKeyPassword.toString().contains(TEST_STRING));
+    }
+
+    @Test
+    void obfuscateCharOFF() {
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString(TEST_STRING);
+        Obfuscate.secureSensitive = "OFF";
+        Obfuscate.secureLogs = "OFF";
+        Assertions.assertFalse(readKeyPassword.toString().contains("****"));
+        Assertions.assertTrue(readKeyPassword.toString().contains(TEST_STRING));
     }
 }

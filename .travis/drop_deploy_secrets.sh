@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export GPG_OWNERTRUST=''
+export GPG_SECRET_KEY=''
+export GPG_PASSPHRASE=''
+export OPENSHIFT_USER=''
+export OPENSHIFT_PASSWORD=''
+export DOCKERHUB_USER=''
+export DOCKERHUB_PASS=''
+export SONATYPE_USERNAME=''
+export SONATYPE_PASSWORD=''

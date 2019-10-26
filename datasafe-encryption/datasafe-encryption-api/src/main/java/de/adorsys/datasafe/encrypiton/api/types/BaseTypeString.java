@@ -3,6 +3,7 @@ package de.adorsys.datasafe.encrypiton.api.types;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
 @Getter
 @RequiredArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class BaseTypeString implements Serializable {
 
     private static final long serialVersionUID = 3569239558130703592L;

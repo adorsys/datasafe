@@ -20,6 +20,7 @@ import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -29,11 +30,10 @@ import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.BucketNameRemovingRouter;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
-import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -66,19 +66,19 @@ public class DatasafeConfig {
     @Bean
     @ConditionalOnProperty(name = DATASAFE_S3_STORAGE, havingValue = "true")
     DFSConfig singleDfsConfigS3(DatasafeProperties properties) {
-        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
+        return new DefaultDFSConfig(properties.getSystemRoot(), new ReadStorePassword(properties.getKeystorePassword()));
     }
 
     @Bean
     @ConditionalOnProperty(FILESYSTEM_ENV)
     DFSConfig singleDfsConfigFilesystem(DatasafeProperties properties) {
-        return new DefaultDFSConfig(properties.getSystemRoot(), properties.getKeystorePassword());
+        return new DefaultDFSConfig(properties.getSystemRoot(), new ReadStorePassword(properties.getKeystorePassword()));
     }
 
     @Bean
     @ConditionalOnProperty(name = CLIENT_CREDENTIALS, havingValue = "true")
     DFSConfig withClientCredentials(DatasafeProperties properties) {
-        return new DFSConfigWithStorageCreds(properties.getSystemRoot(), properties.getKeystorePassword());
+        return new DFSConfigWithStorageCreds(properties.getSystemRoot(), new ReadStorePassword(properties.getKeystorePassword()));
     }
 
     @Bean
@@ -93,8 +93,8 @@ public class DatasafeConfig {
     @Bean
     @ConditionalOnMissingBean(DFSConfig.class)
     DFSConfig multiDfsConfig(DatasafeProperties properties) {
-        return new MultiDFSConfig(URI.create(properties.getS3Path()), URI.create(properties.getDbProfilePath()),
-                properties.getKeystorePassword());
+        return new MultiDFSConfig(URI.create(properties.getSystemRoot()), URI.create(properties.getDbUrl()),
+                new ReadStorePassword(properties.getKeystorePassword()));
     }
 
     /**
@@ -102,7 +102,8 @@ public class DatasafeConfig {
      */
     @Bean
     DefaultDatasafeServices datasafeService(StorageService storageService, DFSConfig dfsConfig,
-                                            Optional<OverridesRegistry> registry) {
+                                            Optional<OverridesRegistry> registry,
+                                            DatasafeProperties properties) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -111,12 +112,14 @@ public class DatasafeConfig {
                 .config(dfsConfig)
                 .storage(storageService)
                 .overridesRegistry(registry.orElse(null))
+                .encryption(properties.getEncryption().toEncryptionConfig())
                 .build();
     }
 
     @Bean
     VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig,
-                                                        Optional<OverridesRegistry> registry) {
+                                                        Optional<OverridesRegistry> registry,
+                                                        DatasafeProperties properties) {
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -125,12 +128,13 @@ public class DatasafeConfig {
                 .config(dfsConfig)
                 .storage(storageService)
                 .overridesRegistry(registry.orElse(null))
+                .encryption(properties.getEncryption().toEncryptionConfig())
                 .build();
     }
 
     @Bean
     @ConditionalOnProperty(value = CLIENT_CREDENTIALS, havingValue = "true")
-    StorageService clientCredentials(AmazonS3 s3, DatasafeProperties properties) {
+    StorageService clientCredentials(AmazonS3 s3, S3Factory factory, DatasafeProperties properties) {
         ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
         S3StorageService basicStorage = new S3StorageService(
             s3,
@@ -147,8 +151,9 @@ public class DatasafeConfig {
                     Pattern.compile(".+"),
                     new UriBasedAuthStorageService(
                         acc -> new S3StorageService(
-                            S3ClientFactory.getClient(
-                                acc.getOnlyHostPart().toString(),
+                                factory.getClient(
+                                acc.getEndpoint(),
+                                acc.getRegion(),
                                 acc.getAccessKey(),
                                 acc.getSecretKey()
                             ),
@@ -158,6 +163,11 @@ public class DatasafeConfig {
                     )
                 ).build()
         );
+    }
+
+    @Bean
+    S3Factory factory() {
+        return new BasicS3Factory();
     }
 
     /**
@@ -203,14 +213,12 @@ public class DatasafeConfig {
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
 
-        StorageService multiDfs = new SchemeDelegatingStorage(
+        return new SchemeDelegatingStorage(
                 ImmutableMap.of(
                         "s3", s3StorageService,
                         "jdbc-mysql", db
                 )
         );
-
-        return multiDfs;
     }
 
     @Bean

@@ -1,0 +1,28 @@
+---
+keystore:
+  type: store-type
+  encryptionAlgo: store-enc
+  pbkdf:
+    scrypt:
+      cost: 1
+      blockSize: 2
+      parallelization: 3
+      saltLength: 4
+  macAlgo: store-mac
+  passwordKeysAlgo: store-pwd-keys
+keys:
+  encKeyNumber: 1
+  signKeyNumber: 2
+  secret:
+    algo: sec-algo
+    size: 12
+  encrypting:
+    algo: enc-algo
+    size: 13
+    sigAlgo: srv-sig-algo
+  singing:
+    algo: sig-algo
+    size: 14
+    sigAlgo: srv-sig-algo
+cms:
+  algo: cms-algo1

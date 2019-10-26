@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.rest.impl.config;
 
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -23,9 +24,6 @@ public class DatasafeProperties {
      */
     private String keystorePassword;
 
-    private String s3Path;
-    private String dbProfilePath;
-
     private String amazonUrl;
     private String amazonAccessKeyID;
     private String amazonSecretAccessKey;
@@ -39,4 +37,6 @@ public class DatasafeProperties {
      * From where to serve static resources.
      */
     private String staticResources;
+
+    private MutableEncryptionConfig encryption = new MutableEncryptionConfig();
 }

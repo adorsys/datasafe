@@ -2,10 +2,13 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 
 import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
-import de.adorsys.datasafe.encrypiton.impl.keystore.types.PasswordBasedKeyConfig;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,35 +20,34 @@ import javax.inject.Inject;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.DOCUMENT_KEY_ID_PREFIX;
-import static de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.*;
 
 @Slf4j
 @RuntimeDelegate
 public class KeyStoreServiceImpl implements KeyStoreService {
 
-    private final PasswordBasedKeyConfig passwordBasedKeyConfig;
+    private final KeyStoreConfig config;
+    private final String passwordStoreEncAlgo;
 
     @Inject
-    public KeyStoreServiceImpl(PasswordBasedKeyConfig passwordBasedKeyConfig) {
-        this.passwordBasedKeyConfig = passwordBasedKeyConfig;
+    public KeyStoreServiceImpl(KeyStoreConfig config) {
+        this.config = config;
+        this.passwordStoreEncAlgo = this.config.getPasswordKeysAlgo();
     }
 
     @Override
     public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
-                                   KeyStoreType keyStoreType,
-                                   KeyStoreCreationConfig config) {
+                                   KeyCreationConfig config) {
 
         return createKeyStore(
                 keyStoreAuth,
-                keyStoreType,
                 config,
                 ImmutableMap.of(
                         new KeyID(PATH_KEY_ID_PREFIX + UUID.randomUUID().toString()), Optional.empty(),
+                        new KeyID(PATH_KEY_ID_PREFIX_CTR + UUID.randomUUID().toString()), Optional.empty(),
                         new KeyID(DOCUMENT_KEY_ID_PREFIX + UUID.randomUUID().toString()), Optional.empty()
                 )
         );
@@ -53,20 +55,16 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     @Override
     public KeyStore createKeyStore(KeyStoreAuth keyStoreAuth,
-                                   KeyStoreType keyStoreType,
-                                   KeyStoreCreationConfig config,
+                                   KeyCreationConfig keyConfig,
                                    Map<KeyID, Optional<SecretKeyEntry>> secretKeys) {
 
         log.debug("start create keystore ");
-        if (config == null) {
-            config = new KeyStoreCreationConfig(5, 5);
-        }
         // TODO, hier also statt der StoreID nun das
         String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
         log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
         KeyStoreGenerator keyStoreGenerator = KeyStoreGenerator.builder()
-                .config(config)
-                .keyStoreType(keyStoreType)
+                .keyCreationConfig(keyConfig)
+                .keyStoreConfig(config)
                 .serverKeyPairAliasPrefix(serverKeyPairAliasPrefix)
                 .readKeyPassword(keyStoreAuth.getReadKeyPassword())
                 .secretKeys(secretKeys)
@@ -82,17 +80,16 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     public KeyStore updateKeyStoreReadKeyPassword(KeyStore current,
                                                   KeyStoreAuth currentCredentials,
                                                   KeyStoreAuth newCredentials) {
-        KeyStore newKeystore = KeyStore.getInstance(current.getType());
-        newKeystore.load(null, null);
+        KeyStore newKeystore = KeyStoreServiceImplBaseFunctions.newKeyStore(config);
         Enumeration<String> aliases = current.aliases();
 
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
-            Key currentKey = current.getKey(alias, currentCredentials.getReadKeyPassword().getValue().toCharArray());
+            Key currentKey = current.getKey(alias, currentCredentials.getReadKeyPassword().getValue());
             newKeystore.setKeyEntry(
                     alias,
                     currentKey,
-                    newCredentials.getReadKeyPassword().getValue().toCharArray(),
+                    newCredentials.getReadKeyPassword().getValue(),
                     current.getCertificateChain(alias)
             );
         }
@@ -126,7 +123,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         ReadKeyPassword readKeyPassword = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword();
         KeyStore keyStore = keyStoreAccess.getKeyStore();
         PrivateKey privateKey;
-        privateKey = (PrivateKey) keyStore.getKey(keyID.getValue(), readKeyPassword.getValue().toCharArray());
+        privateKey = (PrivateKey) keyStore.getKey(keyID.getValue(), readKeyPassword.getValue());
         return privateKey;
     }
 
@@ -134,7 +131,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     @SneakyThrows
     public SecretKeySpec getSecretKey(KeyStoreAccess keyStoreAccess, KeyID keyID) {
         KeyStore keyStore = keyStoreAccess.getKeyStore();
-        char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray();
+        char[] password = keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue();
         return (SecretKeySpec) keyStore.getKey(keyID.getValue(), password);
     }
 
@@ -142,14 +139,14 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     @SneakyThrows
     public void addPasswordBasedSecretKey(KeyStoreAccess keyStoreAccess, String alias, char[] secret) {
         PBEKeySpec pbeKeySpec = new PBEKeySpec(secret);
-        SecretKeyFactory keyFac = SecretKeyFactory.getInstance(passwordBasedKeyConfig.secretKeyFactoryId());
+        SecretKeyFactory keyFac = SecretKeyFactory.getInstance(passwordStoreEncAlgo);
         SecretKey key = keyFac.generateSecret(pbeKeySpec);
         keyStoreAccess.getKeyStore()
                 .setKeyEntry(
                         alias,
                         key,
-                        keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray(),
-                        new Certificate[0]
+                        keyStoreAccess.getKeyStoreAuth().getReadKeyPassword().getValue(),
+                        null
                 );
     }
 
@@ -173,7 +170,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         return KeyStoreServiceImplBaseFunctions.loadKeyStore(
                 payload,
                 storeId,
-                KeyStoreType.DEFAULT,
+                config,
                 readStorePassword
         );
     }

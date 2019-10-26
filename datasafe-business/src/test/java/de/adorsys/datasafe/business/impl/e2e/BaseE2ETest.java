@@ -10,7 +10,7 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalServ
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileUpdatingService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.api.actions.ListInbox;
 import de.adorsys.datasafe.inbox.api.actions.ReadFromInbox;
 import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
@@ -30,9 +30,12 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -41,10 +44,13 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Security;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -72,6 +78,11 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     protected UserIDAuth john;
     protected UserIDAuth jane;
+
+    @BeforeAll
+    static void addBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     protected void initialize(DFSConfig dfsConfig, DefaultDatasafeServices datasafeServices) {
         this.dfsConfig = dfsConfig;
@@ -107,20 +118,20 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     @SneakyThrows
     protected void writeDataToPrivate(UserIDAuth auth, String path, String data) {
-        OutputStream stream = writeToPrivate.write(WriteRequest.forDefaultPrivate(auth, path));
-        stream.write(data.getBytes());
-        stream.close();
+        try (OutputStream stream = writeToPrivate.write(WriteRequest.forDefaultPrivate(auth, path))) {
+            stream.write(data.getBytes(UTF_8));
+        }
         log.info("File {} of user {} saved to {}", Obfuscate.secure(data), auth, Obfuscate.secure(path, "/"));
     }
 
     @SneakyThrows
     protected void writeDataToInbox(UserIDAuth auth, String path, String data) {
-        OutputStream stream = writeToInbox.write(
-                WriteRequest.forDefaultPublic(Collections.singleton(auth.getUserID()), path)
-        );
+        try (OutputStream stream = writeToInbox.write(
+            WriteRequest.forDefaultPublic(Collections.singleton(auth.getUserID()), path)
+        )) {
 
-        stream.write(data.getBytes());
-        stream.close();
+            stream.write(data.getBytes(UTF_8));
+        }
         log.info("File {} of user {} saved to {}", Obfuscate.secure(data), auth, Obfuscate.secure(path, "/"));
     }
 
@@ -129,23 +140,25 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     }
 
     protected List<AbsoluteLocation<ResolvedResource>> getAllFilesInPrivate(UserIDAuth owner) {
-        List<AbsoluteLocation<ResolvedResource>> files = listPrivate.list(
-                ListRequest.forDefaultPrivate(owner, "./")
-        ).collect(Collectors.toList());
-
-        log.info("{} has {} in PRIVATE", owner.getUserID(), files);
-        return files;
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls = listPrivate.list(
+            ListRequest.forDefaultPrivate(owner, "./")
+        )) {
+            List<AbsoluteLocation<ResolvedResource>> files = ls.collect(Collectors.toList());
+            log.info("{} has {} in PRIVATE", owner.getUserID(), files);
+            return files;
+        }
     }
 
     @SneakyThrows
     protected String readPrivateUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        InputStream dataStream = readFromPrivate.read(ReadRequest.forPrivate(user, location));
 
-        ByteStreams.copy(dataStream, outputStream);
-        String data = new String(outputStream.toByteArray());
+        try (InputStream dataStream = readFromPrivate.read(ReadRequest.forPrivate(user, location))) {
+            ByteStreams.copy(dataStream, outputStream);
+        }
+
+        String data = new String(outputStream.toByteArray(), UTF_8);
         log.info("{} has {} in PRIVATE", user, Obfuscate.secure(data));
-
         return data;
     }
 
@@ -156,12 +169,13 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     @SneakyThrows
     protected String readInboxUsingPrivateKey(UserIDAuth user, PrivateResource location) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        InputStream dataStream = readFromInbox.read(ReadRequest.forPrivate(user, location));
 
-        ByteStreams.copy(dataStream, outputStream);
-        String data = new String(outputStream.toByteArray());
+        try (InputStream dataStream = readFromInbox.read(ReadRequest.forPrivate(user, location))) {
+            ByteStreams.copy(dataStream, outputStream);
+        }
+
+        String data = new String(outputStream.toByteArray(), UTF_8);
         log.info("{} has {} in INBOX", user, Obfuscate.secure(data));
-
         return data;
     }
 
@@ -170,12 +184,13 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     }
 
     protected List<AbsoluteLocation<ResolvedResource>> getAllFilesInInbox(UserIDAuth inboxOwner) {
-        List<AbsoluteLocation<ResolvedResource>> files = listInbox.list(
-                ListRequest.forDefaultPrivate(inboxOwner, "./")
-        ).collect(Collectors.toList());
-
-        log.info("{} has {} in INBOX", inboxOwner, files);
-        return files;
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls = listInbox.list(
+            ListRequest.forDefaultPrivate(inboxOwner, "./")
+        )) {
+            List<AbsoluteLocation<ResolvedResource>> files = ls.collect(Collectors.toList());
+            log.info("{} has {} in INBOX", inboxOwner, files);
+            return files;
+        }
     }
 
     protected void registerJohnAndJane() {
@@ -185,11 +200,12 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     @SneakyThrows
     protected void sendToInbox(UserID to, String filename, String data) {
-        OutputStream stream = writeToInbox.write(
-                WriteRequest.forDefaultPublic(Collections.singleton(to), "./" + filename)
-        );
-        stream.write(data.getBytes());
-        stream.close();
+        try (OutputStream stream = writeToInbox.write(
+            WriteRequest.forDefaultPublic(Collections.singleton(to), "./" + filename)
+        )) {
+            stream.write(data.getBytes());
+        }
+
         log.info("File {} sent to INBOX of user {}", Obfuscate.secure(filename), to);
     }
 
@@ -198,7 +214,11 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     }
 
     protected UserIDAuth registerUser(String userName) {
-        UserIDAuth auth = new UserIDAuth(new UserID(userName), new ReadKeyPassword("secure-password " + userName));
+        return registerUser(userName, ReadKeyPasswordTestFactory.getForString("secure-password " + userName));
+    }
+
+    protected UserIDAuth registerUser(String userName, ReadKeyPassword readKeyPassword) {
+        UserIDAuth auth = new UserIDAuth(new UserID(userName), readKeyPassword);
         profileRegistrationService.registerUsingDefaults(auth);
         log.info("Created user: {}", Obfuscate.secure(userName));
         return auth;
@@ -209,49 +229,63 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
         return new UserIDAuth(
                 userName,
-                new ReadKeyPassword("secure-password " + userName.getValue())
+                ReadKeyPasswordTestFactory.getForString("secure-password " + userName.getValue())
         );
     }
 
     protected void assertPrivateSpaceList(UserIDAuth user, String root, String... expected) {
-        List<String> paths = listPrivate.list(ListRequest.forDefaultPrivate(user, root))
+        List<String> paths;
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls =
+                 listPrivate.list(ListRequest.forDefaultPrivate(user, root))
+        ) {
+            paths = ls
                 .map(it -> it.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());
+        }
 
         assertThat(paths).containsExactlyInAnyOrder(expected);
     }
 
     protected void assertInboxSpaceList(UserIDAuth user, String root, String... expected) {
-        List<String> paths = listInbox.list(ListRequest.forDefaultPrivate(user, root))
+        List<String> paths;
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls =
+                 listInbox.list(ListRequest.forDefaultPrivate(user, root))
+        ) {
+            paths = ls
                 .map(it -> it.getResource().asPrivate().decryptedPath().asString())
                 .collect(Collectors.toList());
+        }
 
         assertThat(paths).containsExactlyInAnyOrder(expected);
     }
 
     @SneakyThrows
     protected void assertRootDirIsEmpty(WithStorageProvider.StorageDescriptor descriptor) {
-        assertThat(descriptor.getStorageService().get()
-                .list(
-                        new AbsoluteLocation<>(BasePrivateResource.forPrivate(descriptor.getLocation()))
-                )
-        ).isEmpty();
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls = descriptor.getStorageService().get()
+            .list(
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(descriptor.getLocation())))
+        ) {
+            assertThat(ls).isEmpty();
+        }
+
         if (descriptor.getStorageService().get() instanceof FileSystemStorageService) {
             // additional check that directory contains only folders that were created recursively
             // we do not have permission to delete these - because we removed files linked to profile
             // however we can't remove anything above
-            assertThat(Files.walk(Paths.get(descriptor.getLocation().asURI())))
+            try (Stream<Path> files = Files.walk(Paths.get(descriptor.getLocation().asURI()))) {
+                assertThat(files)
                     .allMatch(it -> it.toFile().isDirectory())
                     .extracting(Path::toUri)
                     .extracting(it -> descriptor.getLocation().asURI().relativize(it))
                     .extracting(URI::toString)
                     .containsExactlyInAnyOrder(
-                            "",
-                            "users/",
-                            "profiles/",
-                            "profiles/public/",
-                            "profiles/private/"
+                        "",
+                        "users/",
+                        "profiles/",
+                        "profiles/public/",
+                        "profiles/private/"
                     );
+            }
         }
     }
 }

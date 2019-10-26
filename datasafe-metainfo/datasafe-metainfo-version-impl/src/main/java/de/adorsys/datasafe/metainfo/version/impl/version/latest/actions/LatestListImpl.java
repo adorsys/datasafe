@@ -6,6 +6,8 @@ import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkServi
 import de.adorsys.datasafe.metainfo.version.impl.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
 import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -45,15 +47,15 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
     }
 
     @Override
-    public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
+    public PasswordClearingStream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
         // Returns absolute location of versioned resource tagged with date based on link
-        return listVersioned(request)
+        return new PasswordClearingStream(listVersioned(request)
                 .map(Versioned::stripVersion)
-                .map(AbsoluteLocation::new);
+                .map(AbsoluteLocation::new), request.getOwner().getReadKeyPassword());
     }
 
     @Override
-    public Stream<Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version>> listVersioned(
+    public PasswordClearingStream<Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version>> listVersioned(
             ListRequest<UserIDAuth, PrivateResource> request) {
 
         ListRequest<UserIDAuth, PrivateResource> forLatestSnapshotDir = request.toBuilder().location(
@@ -67,10 +69,10 @@ public class LatestListImpl<V extends LatestDFSVersion> implements VersionedList
                     request.getStorageIdentifier()
                 );
 
-        return listPrivate
+        return new PasswordClearingStream<>(listPrivate
                 .list(forLatestSnapshotDir)
                 .map(it -> parseVersion(it, linkDecryptor))
-                .filter(Objects::nonNull);
+                .filter(Objects::nonNull), request.getOwner().getReadKeyPassword());
     }
 
     private Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version> parseVersion(

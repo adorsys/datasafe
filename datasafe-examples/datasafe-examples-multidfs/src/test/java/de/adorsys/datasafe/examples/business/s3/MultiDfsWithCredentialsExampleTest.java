@@ -12,10 +12,10 @@ import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
-import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.storage.impl.s3.S3ClientFactory;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
@@ -25,6 +25,8 @@ import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Arrays;
@@ -58,8 +61,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class MultiDfsWithCredentialsExampleTest {
 
-    private static final ExecutorService EXECUTOR = ExecutorServiceUtil
-            .submitterExecutesOnStarvationExecutingService(4, 4);
+    private static final String REGION = "eu-central-1";
+    private static final ExecutorService EXECUTOR = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);
 
     private static Map<MinioContainerId, GenericContainer> minios = new EnumMap<>(MinioContainerId.class);
     private static AmazonS3 directoryClient = null;
@@ -67,18 +70,22 @@ class MultiDfsWithCredentialsExampleTest {
 
     @BeforeAll
     static void startup() {
+        // on windows this is required
+        Security.addProvider(new BouncyCastleProvider());
+
         // Create all required minio-backed S3 buckets:
         Arrays.stream(MinioContainerId.values()).forEach(it -> {
             GenericContainer minio = createAndStartMinio(it.getAccessKey(), it.getSecretKey());
             minios.put(it, minio);
 
-            String endpoint = "http://127.0.0.1:" + minio.getFirstMappedPort() + "/";
-            endpointsByHost.put(it, endpoint + it.getBucketName() + "/");
+            String endpoint = getDockerUri("http://127.0.0.1") + ":" + minio.getFirstMappedPort() + "/";
+            endpointsByHost.put(it, endpoint + REGION + "/" + it.getBucketName() + "/");
             log.info("MINIO for {} is available at: {} with access: '{}'/'{}'", it, endpoint, it.getAccessKey(),
                     it.getSecretKey());
 
             AmazonS3 client = S3ClientFactory.getClient(
                     endpoint,
+                    REGION,
                     it.getAccessKey(),
                     it.getSecretKey()
             );
@@ -112,7 +119,7 @@ class MultiDfsWithCredentialsExampleTest {
         OverridesRegistry registry = new BaseOverridesRegistry();
         DefaultDatasafeServices multiDfsDatasafe = DaggerDefaultDatasafeServices
                 .builder()
-                .config(new DFSConfigWithStorageCreds(directoryBucketS3Uri, "PAZZWORT"))
+                .config(new DFSConfigWithStorageCreds(directoryBucketS3Uri, new ReadStorePassword("PAZZWORT")))
                 // This storage service will route requests to proper bucket based on URI content:
                 // URI with directoryBucket to `directoryStorage`
                 // URI with filesBucketOne will get dynamically generated S3Storage
@@ -123,12 +130,13 @@ class MultiDfsWithCredentialsExampleTest {
                                     // bind URI that contains `directoryBucket` to directoryStorage
                                     .put(Pattern.compile(directoryBucketS3Uri + ".+"), directoryStorage)
                                     .put(
-                                        Pattern.compile("http://127.0.0.1.+"),
+                                        Pattern.compile(getDockerUri("http://127.0.0.1") + ".+"),
                                         // Dynamically creates S3 client with bucket name equal to host value
                                         new UriBasedAuthStorageService(
                                             acc -> new S3StorageService(
                                                 S3ClientFactory.getClient(
-                                                    acc.getOnlyHostPart().toString(),
+                                                    acc.getEndpoint(),
+                                                    acc.getRegion(),
                                                     acc.getAccessKey(),
                                                     acc.getSecretKey()
                                                 ),
@@ -152,7 +160,8 @@ class MultiDfsWithCredentialsExampleTest {
         // Depending on path of file - filesBucketOne or filesBucketTwo - requests will be routed to proper bucket.
         // I.e. path filesBucketOne/path/to/file will end up in `filesBucketOne` with key path/to/file
         // his profile and access credentials for `filesBucketOne`  will be in `configBucket`
-        UserIDAuth john = new UserIDAuth("john", "secret");
+        UserIDAuth john = new UserIDAuth("john",
+                ReadKeyPasswordTestFactory.getForString("secret"));
         // Here, nothing expects John has own storage credentials:
         multiDfsDatasafe.userProfile().registerUsingDefaults(john);
 
@@ -237,5 +246,16 @@ class MultiDfsWithCredentialsExampleTest {
             super(null);
             this.delegate = new RegexAccessServiceWithStorageCredentialsImpl(storageKeyStoreOperations);
         }
+    }
+
+    @SneakyThrows
+    private static String getDockerUri(String defaultUri) {
+        String dockerHost = System.getenv("DOCKER_HOST");
+        if (dockerHost == null) {
+            return defaultUri;
+        }
+
+        URI dockerUri = new URI(dockerHost);
+        return "http://" + dockerUri.getHost();
     }
 }

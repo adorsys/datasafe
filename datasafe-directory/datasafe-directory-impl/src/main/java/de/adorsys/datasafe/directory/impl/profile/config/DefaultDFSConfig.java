@@ -6,9 +6,8 @@ import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadStorePassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.resource.*;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +18,6 @@ import java.util.Collections;
  * Default DFS folders layout provider, suitable both for s3 and filesystem.
  */
 @Slf4j
-@RequiredArgsConstructor
 public class DefaultDFSConfig implements DFSConfig {
 
     protected static final String USERS_ROOT = "users/";
@@ -38,7 +36,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * to place everything in datasafe/system directory within storage
      * @param systemPassword System password to open keystore
      */
-    public DefaultDFSConfig(String systemRoot, String systemPassword) {
+    public DefaultDFSConfig(String systemRoot, ReadStorePassword systemPassword) {
         this(new Uri(systemRoot), systemPassword);
     }
 
@@ -47,7 +45,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * to place everything in datasafe/system directory within storage
      * @param systemPassword System password to open keystore
      */
-    public DefaultDFSConfig(URI systemRoot, String systemPassword) {
+    public DefaultDFSConfig(URI systemRoot, ReadStorePassword systemPassword) {
         this(new Uri(systemRoot), systemPassword);
     }
 
@@ -56,7 +54,7 @@ public class DefaultDFSConfig implements DFSConfig {
      * to place everything in datasafe/system directory within storage
      * @param systemPassword System password to open keystore
      */
-    public DefaultDFSConfig(Uri systemRoot, String systemPassword) {
+    public DefaultDFSConfig(Uri systemRoot, ReadStorePassword systemPassword) {
         this(systemRoot, systemPassword, new DefaultUserProfileLocationImpl(systemRoot));
     }
 
@@ -66,10 +64,10 @@ public class DefaultDFSConfig implements DFSConfig {
      * @param systemPassword System password to open keystore
      * @param userProfileLocation Bootstrap for user profile files placement
      */
-    public DefaultDFSConfig(Uri systemRoot, String systemPassword, UserProfileLocation userProfileLocation) {
+    public DefaultDFSConfig(Uri systemRoot, ReadStorePassword systemPassword, UserProfileLocation userProfileLocation) {
         systemRoot = addTrailingSlashIfNeeded(systemRoot);
         this.systemRoot = systemRoot;
-        this.systemPassword = new ReadStorePassword(systemPassword);
+        this.systemPassword = systemPassword;
         this.userProfileLocation = userProfileLocation;
         log.debug("Root is {}", dfsRoot());
     }
@@ -166,12 +164,15 @@ public class DefaultDFSConfig implements DFSConfig {
 
     public static String addTrailingSlashIfNeeded(String systemRoot) {
         if (systemRoot == null) {
-            throw new RuntimeException("systemRoot must not be null");
+            throw new IllegalArgumentException("systemRoot must not be null");
         }
+
         int last = systemRoot.length();
-        if (systemRoot.substring(last - 1).equals("/")) {
+
+        if (!systemRoot.isEmpty() && systemRoot.substring(last - 1).equals("/")) {
             return systemRoot;
         }
+
         return systemRoot + "/";
     }
 }

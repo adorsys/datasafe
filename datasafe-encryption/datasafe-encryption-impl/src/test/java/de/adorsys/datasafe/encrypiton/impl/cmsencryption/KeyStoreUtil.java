@@ -27,6 +27,6 @@ class KeyStoreUtil {
 
     @SneakyThrows
     private Key getKey(String id, KeyStoreAccess access) {
-        return access.getKeyStore().getKey(id, access.getKeyStoreAuth().getReadKeyPassword().getValue().toCharArray());
+        return access.getKeyStore().getKey(id, access.getKeyStoreAuth().getReadKeyPassword().getValue());
     }
 }

@@ -10,7 +10,7 @@ import javax.crypto.SecretKey;
  * Wrapper for secret key and its ID, so it can be found by ID within keystore.
  */
 @Getter
-@ToString
+@ToString(of = "keyID")
 @RequiredArgsConstructor
 public class SecretKeyIDWithKey {
 

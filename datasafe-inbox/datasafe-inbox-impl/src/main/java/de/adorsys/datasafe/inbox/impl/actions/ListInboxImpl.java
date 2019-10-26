@@ -37,7 +37,7 @@ public class ListInboxImpl implements ListInbox {
 
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(ListRequest<UserIDAuth, PrivateResource> request) {
-        keyService.documentEncryptionSecretKey(request.getOwner()); // Just checking user has access
+        keyService.validateUserHasAccessOrThrow(request.getOwner());
         return listService.list(resolveRelative(request))
                 .map(it -> fillEncryptedDecryptedSegments(request, it));
     }

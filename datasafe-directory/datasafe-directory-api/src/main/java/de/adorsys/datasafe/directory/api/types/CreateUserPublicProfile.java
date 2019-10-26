@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.directory.api.types;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 import lombok.Builder;
@@ -32,11 +33,18 @@ public class CreateUserPublicProfile {
     @NonNull
     private final AbsoluteLocation<PublicResource> inbox;
 
-    public UserPublicProfile removeAccess() {
+    /**
+     * Entity appVersion. Keeps version of Datasafe which was used to create profile
+     */
+    @NonNull
+    @Builder.Default
+    private final Version appVersion = Version.current();
+
+    public UserPublicProfile buildPublicProfile() {
         return UserPublicProfile.builder()
-            // FIXME - remove access ?
             .inbox(inbox)
             .publicKeys(publicKeys)
+            .appVersion(appVersion)
             .build();
     }
 }

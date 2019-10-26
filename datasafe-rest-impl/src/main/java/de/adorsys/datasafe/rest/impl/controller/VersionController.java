@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.rest.impl.exceptions.UnauthorizedException;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -51,7 +50,7 @@ public class VersionController {
                                                @RequestHeader String password,
                                                @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                                @PathVariable(required = false) String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = Optional.ofNullable(path).orElse("./");
         try {
             List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(
@@ -81,7 +80,7 @@ public class VersionController {
                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                       @PathVariable String path,
                                       HttpServletResponse response) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         ReadRequest<UserIDAuth, PrivateResource> request =
                 ReadRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         // this is needed for swagger, produces is just a directive:
@@ -108,7 +107,7 @@ public class VersionController {
                                        @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                        @PathVariable String path,
                                        @RequestParam("file") MultipartFile file) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         WriteRequest<UserIDAuth, PrivateResource> request =
                 WriteRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         try (OutputStream os = versionedDatasafeServices.latestPrivate().write(request);
@@ -130,7 +129,7 @@ public class VersionController {
                                         @RequestHeader String password,
                                         @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                         @PathVariable String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         RemoveRequest<UserIDAuth, PrivateResource> request =
                 RemoveRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         versionedDatasafeServices.latestPrivate().remove(request);
@@ -151,7 +150,7 @@ public class VersionController {
                                    @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                    @ApiParam(defaultValue = ".")
                                    @PathVariable(required = false) String path) {
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), new ReadKeyPassword(password));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");

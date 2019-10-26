@@ -1,11 +1,13 @@
 package de.adorsys.datasafe.simple.adapter.spring.factory;
 
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.impl.SimpleDatasafeServiceImpl;
+import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDatasafeEncryptionProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -15,9 +17,13 @@ public class SpringSimpleDatasafeServiceFactory {
     @Autowired
     DFSCredentials wiredDfsCredentials;
 
+    @Autowired
+    SpringDatasafeEncryptionProperties encryptionProperties;
+
     DFSCredentials dfsCredentials;
 
     boolean useWiredCredentials = true;
+
     @PostConstruct
     public void postConstruct() {
         if (useWiredCredentials) {
@@ -43,11 +49,21 @@ public class SpringSimpleDatasafeServiceFactory {
     public SimpleDatasafeService getSimpleDataSafeServiceWithSubdir(String subdirBelowRoot) {
         if (dfsCredentials instanceof AmazonS3DFSCredentials) {
             AmazonS3DFSCredentials amazonS3DFSCredentials = (AmazonS3DFSCredentials) dfsCredentials;
-            return new SimpleDatasafeServiceImpl(amazonS3DFSCredentials.toBuilder().rootBucket(amazonS3DFSCredentials.getRootBucket() + "/" + subdirBelowRoot).build());
+            return new SimpleDatasafeServiceImpl(
+                    amazonS3DFSCredentials.toBuilder().rootBucket(
+                            amazonS3DFSCredentials.getRootBucket() + "/" + subdirBelowRoot
+                    ).build(),
+                    null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig()
+            );
         }
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
-            return new SimpleDatasafeServiceImpl(filesystemDFSCredentials.toBuilder().root(filesystemDFSCredentials.getRoot() + "/" + subdirBelowRoot).build());
+            return new SimpleDatasafeServiceImpl(
+                    filesystemDFSCredentials.toBuilder().root(
+                            filesystemDFSCredentials.getRoot() + "/" + subdirBelowRoot
+                    ).build(),
+                    null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig()
+            );
         }
         throw new SimpleAdapterException("missing switch for DFSCredentials" + dfsCredentials);
     }

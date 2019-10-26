@@ -1,27 +1,41 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.security.Security;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CleanupDbTest extends WithStorageProvider {
 
     private SimpleDatasafeService simpleDatasafeService;
     private DFSCredentials dfsCredentials;
 
+    @BeforeAll
+    static void setupBouncyCastle() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     private void createSimpleService(WithStorageProvider.StorageDescriptor descriptor) {
         dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
         if (dfsCredentials != null) {
-            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials);
+            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials, new MutableEncryptionConfig());
         } else {
             simpleDatasafeService = new SimpleDatasafeServiceImpl();
         }
@@ -35,8 +49,8 @@ class CleanupDbTest extends WithStorageProvider {
         String content = "content of document";
         String path = "a/b/c.txt";
 
-        UserIDAuth user1 = new UserIDAuth("uzr", "user");
-        UserIDAuth user2 = new UserIDAuth("other", "user");
+        UserIDAuth user1 = new UserIDAuth("uzr", ReadKeyPasswordTestFactory.getForString("user"));
+        UserIDAuth user2 = new UserIDAuth("other", ReadKeyPasswordTestFactory.getForString("user"));
         simpleDatasafeService.createUser(user1);
         simpleDatasafeService.createUser(user2);
 
@@ -46,18 +60,20 @@ class CleanupDbTest extends WithStorageProvider {
                 new DocumentContent(content.getBytes())));
 
         // (1 keystore + 1 pub key + 1 file) * 2
-        assertEquals(6,
-                descriptor.getStorageService().get().list(
-                        BasePrivateResource.forAbsolutePrivate(descriptor.getLocation())
-                ).count()
-        );
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls =
+                     descriptor.getStorageService().get()
+                             .list(BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
+        ) {
+            assertThat(ls).hasSize(6);
+        }
 
         simpleDatasafeService.cleanupDb();
 
-        assertEquals(0,
-                descriptor.getStorageService().get().list(
-                        BasePrivateResource.forAbsolutePrivate(descriptor.getLocation())
-                ).count()
-        );
+        try (Stream<AbsoluteLocation<ResolvedResource>> ls =
+                     descriptor.getStorageService().get()
+                             .list(BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
+        ) {
+            assertThat(ls).isEmpty();
+        }
     }
 }

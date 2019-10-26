@@ -7,6 +7,7 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalServ
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
@@ -14,6 +15,8 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResourceLocation;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +34,7 @@ import java.util.Set;
 @RuntimeDelegate
 public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperations {
 
+    private final KeyCreationConfig config;
     private final GenericKeystoreOperations genericOper;
     private final DFSConfig dfsConfig;
     private final BucketAccessService access;
@@ -40,10 +44,16 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
     private final KeyStoreService keyStoreService;
 
     @Inject
-    public DocumentKeyStoreOperationsImpl(GenericKeystoreOperations genericOper, DFSConfig dfsConfig,
-                                          BucketAccessService access, ProfileRetrievalService profile,
-                                          StorageWriteService writeService, KeyStoreCache keystoreCache,
-                                          KeyStoreService keyStoreService) {
+    public DocumentKeyStoreOperationsImpl(
+            KeyCreationConfig config,
+            GenericKeystoreOperations genericOper,
+            DFSConfig dfsConfig,
+            BucketAccessService access,
+            ProfileRetrievalService profile,
+            StorageWriteService writeService,
+            KeyStoreCache keystoreCache,
+            KeyStoreService keyStoreService) {
+        this.config = config;
         this.genericOper = genericOper;
         this.dfsConfig = dfsConfig;
         this.access = access;
@@ -77,8 +87,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
         KeyStoreAuth auth = keystoreAuth(forUser, forUser.getReadKeyPassword());
         KeyStore keystoreBlob = keyStoreService.createKeyStore(
                 auth,
-                KeyStoreType.DEFAULT,
-                new KeyStoreCreationConfig(1, 1)
+                config
         );
 
         writeKeystore(forUser.getUserID(), auth, keystoreLocationWithAccess(forUser), keystoreBlob);
@@ -116,7 +125,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
 
     private KeyStore keyStore(UserIDAuth forUser) {
         return keystoreCache.getKeystore().computeIfAbsent(
-                forUser.getUserID(),
+                forUser,
                 userId -> {
                     AbsoluteLocation<PrivateResource> location = keystoreLocationWithAccess(forUser);
                     return genericOper.readKeyStore(forUser, location);

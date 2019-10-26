@@ -1,11 +1,16 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyGenerator;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
-import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreCreationConfigImpl;
+import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyCreationConfigImpl;
 import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeystoreBuilder;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.Builder;
 import lombok.NonNull;
@@ -22,13 +27,13 @@ import java.util.UUID;
 public class KeyStoreGenerator {
 
     @NonNull
-    private final KeyStoreType keyStoreType;
+    private final KeyStoreConfig keyStoreConfig;
 
     @NonNull
     private final String serverKeyPairAliasPrefix;
 
     @NonNull
-    private final KeyStoreCreationConfigImpl config;
+    private final KeyCreationConfigImpl config;
 
     @NonNull
     private final ReadKeyPassword readKeyPassword;
@@ -38,14 +43,14 @@ public class KeyStoreGenerator {
 
     @Builder
     protected KeyStoreGenerator(
-            KeyStoreCreationConfig config,
-            KeyStoreType keyStoreType,
+            KeyCreationConfig keyCreationConfig,
+            KeyStoreConfig keyStoreConfig,
             String serverKeyPairAliasPrefix,
             ReadKeyPassword readKeyPassword,
             Map<KeyID, Optional<SecretKeyEntry>> secretKeys
     ) {
-        this.config = new KeyStoreCreationConfigImpl(config);
-        this.keyStoreType = keyStoreType;
+        this.config = new KeyCreationConfigImpl(keyCreationConfig);
+        this.keyStoreConfig = keyStoreConfig;
         this.serverKeyPairAliasPrefix = "KEYSTORE-ID-0";
         this.readKeyPassword = readKeyPassword;
         this.secretKeys = secretKeys;
@@ -62,7 +67,7 @@ public class KeyStoreGenerator {
         Date startTime = new Date();
         try {
             String keyStoreID = serverKeyPairAliasPrefix;
-            KeystoreBuilder keystoreBuilder = new KeystoreBuilder().withStoreType(keyStoreType);
+            KeystoreBuilder keystoreBuilder = new KeystoreBuilder().withKeyStoreConfig(keyStoreConfig);
 
             {
                 KeyPairGenerator encKeyPairGenerator = config.getEncKeyPairGenerator(keyStoreID);
@@ -89,7 +94,7 @@ public class KeyStoreGenerator {
                 }
             }
             {
-                SecretKeyGenerator secretKeyGenerator = config.getSecretKeyGenerator(keyStoreID);
+                SecretKeyGenerator secretKeyGenerator = config.getSecretKeyGenerator();
 
                 for (Map.Entry<KeyID, Optional<SecretKeyEntry>> keyEntry : secretKeys.entrySet()) {
                     keystoreBuilder = buildSecretKey(

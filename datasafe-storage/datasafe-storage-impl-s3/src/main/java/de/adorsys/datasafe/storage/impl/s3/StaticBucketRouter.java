@@ -3,6 +3,8 @@ package de.adorsys.datasafe.storage.impl.s3;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import lombok.RequiredArgsConstructor;
 
+import java.util.function.UnaryOperator;
+
 @RequiredArgsConstructor
 public class StaticBucketRouter implements BucketRouter {
 
@@ -15,6 +17,13 @@ public class StaticBucketRouter implements BucketRouter {
 
     @Override
     public String resourceKey(AbsoluteLocation resource) {
-        return resource.location().getRawPath().replaceFirst("^/", "");
+        UnaryOperator<String> trimStartingSlash = str -> str.replaceFirst("^/", "");
+
+        String resourcePath = trimStartingSlash.apply(resource.location().getRawPath());
+        if (bucketName == null || "".equals(bucketName) || !resourcePath.contains(bucketName)) {
+            return resourcePath;
+        }
+
+        return trimStartingSlash.apply(resourcePath.substring(resourcePath.indexOf(bucketName) + bucketName.length()));
     }
 }

@@ -1,6 +1,8 @@
 package de.adorsys.datasafe.encrypiton.api.types.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreAuthException;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 
 /**
  * Authorization entity to read keystore or both keystore and key in it.

@@ -18,6 +18,7 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.ContentGenerator;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -130,7 +131,7 @@ public class OperationExecutor {
 
     @SneakyThrows
     private void doCreate(Operation oper) {
-        UserIDAuth auth = new UserIDAuth(oper.getUserId(), oper.getUserId());
+        UserIDAuth auth = new UserIDAuth(oper.getUserId(), ReadKeyPasswordTestFactory.getForString(oper.getUserId()));
         registrationService.registerUsingDefaults(auth);
         users.put(auth.getUserID().getValue(), new UserSpec(auth, new ContentGenerator(fileContentSize)));
     }

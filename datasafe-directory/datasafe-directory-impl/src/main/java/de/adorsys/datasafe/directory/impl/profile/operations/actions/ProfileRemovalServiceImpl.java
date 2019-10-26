@@ -63,7 +63,7 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         }
 
         // NOP just check that user has access
-        privateKeyService.documentEncryptionSecretKey(userID);
+        privateKeyService.validateUserHasAccessOrThrow(userID);
 
         UserPublicProfile publicProfile = retrievalService.publicProfile(userID.getUserID());
         UserPrivateProfile privateProfile = retrievalService.privateProfile(userID);
@@ -98,6 +98,7 @@ public class ProfileRemovalServiceImpl implements ProfileRemovalService {
         keyStoreCache.remove(userID.getUserID());
 
         log.debug("Deregistered user {}", userID);
+        userID.getReadKeyPassword().clear();
     }
 
     protected void removeUserProfileFiles(UserID forUser) {

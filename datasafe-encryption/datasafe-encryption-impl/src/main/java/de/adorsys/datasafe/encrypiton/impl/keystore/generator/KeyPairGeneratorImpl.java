@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
 
-import de.adorsys.datasafe.encrypiton.api.types.keystore.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
 import de.adorsys.datasafe.encrypiton.impl.keystore.types.SelfSignedKeyPairData;
 import org.bouncycastle.asn1.x500.X500Name;

@@ -1,6 +1,65 @@
 # Datasafe long run test results
 
-### 1. Testing procedure description.
+### 1. Testing environment preparation
+Datasafe throughput tests was run on different Amazon EC2 instances. On each instance after creation was installed JDK, maven and git. Then datasafe project was pulled and executed 
+[RandomActionsOnDatasafeTest](datasafe-business-tests-random-actions/src/test/java/de/adorsys/datasafe/business/impl/e2e/randomactions/RandomActionsOnDatasafeTest.java) which uses one bucket. Test was launched with all combinations of 2, 4, 8 and 16 parallel threads and 100kb, 1mb and 10mb file sizes.
+
+#### Preparation commands for running test
+
+```text
+ssh -i ~/Documents/mhr.pem ec2-user@x.x.x.x
+```
+
+where x.x.x.x - current ip address of ec2 instance.
+
+mhr.pem - key pair file to access remote console by ssh.
+
+Uploading jdk to remote server. jdk-8u221-linux-x64.rpm file should be first downloaded from Oracle website.
+```text
+scp -i ~/Documents/mhr.pem ~/jdk-8u221-linux-x64.rpm ec2-user@3.120.206.136:/home/ec2-user
+```
+Installation of jdk, maven, git.
+```text
+sudo yum install -y jdk-8u221-linux-x64.rpm
+sudo yum install -y git
+sudo yum install -y maven
+```
+
+Datasafe checkout and compilation
+
+```text
+git clone https://github.com/adorsys/datasafe.git
+mvn -DskipTests=true install
+cd datasafe-long-run-tests/datasafe-business-tests-random-actions/
+```
+
+Test execution command.
+
+```text
+mvn -DAWS_ACCESS_KEY="***" \
+    -DAWS_SECRET_KEY="***" \
+    -DAWS_BUCKET="***" \
+    -DAWS_REGION="eu-central-1" \
+    -DtestArgs="-Xmx512m \
+    -Dcom.sun.management.jmxremote.ssl=false \
+    -Dcom.sun.management.jmxremote.authenticate=false \
+    -Dcom.sun.management.jmxremote.port=8090 \
+    -Dcom.sun.management.jmxremote.rmi.port=8090 \
+    -Djava.rmi.server.hostname=127.0.0.1 \
+    -Dcom.sun.management.jmxremote.local.only=false" \
+    -Dtest=RandomActionsOnDatasafeTest test
+```
+
+*** should be changed to real aws s3 bucket name, access key and secret key.
+
+With Xmx parameter used memory could be configured. But due to some memory leaks it was not used and test ran with all available memory.
+
+Enabling jmx monitoring
+```text
+ssh -i ~/Documents/mhr.pem -L 8090:127.0.0.1:8090 ec2-user@x.x.x.x
+```
+
+### 2. Testing procedure description
 
 Tests were done on 6 different aws ec2 instances:
 
@@ -73,7 +132,7 @@ Threads	100kb	1mb	10mb
 2	118.67294777989376	42.735968236780366	6.102306403813942  
 ```
 
-### 2.  Test result charts.
+### 3.  Test result charts
 
 1.  WRITE operation
 
@@ -108,7 +167,7 @@ MULTIBUCKET TEST
 All tests were made using AES256_CBC Encryption algorithm. On next chart test results using AES256_GCM comparing to AES256_CBC.
 ![](.images/CBCvsGCM.png)
 
-### 3. CEPH S3 storage test
+### 4. CEPH S3 storage test
 
 For Ceph testing, cluster consists of osd1, osd2, osd3 t2.xlarge ec2 instances and t2.large instances for ceph monitor and gateway.
 
@@ -117,3 +176,34 @@ For Ceph testing, cluster consists of osd1, osd2, osd3 t2.xlarge ec2 instances a
 Each test was run with 2, 4, 8, 16 threads with single bucket and multi bucket(3 buckets were used) from ec2 c5n.2xlarge(8core) instance. 
 
 ![](.images/ceph.png)
+
+### 5. Simple Datasafe Adapter test
+There is also [RandomActionsOnSimpleDatasafeAdapterTest](datasafe-business-tests-random-actions/src/test/java/de/adorsys/datasafe/business/impl/e2e/randomactions/RandomActionsOnSimpleDatasafeAdapterTest.java) for testing functionality of Simple Datasafe Adapter (used for compatibility with predecessor of datasafe - docusafe). 
+To run test you need to have installed jdk and maven. 
+If your storage is aws s3 then command will be:
+```text
+mvn -DAWS_ACCESS_KEY="accesskey" \
+    -DAWS_SECRET_KEY="secretkey" \
+    -DAWS_BUCKET="datasafe-bucket" \
+    -DAWS_REGION="eu-central-1" \
+    -DtestArgs="-Xmx256m \                  # memory limit for test
+    -DSTORAGE_PROVIDERS="AMAZON" \          # means that external s3 compatible storage will be used. By default local MINIO container is used.
+    -DFIXTURE_SIZE="MEDIUM" \               # available values: MEDIUM (1000 operations), LARGE (10000 operations). By default small fixture is used with 200 operations.
+    -DTHREADS=16 \                          # comma separated list of desired number of threads
+    -DFILE_SIZES=100,1024,10240" \          # comma separated list of file sizes used in test
+    -Dtest=RandomActionsOnSimpleDatasafeAdapterTest test
+```
+For Ceph you have to add AWS_URL param. Without this parameter test by default trying to connect to Amazon.
+```text
+mvn -DAWS_ACCESS_KEY="accesskey" \
+    -DAWS_SECRET_KEY="secretkey" \
+    -DAWS_BUCKET="ceph-bucket" \
+    -DAWS_URL="host.ceph.com:7480" \
+    -DtestArgs="-Xmx256m -DSTORAGE_PROVIDERS="AMAZON" -DFIXTURE_SIZE="MEDIUM" -DTHREADS=2,4,8,16 -DFILE_SIZES=100,1024,10240" \
+    -Dtest=RandomActionsOnSimpleDatasafeAdapterTest test
+```
+Test will automatcally run in all combinations of values of threads, file_size and storage providers lists.
+
+For simplifying running this test there is [runSimpleDatasafeAdapterPerformanceTest.sh](../scripts/runSimpleDatasafeAdapterPerformanceTest.sh) 
+script which uses credentials from environment variables and by default runs test with small fixture size, 2 threads and 100kb file size.
+AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_BUCKET, AWS_REGION environment variables have to be set. And for Ceph also AWS_URL has to be set. 
