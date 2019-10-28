@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.encrypiton.api.types.encryption;
 
-import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.KeyStoreConfig;
-import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.pbkdf.PBKDF2;
-import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.pbkdf.Scrypt;
+import de.adorsys.keymanagement.api.types.KeyStoreConfig;
+import de.adorsys.keymanagement.api.types.pbkdf.PBKDF2;
+import de.adorsys.keymanagement.api.types.pbkdf.Scrypt;
 import lombok.Data;
 
 /**

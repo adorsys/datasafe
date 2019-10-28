@@ -13,9 +13,9 @@ import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import de.adorsys.keymanagement.api.types.KeySetTemplate;
+import de.adorsys.keymanagement.api.types.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.source.KeySet;
 import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
-import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.KeyStoreConfig;
 import de.adorsys.keymanagement.juggler.services.DaggerJuggler;
 import de.adorsys.keymanagement.juggler.services.Juggler;
 import org.junit.jupiter.api.Assertions;
@@ -78,14 +78,15 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getPrivateKey() throws Exception {
-        Juggler juggler = DaggerJuggler.builder().keyStoreConfig(KeyStoreConfig.builder().build()).build();
+        KeyStoreConfig config = KeyStoreConfig.builder().type("UBER").build();
+        Juggler juggler = DaggerJuggler.builder().build();
         KeySetTemplate template = KeySetTemplate.builder()
                 .generatedEncryptionKeys(Encrypting.with().prefix("KEYSTORE-ID-0").password("keypass"::toCharArray).build().repeat(1))
                 .build();
         KeySet keySet = juggler.generateKeys().fromTemplate(template);
         PrivateKey privateKey1 = keySet.getKeyPairs().get(0).getPair().getPrivate();
-        KeyStore keyStore = juggler.toKeystore().generate(keySet, () -> keyStoreAuth.getReadStorePassword().getValue());
-
+        KeyStore keyStore = juggler.toKeystore().withConfig(config).generate(keySet, () -> keyStoreAuth.getReadStorePassword().getValue());
+        Assertions.assertEquals("UBER", keyStore.getType());
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
         String keyID = keyStore.aliases().nextElement();

@@ -7,7 +7,7 @@ import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
-import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.KeyStoreConfig;
+import de.adorsys.keymanagement.api.types.KeyStoreConfig;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;

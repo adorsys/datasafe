@@ -8,11 +8,11 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.keymanagement.api.types.KeySetTemplate;
+import de.adorsys.keymanagement.api.types.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.source.KeySet;
 import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
 import de.adorsys.keymanagement.api.types.template.generated.Secret;
 import de.adorsys.keymanagement.api.types.template.generated.Signing;
-import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.KeyStoreConfig;
 import de.adorsys.keymanagement.juggler.services.DaggerJuggler;
 import de.adorsys.keymanagement.juggler.services.Juggler;
 import lombok.SneakyThrows;
@@ -72,7 +72,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
         log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
 
-        Juggler juggler = DaggerJuggler.builder().keyStoreConfig(config).build();
+        Juggler juggler = DaggerJuggler.builder().build();
         EncryptingKeyCreationCfg encConf = keyConfig.getEncrypting();
         SigningKeyCreationCfg signConf = keyConfig.getSigning();
         KeySetTemplate template = KeySetTemplate.builder()
@@ -82,6 +82,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                 .build();
         KeySet keySet = juggler.generateKeys().fromTemplate(template);
 
+        juggler.withConfig(config);
         KeyStore ks = juggler.toKeystore().generate(keySet, () -> keyStoreAuth.getReadKeyPassword().getValue());
         log.debug("finished create keystore ");
         return ks;

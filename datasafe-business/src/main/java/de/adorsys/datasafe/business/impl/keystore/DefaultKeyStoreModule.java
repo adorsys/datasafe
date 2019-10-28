@@ -8,7 +8,7 @@ import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImplRuntimeDelegatable;
-import de.adorsys.keymanagement.bouncycastle.adapter.services.persist.KeyStoreConfig;
+import de.adorsys.keymanagement.api.types.KeyStoreConfig;
 
 import javax.annotation.Nullable;
 

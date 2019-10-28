@@ -14,12 +14,10 @@
             <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>de.adorsys.keymanagement</groupId>
-			<artifactId>juggler-bouncycastle</artifactId>
-		</dependency>
-
-
+        <dependency>
+            <groupId>de.adorsys.keymanagement</groupId>
+            <artifactId>juggler-bouncycastle</artifactId>
+        </dependency>
 	</dependencies>
 
 	<build>
