@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
+import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
@@ -69,13 +70,8 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             log.info(lsf.toString());
             this.systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
             storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
-            customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
+            customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword))
-                    .encryption(
-                            config.toEncryptionConfig().toBuilder()
-                                    .keystore(extractKeystoreType(config))
-                                    .build()
-                    )
                     .storage(getStorageService())
                     .build();
 
@@ -137,29 +133,13 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             );
             this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
 
-            customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
+            customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword))
-                    .encryption(
-                            config.toEncryptionConfig().toBuilder()
-                                    .keystore(extractKeystoreType(config))
-                                    .build()
-                    )
                     .storage(getStorageService())
                     .build();
 
             log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
         }
-    }
-
-    private KeyStoreConfig extractKeystoreType(MutableEncryptionConfig config) {
-        String keystoreType = null == config.getKeystore() || Strings.isNullOrEmpty(config.getKeystore().getType()) ?
-                        "UBER" : config.getKeystore().getType();
-
-        // FIXME: It is legacy keystore default - UBER, Release 1.1 should fix it
-        if (keystoreType.equals("UBER")) {
-            log.warn("Using UBER keystore type, consider switching to BCFKS");
-        }
-        return KeyStoreConfig.builder().type(keystoreType).build();
     }
 
     public StorageService getStorageService() {
