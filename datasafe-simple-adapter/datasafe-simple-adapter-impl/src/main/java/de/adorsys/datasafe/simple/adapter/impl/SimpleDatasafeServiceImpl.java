@@ -132,7 +132,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             );
             this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
 
-            customlyBuiltDatasafeServices = DaggerDefaultDatasafeServices.builder()
+            customlyBuiltDatasafeServices = DaggerS.builder()
                     .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword))
                     .storage(getStorageService())
                     .build();
