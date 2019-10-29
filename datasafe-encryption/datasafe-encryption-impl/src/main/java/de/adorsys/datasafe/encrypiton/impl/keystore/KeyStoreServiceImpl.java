@@ -8,13 +8,12 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.keymanagement.api.types.KeySetTemplate;
-import de.adorsys.keymanagement.api.types.KeyStoreConfig;
+import de.adorsys.keymanagement.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.source.KeySet;
 import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
 import de.adorsys.keymanagement.api.types.template.generated.Secret;
-import de.adorsys.keymanagement.api.types.template.generated.Signing;
-import de.adorsys.keymanagement.juggler.services.DaggerJuggler;
-import de.adorsys.keymanagement.juggler.services.Juggler;
+import de.adorsys.keymanagement.juggler.services.BCJuggler;
+import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,13 +22,12 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.*;
@@ -72,18 +70,25 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
         log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
 
-        Juggler juggler = DaggerJuggler.builder().build();
+        BCJuggler juggler = DaggerBCJuggler.builder().build();
         EncryptingKeyCreationCfg encConf = keyConfig.getEncrypting();
-        SigningKeyCreationCfg signConf = keyConfig.getSigning();
+        Supplier<char[]> passSupplier = () -> keyStoreAuth.getReadKeyPassword().getValue();
         KeySetTemplate template = KeySetTemplate.builder()
-                .generatedEncryptionKeys(Encrypting.with().algo(encConf.getAlgo()).sigAlgo(encConf.getSigAlgo()).keySize(encConf.getSize()).prefix("ENC").password(() -> keyStoreAuth.getReadKeyPassword().getValue()).build().repeat(keyConfig.getEncKeyNumber()))
-                .generatedSigningKeys(Signing.with().algo(signConf.getAlgo()).sigAlgo(signConf.getSigAlgo()).keySize(signConf.getSize()).alias("SIGN-1").password(() -> keyStoreAuth.getReadKeyPassword().getValue()).build().repeat(keyConfig.getSignKeyNumber()))
-                .generatedSecretKeys(secretKeys.keySet().stream().map(it -> Secret.with().prefix(it.getValue()).build()).collect(Collectors.toList()))
+                .generatedEncryptionKeys(Encrypting.with()
+                        .algo(encConf.getAlgo())
+                        .sigAlgo(encConf.getSigAlgo())
+                        .keySize(encConf.getSize())
+                        .prefix("ENC").password(passSupplier)
+                        .build()
+                        .repeat(keyConfig.getEncKeyNumber()))
+                .generatedSecretKeys(secretKeys.keySet().stream()
+                        .map(it -> Secret.with().prefix(it.getValue()).build())
+                        .collect(Collectors.toList()))
                 .build();
         KeySet keySet = juggler.generateKeys().fromTemplate(template);
 
-        juggler.withConfig(config);
-        KeyStore ks = juggler.toKeystore().generate(keySet, () -> keyStoreAuth.getReadKeyPassword().getValue());
+        KeyStore ks = juggler.toKeystore().withConfig(config)
+                .generate(keySet, passSupplier);
         log.debug("finished create keystore ");
         return ks;
     }
@@ -171,17 +176,15 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     @Override
     @SneakyThrows
-    public byte[] serialize(KeyStore store, String storeId, ReadStorePassword readStorePassword) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        store.store(stream, readStorePassword.getValue());
-        return stream.toByteArray();
+    public byte[] serialize(KeyStore store, ReadStorePassword readStorePassword) {
+        BCJuggler juggler = DaggerBCJuggler.builder().build();
+        return juggler.serializeDeserialize().serialize(store, readStorePassword::getValue);
     }
 
     @Override
     @SneakyThrows
-    public KeyStore deserialize(byte[] payload, String storeId, ReadStorePassword readStorePassword) {
-        KeyStore ks = KeyStore.getInstance(config.getType());
-        ks.load(new ByteArrayInputStream(payload), readStorePassword.getValue());
-        return ks;
+    public KeyStore deserialize(byte[] payload, ReadStorePassword readStorePassword) {
+        BCJuggler juggler = DaggerBCJuggler.builder().build();
+        return juggler.serializeDeserialize().withConfig(config).deserialize(payload, readStorePassword::getValue);
     }
 }

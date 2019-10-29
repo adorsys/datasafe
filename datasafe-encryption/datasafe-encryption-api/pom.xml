@@ -16,7 +16,7 @@
         </dependency>
         <dependency>
             <groupId>de.adorsys.keymanagement</groupId>
-            <artifactId>juggler-bouncycastle</artifactId>
+            <artifactId>api</artifactId>
         </dependency>
 	</dependencies>
 

@@ -31,6 +31,7 @@ import de.adorsys.datasafe.types.api.resource.StorageCapability;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+import de.adorsys.keymanagement.config.keystore.KeyStoreConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;

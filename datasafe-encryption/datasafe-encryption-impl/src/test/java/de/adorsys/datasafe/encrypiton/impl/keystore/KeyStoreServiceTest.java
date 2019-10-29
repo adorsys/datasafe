@@ -9,15 +9,16 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
 import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
+import de.adorsys.datasafe.encrypiton.impl.utils.ProviderUtils;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.keymanagement.api.Juggler;
 import de.adorsys.keymanagement.api.types.KeySetTemplate;
-import de.adorsys.keymanagement.api.types.KeyStoreConfig;
+import de.adorsys.keymanagement.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.source.KeySet;
 import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
-import de.adorsys.keymanagement.juggler.services.DaggerJuggler;
-import de.adorsys.keymanagement.juggler.services.Juggler;
+import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
         Assertions.assertEquals(4, list.size());
 
         Assertions.assertEquals("BCFKS", keyStore.getType());
-        Assertions.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
+        Assertions.assertEquals(ProviderUtils.bcProvider, keyStore.getProvider());
     }
 
     @Test
@@ -79,7 +80,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     @Test
     void getPrivateKey() throws Exception {
         KeyStoreConfig config = KeyStoreConfig.builder().type("UBER").build();
-        Juggler juggler = DaggerJuggler.builder().build();
+        Juggler juggler = DaggerBCJuggler.builder().build();
         KeySetTemplate template = KeySetTemplate.builder()
                 .generatedEncryptionKeys(Encrypting.with().prefix("KEYSTORE-ID-0").password("keypass"::toCharArray).build().repeat(1))
                 .build();

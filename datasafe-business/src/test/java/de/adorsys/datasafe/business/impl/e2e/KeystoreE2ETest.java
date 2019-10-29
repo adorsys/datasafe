@@ -7,7 +7,7 @@ import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
-import de.adorsys.keymanagement.api.types.KeyStoreConfig;
+import de.adorsys.keymanagement.config.keystore.KeyStoreConfig;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
@@ -59,11 +59,7 @@ class KeystoreE2ETest extends BaseMockitoTest {
                 .getKeystore().location().asURI();
 
         KeyStoreServiceImpl keyStoreService = new KeyStoreServiceImpl(KeyStoreConfig.builder().build());
-        KeyStore keyStore = keyStoreService.deserialize(
-                Files.readAllBytes(Paths.get(keystorePath)),
-                "ID",
-                STORE_PAZZWORD
-        );
+        KeyStore keyStore = keyStoreService.deserialize(Files.readAllBytes(Paths.get(keystorePath)), STORE_PAZZWORD);
 
         assertThat(aliases(keyStore)).filteredOn(it -> it.matches(PATH_KEY_ID_PREFIX + ".+")).hasSize(1);
         assertThat(aliases(keyStore)).filteredOn(it -> it.matches(PATH_KEY_ID_PREFIX_CTR + ".+")).hasSize(1);

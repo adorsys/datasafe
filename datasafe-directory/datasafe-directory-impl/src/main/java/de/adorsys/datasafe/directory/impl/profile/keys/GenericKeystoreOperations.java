@@ -118,10 +118,7 @@ public class GenericKeystoreOperations {
             payload = ByteStreams.toByteArray(is);
         }
 
-        return keyStoreService.deserialize(
-                payload,
-                forUser.getUserID().getValue(),
-                dfsConfig.privateKeyStoreAuth(forUser).getReadStorePassword()
+        return keyStoreService.deserialize(payload, dfsConfig.privateKeyStoreAuth(forUser).getReadStorePassword()
         );
     }
 
@@ -133,7 +130,7 @@ public class GenericKeystoreOperations {
     public void writeKeystore(UserID forUser, KeyStoreAuth auth,
                               AbsoluteLocation locationWithAccess, KeyStore keystoreBlob) {
         try (OutputStream os = writeService.write(WithCallback.noCallback(locationWithAccess))) {
-            os.write(keyStoreService.serialize(keystoreBlob, forUser.getValue(), auth.getReadStorePassword()));
+            os.write(keyStoreService.serialize(keystoreBlob, auth.getReadStorePassword()));
         }
         log.debug("Keystore written for user {} in path {}", forUser, locationWithAccess);
     }

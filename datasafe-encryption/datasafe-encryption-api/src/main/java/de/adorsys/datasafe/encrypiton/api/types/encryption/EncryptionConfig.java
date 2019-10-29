@@ -1,6 +1,6 @@
 package de.adorsys.datasafe.encrypiton.api.types.encryption;
 
-import de.adorsys.keymanagement.api.types.KeyStoreConfig;
+import de.adorsys.keymanagement.config.keystore.KeyStoreConfig;
 import lombok.Builder;
 import lombok.Getter;
 

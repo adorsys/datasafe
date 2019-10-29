@@ -138,6 +138,11 @@
         <dependencies>
             <dependency>
                 <groupId>de.adorsys.keymanagement</groupId>
+                <artifactId>api</artifactId>
+                <version>${keymanagement.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.adorsys.keymanagement</groupId>
                 <artifactId>juggler-bouncycastle</artifactId>
                 <version>${keymanagement.version}</version>
             </dependency>

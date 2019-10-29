@@ -118,7 +118,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
     private <T extends ResourceLocation<T>> void writeKeystore(UserID forUser, KeyStoreAuth auth,
                                                                AbsoluteLocation<T> keystore, KeyStore keystoreBlob) {
         try (OutputStream os = writeService.write(WithCallback.noCallback(access.withSystemAccess(keystore)))) {
-            os.write(keyStoreService.serialize(keystoreBlob, forUser.getValue(), auth.getReadStorePassword()));
+            os.write(keyStoreService.serialize(keystoreBlob, auth.getReadStorePassword()));
         }
         log.debug("Keystore created for user {} in path {}", forUser, keystore);
     }
