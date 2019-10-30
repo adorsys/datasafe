@@ -35,10 +35,6 @@ import javax.inject.Singleton;
 public interface SwitchableDatasafeServices extends DefaultDatasafeServices {
 
 
-/**
- * Datasafe service that is compatible with 0.4.3 release.
- */
-
     @Component.Builder
     interface Builder {
 
