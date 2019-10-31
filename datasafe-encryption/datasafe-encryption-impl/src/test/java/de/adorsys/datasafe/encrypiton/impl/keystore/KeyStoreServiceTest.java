@@ -64,7 +64,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
         // One additional secret key being generated for path encryption and one for private doc encryption.
-        Assertions.assertEquals(5, list.size());
+        Assertions.assertEquals(4, list.size());
     }
 
     @Test
