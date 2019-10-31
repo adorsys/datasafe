@@ -7,8 +7,8 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
+import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.KeySetTemplate;
-import de.adorsys.keymanagement.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.source.KeySet;
 import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
 import de.adorsys.keymanagement.api.types.template.generated.Secret;
@@ -22,11 +22,11 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -87,8 +87,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                 .build();
         KeySet keySet = juggler.generateKeys().fromTemplate(template);
 
-        KeyStore ks = juggler.toKeystore().withConfig(config)
-                .generate(keySet, passSupplier);
+        KeyStore ks = juggler.toKeystore().withConfig(config).generate(keySet, passSupplier);
         log.debug("finished create keystore ");
         return ks;
     }
@@ -98,21 +97,13 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     public KeyStore updateKeyStoreReadKeyPassword(KeyStore current,
                                                   KeyStoreAuth currentCredentials,
                                                   KeyStoreAuth newCredentials) {
-        KeyStore newKeystore = KeyStoreServiceImplBaseFunctions.newKeyStore(config);
-        Enumeration<String> aliases = current.aliases();
-
-        while (aliases.hasMoreElements()) {
-            String alias = aliases.nextElement();
-            Key currentKey = current.getKey(alias, currentCredentials.getReadKeyPassword().getValue());
-            newKeystore.setKeyEntry(
-                    alias,
-                    currentKey,
-                    newCredentials.getReadKeyPassword().getValue(),
-                    current.getCertificateChain(alias)
-            );
-        }
-
-        return newKeystore;
+        BCJuggler juggler = DaggerBCJuggler.builder().build();
+        Function<String, char[]> keyPass = id -> currentCredentials.getReadKeyPassword().getValue();
+        Function<String, char[]> newKeyPass = id -> newCredentials.getReadKeyPassword().getValue();
+        KeySet clonedSet = juggler.readKeys()
+                .fromKeyStore(current, keyPass)
+                .copyToKeySet(newKeyPass);
+        return juggler.toKeystore().generate(clonedSet, () -> null);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package de.adorsys.datasafe.encrypiton.api.types.encryption;
 
-import de.adorsys.keymanagement.config.keystore.KeyStoreConfig;
-import de.adorsys.keymanagement.config.keystore.pbkdf.PBKDF2;
-import de.adorsys.keymanagement.config.keystore.pbkdf.Scrypt;
+import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
+import de.adorsys.keymanagement.api.config.keystore.pbkdf.PBKDF2;
+import de.adorsys.keymanagement.api.config.keystore.pbkdf.Scrypt;
 import lombok.Data;
 
 /**

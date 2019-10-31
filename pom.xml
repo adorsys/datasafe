@@ -123,7 +123,7 @@
         <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>
         <siv-mode.version>1.3.1</siv-mode.version>
         <jackson.version>2.10.0</jackson.version>
-        <keymanagement.version>0.0.1-SNAPSHOT</keymanagement.version>
+        <keymanagement.version>0.0.4</keymanagement.version>
     </properties>
 
     <dependencies>

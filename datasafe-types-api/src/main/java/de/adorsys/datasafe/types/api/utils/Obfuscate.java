@@ -3,7 +3,6 @@ package de.adorsys.datasafe.types.api.utils;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;

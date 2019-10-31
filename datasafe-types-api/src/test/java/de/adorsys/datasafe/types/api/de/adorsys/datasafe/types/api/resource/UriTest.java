@@ -2,7 +2,6 @@ package de.adorsys.datasafe.types.api.de.adorsys.datasafe.types.api.resource;
 
 import de.adorsys.datasafe.types.api.resource.Uri;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;

@@ -14,8 +14,8 @@ import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import de.adorsys.keymanagement.api.Juggler;
+import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.KeySetTemplate;
-import de.adorsys.keymanagement.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.source.KeySet;
 import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
 import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.SecretKey;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.util.Collections;
 import java.util.List;
 
