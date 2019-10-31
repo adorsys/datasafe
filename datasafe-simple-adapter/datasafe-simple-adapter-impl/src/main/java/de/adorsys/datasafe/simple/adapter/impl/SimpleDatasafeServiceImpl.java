@@ -31,6 +31,8 @@ import de.adorsys.datasafe.types.api.resource.StorageCapability;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +41,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private static final ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private static final String S3_PREFIX = "s3://";
 
-    private AbstractMap.Entry<URI, StorageService> rootAndStorage;
+    private SystemRootAndStorageService rootAndStorage;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
 
     public SimpleDatasafeServiceImpl() {
@@ -66,13 +67,13 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         }
 
         customlyBuiltDatasafeServices = DaggerSwitchableDatasafeServices.builder()
-                .config(new DefaultDFSConfig(rootAndStorage.getKey(), universalReadStorePassword))
+                .config(new DefaultDFSConfig(rootAndStorage.getSystemRoot(), universalReadStorePassword))
                 .encryption(config.toEncryptionConfig())
                 .storage(getStorageService())
                 .build();
     }
     public StorageService getStorageService() {
-        return rootAndStorage.getValue();
+        return rootAndStorage.getStorageService();
     }
 
     @Override
@@ -184,14 +185,14 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public void cleanupDb() {
-        rootAndStorage.getValue()
+        rootAndStorage.getStorageService()
                 .list(new AbsoluteLocationWithCapability<>(
-                        BasePrivateResource.forPrivate(rootAndStorage.getKey()), StorageCapability.LIST_RETURNS_DIR)
-                ).forEach(rootAndStorage.getValue()::remove);
+                        BasePrivateResource.forPrivate(rootAndStorage.getSystemRoot()), StorageCapability.LIST_RETURNS_DIR)
+                ).forEach(rootAndStorage.getStorageService()::remove);
     }
 
 
-    private static AbstractMap.Entry<URI, StorageService> useAmazonS3(AmazonS3DFSCredentials dfsCredentials) {
+    private static SystemRootAndStorageService useAmazonS3(AmazonS3DFSCredentials dfsCredentials) {
         AmazonS3DFSCredentials amazonS3DFSCredentials = dfsCredentials;
         LogStringFrame lsf = new LogStringFrame();
         lsf.add("AMAZON S3");
@@ -247,10 +248,10 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         );
         URI systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
         log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
-        return new AbstractMap.SimpleEntry<>(systemRoot, storageService);
+        return new SystemRootAndStorageService(systemRoot, storageService);
     }
 
-    private static AbstractMap.Entry<URI, StorageService> useFileSystem(FilesystemDFSCredentials dfsCredentials) {
+    private static SystemRootAndStorageService useFileSystem(FilesystemDFSCredentials dfsCredentials) {
         FilesystemDFSCredentials filesystemDFSCredentials = dfsCredentials;
         LogStringFrame lsf = new LogStringFrame();
         lsf.add("FILESYSTEM");
@@ -260,8 +261,15 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         URI systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
         StorageService storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
         log.info("build DFS to FILESYSTEM with root " + filesystemDFSCredentials.getRoot());
-        return new AbstractMap.SimpleEntry<>(systemRoot, storageService);
+        return new SystemRootAndStorageService(systemRoot, storageService);
     }
 
+
+    @AllArgsConstructor
+    @Getter
+    private static class SystemRootAndStorageService {
+        private final URI systemRoot;
+        private final StorageService storageService;
+    }
 
 }
