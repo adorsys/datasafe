@@ -13,6 +13,7 @@ import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Sets;
@@ -49,7 +50,8 @@ class CmsEncryptionServiceImplTest extends WithBouncyCastle {
 
     private static KeyStoreAccess keyStoreAccess;
     private static KeyStoreService keyStoreService = new KeyStoreServiceImpl(
-            EncryptionConfig.builder().build().getKeystore()
+            EncryptionConfig.builder().build().getKeystore(),
+            DaggerBCJuggler.builder().build()
     );
     private CMSEncryptionService cmsEncryptionService = new CMSEncryptionServiceImpl(
             new ASNCmsEncryptionConfig(CmsEncryptionConfig.builder().build())

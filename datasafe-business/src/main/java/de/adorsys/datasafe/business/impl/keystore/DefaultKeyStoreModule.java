@@ -8,7 +8,9 @@ import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImplRuntimeDelegatable;
+import de.adorsys.keymanagement.api.Juggler;
 import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
+import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 
 import javax.annotation.Nullable;
 
@@ -25,6 +27,11 @@ public abstract class DefaultKeyStoreModule {
         }
 
         return config.getKeystore();
+    }
+
+    @Provides
+    static Juggler bcJuggler(KeyStoreConfig config) {
+        return DaggerBCJuggler.builder().keyStoreConfig(config).build();
     }
 
     /**

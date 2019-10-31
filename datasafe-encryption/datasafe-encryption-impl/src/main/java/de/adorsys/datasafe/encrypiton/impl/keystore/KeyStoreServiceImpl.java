@@ -7,6 +7,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
+import de.adorsys.keymanagement.api.Juggler;
 import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.KeySetTemplate;
 import de.adorsys.keymanagement.api.types.source.KeySet;
@@ -38,11 +39,13 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     private final KeyStoreConfig config;
     private final String passwordStoreEncAlgo;
+    private final Juggler juggler;
 
     @Inject
-    public KeyStoreServiceImpl(KeyStoreConfig config) {
+    public KeyStoreServiceImpl(KeyStoreConfig config, Juggler juggler) {
         this.config = config;
         this.passwordStoreEncAlgo = this.config.getPasswordKeysAlgo();
+        this.juggler = juggler;
     }
 
     @Override
@@ -70,7 +73,6 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
         log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
 
-        BCJuggler juggler = DaggerBCJuggler.builder().build();
         EncryptingKeyCreationCfg encConf = keyConfig.getEncrypting();
         Supplier<char[]> passSupplier = () -> keyStoreAuth.getReadKeyPassword().getValue();
         KeySetTemplate template = KeySetTemplate.builder()
@@ -97,7 +99,6 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     public KeyStore updateKeyStoreReadKeyPassword(KeyStore current,
                                                   KeyStoreAuth currentCredentials,
                                                   KeyStoreAuth newCredentials) {
-        BCJuggler juggler = DaggerBCJuggler.builder().build();
         Function<String, char[]> keyPass = id -> currentCredentials.getReadKeyPassword().getValue();
         Function<String, char[]> newKeyPass = id -> newCredentials.getReadKeyPassword().getValue();
         KeySet clonedSet = juggler.readKeys()

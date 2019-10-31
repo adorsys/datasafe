@@ -11,6 +11,7 @@ import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import lombok.extern.slf4j.Slf4j;
 import org.cryptomator.siv.SivMode;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,10 @@ class IntegrityPreservingUriEncryptionTest extends WithBouncyCastle {
             new PathSegmentEncryptorDecryptor(new SivMode())
     );
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(
+            EncryptionConfig.builder().build().getKeystore(),
+            DaggerBCJuggler.builder().build()
+    );
     private ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("readkeypassword");
     private ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
     private KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);

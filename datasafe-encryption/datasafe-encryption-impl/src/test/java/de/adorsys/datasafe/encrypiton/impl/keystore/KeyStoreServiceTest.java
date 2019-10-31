@@ -33,7 +33,10 @@ import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationCon
 
 class KeyStoreServiceTest extends WithBouncyCastle {
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(
+                EncryptionConfig.builder().build().getKeystore(),
+                DaggerBCJuggler.builder().build()
+    );
     private KeyStoreAuth keyStoreAuth;
 
     @BeforeEach
