@@ -7,15 +7,11 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
@@ -32,7 +28,11 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocationWithCapability;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageCapability;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +50,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private static final ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private static final String S3_PREFIX = "s3://";
 
-    private URI systemRoot;
-    private StorageService storageService;
+    private SystemRootAndStorageService rootAndStorage;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
 
     public SimpleDatasafeServiceImpl() {
@@ -61,109 +60,20 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials, MutableEncryptionConfig config) {
 
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
-            FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
-            LogStringFrame lsf = new LogStringFrame();
-            lsf.add("FILESYSTEM");
-            lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
-            lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
-            log.info(lsf.toString());
-            this.systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
-            storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
-            customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
-                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword))
-                    .encryption(
-                            config.toEncryptionConfig().toBuilder()
-                                    .keystore(extractKeystoreType(config))
-                                    .build()
-                    )
-                    .storage(getStorageService())
-                    .build();
-
-            log.info("build DFS to FILESYSTEM with root " + filesystemDFSCredentials.getRoot());
+            this.rootAndStorage = useFileSystem((FilesystemDFSCredentials) dfsCredentials);
         }
         if (dfsCredentials instanceof AmazonS3DFSCredentials) {
-            AmazonS3DFSCredentials amazonS3DFSCredentials = (AmazonS3DFSCredentials) dfsCredentials;
-            LogStringFrame lsf = new LogStringFrame();
-            lsf.add("AMAZON S3");
-            lsf.add("root bucket     : " + amazonS3DFSCredentials.getRootBucket());
-            lsf.add("url             : " + amazonS3DFSCredentials.getUrl());
-            lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
-            lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
-            lsf.add("no https        : " + amazonS3DFSCredentials.isNoHttps());
-            lsf.add("threadpool size : " + amazonS3DFSCredentials.getThreadPoolSize());
-            log.info(lsf.toString());
-            AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
-                    .withCredentials(
-                            new AWSStaticCredentialsProvider(
-                                    new BasicAWSCredentials(
-                                            amazonS3DFSCredentials.getAccessKey(),
-                                            amazonS3DFSCredentials.getSecretKey()))
-                    )
-                    .enablePathStyleAccess();
-
-            boolean useEndpoint = !amazonS3DFSCredentials.getUrl().equals(AMAZON_URL)
-                    && !amazonS3DFSCredentials.getUrl().startsWith(S3_PREFIX);
-            if (useEndpoint) {
-                AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
-                        amazonS3DFSCredentials.getUrl(),
-                        amazonS3DFSCredentials.getRegion()
-                );
-                amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
-            } else {
-                amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
-            }
-
-            if (amazonS3DFSCredentials.isNoHttps()) {
-                log.info("Creating S3 client without https");
-                ClientConfiguration clientConfig = new ClientConfiguration();
-                clientConfig.setProtocol(Protocol.HTTP);
-                clientConfig.disableSocketProxy();
-                amazonS3ClientBuilder.withClientConfiguration(clientConfig);
-            }
-
-            AmazonS3 amazons3 = amazonS3ClientBuilder.build();
-
-            if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
-                amazons3.createBucket(amazonS3DFSCredentials.getContainer());
-            }
-            storageService = new S3StorageService(
-                    amazons3,
-                    amazonS3DFSCredentials.getContainer(),
-                    ExecutorServiceUtil
-                            .submitterExecutesOnStarvationExecutingService(
-                                    amazonS3DFSCredentials.getThreadPoolSize(),
-                                    amazonS3DFSCredentials.getQueueSize()
-                            )
-            );
-            this.systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
-
-            customlyBuiltDatasafeServices = DaggerLegacyDatasafeService.builder()
-                    .config(new DefaultDFSConfig(systemRoot, universalReadStorePassword))
-                    .encryption(
-                            config.toEncryptionConfig().toBuilder()
-                                    .keystore(extractKeystoreType(config))
-                                    .build()
-                    )
-                    .storage(getStorageService())
-                    .build();
-
-            log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
+            this.rootAndStorage = useAmazonS3((AmazonS3DFSCredentials) dfsCredentials);
         }
+
+        customlyBuiltDatasafeServices = DaggerSwitchableDatasafeServices.builder()
+                .config(new DefaultDFSConfig(rootAndStorage.getSystemRoot(), universalReadStorePassword))
+                .encryption(config.toEncryptionConfig())
+                .storage(getStorageService())
+                .build();
     }
-
-    private KeyStoreConfig extractKeystoreType(MutableEncryptionConfig config) {
-        String keystoreType = null == config.getKeystore() || Strings.isNullOrEmpty(config.getKeystore().getType()) ?
-                        "UBER" : config.getKeystore().getType();
-
-        // FIXME: It is legacy keystore default - UBER, Release 1.1 should fix it
-        if (keystoreType.equals("UBER")) {
-            log.warn("Using UBER keystore type, consider switching to BCFKS");
-        }
-        return KeyStoreConfig.builder().type(keystoreType).build();
-    }
-
     public StorageService getStorageService() {
-        return storageService;
+        return rootAndStorage.getStorageService();
     }
 
     @Override
@@ -275,9 +185,91 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public void cleanupDb() {
-        storageService
+        rootAndStorage.getStorageService()
                 .list(new AbsoluteLocationWithCapability<>(
-                        BasePrivateResource.forPrivate(systemRoot), StorageCapability.LIST_RETURNS_DIR)
-                ).forEach(storageService::remove);
+                        BasePrivateResource.forPrivate(rootAndStorage.getSystemRoot()), StorageCapability.LIST_RETURNS_DIR)
+                ).forEach(rootAndStorage.getStorageService()::remove);
     }
+
+
+    private static SystemRootAndStorageService useAmazonS3(AmazonS3DFSCredentials dfsCredentials) {
+        AmazonS3DFSCredentials amazonS3DFSCredentials = dfsCredentials;
+        LogStringFrame lsf = new LogStringFrame();
+        lsf.add("AMAZON S3");
+        lsf.add("root bucket     : " + amazonS3DFSCredentials.getRootBucket());
+        lsf.add("url             : " + amazonS3DFSCredentials.getUrl());
+        lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
+        lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+        lsf.add("no https        : " + amazonS3DFSCredentials.isNoHttps());
+        lsf.add("threadpool size : " + amazonS3DFSCredentials.getThreadPoolSize());
+        log.info(lsf.toString());
+        AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(
+                                        amazonS3DFSCredentials.getAccessKey(),
+                                        amazonS3DFSCredentials.getSecretKey()))
+                )
+                .enablePathStyleAccess();
+
+        boolean useEndpoint = !amazonS3DFSCredentials.getUrl().equals(AMAZON_URL)
+                && !amazonS3DFSCredentials.getUrl().startsWith(S3_PREFIX);
+        if (useEndpoint) {
+            AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
+                    amazonS3DFSCredentials.getUrl(),
+                    amazonS3DFSCredentials.getRegion()
+            );
+            amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
+        } else {
+            amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
+        }
+
+        if (amazonS3DFSCredentials.isNoHttps()) {
+            log.info("Creating S3 client without https");
+            ClientConfiguration clientConfig = new ClientConfiguration();
+            clientConfig.setProtocol(Protocol.HTTP);
+            clientConfig.disableSocketProxy();
+            amazonS3ClientBuilder.withClientConfiguration(clientConfig);
+        }
+
+        AmazonS3 amazons3 = amazonS3ClientBuilder.build();
+
+        if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
+            amazons3.createBucket(amazonS3DFSCredentials.getContainer());
+        }
+        StorageService storageService = new S3StorageService(
+                amazons3,
+                amazonS3DFSCredentials.getContainer(),
+                ExecutorServiceUtil
+                        .submitterExecutesOnStarvationExecutingService(
+                                amazonS3DFSCredentials.getThreadPoolSize(),
+                                amazonS3DFSCredentials.getQueueSize()
+                        )
+        );
+        URI systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
+        log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());
+        return new SystemRootAndStorageService(systemRoot, storageService);
+    }
+
+    private static SystemRootAndStorageService useFileSystem(FilesystemDFSCredentials dfsCredentials) {
+        FilesystemDFSCredentials filesystemDFSCredentials = dfsCredentials;
+        LogStringFrame lsf = new LogStringFrame();
+        lsf.add("FILESYSTEM");
+        lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
+        lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+        log.info(lsf.toString());
+        URI systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
+        StorageService storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
+        log.info("build DFS to FILESYSTEM with root " + filesystemDFSCredentials.getRoot());
+        return new SystemRootAndStorageService(systemRoot, storageService);
+    }
+
+
+    @AllArgsConstructor
+    @Getter
+    private static class SystemRootAndStorageService {
+        private final URI systemRoot;
+        private final StorageService storageService;
+    }
+
 }
