@@ -6,8 +6,8 @@ import de.adorsys.datasafe.encrypiton.api.types.encryption.CmsEncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
-import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
@@ -32,7 +32,7 @@ import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.get
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class SymetricEncryptionTest extends WithBouncyCastle {
+class SymetricEncryptionTest extends BaseMockitoTest {
 
     private static final String MESSAGE_CONTENT = "message content";
 

@@ -42,11 +42,6 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
     private StorageService minio;
     private DefaultDatasafeServices datasafeServices;
 
-    @BeforeAll
-    static void addBouncyCastle() {
-        Security.addProvider(new BouncyCastleProvider());
-    }
-
     @BeforeEach
     void initialize(@TempDir Path tempDir) {
         StorageDescriptor minioDescriptor = minio();

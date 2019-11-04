@@ -30,7 +30,6 @@ import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,6 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.security.Security;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -70,9 +68,6 @@ class MultiDfsWithCredentialsExampleTest {
 
     @BeforeAll
     static void startup() {
-        // on windows this is required
-        Security.addProvider(new BouncyCastleProvider());
-
         // Create all required minio-backed S3 buckets:
         Arrays.stream(MinioContainerId.values()).forEach(it -> {
             GenericContainer minio = createAndStartMinio(it.getAccessKey(), it.getSecretKey());
@@ -107,7 +102,6 @@ class MultiDfsWithCredentialsExampleTest {
     @SneakyThrows
     void testMultiUserStorageUserSetup() {
         // BEGIN_SNIPPET:Datasafe with multi-dfs setup
-        Security.addProvider(new BouncyCastleProvider());
         String directoryBucketS3Uri = "s3://" + DIRECTORY_BUCKET.getBucketName() + "/";
         // static client that will be used to access `directory` bucket:
         StorageService directoryStorage = new S3StorageService(

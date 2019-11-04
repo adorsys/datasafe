@@ -12,12 +12,9 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.security.Security;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,11 +23,6 @@ class CleanupDbTest extends WithStorageProvider {
 
     private SimpleDatasafeService simpleDatasafeService;
     private DFSCredentials dfsCredentials;
-
-    @BeforeAll
-    static void setupBouncyCastle() {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
     private void createSimpleService(WithStorageProvider.StorageDescriptor descriptor) {
         dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);

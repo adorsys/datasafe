@@ -8,8 +8,8 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
-import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.utils.ProviderUtils;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
@@ -31,7 +31,7 @@ import java.util.List;
 
 import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
-class KeyStoreServiceTest extends WithBouncyCastle {
+class KeyStoreServiceTest extends BaseMockitoTest {
 
     private KeyStoreService keyStoreService = new KeyStoreServiceImpl(
                 EncryptionConfig.builder().build().getKeystore(),

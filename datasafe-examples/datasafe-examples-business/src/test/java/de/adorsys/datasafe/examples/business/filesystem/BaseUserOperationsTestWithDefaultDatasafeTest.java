@@ -16,7 +16,6 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -25,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.security.Security;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,7 +44,6 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
     @BeforeEach
     void createServices(@TempDir Path root) {
         // BEGIN_SNIPPET:Create Datasafe services
-        Security.addProvider(new BouncyCastleProvider());
         // this will create all Datasafe files and user documents under <temp dir path>
         defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
                 .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))

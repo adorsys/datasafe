@@ -22,17 +22,14 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.Security;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,11 +45,6 @@ class SchemeDelegationWithDbTest extends WithStorageProvider {
     private Path fsPath;
     private StorageService db;
     private DefaultDatasafeServices datasafeServices;
-
-    @BeforeAll
-    static void addBouncyCastle() {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
     @BeforeEach
     void initialize(@TempDir Path tempDir) {

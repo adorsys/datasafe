@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.CryptoServicesRegistrar;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import picocli.CommandLine;
 
 import java.io.Reader;
@@ -25,7 +24,6 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Security;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -55,8 +53,6 @@ public class Cli implements Runnable {
     public static void main(String[] args) {
         // Restoring correct SecureRandom implementation
         reInitializeRandomAgain();
-        // Only needed when running using JRE, unnecessary for CLI:
-        Security.addProvider(new BouncyCastleProvider());
         // silencing AWS SDK:
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 

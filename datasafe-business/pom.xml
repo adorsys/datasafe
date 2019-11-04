@@ -99,10 +99,6 @@
             <artifactId>dagger</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.cryptomator</groupId>
             <artifactId>siv-mode</artifactId>
         </dependency>
@@ -229,6 +225,7 @@
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>com.amazonaws</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.bouncycastle</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                         </configuration>
                     </execution>

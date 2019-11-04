@@ -24,7 +24,6 @@ import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +35,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.security.Security;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -138,7 +136,6 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
     @SneakyThrows
     void writeFileThenReadLatestAndReadByVersion() {
         // BEGIN_SNIPPET:Versioned storage support - writing file and reading back
-        Security.addProvider(new BouncyCastleProvider());
         // creating new user
         UserIDAuth user = registerUser("john");
 

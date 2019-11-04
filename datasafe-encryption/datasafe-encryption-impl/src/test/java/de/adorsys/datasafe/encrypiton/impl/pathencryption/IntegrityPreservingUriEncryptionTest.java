@@ -5,9 +5,9 @@ import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
-import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-class IntegrityPreservingUriEncryptionTest extends WithBouncyCastle {
+class IntegrityPreservingUriEncryptionTest extends BaseMockitoTest {
 
     private IntegrityPreservingUriEncryption symmetricPathEncryptionService = new IntegrityPreservingUriEncryption(
             new PathSegmentEncryptorDecryptor(new SivMode())

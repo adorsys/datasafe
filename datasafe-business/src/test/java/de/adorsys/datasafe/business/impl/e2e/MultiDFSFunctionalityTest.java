@@ -34,7 +34,6 @@ import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,7 +45,6 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,7 +87,6 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @BeforeAll
     static void initDistributedMinios() {
-        Security.addProvider(new BouncyCastleProvider());
         // Create all required minio-backed S3 buckets:
         Stream.of(CREDENTIALS, KEYSTORE, FILES_ONE, FILES_TWO, INBOX).forEach(it -> {
             GenericContainer minio = new GenericContainer("minio/minio")
