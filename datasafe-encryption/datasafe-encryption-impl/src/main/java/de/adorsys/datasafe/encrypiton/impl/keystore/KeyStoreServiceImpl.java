@@ -87,7 +87,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                 .build();
         KeySet keySet = juggler.generateKeys().fromTemplate(template);
 
-        KeyStore ks = juggler.toKeystore().withConfig(config).generate(keySet, passSupplier);
+        KeyStore ks = juggler.toKeystore().generate(keySet, passSupplier);
         log.debug("finished create keystore ");
         return ks;
     }
@@ -173,6 +173,6 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     @Override
     @SneakyThrows
     public KeyStore deserialize(byte[] payload, ReadStorePassword readStorePassword) {
-        return juggler.serializeDeserialize().withConfig(config).deserialize(payload, readStorePassword::getValue);
+        return juggler.serializeDeserialize().deserialize(payload, readStorePassword::getValue);
     }
 }

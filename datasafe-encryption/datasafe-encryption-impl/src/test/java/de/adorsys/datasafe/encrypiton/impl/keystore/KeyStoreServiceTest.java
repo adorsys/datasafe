@@ -82,20 +82,18 @@ class KeyStoreServiceTest extends WithBouncyCastle {
     @Test
     void getPrivateKey() throws Exception {
         KeyStoreConfig config = KeyStoreConfig.builder().type("UBER").build();
-        Juggler juggler = DaggerBCJuggler.builder().build();
+        Juggler juggler = DaggerBCJuggler.builder().keyStoreConfig(config).build();
         KeySetTemplate template = KeySetTemplate.builder()
                 .generatedEncryptionKeys(Encrypting.with().prefix("KEYSTORE-ID-0").password("keypass"::toCharArray).build().repeat(1))
                 .build();
         KeySet keySet = juggler.generateKeys().fromTemplate(template);
         PrivateKey privateKey1 = keySet.getKeyPairs().get(0).getPair().getPrivate();
-        KeyStore keyStore = juggler.toKeystore().withConfig(config).generate(keySet, () -> keyStoreAuth.getReadStorePassword().getValue());
+        KeyStore keyStore = juggler.toKeystore().generate(keySet, () -> keyStoreAuth.getReadStorePassword().getValue());
         Assertions.assertEquals("UBER", keyStore.getType());
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
         String keyID = keyStore.aliases().nextElement();
         PrivateKey privateKey2 = keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(keyID));
-        System.out.println(privateKey1);
-        System.out.println(privateKey2);
         Assertions.assertEquals(privateKey1, privateKey2);
     }
 
