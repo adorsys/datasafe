@@ -20,8 +20,11 @@ import javax.annotation.Nullable;
 @Module
 public abstract class DefaultKeyStoreModule {
 
+    /**
+     * Configures default keystore type and encryption, can be overridden by withConfig method.
+     */
     @Provides
-    static KeyStoreConfig cmsEncryptionConfig(@Nullable EncryptionConfig config) {
+    static KeyStoreConfig keyStoreConfig(@Nullable EncryptionConfig config) {
         if (null == config) {
             return EncryptionConfig.builder().build().getKeystore();
         }
@@ -29,8 +32,11 @@ public abstract class DefaultKeyStoreModule {
         return config.getKeystore();
     }
 
+    /**
+     * Includes default bouncy castle key management implementation
+     */
     @Provides
-    static Juggler bcJuggler(KeyStoreConfig config) {
+    static Juggler juggler(KeyStoreConfig config) {
         return DaggerBCJuggler.builder().keyStoreConfig(config).build();
     }
 

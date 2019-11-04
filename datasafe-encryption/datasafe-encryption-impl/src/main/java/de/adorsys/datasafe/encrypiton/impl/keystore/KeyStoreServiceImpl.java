@@ -13,8 +13,6 @@ import de.adorsys.keymanagement.api.types.KeySetTemplate;
 import de.adorsys.keymanagement.api.types.source.KeySet;
 import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
 import de.adorsys.keymanagement.api.types.template.generated.Secret;
-import de.adorsys.keymanagement.juggler.services.BCJuggler;
-import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -169,14 +167,12 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     @Override
     @SneakyThrows
     public byte[] serialize(KeyStore store, ReadStorePassword readStorePassword) {
-        BCJuggler juggler = DaggerBCJuggler.builder().build();
         return juggler.serializeDeserialize().serialize(store, readStorePassword::getValue);
     }
 
     @Override
     @SneakyThrows
     public KeyStore deserialize(byte[] payload, ReadStorePassword readStorePassword) {
-        BCJuggler juggler = DaggerBCJuggler.builder().build();
         return juggler.serializeDeserialize().withConfig(config).deserialize(payload, readStorePassword::getValue);
     }
 }

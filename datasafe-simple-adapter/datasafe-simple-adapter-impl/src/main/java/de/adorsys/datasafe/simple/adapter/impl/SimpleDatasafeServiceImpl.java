@@ -33,7 +33,6 @@ import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
