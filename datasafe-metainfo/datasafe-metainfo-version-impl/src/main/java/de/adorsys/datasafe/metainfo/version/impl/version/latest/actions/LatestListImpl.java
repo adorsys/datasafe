@@ -6,18 +6,22 @@ import de.adorsys.datasafe.metainfo.version.api.version.EncryptedLatestLinkServi
 import de.adorsys.datasafe.metainfo.version.impl.version.VersionEncoderDecoder;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.LatestDFSVersion;
-import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
 import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
 import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BaseVersionedPath;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Version;
+import de.adorsys.datasafe.types.api.resource.Versioned;
+import de.adorsys.datasafe.types.api.resource.VersionedUri;
 import lombok.Getter;
 
 import javax.inject.Inject;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 /**
  * Default latest list operation that reads latest resource root for incoming request

@@ -4,7 +4,6 @@ import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImpl;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
@@ -12,15 +11,14 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.Security;
 import java.util.function.Function;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -31,7 +29,6 @@ class RuntimeOverrideOperationsTest {
     @SneakyThrows
     void testPathEncryptionOverridden(@TempDir Path root) {
         // BEGIN_SNIPPET:Create overridable Datasafe services without recompilation
-        Security.addProvider(new BouncyCastleProvider());
         // This shows how to override path encryption service, in particular we are going to disable it
         OverridesRegistry registry = new BaseOverridesRegistry();
 

@@ -1,4 +1,4 @@
-package de.adorsys.datasafe.encrypiton.impl.keystore.generator;
+package de.adorsys.datasafe.encrypiton.impl.utils;
 
 import lombok.experimental.UtilityClass;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;

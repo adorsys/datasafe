@@ -14,7 +14,7 @@ cd "$REPO_ROOT" || exit 1
 
 # 2. BC libs - download
 # 2.1 Parse BouncyCastle version
-BC_VERSION=`grep "<bouncycastle\.version>.*</bouncycastle\.version>" pom.xml | cut -d">" -f2 | cut -d"<" -f1`
+BC_VERSION=`./mvnw dependency:tree -Dincludes=org.bouncycastle | grep -m 1 "org.bouncycastle:bcprov-jdk15on:jar:.*:compile" | cut -d":" -f4`
 
 # 2.2 Download BC jars needed
 curl "https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/${BC_VERSION}/bcprov-jdk15on-${BC_VERSION}.jar" \

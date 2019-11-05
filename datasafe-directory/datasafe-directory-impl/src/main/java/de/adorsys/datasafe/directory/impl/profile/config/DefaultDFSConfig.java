@@ -6,8 +6,13 @@ import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.BasePublicResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
-import de.adorsys.datasafe.types.api.resource.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 

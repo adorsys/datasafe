@@ -2,7 +2,11 @@ package de.adorsys.datasafe.metainfo.version.api.version;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Version;
+import de.adorsys.datasafe.types.api.resource.Versioned;
 
 import java.util.stream.Stream;
 

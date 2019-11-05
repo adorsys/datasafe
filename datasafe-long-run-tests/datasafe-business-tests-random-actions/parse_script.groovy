@@ -1,4 +1,3 @@
-import java.nio.file.Files
 import java.nio.file.Paths
 
 // .+with (\d+) threads and (\d+) Mb .+\n.*WRITE.+95=([0-9\.]+).+throughputPerThread=([0-9\.]+).+

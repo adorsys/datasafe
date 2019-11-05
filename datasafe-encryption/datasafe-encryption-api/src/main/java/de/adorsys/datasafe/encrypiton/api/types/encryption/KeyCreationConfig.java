@@ -27,7 +27,7 @@ public class KeyCreationConfig {
     private final EncryptingKeyCreationCfg encrypting = EncryptingKeyCreationCfg.builder().build();
 
     @Builder.Default
-    private final SigningKeyCreationCfg singing = SigningKeyCreationCfg.builder().build();
+    private final SigningKeyCreationCfg signing = SigningKeyCreationCfg.builder().build();
 
     @Getter
     @Builder

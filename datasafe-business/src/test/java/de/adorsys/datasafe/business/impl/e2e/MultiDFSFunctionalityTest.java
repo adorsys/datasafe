@@ -15,8 +15,6 @@ import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
@@ -27,14 +25,19 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.BasePublicResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
-import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,7 +49,6 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,7 +91,6 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     @BeforeAll
     static void initDistributedMinios() {
-        Security.addProvider(new BouncyCastleProvider());
         // Create all required minio-backed S3 buckets:
         Stream.of(CREDENTIALS, KEYSTORE, FILES_ONE, FILES_TWO, INBOX).forEach(it -> {
             GenericContainer minio = new GenericContainer("minio/minio")

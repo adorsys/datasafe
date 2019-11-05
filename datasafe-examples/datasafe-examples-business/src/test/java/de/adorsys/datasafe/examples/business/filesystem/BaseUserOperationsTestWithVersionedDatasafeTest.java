@@ -5,7 +5,6 @@ import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -15,9 +14,9 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Versioned;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.security.Security;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -47,7 +45,6 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
     @BeforeEach
     void createServices(@TempDir Path root) {
         // BEGIN_SNIPPET:Create versioned Datasafe services
-        Security.addProvider(new BouncyCastleProvider());
         // this will create all Datasafe files and user documents under <temp dir path>
         versionedServices = DaggerVersionedDatasafeServices.builder()
                 .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))

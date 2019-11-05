@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.rest.impl.security.SecurityConstants;
 import de.adorsys.datasafe.rest.impl.security.SecurityProperties;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;

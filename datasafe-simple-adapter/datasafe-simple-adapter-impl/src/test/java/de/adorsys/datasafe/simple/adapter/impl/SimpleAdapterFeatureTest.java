@@ -2,13 +2,20 @@ package de.adorsys.datasafe.simple.adapter.impl;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.simple.adapter.api.types.*;
+import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
+import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentialsFactory;
+import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
+import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
+import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.impl.cmsencryption.SwitchableCmsEncryptionImpl;
 import de.adorsys.datasafe.simple.adapter.impl.pathencryption.SwitchablePathEncryptionImpl;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-class SimpleAdapterFeatureTest extends WithBouncyCastle {
+class SimpleAdapterFeatureTest extends BaseMockitoTest {
     
     private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPasswordTestFactory.getForString("password"));
     private String content = "content of document";

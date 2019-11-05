@@ -10,7 +10,6 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalServ
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileUpdatingService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.inbox.api.actions.ListInbox;
 import de.adorsys.datasafe.inbox.api.actions.ReadFromInbox;
 import de.adorsys.datasafe.inbox.api.actions.RemoveFromInbox;
@@ -29,13 +28,12 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.jupiter.api.BeforeAll;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -44,7 +42,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Security;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,11 +75,6 @@ public abstract class BaseE2ETest extends WithStorageProvider {
 
     protected UserIDAuth john;
     protected UserIDAuth jane;
-
-    @BeforeAll
-    static void addBouncyCastle() {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
     protected void initialize(DFSConfig dfsConfig, DefaultDatasafeServices datasafeServices) {
         this.dfsConfig = dfsConfig;

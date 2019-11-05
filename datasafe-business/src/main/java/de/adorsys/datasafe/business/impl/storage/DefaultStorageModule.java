@@ -3,7 +3,11 @@ package de.adorsys.datasafe.business.impl.storage;
 import dagger.Binds;
 import dagger.Module;
 import de.adorsys.datasafe.storage.api.StorageService;
-import de.adorsys.datasafe.storage.api.actions.*;
+import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
+import de.adorsys.datasafe.storage.api.actions.StorageListService;
+import de.adorsys.datasafe.storage.api.actions.StorageReadService;
+import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
+import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 
 @Module
 public abstract class DefaultStorageModule {

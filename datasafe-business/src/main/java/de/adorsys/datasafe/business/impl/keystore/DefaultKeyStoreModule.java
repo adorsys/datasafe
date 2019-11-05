@@ -6,9 +6,11 @@ import dagger.Provides;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImplRuntimeDelegatable;
+import de.adorsys.keymanagement.api.Juggler;
+import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
+import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 
 import javax.annotation.Nullable;
 
@@ -18,13 +20,24 @@ import javax.annotation.Nullable;
 @Module
 public abstract class DefaultKeyStoreModule {
 
+    /**
+     * Configures default keystore type and encryption, can be overridden by withConfig method.
+     */
     @Provides
-    static KeyStoreConfig cmsEncryptionConfig(@Nullable EncryptionConfig config) {
+    static KeyStoreConfig keyStoreConfig(@Nullable EncryptionConfig config) {
         if (null == config) {
             return EncryptionConfig.builder().build().getKeystore();
         }
 
         return config.getKeystore();
+    }
+
+    /**
+     * Includes default bouncy castle key management implementation
+     */
+    @Provides
+    static Juggler juggler(KeyStoreConfig config) {
+        return DaggerBCJuggler.builder().keyStoreConfig(config).build();
     }
 
     /**

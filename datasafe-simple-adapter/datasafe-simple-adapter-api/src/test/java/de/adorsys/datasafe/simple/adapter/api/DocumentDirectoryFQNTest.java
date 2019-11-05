@@ -2,7 +2,6 @@ package de.adorsys.datasafe.simple.adapter.api;
 
 
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
-import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

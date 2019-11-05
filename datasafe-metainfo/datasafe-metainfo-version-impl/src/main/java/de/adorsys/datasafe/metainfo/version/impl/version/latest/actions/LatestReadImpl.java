@@ -13,7 +13,6 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import lombok.Getter;
 
 import javax.inject.Inject;
-import java.io.InputStream;
 
 /**
  * Default versioned resource reader that resolves latest resource link location using

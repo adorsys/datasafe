@@ -75,6 +75,14 @@
         </dependency>
 
         <dependency>
+            <groupId>de.adorsys.keymanagement</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys.keymanagement</groupId>
+            <artifactId>juggler-bouncycastle</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -89,10 +97,6 @@
         <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
         <dependency>
             <groupId>org.cryptomator</groupId>
@@ -221,6 +225,7 @@
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>com.amazonaws</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.bouncycastle</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                         </configuration>
                     </execution>

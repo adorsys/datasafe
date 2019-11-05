@@ -1,5 +1,6 @@
-import java.nio.file.Paths
 import groovy.transform.Field
+
+import java.nio.file.Paths
 
 // script expects file name as argument
 rawData = [:]

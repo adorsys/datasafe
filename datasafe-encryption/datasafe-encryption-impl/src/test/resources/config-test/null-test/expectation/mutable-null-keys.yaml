@@ -20,7 +20,7 @@ keys:
     algo: RSA
     size: 2048
     sigAlgo: SHA256withRSA
-  singing:
+  signing:
     algo: RSA
     size: 2048
     sigAlgo: SHA256withRSA

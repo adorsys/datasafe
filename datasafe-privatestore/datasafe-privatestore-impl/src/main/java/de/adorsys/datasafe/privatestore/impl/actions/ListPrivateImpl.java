@@ -13,7 +13,6 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 
 import javax.inject.Inject;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 /**
  * Default listing service that encrypts the location of where to list files using {@link EncryptedResourceResolver}

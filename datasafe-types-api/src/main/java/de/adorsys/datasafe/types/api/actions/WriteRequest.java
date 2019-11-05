@@ -1,8 +1,18 @@
 package de.adorsys.datasafe.types.api.actions;
 
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
-import de.adorsys.datasafe.types.api.resource.*;
-import lombok.*;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.BasePublicResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.resource.Uri;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Singular;
+import lombok.Value;
 
 import java.net.URI;
 import java.util.ArrayList;

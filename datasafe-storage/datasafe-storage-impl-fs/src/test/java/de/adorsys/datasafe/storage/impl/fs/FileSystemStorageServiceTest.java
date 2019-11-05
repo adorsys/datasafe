@@ -1,6 +1,11 @@
 package de.adorsys.datasafe.storage.impl.fs;
 
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.resource.WithCallback;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +18,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 import java.util.stream.Stream;
 

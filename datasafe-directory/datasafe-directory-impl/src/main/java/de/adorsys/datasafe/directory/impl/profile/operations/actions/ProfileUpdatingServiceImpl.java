@@ -7,8 +7,8 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileUpdatingServi
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 

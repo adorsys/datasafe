@@ -5,8 +5,6 @@ import de.adorsys.datasafe.privatestore.api.PasswordClearingOutputStream;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
-import java.io.OutputStream;
-
 /**
  * Writes to file in user privatespace.
  */

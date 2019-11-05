@@ -2,14 +2,14 @@ package de.adorsys.datasafe.privatestore.impl.actions;
 
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
 import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
 import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
-import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 
 import javax.inject.Inject;
 
