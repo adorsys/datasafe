@@ -67,9 +67,6 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                                    Map<KeyID, Optional<SecretKeyEntry>> secretKeys) {
 
         log.debug("start create keystore ");
-        // TODO, hier also statt der StoreID nun das
-        String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
-        log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
 
         EncryptingKeyCreationCfg encConf = keyConfig.getEncrypting();
         Supplier<char[]> passSupplier = () -> keyStoreAuth.getReadKeyPassword().getValue();
@@ -87,7 +84,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                 .build();
         KeySet keySet = juggler.generateKeys().fromTemplate(template);
 
-        KeyStore ks = juggler.toKeystore().generate(keySet, passSupplier);
+        KeyStore ks = juggler.toKeystore().generate(keySet);
         log.debug("finished create keystore ");
         return ks;
     }
