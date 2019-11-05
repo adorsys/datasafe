@@ -3,9 +3,17 @@ package de.adorsys.datasafe.business.impl.privatestore.actions;
 import dagger.Binds;
 import dagger.Module;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
-import de.adorsys.datasafe.privatestore.api.actions.*;
+import de.adorsys.datasafe.privatestore.api.actions.EncryptedResourceResolver;
+import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
+import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
+import de.adorsys.datasafe.privatestore.api.actions.RemoveFromPrivate;
+import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
 import de.adorsys.datasafe.privatestore.impl.PrivateSpaceServiceImplRuntimeDelegatable;
-import de.adorsys.datasafe.privatestore.impl.actions.*;
+import de.adorsys.datasafe.privatestore.impl.actions.EncryptedResourceResolverImplRuntimeDelegatable;
+import de.adorsys.datasafe.privatestore.impl.actions.ListPrivateImplRuntimeDelegatable;
+import de.adorsys.datasafe.privatestore.impl.actions.ReadFromPrivateImplRuntimeDelegatable;
+import de.adorsys.datasafe.privatestore.impl.actions.RemoveFromPrivateImplRuntimeDelegatable;
+import de.adorsys.datasafe.privatestore.impl.actions.WriteToPrivateImplRuntimeDelegatable;
 
 /**
  * This module is responsible for providing default actions on PRIVATE folder.

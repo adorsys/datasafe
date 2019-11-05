@@ -1,7 +1,11 @@
 package de.adorsys.datasafe.encrypiton.api.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 
 import javax.crypto.spec.SecretKeySpec;

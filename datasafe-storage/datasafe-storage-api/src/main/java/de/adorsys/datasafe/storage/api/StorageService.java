@@ -1,6 +1,10 @@
 package de.adorsys.datasafe.storage.api;
 
-import de.adorsys.datasafe.storage.api.actions.*;
+import de.adorsys.datasafe.storage.api.actions.StorageCheckService;
+import de.adorsys.datasafe.storage.api.actions.StorageListService;
+import de.adorsys.datasafe.storage.api.actions.StorageReadService;
+import de.adorsys.datasafe.storage.api.actions.StorageRemoveService;
+import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 
 /**
  * Groups all operations on data storage into a single class.

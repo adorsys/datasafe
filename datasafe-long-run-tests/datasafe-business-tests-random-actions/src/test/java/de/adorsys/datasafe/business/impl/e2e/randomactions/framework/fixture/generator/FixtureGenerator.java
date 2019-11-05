@@ -1,7 +1,12 @@
 package de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.generator;
 
 import com.google.gson.GsonBuilder;
-import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.*;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.Fixture;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.Operation;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.StorageType;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.TestFileTreeOper;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.TestUser;
+import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.fixture.dto.UserFileSystem;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +22,12 @@ import org.kie.api.runtime.StatelessKieSession;
 import org.kie.internal.io.ResourceFactory;
 
 import java.io.FileOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

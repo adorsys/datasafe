@@ -6,9 +6,11 @@ import de.adorsys.datasafe.privatestore.api.PasswordClearingStream;
 import de.adorsys.datasafe.privatestore.api.actions.ListPrivate;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.VersionStrategy;
-import de.adorsys.datasafe.types.api.resource.*;
-
-import java.util.stream.Stream;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Version;
+import de.adorsys.datasafe.types.api.resource.Versioned;
 
 /**
  * Service to list latest filesystem view.

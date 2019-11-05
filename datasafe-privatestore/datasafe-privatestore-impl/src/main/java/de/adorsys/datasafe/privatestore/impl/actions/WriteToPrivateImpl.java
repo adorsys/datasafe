@@ -15,7 +15,6 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
 
 import javax.inject.Inject;
-import java.io.OutputStream;
 
 /**
  * Default privatespace resource write action that retrieves users' secret key for document encryption

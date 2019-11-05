@@ -6,7 +6,6 @@ import dagger.Provides;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.IntegrityPreservingUriEncryptionRuntimeDelegatable;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptorDecryptor;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathSegmentEncryptorDecryptorRuntimeDelegatable;
 import org.cryptomator.siv.SivMode;

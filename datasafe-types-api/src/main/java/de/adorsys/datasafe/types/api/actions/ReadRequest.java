@@ -1,6 +1,12 @@
 package de.adorsys.datasafe.types.api.actions;
 
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResourceLocation;
+import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.resource.Version;
+import de.adorsys.datasafe.types.api.resource.VersionedPrivateResource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;

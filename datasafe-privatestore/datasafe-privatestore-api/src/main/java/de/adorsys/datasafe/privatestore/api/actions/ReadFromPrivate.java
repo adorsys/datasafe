@@ -5,8 +5,6 @@ import de.adorsys.datasafe.privatestore.api.PasswordClearingInputStream;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 
-import java.io.InputStream;
-
 /**
  * Reads users' file in privatespace.
  */

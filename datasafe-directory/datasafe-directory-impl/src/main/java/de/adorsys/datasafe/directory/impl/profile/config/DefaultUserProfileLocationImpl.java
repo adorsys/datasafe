@@ -1,7 +1,12 @@
 package de.adorsys.datasafe.directory.impl.profile.config;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.BasePublicResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.PublicResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 
 public class DefaultUserProfileLocationImpl implements UserProfileLocation {
     private static final Uri PRIVATE_PROFILE = new Uri("./profiles/private/");

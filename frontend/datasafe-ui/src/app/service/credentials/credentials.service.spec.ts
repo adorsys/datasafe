@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { CredentialsService } from './credentials.service';
+import {CredentialsService} from './credentials.service';
 
 describe('CredentialsService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
