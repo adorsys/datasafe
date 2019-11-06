@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.privatestore.api;
 
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;

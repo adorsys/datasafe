@@ -1,7 +1,11 @@
 package de.adorsys.datasafe.encrypiton.api.keystore;
 
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -93,19 +97,17 @@ public interface KeyStoreService {
      * Converts keystore into bytes, they are safe to be store/transferred because of encryption using
      * {@link KeyStoreAuth#getReadStorePassword()}
      * @param store Keystore that will be serialized
-     * @param storeId Assign ID to serialized keystore
      * @param password Encrypts byte sequence
      * @return Encrypted serialized keystore
      */
-    byte[] serialize(KeyStore store, String storeId, ReadStorePassword password);
+    byte[] serialize(KeyStore store, ReadStorePassword password);
 
     /**
      * Reads encrypted keystore from its byte representation - decryption is done using
      * {@link KeyStoreAuth#getReadStorePassword()}
      * @param payload Bytes to read from
-     * @param storeId Specifies which keystore to read from bytes
      * @param password Decrypts byte sequence
      * @return Decrypted keystore
      */
-    KeyStore deserialize(byte[] payload, String storeId, ReadStorePassword password);
+    KeyStore deserialize(byte[] payload, ReadStorePassword password);
 }

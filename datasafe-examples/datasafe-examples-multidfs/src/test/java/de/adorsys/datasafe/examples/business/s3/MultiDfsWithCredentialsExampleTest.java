@@ -12,7 +12,6 @@ import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.UriBasedAuthStorageService;
@@ -25,12 +24,12 @@ import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
-import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,6 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.security.Security;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -49,7 +47,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.*;
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.DIRECTORY_BUCKET;
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_ONE;
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_TWO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -70,9 +70,6 @@ class MultiDfsWithCredentialsExampleTest {
 
     @BeforeAll
     static void startup() {
-        // on windows this is required
-        Security.addProvider(new BouncyCastleProvider());
-
         // Create all required minio-backed S3 buckets:
         Arrays.stream(MinioContainerId.values()).forEach(it -> {
             GenericContainer minio = createAndStartMinio(it.getAccessKey(), it.getSecretKey());
@@ -107,7 +104,6 @@ class MultiDfsWithCredentialsExampleTest {
     @SneakyThrows
     void testMultiUserStorageUserSetup() {
         // BEGIN_SNIPPET:Datasafe with multi-dfs setup
-        Security.addProvider(new BouncyCastleProvider());
         String directoryBucketS3Uri = "s3://" + DIRECTORY_BUCKET.getBucketName() + "/";
         // static client that will be used to access `directory` bucket:
         StorageService directoryStorage = new S3StorageService(

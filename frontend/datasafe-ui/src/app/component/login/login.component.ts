@@ -4,7 +4,6 @@ import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {CredentialsService} from '../../service/credentials/credentials.service';
 import {Env, FieldErrorStateMatcher} from '../../app.component';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
-import {AddFolderDialog} from '../filetree/filetree.component';
 
 export interface ApiConfigData {
   apiUrl: string;

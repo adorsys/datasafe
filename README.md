@@ -53,10 +53,10 @@ locally - on your machine (See [CLI-README](datasafe-cli/README.md) for details)
 
 **Download CLI executable**:
 
-1. [MacOS native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64)
-1. [Linux native executable](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-linux-x64)
+1. [MacOS native executable](https://github.com/adorsys/datasafe/releases/download/v0.7.0/datasafe-cli-osx-x64)
+1. [Linux native executable](https://github.com/adorsys/datasafe/releases/download/v0.7.0/datasafe-cli-linux-x64)
 1. Windows executable (N/A yet), please use java version below
-1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
+1. [Java-based jar](https://github.com/adorsys/datasafe/releases/download/v0.7.0/datasafe-cli.jar), requires JRE (1.8+), use `java -jar datasafe-cli.jar` to execute
 
 #### Example actions:
 ##### Download application and create new user:
@@ -283,7 +283,6 @@ TODO: Migrate to AsciiDoc for automatic snippet embedding.
 First, you want to create Datasafe services. This snippet provides you Datasafe that uses filesystem storage adapter:
 [Example:Create Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L46-L53)
 ```groovy
-Security.addProvider(new BouncyCastleProvider());
 // this will create all Datasafe files and user documents under <temp dir path>
 defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
         .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
@@ -410,7 +409,6 @@ we can use storage provider that supports versioning. But if we have storage pro
 First, we will obtain versioned Datasafe services that uses filesystem storage adapter:
 [Example:Create versioned Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L47-L54)
 ```groovy
-Security.addProvider(new BouncyCastleProvider());
 // this will create all Datasafe files and user documents under <temp dir path>
 versionedServices = DaggerVersionedDatasafeServices.builder()
         .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
@@ -517,7 +515,6 @@ If you have storage for user files on **versioned S3 bucket** and want to get ob
 object or to read some older version encrypted object, you can follow this example of how to do that:
 [Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L138-L173)
 ```groovy
-Security.addProvider(new BouncyCastleProvider());
 // creating new user
 UserIDAuth user = registerUser("john");
 
@@ -600,7 +597,6 @@ custom class implementation and use it if present. This one has the advantage of
 Datasafe library, but has a limitation of working on static dependency graph - you can't rebuild it.
 [Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L31-L54)
 ```groovy
-Security.addProvider(new BouncyCastleProvider());
 // This shows how to override path encryption service, in particular we are going to disable it
 OverridesRegistry registry = new BaseOverridesRegistry();
 
@@ -635,7 +631,6 @@ To create custom Datasafe service we need to follow these 3 steps:
 1. Use custom-built Datasafe as shown here:
 [Example:Create custom-built Datasafe service](datasafe-examples/datasafe-examples-customize-dagger/src/test/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServiceTest.java#L25-L40)
 ```groovy
-Security.addProvider(new BouncyCastleProvider());
 // Customized service, we create required module using compile time DI provided by Dagger:
 CustomlyBuiltDatasafeServices datasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
         .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
@@ -656,7 +651,6 @@ In case user wants to register storage credentials himself or place keystore wit
 location one can use this example:
 [Example:Datasafe with multi-dfs setup](datasafe-examples/datasafe-examples-multidfs/src/test/java/de/adorsys/datasafe/examples/business/s3/MultiDfsWithCredentialsExampleTest.java#L107-L222)
 ```groovy
-Security.addProvider(new BouncyCastleProvider());
 String directoryBucketS3Uri = "s3://" + DIRECTORY_BUCKET.getBucketName() + "/";
 // static client that will be used to access `directory` bucket:
 StorageService directoryStorage = new S3StorageService(

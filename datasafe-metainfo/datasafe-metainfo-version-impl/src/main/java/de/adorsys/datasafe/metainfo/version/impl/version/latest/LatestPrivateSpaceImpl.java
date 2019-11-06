@@ -15,12 +15,14 @@ import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
-import de.adorsys.datasafe.types.api.resource.*;
+import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
+import de.adorsys.datasafe.types.api.resource.ResolvedResource;
+import de.adorsys.datasafe.types.api.resource.Version;
+import de.adorsys.datasafe.types.api.resource.Versioned;
 import lombok.Getter;
 
 import javax.inject.Inject;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.stream.Stream;
 
 /**

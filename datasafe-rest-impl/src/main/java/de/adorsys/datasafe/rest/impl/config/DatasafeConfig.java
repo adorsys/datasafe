@@ -20,7 +20,6 @@ import de.adorsys.datasafe.directory.impl.profile.config.MultiDFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.dfs.RegexAccessServiceWithStorageCredentialsImpl;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.RegexDelegatingStorage;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -33,10 +32,10 @@ import de.adorsys.datasafe.storage.impl.s3.BucketNameRemovingRouter;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +43,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.net.URI;
 import java.nio.file.Paths;
-import java.security.Security;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -105,8 +103,6 @@ public class DatasafeConfig {
                                             Optional<OverridesRegistry> registry,
                                             DatasafeProperties properties) {
 
-        Security.addProvider(new BouncyCastleProvider());
-
         return DaggerDefaultDatasafeServices
                 .builder()
                 .config(dfsConfig)
@@ -120,8 +116,6 @@ public class DatasafeConfig {
     VersionedDatasafeServices versionedDatasafeServices(StorageService storageService, DFSConfig dfsConfig,
                                                         Optional<OverridesRegistry> registry,
                                                         DatasafeProperties properties) {
-
-        Security.addProvider(new BouncyCastleProvider());
 
         return DaggerVersionedDatasafeServices
                 .builder()

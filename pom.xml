@@ -25,7 +25,7 @@
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -84,7 +84,6 @@
         <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
         <lombok.version>1.18.6</lombok.version>
         <common-lang3.version>3.5</common-lang3.version>
-        <bouncycastle.version>1.64</bouncycastle.version>
         <gson.version>2.8.5</gson.version>
         <dagger.version>2.24</dagger.version>
         <guava.version>27.0.1-jre</guava.version>
@@ -123,6 +122,7 @@
         <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>
         <siv-mode.version>1.3.1</siv-mode.version>
         <jackson.version>2.10.0</jackson.version>
+        <keymanagement.version>0.0.5</keymanagement.version>
     </properties>
 
     <dependencies>
@@ -136,6 +136,22 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>de.adorsys.keymanagement</groupId>
+                <artifactId>api</artifactId>
+                <version>${keymanagement.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.adorsys.keymanagement</groupId>
+                <artifactId>juggler-bouncycastle</artifactId>
+                <version>${keymanagement.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.xerial</groupId>
+                        <artifactId>sqlite-jdbc</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
@@ -144,16 +160,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${common-lang3.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
-                <version>${bouncycastle.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
-                <version>${bouncycastle.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>

@@ -3,18 +3,22 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.exceptions.KeyStoreConfigException;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
-import de.adorsys.datasafe.encrypiton.impl.WithBouncyCastle;
-import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyCreationConfigImpl;
-import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
-import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairEntry;
-import de.adorsys.datasafe.encrypiton.impl.keystore.types.KeyPairGenerator;
+import de.adorsys.datasafe.encrypiton.impl.utils.ProviderUtils;
+import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.keymanagement.api.Juggler;
+import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
+import de.adorsys.keymanagement.api.types.KeySetTemplate;
+import de.adorsys.keymanagement.api.types.source.KeySet;
+import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
+import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,16 +26,17 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.SecretKey;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
-class KeyStoreServiceTest extends WithBouncyCastle {
+class KeyStoreServiceTest extends BaseMockitoTest {
 
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(EncryptionConfig.builder().build().getKeystore());
+    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(
+                EncryptionConfig.builder().build().getKeystore(),
+                DaggerBCJuggler.builder().build()
+    );
     private KeyStoreAuth keyStoreAuth;
 
     @BeforeEach
@@ -53,7 +58,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
         Assertions.assertEquals(4, list.size());
 
         Assertions.assertEquals("BCFKS", keyStore.getType());
-        Assertions.assertEquals(Security.getProvider("BC"), keyStore.getProvider());
+        Assertions.assertEquals(ProviderUtils.bcProvider, keyStore.getProvider());
     }
 
     @Test
@@ -62,16 +67,7 @@ class KeyStoreServiceTest extends WithBouncyCastle {
         Assertions.assertNotNull(keyStore);
         List<String> list = Collections.list(keyStore.aliases());
         // One additional secret key being generated for path encryption and one for private doc encryption.
-        Assertions.assertEquals(5, list.size());
-    }
-
-    @Test
-    void createKeyStoreException() {
-        KeyCreationConfig config = KeyCreationConfig.builder().encKeyNumber(0).signKeyNumber(0).build();
-
-            Assertions.assertThrows(KeyStoreConfigException.class, () ->
-                    keyStoreService.createKeyStore(keyStoreAuth, config, Collections.emptyMap())
-            );
+        Assertions.assertEquals(4, list.size());
     }
 
     @Test
@@ -85,22 +81,20 @@ class KeyStoreServiceTest extends WithBouncyCastle {
 
     @Test
     void getPrivateKey() throws Exception {
-        KeyStore keyStore = KeyStoreServiceImplBaseFunctions.newKeyStore(KeyStoreConfig.builder().build()); // BCFKS
-
-        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("keypass");
-        KeyCreationConfigImpl keyStoreCreationConfig = new KeyCreationConfigImpl(KeyCreationConfig.builder().build());
-        KeyPairGenerator encKeyPairGenerator = keyStoreCreationConfig.getEncKeyPairGenerator("KEYSTORE-ID-0");
-        String alias = "KEYSTORE-ID-0" + UUID.randomUUID().toString();
-        KeyPairEntry keyPairEntry = encKeyPairGenerator.generateEncryptionKey(alias, readKeyPassword);
-        KeyStoreServiceImplBaseFunctions.addToKeyStore(keyStore, keyPairEntry);
-
+        KeyStoreConfig config = KeyStoreConfig.builder().type("UBER").build();
+        Juggler juggler = DaggerBCJuggler.builder().keyStoreConfig(config).build();
+        KeySetTemplate template = KeySetTemplate.builder()
+                .generatedEncryptionKeys(Encrypting.with().prefix("KEYSTORE-ID-0").password("keypass"::toCharArray).build().repeat(1))
+                .build();
+        KeySet keySet = juggler.generateKeys().fromTemplate(template);
+        PrivateKey privateKey1 = keySet.getKeyPairs().get(0).getPair().getPrivate();
+        KeyStore keyStore = juggler.toKeystore().generate(keySet, () -> keyStoreAuth.getReadStorePassword().getValue());
+        Assertions.assertEquals("UBER", keyStore.getType());
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
         String keyID = keyStore.aliases().nextElement();
-        PrivateKey privateKey = keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(keyID));
-        System.out.println(privateKey);
-        System.out.println(keyID);
-        Assertions.assertEquals(alias, keyID);
+        PrivateKey privateKey2 = keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(keyID));
+        Assertions.assertEquals(privateKey1, privateKey2);
     }
 
     @Test

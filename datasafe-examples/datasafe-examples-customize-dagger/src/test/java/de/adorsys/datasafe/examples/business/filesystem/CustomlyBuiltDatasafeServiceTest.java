@@ -2,18 +2,16 @@ package de.adorsys.datasafe.examples.business.filesystem;
 
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.Security;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +23,6 @@ class CustomlyBuiltDatasafeServiceTest {
     @Test
     void testPathEncryptionOverridden(@TempDir Path root) {
         // BEGIN_SNIPPET:Create custom-built Datasafe service
-        Security.addProvider(new BouncyCastleProvider());
         // Customized service, we create required module using compile time DI provided by Dagger:
         CustomlyBuiltDatasafeServices datasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
                 .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))

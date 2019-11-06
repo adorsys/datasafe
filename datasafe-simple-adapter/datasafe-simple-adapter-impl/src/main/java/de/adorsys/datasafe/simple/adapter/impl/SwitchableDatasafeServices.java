@@ -2,6 +2,7 @@ package de.adorsys.datasafe.simple.adapter.impl;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import de.adorsys.datasafe.business.impl.directory.DefaultCredentialsModule;
 import de.adorsys.datasafe.business.impl.document.DefaultDocumentModule;
 import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule;
 import de.adorsys.datasafe.business.impl.keystore.DefaultKeyStoreModule;
@@ -11,8 +12,7 @@ import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.impl.cmsencryption.SwitchableCMSEncryptionModule;
-import de.adorsys.datasafe.simple.adapter.impl.pathencryption.LegacyCredentialsModule;
-import de.adorsys.datasafe.simple.adapter.impl.pathencryption.LegacyPathEncryptionModule;
+import de.adorsys.datasafe.simple.adapter.impl.pathencryption.SwitchablePathEncryptionModule;
 import de.adorsys.datasafe.simple.adapter.impl.profile.HardcodedProfileModule;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
@@ -20,22 +20,20 @@ import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
-/**
- * Datasafe service that is compatible with 0.4.3 release.
- */
 @Singleton
 @Component(modules = {
-        LegacyCredentialsModule.class,
+        DefaultCredentialsModule.class,
         DefaultKeyStoreModule.class,
         DefaultDocumentModule.class,
         SwitchableCMSEncryptionModule.class,
-        LegacyPathEncryptionModule.class,
+        SwitchablePathEncryptionModule.class,
         DefaultInboxActionsModule.class,
         DefaultPrivateActionsModule.class,
         HardcodedProfileModule.class,
         DefaultStorageModule.class
 })
-public interface LegacyDatasafeService extends DefaultDatasafeServices {
+public interface SwitchableDatasafeServices extends DefaultDatasafeServices {
+
 
     @Component.Builder
     interface Builder {
@@ -68,6 +66,6 @@ public interface LegacyDatasafeService extends DefaultDatasafeServices {
          * @return Provide NEW instance of <b>Legacy Datasafe</b> services. All dependencies except
          * annotated with {@code @Singleton} will have scope analogous to Spring {code @Prototype}.
          */
-        LegacyDatasafeService build();
+        SwitchableDatasafeServices build();
     }
 }

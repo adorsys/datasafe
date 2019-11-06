@@ -5,8 +5,8 @@ import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.St
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.storage.api.UserBasedDelegatingStorage;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;

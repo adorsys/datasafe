@@ -8,7 +8,9 @@ import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -118,7 +120,7 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
     private <T extends ResourceLocation<T>> void writeKeystore(UserID forUser, KeyStoreAuth auth,
                                                                AbsoluteLocation<T> keystore, KeyStore keystoreBlob) {
         try (OutputStream os = writeService.write(WithCallback.noCallback(access.withSystemAccess(keystore)))) {
-            os.write(keyStoreService.serialize(keystoreBlob, forUser.getValue(), auth.getReadStorePassword()));
+            os.write(keyStoreService.serialize(keystoreBlob, auth.getReadStorePassword()));
         }
         log.debug("Keystore created for user {} in path {}", forUser, keystore);
     }

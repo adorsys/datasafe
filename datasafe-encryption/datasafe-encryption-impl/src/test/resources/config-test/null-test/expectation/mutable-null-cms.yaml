@@ -20,7 +20,7 @@ keys:
     algo: enc-algo
     size: 13
     sigAlgo: srv-sig-algo
-  singing:
+  signing:
     algo: sig-algo
     size: 14
     sigAlgo: srv-sig-algo

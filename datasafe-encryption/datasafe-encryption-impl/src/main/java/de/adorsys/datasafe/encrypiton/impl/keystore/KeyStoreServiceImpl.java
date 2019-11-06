@@ -3,12 +3,20 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyStoreConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
-import de.adorsys.datasafe.encrypiton.impl.keystore.generator.KeyStoreServiceImplBaseFunctions;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
+import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyEntry;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
+import de.adorsys.keymanagement.api.Juggler;
+import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
+import de.adorsys.keymanagement.api.types.KeySetTemplate;
+import de.adorsys.keymanagement.api.types.source.KeySet;
+import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
+import de.adorsys.keymanagement.api.types.template.generated.Secret;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,13 +25,23 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.*;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.EncryptingKeyCreationCfg;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.PATH_KEY_ID_PREFIX;
+import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.PATH_KEY_ID_PREFIX_CTR;
 
 @Slf4j
 @RuntimeDelegate
@@ -31,11 +49,13 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
     private final KeyStoreConfig config;
     private final String passwordStoreEncAlgo;
+    private final Juggler juggler;
 
     @Inject
-    public KeyStoreServiceImpl(KeyStoreConfig config) {
+    public KeyStoreServiceImpl(KeyStoreConfig config, Juggler juggler) {
         this.config = config;
         this.passwordStoreEncAlgo = this.config.getPasswordKeysAlgo();
+        this.juggler = juggler;
     }
 
     @Override
@@ -59,20 +79,32 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                                    Map<KeyID, Optional<SecretKeyEntry>> secretKeys) {
 
         log.debug("start create keystore ");
-        // TODO, hier also statt der StoreID nun das
-        String serverKeyPairAliasPrefix = UUID.randomUUID().toString();
-        log.debug("keystoreid = {}", serverKeyPairAliasPrefix);
-        KeyStoreGenerator keyStoreGenerator = KeyStoreGenerator.builder()
-                .keyCreationConfig(keyConfig)
-                .keyStoreConfig(config)
-                .serverKeyPairAliasPrefix(serverKeyPairAliasPrefix)
-                .readKeyPassword(keyStoreAuth.getReadKeyPassword())
-                .secretKeys(secretKeys)
-                .build();
 
-        KeyStore userKeyStore = keyStoreGenerator.generate();
+        EncryptingKeyCreationCfg encConf = keyConfig.getEncrypting();
+        Supplier<char[]> passSupplier = () -> keyStoreAuth.getReadKeyPassword().getValue();
+        KeySetTemplate template = KeySetTemplate.builder()
+                .generatedEncryptionKeys(Encrypting.with()
+                        .algo(encConf.getAlgo())
+                        .sigAlgo(encConf.getSigAlgo())
+                        .keySize(encConf.getSize())
+                        .prefix("ENC")
+                        .password(passSupplier)
+                        .build()
+                        .repeat(keyConfig.getEncKeyNumber())
+                )
+                .generatedSecretKeys(secretKeys.keySet().stream()
+                        .map(it -> Secret.with()
+                                .prefix(it.getValue())
+                                .password(passSupplier)
+                                .build()
+                        )
+                        .collect(Collectors.toList()))
+                .build();
+        KeySet keySet = juggler.generateKeys().fromTemplate(template);
+
+        KeyStore ks = juggler.toKeystore().generate(keySet);
         log.debug("finished create keystore ");
-        return userKeyStore;
+        return ks;
     }
 
     @Override
@@ -80,21 +112,12 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     public KeyStore updateKeyStoreReadKeyPassword(KeyStore current,
                                                   KeyStoreAuth currentCredentials,
                                                   KeyStoreAuth newCredentials) {
-        KeyStore newKeystore = KeyStoreServiceImplBaseFunctions.newKeyStore(config);
-        Enumeration<String> aliases = current.aliases();
-
-        while (aliases.hasMoreElements()) {
-            String alias = aliases.nextElement();
-            Key currentKey = current.getKey(alias, currentCredentials.getReadKeyPassword().getValue());
-            newKeystore.setKeyEntry(
-                    alias,
-                    currentKey,
-                    newCredentials.getReadKeyPassword().getValue(),
-                    current.getCertificateChain(alias)
-            );
-        }
-
-        return newKeystore;
+        Function<String, char[]> keyPass = id -> currentCredentials.getReadKeyPassword().getValue();
+        Function<String, char[]> newKeyPass = id -> newCredentials.getReadKeyPassword().getValue();
+        KeySet clonedSet = juggler.readKeys()
+                .fromKeyStore(current, keyPass)
+                .copyToKeySet(newKeyPass);
+        return juggler.toKeystore().generate(clonedSet, () -> null);
     }
 
     @Override
@@ -157,21 +180,14 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     }
 
     @Override
-    public byte[] serialize(KeyStore store, String storeId, ReadStorePassword readStorePassword) {
-        return KeyStoreServiceImplBaseFunctions.toByteArray(
-                store,
-                storeId,
-                readStorePassword
-        );
+    @SneakyThrows
+    public byte[] serialize(KeyStore store, ReadStorePassword readStorePassword) {
+        return juggler.serializeDeserialize().serialize(store, readStorePassword::getValue);
     }
 
     @Override
-    public KeyStore deserialize(byte[] payload, String storeId, ReadStorePassword readStorePassword) {
-        return KeyStoreServiceImplBaseFunctions.loadKeyStore(
-                payload,
-                storeId,
-                config,
-                readStorePassword
-        );
+    @SneakyThrows
+    public KeyStore deserialize(byte[] payload, ReadStorePassword readStorePassword) {
+        return juggler.serializeDeserialize().deserialize(payload, readStorePassword::getValue);
     }
 }
