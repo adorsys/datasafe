@@ -122,7 +122,7 @@
         <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>
         <siv-mode.version>1.3.1</siv-mode.version>
         <jackson.version>2.10.0</jackson.version>
-        <keymanagement.version>0.0.5</keymanagement.version>
+        <keymanagement.version>0.0.6</keymanagement.version>
     </properties>
 
     <dependencies>
@@ -155,11 +155,6 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${common-lang3.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
