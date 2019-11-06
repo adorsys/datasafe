@@ -83,7 +83,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 .map(authority -> new SimpleGrantedAuthority((String) authority))
                 .collect(Collectors.toList());
 
-        if (Strings.isNullOrEmpty(username)) {
+        if (!Strings.isNullOrEmpty(username)) {
             return new UsernamePasswordAuthenticationToken(username, null, authorities);
         }
 
