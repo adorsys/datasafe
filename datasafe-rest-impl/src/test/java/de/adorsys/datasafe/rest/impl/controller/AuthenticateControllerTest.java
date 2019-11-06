@@ -5,7 +5,6 @@ import de.adorsys.datasafe.inbox.impl.InboxServiceImpl;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.rest.impl.security.SecurityConstants;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -15,6 +14,7 @@ import org.springframework.http.MediaType;
 import java.io.ByteArrayOutputStream;
 
 import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,7 +52,7 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
         String authorizationToken = sendAuthenticateRequest(userDTO).getResponse()
                 .getHeader(SecurityConstants.TOKEN_HEADER);
 
-        assertTrue(StringUtils.isNotBlank(authorizationToken));
+        assertThat(authorizationToken).isNotBlank();
         assertTrue(authorizationToken.startsWith(SecurityConstants.TOKEN_PREFIX));
     }
 
@@ -67,7 +67,7 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
                 .getResponse()
                 .getErrorMessage();
 
-        assertTrue(StringUtils.isNotBlank(response));
+        assertThat(response).isNotBlank();
         assertEquals("Access Denied", response);
     }
 
