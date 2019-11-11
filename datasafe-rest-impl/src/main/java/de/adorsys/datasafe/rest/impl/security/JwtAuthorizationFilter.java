@@ -1,14 +1,9 @@
 package de.adorsys.datasafe.rest.impl.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import com.google.common.base.Strings;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,7 +35,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
         String header = request.getHeader(SecurityConstants.TOKEN_HEADER);
 
-        if (StringUtils.isEmpty(header) || !header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+        if (Strings.isNullOrEmpty(header) || !header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -51,7 +46,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(SecurityConstants.TOKEN_HEADER);
-        if (StringUtils.isEmpty(token)) {
+        if (Strings.isNullOrEmpty(token)) {
             return null;
         }
 
@@ -88,7 +83,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 .map(authority -> new SimpleGrantedAuthority((String) authority))
                 .collect(Collectors.toList());
 
-        if (StringUtils.isNotEmpty(username)) {
+        if (!Strings.isNullOrEmpty(username)) {
             return new UsernamePasswordAuthenticationToken(username, null, authorities);
         }
 

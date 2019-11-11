@@ -134,6 +134,7 @@ encryption modes such as CCM or GCM in preference to CBC. It prevent attacks com
 Can be configured to use another encryption algorithm. Datasafe supports AES algorithms with 128, 192 and 256 key size 
 in operation modes CBC (Cipher-block chaining), CCM (CBC-MAC), GCM or WRAP (Key Wrap). For the cases when 
 large amounts of data (> 350GB) are going to be stored one should prefer <a id="CHACHA20_POLY1305"></a> CHACHA20_POLY1305 that is also available.
+However keep in mind that there is an issue using bouncy castle implementation of CHACHA20_POLY1305 with CMS - size of data for encryption shouldn't be smaller then 64 bytes.
 Encrypted data wrapped into CMS standard envelope which contents information about key ID and algorithm used for encryption. 
 Key derivation algorithm is <a id="AES256-WRAP"></a> AES256-WRAP (OID 2.16.840.1.101.3.4.1.45)
 [RFC5652 section-6.2.3](http://tools.ietf.org/html/rfc5652#section-6.2.3)

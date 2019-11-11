@@ -7,6 +7,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.google.common.base.CharMatcher;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
@@ -35,7 +36,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -163,7 +163,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
     @Override
     public void deleteFolder(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN) {
-        list(userIDAuth, documentDirectoryFQN, ListRecursiveFlag.TRUE).stream().forEach(file -> {
+        list(userIDAuth, documentDirectoryFQN, ListRecursiveFlag.TRUE).forEach(file -> {
             PrivateResource resource = BasePrivateResource.forPrivate(file.getDatasafePath());
             RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
             customlyBuiltDatasafeServices.privateService().remove(request);
@@ -179,8 +179,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         if (recursiveFlag.equals(ListRecursiveFlag.TRUE)) {
             return l;
         }
-        int numberOfSlashesExpected = 1 + StringUtils.countMatches(documentDirectoryFQN.getDatasafePath(), "/");
-        return l.stream().filter(el -> StringUtils.countMatches(el.getDatasafePath(), "/") == numberOfSlashesExpected).collect(Collectors.toList());
+
+        int numberOfSlashesExpected = 1 + CharMatcher.is('/').countIn(documentDirectoryFQN.getDatasafePath());
+        return l.stream()
+                .filter(el -> CharMatcher.is('/').countIn(el.getDatasafePath()) == numberOfSlashesExpected)
+                .collect(Collectors.toList());
     }
 
     @Override
