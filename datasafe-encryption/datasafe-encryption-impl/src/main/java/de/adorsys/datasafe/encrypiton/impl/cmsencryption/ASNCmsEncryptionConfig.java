@@ -35,7 +35,7 @@ public class ASNCmsEncryptionConfig {
                     .put("AES128_WRAP", NISTObjectIdentifiers.id_aes128_wrap)
                     .put("AES192_WRAP", NISTObjectIdentifiers.id_aes192_wrap)
                     .put("AES256_WRAP", NISTObjectIdentifiers.id_aes256_wrap)
-                    .put("CHACHA20_POLY1305", PKCSObjectIdentifiers.id_alg_AEADChaCha20Poly1305)
+                    .put("CHACHA20_POLY1305", PKCSObjectIdentifiers.id_alg_AEADChaCha20Poly1305) // with CMS should be used data size 64 bytes or more
                     .build();
 
     @Getter
