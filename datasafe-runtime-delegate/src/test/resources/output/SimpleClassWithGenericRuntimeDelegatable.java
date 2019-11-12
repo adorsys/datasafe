@@ -1,10 +1,10 @@
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
-
+import java.lang.Override;
+import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.List;
-import java.util.function.Function;
 
 @Generated(
         value = "de.adorsys.datasafe.runtimedelegate.RuntimeDelegateGenerator",
