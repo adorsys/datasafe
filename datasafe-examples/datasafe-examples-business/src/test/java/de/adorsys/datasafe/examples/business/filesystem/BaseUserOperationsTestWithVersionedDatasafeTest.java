@@ -14,7 +14,6 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Versioned;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +46,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
         // BEGIN_SNIPPET:Create versioned Datasafe services
         // this will create all Datasafe files and user documents under <temp dir path>
         versionedServices = DaggerVersionedDatasafeServices.builder()
-                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))
+                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"::toCharArray))
                 .storage(new FileSystemStorageService(root))
                 .build();
         // END_SNIPPET
@@ -64,7 +63,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
         IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
         synchronization due to eventual consistency or you need to supply globally unique username on registration
         */
-        versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", ReadKeyPasswordTestFactory.getForString("passwrd")));
+        versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"::toCharArray));
         // END_SNIPPET
 
         assertThat(versionedServices.userProfile().userExists(new UserID("user")));

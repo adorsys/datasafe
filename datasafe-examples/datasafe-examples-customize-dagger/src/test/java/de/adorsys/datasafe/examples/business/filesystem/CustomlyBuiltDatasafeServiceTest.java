@@ -4,8 +4,6 @@ import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
-import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -25,12 +23,12 @@ class CustomlyBuiltDatasafeServiceTest {
         // BEGIN_SNIPPET:Create custom-built Datasafe service
         // Customized service, we create required module using compile time DI provided by Dagger:
         CustomlyBuiltDatasafeServices datasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
-                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))
+                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"::toCharArray))
                 .storage(new FileSystemStorageService(root))
                 .build();
 
         // registering user
-        UserIDAuth user = new UserIDAuth("user", ReadKeyPasswordTestFactory.getForString("passwrd"));
+        UserIDAuth user = new UserIDAuth("user", "password"::toCharArray);
         datasafeServices.userProfile().registerUsingDefaults(user);
         // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
         datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));

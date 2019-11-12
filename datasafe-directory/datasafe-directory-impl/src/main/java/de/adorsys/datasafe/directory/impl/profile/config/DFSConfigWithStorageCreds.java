@@ -6,6 +6,7 @@ import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 
 import java.net.URI;
+import java.util.function.Supplier;
 
 public class DFSConfigWithStorageCreds extends DefaultDFSConfig {
 
@@ -23,6 +24,14 @@ public class DFSConfigWithStorageCreds extends DefaultDFSConfig {
     }
 
     public DFSConfigWithStorageCreds(Uri systemRoot, ReadStorePassword systemPassword) {
+        super(systemRoot, systemPassword);
+    }
+
+    public DFSConfigWithStorageCreds(URI systemRoot, Supplier<char[]> systemPassword) {
+        super(systemRoot, systemPassword);
+    }
+
+    public DFSConfigWithStorageCreds(String systemRoot, Supplier<char[]> systemPassword) {
         super(systemRoot, systemPassword);
     }
 

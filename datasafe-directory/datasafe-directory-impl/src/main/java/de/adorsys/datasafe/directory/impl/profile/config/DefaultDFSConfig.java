@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 /**
  * Default DFS folders layout provider, suitable both for s3 and filesystem.
@@ -50,8 +51,27 @@ public class DefaultDFSConfig implements DFSConfig {
      * to place everything in datasafe/system directory within storage
      * @param systemPassword System password to open keystore
      */
+    public DefaultDFSConfig(String systemRoot, Supplier<char[]> systemPassword) {
+        this(new Uri(systemRoot), new ReadStorePassword(systemPassword));
+    }
+
+
+    /**
+     * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
+     * to place everything in datasafe/system directory within storage
+     * @param systemPassword System password to open keystore
+     */
     public DefaultDFSConfig(URI systemRoot, ReadStorePassword systemPassword) {
         this(new Uri(systemRoot), systemPassword);
+    }
+
+    /**
+     * @param systemRoot Root location for all files - private files, user profiles, etc. For example you want
+     * to place everything in datasafe/system directory within storage
+     * @param systemPassword System password to open keystore
+     */
+    public DefaultDFSConfig(URI systemRoot, Supplier<char[]> systemPassword) {
+        this(new Uri(systemRoot), new ReadStorePassword(systemPassword));
     }
 
     /**

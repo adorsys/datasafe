@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.function.Supplier;
+
 /**
  * Wrapper that represents username and password.
  */
@@ -19,6 +21,11 @@ public class UserIDAuth {
     public UserIDAuth(String userID, ReadKeyPassword readKeyPassword) {
         this.userID = new UserID(userID);
         this.readKeyPassword = readKeyPassword;
+    }
+
+    public UserIDAuth(String userID, Supplier<char[]> readKeyPassword) {
+        this.userID = new UserID(userID);
+        this.readKeyPassword = new ReadKeyPassword(readKeyPassword);
     }
 
     @Override
