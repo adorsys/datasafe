@@ -22,8 +22,21 @@ public class AmazonS3DFSCredentials extends DFSCredentials {
     @Builder.Default
     private final int queueSize = 5;
 
+    // value 0 means, do not set it when creating connection,
+    // so S3 default is used
+    @Builder.Default
+    private final int maxConnections = 0;
+
+    // value 0 means, do not set it when creating connection,
+    // so S3 default is used
+    @Builder.Default
+    private final int requestTimeout = 0;
+
+
     public String getContainer() {
         return rootBucket.split("/")[0];
     }
+
+
 
 }

@@ -208,12 +208,21 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         AmazonS3DFSCredentials amazonS3DFSCredentials = dfsCredentials;
         LogStringFrame lsf = new LogStringFrame();
         lsf.add("AMAZON S3");
-        lsf.add("root bucket     : " + amazonS3DFSCredentials.getRootBucket());
-        lsf.add("url             : " + amazonS3DFSCredentials.getUrl());
-        lsf.add("region          : " + amazonS3DFSCredentials.getRegion());
-        lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
-        lsf.add("no https        : " + amazonS3DFSCredentials.isNoHttps());
-        lsf.add("threadpool size : " + amazonS3DFSCredentials.getThreadPoolSize());
+        lsf.add("root bucket        : " + amazonS3DFSCredentials.getRootBucket());
+        lsf.add("url                : " + amazonS3DFSCredentials.getUrl());
+        lsf.add("region             : " + amazonS3DFSCredentials.getRegion());
+        lsf.add("path encryption    : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+        lsf.add("no https           : " + amazonS3DFSCredentials.isNoHttps());
+        lsf.add("threadpool size    : " + amazonS3DFSCredentials.getThreadPoolSize());
+        int maxConnections = amazonS3DFSCredentials.getMaxConnections();
+        if (maxConnections > 0) {
+            lsf.add("max connections    : " + maxConnections);
+        }
+        int requestTimeout = amazonS3DFSCredentials.getRequestTimeout();
+        if (requestTimeout > 0) {
+            lsf.add("request timeout    : " + requestTimeout);
+        }
+
         log.info(lsf.toString());
         AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
                 .withCredentials(
@@ -236,11 +245,21 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
         }
 
-        if (amazonS3DFSCredentials.isNoHttps()) {
-            log.info("Creating S3 client without https");
+        if (amazonS3DFSCredentials.isNoHttps() || maxConnections > 0 || requestTimeout > 0) {
             ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.HTTP);
-            clientConfig.disableSocketProxy();
+            if (amazonS3DFSCredentials.isNoHttps()) {
+                log.info("Creating S3 client without https");
+                clientConfig.setProtocol(Protocol.HTTP);
+                clientConfig.disableSocketProxy();
+            }
+            if (maxConnections > 0) {
+                log.info("Creating S3 client with max connections:{}",maxConnections);
+                clientConfig.setMaxConnections(maxConnections);
+            }
+            if (requestTimeout > 0) {
+                log.info("Creating S3 client with connection timeout:{}",requestTimeout);
+                clientConfig.setRequestTimeout(requestTimeout);
+            }
             amazonS3ClientBuilder.withClientConfiguration(clientConfig);
         }
 

@@ -6,6 +6,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
+import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocumentStream;
@@ -22,6 +23,7 @@ import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -41,11 +43,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class SimpleDatasafeAdapterTest extends WithStorageProvider {
@@ -310,33 +308,46 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @SneakyThrows
     void testExhaustedInputStream(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
-        mystart();
-        long openFileHandlesBefore = 0;
-        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-        if(os instanceof UnixOperatingSystemMXBean){
-            openFileHandlesBefore = ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
-        } else {
-            log.error("test for open filehandles can not be done");
-            return;
+
+        if (!(dfsCredentials instanceof AmazonS3DFSCredentials)) {
+            throw new RuntimeException("programming error");
         }
+        dfsCredentials = ((AmazonS3DFSCredentials) dfsCredentials).toBuilder().maxConnections(2).requestTimeout(1000).build();
+        mystart();
+// org.bouncycastle.crypto.io.InvalidCipherTextIOException
 
         String content = "content of document qdm;mwm;ewmfmwemf;we;mfw;emf;llllle";
         String path = "a/b/c.txt";
         DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
         simpleDatasafeService.storeDocument(userIDAuth, document);
-        IntStream.range(0, 10).forEach(it -> {
-            DSDocumentStream ds = simpleDatasafeService.readDocumentStream(userIDAuth, document.getDocumentFQN());
-            try {
-                //Streams.readAll(ds.getDocumentStream());
-                ds.getDocumentStream().close();
-            } catch (Exception ex) {
-                log.info("EXc " + it, ex);
-            }
-            log.info("Read " + it);
-        });
+        boolean timeout = false;
+        try {
+            IntStream.range(0, 3).forEach(it -> {
+                DSDocumentStream ds = simpleDatasafeService.readDocumentStream(userIDAuth, document.getDocumentFQN());
+                try {
+                    //Streams.readAll(ds.getDocumentStream());
+                    ds.getDocumentStream().close();
+                } catch (Exception ex) {
+                    log.info("EXc " + it, ex);
+                }
+                log.info("Read " + it);
+            });
+        } catch (Exception e) {
+            Throwable t = e;
+            do {
+                if (t instanceof com.amazonaws.http.exception.HttpRequestTimeoutException) {
+                    timeout = true;
 
-        long openFileHandlesAfter = ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
-        Assertions.assertEquals(openFileHandlesBefore, openFileHandlesAfter);
+                }
+                t = t.getCause();
+            } while (timeout == false && e != null);
+
+            log.info("this must be the timeout exception:", e);
+        }
+        Assertions.assertFalse(timeout);
+        log.info("no timeout exception has raised");
+        // btw. if the exception raises, the test fails anyway, because cleanup has no free handles ;-)
+
     }
 
     private void show(String message, List<DocumentFQN> listFound) {
