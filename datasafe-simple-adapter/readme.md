@@ -48,7 +48,12 @@ datasafe:
       accesskey: *
       secretkey: *
       region: eu-central-1
-      rootbucket: adorsys-docusafe
+      rootbucket: adorsys-docusafe      
+      nohttps: (optional, default false - use https to reach s3 endpoint)
+      threadpoolsize: (optional, default 5, how many workers should send chunk requests)
+      maxconnections: (optional, if unset default of amazon is taken)
+      requesttimeout: (optional, if unset default of amazon is taken)
+      
 ```
 or for a filesystem like that:
 ```
