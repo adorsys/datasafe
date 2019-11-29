@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.sun.management.UnixOperatingSystemMXBean;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
@@ -23,16 +24,20 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.nio.file.NoSuchFileException;
 import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -298,6 +303,40 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
         assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
 
+    }
+
+    @ParameterizedTest
+    @MethodSource("minioOnly")
+    @SneakyThrows
+    void testExhaustedInputStream(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
+        mystart();
+        long openFileHandlesBefore = 0;
+        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+        if(os instanceof UnixOperatingSystemMXBean){
+            openFileHandlesBefore = ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
+        } else {
+            log.error("test for open filehandles can not be done");
+            return;
+        }
+
+        String content = "content of document qdm;mwm;ewmfmwemf;we;mfw;emf;llllle";
+        String path = "a/b/c.txt";
+        DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
+        simpleDatasafeService.storeDocument(userIDAuth, document);
+        IntStream.range(0, 10).forEach(it -> {
+            DSDocumentStream ds = simpleDatasafeService.readDocumentStream(userIDAuth, document.getDocumentFQN());
+            try {
+                //Streams.readAll(ds.getDocumentStream());
+                ds.getDocumentStream().close();
+            } catch (Exception ex) {
+                log.info("EXc " + it, ex);
+            }
+            log.info("Read " + it);
+        });
+
+        long openFileHandlesAfter = ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
+        Assertions.assertEquals(openFileHandlesBefore, openFileHandlesAfter);
     }
 
     private void show(String message, List<DocumentFQN> listFound) {
