@@ -1,10 +1,12 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.sun.management.UnixOperatingSystemMXBean;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
+import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocumentStream;
@@ -21,26 +23,27 @@ import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.nio.file.NoSuchFileException;
 import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class SimpleDatasafeAdapterTest extends WithStorageProvider {
@@ -298,6 +301,39 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
         assertTrue(simpleDatasafeService.documentExists(userIDAuth, document.getDocumentFQN()));
 
+    }
+
+    @ParameterizedTest
+    @MethodSource("minioOnly")
+    @SneakyThrows
+    void testExhaustedInputStream(WithStorageProvider.StorageDescriptor descriptor) {
+        myinit(descriptor);
+
+        if (!(dfsCredentials instanceof AmazonS3DFSCredentials)) {
+            throw new RuntimeException("programming error");
+        }
+        int maxConnections = 2;
+        dfsCredentials = ((AmazonS3DFSCredentials) dfsCredentials).toBuilder()
+                .maxConnections(maxConnections)
+                .requestTimeout(1000)
+                .build();
+        mystart();
+
+        String content = "content of document qdm;mwm;ewmfmwemf;we;mfw;emf;llllle";
+        String path = "a/b/c.txt";
+        DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
+        simpleDatasafeService.storeDocument(userIDAuth, document);
+
+        // create more `not closed requests` than pool can handle
+        IntStream.range(0, maxConnections + 1).forEach(it -> {
+            DSDocumentStream ds = simpleDatasafeService.readDocumentStream(userIDAuth, document.getDocumentFQN());
+            try {
+                // This causes exceptions when using authenticated encryption
+                ds.getDocumentStream().close();
+            } catch (Exception ex) {
+                // Ignoring exception, i'm badly behaved client...
+            }
+        });
     }
 
     private void show(String message, List<DocumentFQN> listFound) {

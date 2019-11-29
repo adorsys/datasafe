@@ -16,6 +16,7 @@ import lombok.SneakyThrows;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,30 +56,36 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
      */
     @RequiredArgsConstructor
     private static final class CloseCoordinatingStream extends InputStream {
-
         private final InputStream streamToRead;
         private final List<InputStream> streamsToClose;
-
         @Override
         public int read(byte[] b, int off, int len) throws IOException {
             return streamToRead.read(b, off, len);
         }
-
         @Override
         public int read() throws IOException {
             return streamToRead.read();
         }
-
         @Override
         @SneakyThrows
         public void close() {
-            super.close();
-            streamsToClose.forEach(CloseCoordinatingStream::doClose);
+            List<Exception> exceptions = new ArrayList<>();
+            try {
+                super.close();
+            } catch (Exception ex) {
+                exceptions.add(ex);
+            }
+            streamsToClose.forEach(it -> doClose(it, exceptions));
+            if (!exceptions.isEmpty()) {
+                throw exceptions.get(0);
+            }
         }
-
         @SneakyThrows
-        private static void doClose(InputStream stream) {
-            stream.close();
+        private static void doClose(InputStream stream, List<Exception> exceptions) {
+            try {
+                stream.close();
+            } catch (Exception ex) {
+                exceptions.add(ex);
+            }
         }
-    }
-}
+    }}
