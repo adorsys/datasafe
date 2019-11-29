@@ -44,10 +44,6 @@ public class SpringAmazonS3DFSCredentialsProperties {
 
     private boolean nohttps = false;
     private int threadpoolsize = 5;
-
-    @Nullable
     private int maxconnections = 0;
-
-    @Nullable
     private int requesttimeout = 0;
 }

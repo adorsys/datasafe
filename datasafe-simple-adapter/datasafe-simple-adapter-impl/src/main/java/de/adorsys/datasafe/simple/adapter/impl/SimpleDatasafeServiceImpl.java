@@ -81,6 +81,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                 .storage(getStorageService())
                 .build();
     }
+
     public StorageService getStorageService() {
         return rootAndStorage.getStorageService();
     }
@@ -253,11 +254,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                 clientConfig.disableSocketProxy();
             }
             if (maxConnections > 0) {
-                log.info("Creating S3 client with max connections:{}",maxConnections);
+                log.info("Creating S3 client with max connections:{}", maxConnections);
                 clientConfig.setMaxConnections(maxConnections);
             }
             if (requestTimeout > 0) {
-                log.info("Creating S3 client with connection timeout:{}",requestTimeout);
+                log.info("Creating S3 client with connection timeout:{}", requestTimeout);
                 clientConfig.setRequestTimeout(requestTimeout);
             }
             amazonS3ClientBuilder.withClientConfiguration(clientConfig);

@@ -312,42 +312,28 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
         if (!(dfsCredentials instanceof AmazonS3DFSCredentials)) {
             throw new RuntimeException("programming error");
         }
-        dfsCredentials = ((AmazonS3DFSCredentials) dfsCredentials).toBuilder().maxConnections(2).requestTimeout(1000).build();
+        int maxConnections = 2;
+        dfsCredentials = ((AmazonS3DFSCredentials) dfsCredentials).toBuilder()
+                .maxConnections(maxConnections)
+                .requestTimeout(1000)
+                .build();
         mystart();
-// org.bouncycastle.crypto.io.InvalidCipherTextIOException
 
         String content = "content of document qdm;mwm;ewmfmwemf;we;mfw;emf;llllle";
         String path = "a/b/c.txt";
         DSDocument document = new DSDocument(new DocumentFQN(path), new DocumentContent(content.getBytes()));
         simpleDatasafeService.storeDocument(userIDAuth, document);
-        boolean timeout = false;
-        try {
-            IntStream.range(0, 3).forEach(it -> {
-                DSDocumentStream ds = simpleDatasafeService.readDocumentStream(userIDAuth, document.getDocumentFQN());
-                try {
-                    //Streams.readAll(ds.getDocumentStream());
-                    ds.getDocumentStream().close();
-                } catch (Exception ex) {
-                    log.info("EXc " + it, ex);
-                }
-                log.info("Read " + it);
-            });
-        } catch (Exception e) {
-            Throwable t = e;
-            do {
-                if (t instanceof com.amazonaws.http.exception.HttpRequestTimeoutException) {
-                    timeout = true;
 
-                }
-                t = t.getCause();
-            } while (timeout == false && e != null);
-
-            log.info("this must be the timeout exception:", e);
-        }
-        Assertions.assertFalse(timeout);
-        log.info("no timeout exception has raised");
-        // btw. if the exception raises, the test fails anyway, because cleanup has no free handles ;-)
-
+        // create more `not closed requests` than pool can handle
+        IntStream.range(0, maxConnections + 1).forEach(it -> {
+            DSDocumentStream ds = simpleDatasafeService.readDocumentStream(userIDAuth, document.getDocumentFQN());
+            try {
+                // This causes exceptions when using authenticated encryption
+                ds.getDocumentStream().close();
+            } catch (Exception ex) {
+                // Ignoring exception, i'm badly behaved client...
+            }
+        });
     }
 
     private void show(String message, List<DocumentFQN> listFound) {
