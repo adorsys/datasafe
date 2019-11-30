@@ -11,8 +11,10 @@ import java.util.stream.Stream;
 
 @AllArgsConstructor
 public class PasswordClearingStream<T> implements Stream<T> {
+
     @Delegate(types = LombokGenericStream.class, excludes = Closeable.class)
     private final Stream<T> stream;
+
     private final ReadKeyPassword readKeyPassword;
 
     @SneakyThrows
@@ -21,6 +23,7 @@ public class PasswordClearingStream<T> implements Stream<T> {
         if (readKeyPassword != null) {
             readKeyPassword.clear();
         }
+
         stream.close();
     }
 

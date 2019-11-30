@@ -11,8 +11,6 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.Uri;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
-import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -38,13 +36,13 @@ class RuntimeOverrideOperationsTest {
 
         // Customized service, without creating complete module and building it:
         DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), new ReadStorePassword("secret")))
+                .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"::toCharArray))
                 .storage(new FileSystemStorageService(root))
                 .overridesRegistry(registry)
                 .build();
 
         // registering user
-        UserIDAuth user = new UserIDAuth("user", ReadKeyPasswordTestFactory.getForString("passwrd"));
+        UserIDAuth user = new UserIDAuth("user", "passwrd"::toCharArray);
         datasafeServices.userProfile().registerUsingDefaults(user);
         // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
         datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));

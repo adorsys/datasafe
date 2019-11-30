@@ -23,6 +23,8 @@ public class SpringPropertiesToDFSCredentialsUtil {
                     .url(props.getUrl())
                     .noHttps(props.isNohttps())
                     .threadPoolSize(props.getThreadpoolsize())
+                    .requestTimeout(props.getRequesttimeout())
+                    .maxConnections(props.getMaxconnections())
                     .build();
         }
         if (properties.getFilesystem() != null) {

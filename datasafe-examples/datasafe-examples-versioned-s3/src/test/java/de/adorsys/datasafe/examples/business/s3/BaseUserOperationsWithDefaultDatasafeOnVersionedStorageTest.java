@@ -19,9 +19,7 @@ import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.resource.StorageVersion;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
-import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
@@ -120,7 +118,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
         // this will create all Datasafe files and user documents under S3 bucket root, we assume that
         // S3 versioned bucket was already created
         defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(cephMappedUrl, new ReadStorePassword("secret")))
+                .config(new DefaultDFSConfig(cephMappedUrl, "secret"::toCharArray))
                 .storage(new S3StorageService(
                         cephS3,
                         VERSIONED_BUCKET_NAME,
@@ -231,7 +229,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
     }
 
     private UserIDAuth registerUser(String username) {
-        UserIDAuth creds = new UserIDAuth(username, ReadKeyPasswordTestFactory.getForString("passwrd" + username));
+        UserIDAuth creds = new UserIDAuth(username, ("passwrd" + username)::toCharArray);
         defaultDatasafeServices.userProfile().registerUsingDefaults(creds);
         return creds;
     }

@@ -281,28 +281,28 @@ TODO: Migrate to AsciiDoc for automatic snippet embedding.
 
 ## Generic Datasafe usage
 First, you want to create Datasafe services. This snippet provides you Datasafe that uses filesystem storage adapter:
-[Example:Create Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L46-L53)
+[Example:Create Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L46-L52)
 ```groovy
 // this will create all Datasafe files and user documents under <temp dir path>
 defaultDatasafeServices = DaggerDefaultDatasafeServices.builder()
-        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"::toCharArray))
         .storage(new FileSystemStorageService(root))
         .build();
 ```
 
 Second you want to add new users:
-[Example:Create new user](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L61-L68)
+[Example:Create new user](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L60-L67)
 ```groovy
 // Creating new user with username 'user' and private/secret key password 'passwrd':
 /*
 IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
 synchronization due to eventual consistency or you need to supply globally unique username on registration
 */
-defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
+defaultDatasafeServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"::toCharArray));
 ```
 
 After you have a user, he wants to store some data or document securely in his privatespace:
-[Example:Store file in privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L79-L89)
+[Example:Store file in privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L78-L88)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -316,7 +316,7 @@ try (OutputStream os = defaultDatasafeServices.privateService()
 ```
 
 Now user wants to read again his secured file:
-[Example:Read file from privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L100-L113)
+[Example:Read file from privatespace](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L99-L112)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("jane");
@@ -333,7 +333,7 @@ try (InputStream is = defaultDatasafeServices.privateService()
 ```
 
 But he doesn't remember the name of file he stored, so he will list all files in privatespace and read first:
-[Example:Read file from privatespace using list](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L247-L261)
+[Example:Read file from privatespace using list](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L246-L260)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -351,7 +351,7 @@ assertThat(defaultDatasafeServices.privateService().read(
 ```
 
 Now he wants to share some data with another user:
-[Example:Send file to INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L125-L135)
+[Example:Send file to INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L124-L134)
 ```groovy
 // create Jane, so her INBOX does exist
 UserIDAuth jane = registerUser("jane");
@@ -366,7 +366,7 @@ try (OutputStream os = defaultDatasafeServices.inboxService()
 
 Now he wants to share some data with couple of users, so that it will be encrypted once and they both
 could read the file using each using own private key:
-[Example:Send file to INBOX - multiple users](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L147-L159)
+[Example:Send file to INBOX - multiple users](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L146-L158)
 ```groovy
 // create Jane, so her INBOX does exist
 UserIDAuth jane = registerUser("jane");
@@ -382,7 +382,7 @@ try (OutputStream os = defaultDatasafeServices.inboxService().write(
 ```
 
 And finally it is time to read data that was shared with you:
-[Example:Read file from INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L269-L285)
+[Example:Read file from INBOX](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L268-L284)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -407,28 +407,28 @@ we can use storage provider that supports versioning. But if we have storage pro
 (i.e. minio) we can turn-on software versioning, here is its usage examples;
 
 First, we will obtain versioned Datasafe services that uses filesystem storage adapter:
-[Example:Create versioned Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L47-L54)
+[Example:Create versioned Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L47-L53)
 ```groovy
 // this will create all Datasafe files and user documents under <temp dir path>
 versionedServices = DaggerVersionedDatasafeServices.builder()
-        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"::toCharArray))
         .storage(new FileSystemStorageService(root))
         .build();
 ```
 
 Next we will create user, this is same as in non-versioned services:
-[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L62-L69)
+[Example:Creating user for versioned services looks same](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L61-L68)
 ```groovy
 // Creating new user:
 /*
 IMPORTANT: For cases when user profile is stored on S3 without object locks, this requires some global
 synchronization due to eventual consistency or you need to supply globally unique username on registration
 */
-versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"));
+versionedServices.userProfile().registerUsingDefaults(new UserIDAuth("user", "passwrd"::toCharArray));
 ```
 
 This is how file versioning works when saving file multiple times:
-[Example:Saving file couple of times - versioned](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L81-L105)
+[Example:Saving file couple of times - versioned](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L80-L104)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -456,7 +456,7 @@ assertThat(versionedServices.latestPrivate().list(ListRequest.forDefaultPrivate(
 ```
 
 And we can work with file versions too, of course, everything is encrypted:
-[Example:Lets check how to read oldest file version](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L107-L123)
+[Example:Lets check how to read oldest file version](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L106-L122)
 ```groovy
 // so lets collect all versions
 List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> withVersions =
@@ -476,7 +476,7 @@ assertThat(versionedServices.privateService()
 ```
 
 Another important case to mention  is how to determine if file has changed on storage compared to some copy we have:
-[Example:Check if we have latest file locally](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L133-L164)
+[Example:Check if we have latest file locally](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L132-L163)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -513,7 +513,7 @@ assertThat(savedOnPC).isAfter(savedOnMobile);
 ## Datasafe on versioned storage
 If you have storage for user files on **versioned S3 bucket** and want to get object version when you write
 object or to read some older version encrypted object, you can follow this example of how to do that:
-[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L138-L173)
+[Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L138-L172)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -551,7 +551,7 @@ assertThat(defaultDatasafeServices.privateService().read(
 ```
 Removing old file version can be done by [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#non-current-days-calculations)
 or manually, using this snippet:
-[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L189-L216)
+[Example:Versioned storage support - removing specific version](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L188-L215)
 ```groovy
 // creating new user
 UserIDAuth user = registerUser("john");
@@ -595,7 +595,7 @@ and it works by putting the custom implementation of a class to be overridden in
 During runtime, when accessing desired functionality, the library will look into OverridesRegistry for
 custom class implementation and use it if present. This one has the advantage of not requiring recompilation of
 Datasafe library, but has a limitation of working on static dependency graph - you can't rebuild it.
-[Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L31-L54)
+[Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L31-L53)
 ```groovy
 // This shows how to override path encryption service, in particular we are going to disable it
 OverridesRegistry registry = new BaseOverridesRegistry();
@@ -606,13 +606,13 @@ PathEncryptionImplRuntimeDelegatable.overrideWith(registry, PathEncryptionImplOv
 
 // Customized service, without creating complete module and building it:
 DefaultDatasafeServices datasafeServices = DaggerDefaultDatasafeServices.builder()
-        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"::toCharArray))
         .storage(new FileSystemStorageService(root))
         .overridesRegistry(registry)
         .build();
 
 // registering user
-UserIDAuth user = new UserIDAuth("user", "passwrd");
+UserIDAuth user = new UserIDAuth("user", "passwrd"::toCharArray);
 datasafeServices.userProfile().registerUsingDefaults(user);
 // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
 datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));
@@ -629,16 +629,16 @@ To create custom Datasafe service we need to follow these 3 steps:
 1. Create your own custom module (or modules) - see [CustomPathEncryptionModule](datasafe-examples/datasafe-examples-customize-dagger/src/main/java/de/adorsys/datasafe/examples/business/filesystem/CustomPathEncryptionModule.java)
 1. Create custom Datasafe with custom module list - see [CustomlyBuiltDatasafeServices](datasafe-examples/datasafe-examples-customize-dagger/src/main/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServices.java)
 1. Use custom-built Datasafe as shown here:
-[Example:Create custom-built Datasafe service](datasafe-examples/datasafe-examples-customize-dagger/src/test/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServiceTest.java#L25-L40)
+[Example:Create custom-built Datasafe service](datasafe-examples/datasafe-examples-customize-dagger/src/test/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServiceTest.java#L25-L39)
 ```groovy
 // Customized service, we create required module using compile time DI provided by Dagger:
 CustomlyBuiltDatasafeServices datasafeServices = DaggerCustomlyBuiltDatasafeServices.builder()
-        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"))
+        .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"::toCharArray))
         .storage(new FileSystemStorageService(root))
         .build();
 
 // registering user
-UserIDAuth user = new UserIDAuth("user", "passwrd");
+UserIDAuth user = new UserIDAuth("user", "password"::toCharArray);
 datasafeServices.userProfile().registerUsingDefaults(user);
 // writing into user privatespace, note that with default implementation `file.txt` would be encrypted
 datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "file.txt"));
@@ -649,7 +649,7 @@ assertThat(walk(root)).asString().contains("file.txt");
 ### Customizing Datasafe to store dynamic and user-provided credentials
 In case user wants to register storage credentials himself or place keystore within credentials-protected
 location one can use this example:
-[Example:Datasafe with multi-dfs setup](datasafe-examples/datasafe-examples-multidfs/src/test/java/de/adorsys/datasafe/examples/business/s3/MultiDfsWithCredentialsExampleTest.java#L107-L222)
+[Example:Datasafe with multi-dfs setup](datasafe-examples/datasafe-examples-multidfs/src/test/java/de/adorsys/datasafe/examples/business/s3/MultiDfsWithCredentialsExampleTest.java#L106-L220)
 ```groovy
 String directoryBucketS3Uri = "s3://" + DIRECTORY_BUCKET.getBucketName() + "/";
 // static client that will be used to access `directory` bucket:
@@ -662,7 +662,7 @@ StorageService directoryStorage = new S3StorageService(
 OverridesRegistry registry = new BaseOverridesRegistry();
 DefaultDatasafeServices multiDfsDatasafe = DaggerDefaultDatasafeServices
         .builder()
-        .config(new DFSConfigWithStorageCreds(directoryBucketS3Uri, "PAZZWORT"))
+        .config(new DFSConfigWithStorageCreds(directoryBucketS3Uri, "PAZZWORT"::toCharArray))
         // This storage service will route requests to proper bucket based on URI content:
         // URI with directoryBucket to `directoryStorage`
         // URI with filesBucketOne will get dynamically generated S3Storage
@@ -703,7 +703,7 @@ BucketAccessServiceImplRuntimeDelegatable.overrideWith(
 // Depending on path of file - filesBucketOne or filesBucketTwo - requests will be routed to proper bucket.
 // I.e. path filesBucketOne/path/to/file will end up in `filesBucketOne` with key path/to/file
 // his profile and access credentials for `filesBucketOne`  will be in `configBucket`
-UserIDAuth john = new UserIDAuth("john", "secret");
+UserIDAuth john = new UserIDAuth("john", "secret"::toCharArray);
 // Here, nothing expects John has own storage credentials:
 multiDfsDatasafe.userProfile().registerUsingDefaults(john);
 

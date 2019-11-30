@@ -11,8 +11,9 @@ import java.io.OutputStream;
 @AllArgsConstructor
 public class PasswordClearingOutputStream extends OutputStream {
 
-    @Delegate(types=OutputStream.class, excludes = Closeable.class)
+    @Delegate(types = OutputStream.class, excludes = Closeable.class)
     private final OutputStream outputStream;
+
     private final ReadKeyPassword readKeyPassword;
 
     @SneakyThrows
@@ -21,6 +22,7 @@ public class PasswordClearingOutputStream extends OutputStream {
         if (readKeyPassword != null) {
             readKeyPassword.clear();
         }
+
         outputStream.close();
     }
 }

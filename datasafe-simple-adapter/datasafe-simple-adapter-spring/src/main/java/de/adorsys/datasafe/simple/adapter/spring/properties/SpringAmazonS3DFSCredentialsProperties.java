@@ -28,7 +28,9 @@ public class SpringAmazonS3DFSCredentialsProperties {
             "      region: (optional)\n" +
             "      rootbucket: (optional)\n" +
             "      nohttps: (optional, default false - use https to reach s3 endpoint)\n" +
-            "      threadpoolsize: (optional, default 5, how many workers should send chunk requests)\n";
+            "      threadpoolsize: (optional, default 5, how many workers should send chunk requests)\n" +
+            "      maxconnections: (optional, if unset default of amazon is taken)\n" +
+            "      requesttimeout: (optional, if unset default of amazon is taken)\n";
 
     private String url;
     private String accesskey;
@@ -42,4 +44,6 @@ public class SpringAmazonS3DFSCredentialsProperties {
 
     private boolean nohttps = false;
     private int threadpoolsize = 5;
+    private int maxconnections = 0;
+    private int requesttimeout = 0;
 }

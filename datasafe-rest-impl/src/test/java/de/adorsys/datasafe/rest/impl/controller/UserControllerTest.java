@@ -10,13 +10,17 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -42,6 +46,8 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     @MockBean
     private DFSBasedProfileStorageImpl userProfile;
 
+    @Captor
+    private ArgumentCaptor<ReadKeyPassword> password;
 
     @BeforeEach
     public void setup() {
@@ -92,8 +98,10 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
 
         verify(userProfile).updateReadKeyPassword(
                 eq(new UserIDAuth(TEST_USER, TEST_PASS)),
-                eq(ReadKeyPasswordHelper.getForString(newPassword))
+                password.capture()
         );
+
+        assertThat(password.getValue().getValue()).isEqualTo(newPassword.toCharArray());
     }
 
     @SneakyThrows

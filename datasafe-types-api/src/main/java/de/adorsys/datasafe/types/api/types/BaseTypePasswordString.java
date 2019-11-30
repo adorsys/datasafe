@@ -2,75 +2,72 @@ package de.adorsys.datasafe.types.api.types;
 
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.ToString;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
  * Wrapper for password sensitive data.
  */
 @Slf4j
-@RequiredArgsConstructor
-@EqualsAndHashCode(exclude = {"toBeCleared", "cleared"} )
-@ToString
+@EqualsAndHashCode
 public class BaseTypePasswordString {
-    private char[] value;
-    private AtomicBoolean toBeCleared = new AtomicBoolean(true);
-    private AtomicBoolean cleared = new AtomicBoolean(false);
+
+    private final char[] value;
+    private Supplier<char[]> passwordSupplier;
+    private boolean cleared = false;
 
     /**
      * ATTENTION
      * <p>
-     * caller of method gives responsiblity of char[]
-     * to this class. char[] will be nullyfied
-     * asap (after successfull read/write/list)
+     * caller of method gives ownership of {@code value[]}
+     * to this class. Value will be nullyfied after successful read/write/list.
      *
      * @param value will be nullified asap
      */
     public BaseTypePasswordString(char[] value) {
         this.value = value;
-        toBeCleared.set(true);
-        cleared.set(false);
+        passwordSupplier = null;
     }
 
     /**
-     * caller of method makes sure, supplied char[] is deleted asap
-     *
+     * Argument provider is responsible for password cleanup
      * @param value will stay unchanged
      */
     public BaseTypePasswordString(Supplier<char[]> value) {
-        this.value = value.get();
-        toBeCleared.set(false);
-        cleared.set(false);
+        this.passwordSupplier = value;
+        this.value = null;
     }
-
 
     /**
      * clears the char array
      */
+    @Synchronized
     public void clear() {
-        synchronized (value) {
-            if (toBeCleared.get()) {
-                cleared.set(true);
-                log.debug("CLEAR PASSWORD {}", this.getClass().getSimpleName());
-                Arrays.fill(value, '0');
-            }
+        if (null != value) {
+            Arrays.fill(value, '0');
         }
+        cleared = true;
     }
 
+    /**
+     * Note that returned value is not immutable.
+     */
+    @Synchronized
     @SneakyThrows
     public char[] getValue() {
-        synchronized (value) {
-            if (cleared.get()) {
-                throw new BaseTypePasswordStringException("Password was cleared before and must not be reused");
-            }
-            return value;
+        if (null != passwordSupplier) {
+            return passwordSupplier.get();
         }
+
+        if (cleared) {
+            throw new BaseTypePasswordStringException("Password was cleared before and must not be reused");
+        }
+
+        return value;
     }
 
     @Override

@@ -13,8 +13,9 @@ import java.io.InputStream;
 @RuntimeDelegate
 public class PasswordClearingInputStream extends InputStream {
 
-    @Delegate(types=InputStream.class, excludes = Closeable.class)
+    @Delegate(types = InputStream.class, excludes = Closeable.class)
     private final InputStream inputStream;
+
     private final ReadKeyPassword readKeyPassword;
 
     @SneakyThrows
@@ -23,6 +24,7 @@ public class PasswordClearingInputStream extends InputStream {
         if (readKeyPassword != null) {
             readKeyPassword.clear();
         }
+
         inputStream.close();
     }
 }
