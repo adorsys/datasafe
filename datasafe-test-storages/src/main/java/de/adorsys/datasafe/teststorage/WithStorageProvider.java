@@ -52,6 +52,11 @@ import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 @Slf4j
 @Getter
 public abstract class WithStorageProvider extends BaseMockitoTest {
+    // to make tests possible for minio, ceph AND amazon by setting AWS_PROPERTIES
+    // we check for amazon and NOT amazon by the following two strings
+    private static final String amazonDomain = "s3.amazonaws.com";
+    private static final String amazonProtocol = "https://";
+
     public static final String SKIP_CEPH = "SKIP_CEPH";
     public static final String CEPH_REGION = "US";
 
@@ -201,6 +206,13 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     }
 
     @ValueSource
+    protected static Stream<StorageDescriptor> s3Only() {
+        return Stream.of(
+                s3()
+        ).filter(Objects::nonNull);
+    }
+
+    @ValueSource
     protected static Stream<StorageDescriptor> minioOnly() {
         return Stream.of(
                 minio()
@@ -322,13 +334,20 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             amazonS3ClientBuilder = amazonS3ClientBuilder.withRegion(amazonRegion);
             amazonMappedUrl = "s3://" + primaryBucket + "/" + bucketPath + "/";
         } else {
+            final boolean isRealAmazon = ((amazonProtocol + amazonDomain).equals(amazonUrl) || (amazonDomain).equals(amazonUrl));
+
             amazonS3ClientBuilder = amazonS3ClientBuilder
                     .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
                     .withEndpointConfiguration(
-                            new AwsClientBuilder.EndpointConfiguration(amazonUrl, CEPH_REGION)
-                    )
-                    .enablePathStyleAccess();
-            amazonMappedUrl = "http://" + primaryBucket + "." + amazonUrl;
+                            new AwsClientBuilder.EndpointConfiguration(amazonUrl, amazonRegion)
+                    );
+            if (isRealAmazon) {
+                amazonMappedUrl = amazonProtocol + primaryBucket + "." + amazonDomain;
+            }
+            else {
+                amazonMappedUrl = amazonUrl + "/" + primaryBucket;
+                amazonS3ClientBuilder.enablePathStyleAccess();
+            }
         }
         amazonS3 = amazonS3ClientBuilder.build();
 

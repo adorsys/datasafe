@@ -231,8 +231,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                                 new BasicAWSCredentials(
                                         amazonS3DFSCredentials.getAccessKey(),
                                         amazonS3DFSCredentials.getSecretKey()))
-                )
-                .enablePathStyleAccess();
+                );
+
+        // TODO PETER FIX THIS
+        // .enablePathStyleAccess();
+        // log.info("USED ENABLE PATHSTYLE ACCESS");
 
         boolean useEndpoint = !amazonS3DFSCredentials.getUrl().equals(AMAZON_URL)
                 && !amazonS3DFSCredentials.getUrl().startsWith(S3_PREFIX);
