@@ -330,25 +330,24 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             log.info("Using {} buckets:{}", buckets.size(), buckets);
         }
 
-        if (StringUtils.isNullOrEmpty(amazonUrl)) {
-            amazonS3ClientBuilder = amazonS3ClientBuilder.withRegion(amazonRegion);
-            amazonMappedUrl = "s3://" + primaryBucket + "/" + bucketPath + "/";
-        } else {
-            final boolean isRealAmazon = ((amazonProtocol + amazonDomain).equals(amazonUrl) || (amazonDomain).equals(amazonUrl));
 
-            amazonS3ClientBuilder = amazonS3ClientBuilder
-                    .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
-                    .withEndpointConfiguration(
-                            new AwsClientBuilder.EndpointConfiguration(amazonUrl, amazonRegion)
-                    );
-            if (isRealAmazon) {
-                amazonMappedUrl = amazonProtocol + primaryBucket + "." + amazonDomain;
-            }
-            else {
-                amazonMappedUrl = amazonUrl + "/" + primaryBucket;
-                amazonS3ClientBuilder.enablePathStyleAccess();
-            }
+        if (StringUtils.isNullOrEmpty(amazonUrl)) {
+            amazonUrl = amazonProtocol + amazonDomain;
         }
+        final boolean isRealAmazon = ((amazonProtocol + amazonDomain).equals(amazonUrl) || (amazonDomain).equals(amazonUrl));
+
+        amazonS3ClientBuilder = amazonS3ClientBuilder
+                .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(amazonUrl, amazonRegion)
+                );
+        if (isRealAmazon) {
+            amazonMappedUrl = amazonProtocol + primaryBucket + "." + amazonDomain;
+        } else {
+            amazonMappedUrl = amazonUrl + "/";
+            amazonS3ClientBuilder.enablePathStyleAccess();
+        }
+
         amazonS3 = amazonS3ClientBuilder.build();
 
         log.info("Amazon mapped URL:" + amazonMappedUrl);

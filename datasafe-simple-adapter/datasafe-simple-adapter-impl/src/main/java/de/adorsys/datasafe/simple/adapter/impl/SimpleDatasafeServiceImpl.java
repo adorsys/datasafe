@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
-    private static final String AMAZON_URL = "https://s3.amazonaws.com";
+    private static final String AMAZON_URL = "https://.*s3.amazonaws.com";
     private static final ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private static final String S3_PREFIX = "s3://";
 
@@ -233,19 +233,19 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                                         amazonS3DFSCredentials.getSecretKey()))
                 );
 
-        // TODO PETER FIX THIS
-        // .enablePathStyleAccess();
-        // log.info("USED ENABLE PATHSTYLE ACCESS");
-
-        boolean useEndpoint = !amazonS3DFSCredentials.getUrl().equals(AMAZON_URL)
+        boolean useEndpoint = !amazonS3DFSCredentials.getUrl().matches(AMAZON_URL)
                 && !amazonS3DFSCredentials.getUrl().startsWith(S3_PREFIX);
         if (useEndpoint) {
+            log.info("not real amazon, so use pathStyleAccess");
             AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
                     amazonS3DFSCredentials.getUrl(),
                     amazonS3DFSCredentials.getRegion()
             );
-            amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
+            amazonS3ClientBuilder
+                    .withEndpointConfiguration(endpoint)
+                    .enablePathStyleAccess();
         } else {
+            log.info("real amazon, so use bucketStyleAccess");
             amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
         }
 
