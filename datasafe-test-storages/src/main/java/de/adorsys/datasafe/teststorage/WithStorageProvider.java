@@ -398,6 +398,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .withEnv("CEPH_DEMO_SECRET_KEY", cephSecretAccessKey)
                 .withCommand("mkdir -p /etc/ceph && mkdir -p /var/lib/ceph && /entrypoint.sh")
                 .waitingFor(Wait.defaultWaitStrategy().withStartupTimeout(Duration.ofSeconds(180)));
+        // DOC-175 increased timeout to 180 secs to get travis run
 
         cephContainer.start();
         Integer mappedPort = cephContainer.getMappedPort(8000);
