@@ -235,8 +235,9 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
 
         boolean useEndpoint = !amazonS3DFSCredentials.getUrl().matches(AMAZON_URL)
                 && !amazonS3DFSCredentials.getUrl().startsWith(S3_PREFIX);
+        lsf = new LogStringFrame();
         if (useEndpoint) {
-            log.info("not real amazon, so use pathStyleAccess");
+            lsf.add("not real amazon, so use pathStyleAccess");
             AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
                     amazonS3DFSCredentials.getUrl(),
                     amazonS3DFSCredentials.getRegion()
@@ -245,9 +246,10 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
                     .withEndpointConfiguration(endpoint)
                     .enablePathStyleAccess();
         } else {
-            log.info("real amazon, so use bucketStyleAccess");
+            lsf.add("real amazon, so use bucketStyleAccess");
             amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
         }
+        log.info(lsf.toString());
 
         if (amazonS3DFSCredentials.isNoHttps() || maxConnections > 0 || requestTimeout > 0) {
             ClientConfiguration clientConfig = new ClientConfiguration();
