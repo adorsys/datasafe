@@ -81,7 +81,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
     private static String amazonSecretAccessKey = readPropOrEnv("AWS_SECRET_KEY");
-    private static String amazonRegion = readPropOrEnv("AWS_REGION", "eu-central-1");
+    private static String amazonRegion = readPropOrEnv("AWS_REGION", "us-east-1");
     private static String amazonUrl = readPropOrEnv("AWS_URL");
     private static String amazonMappedUrl;
 
