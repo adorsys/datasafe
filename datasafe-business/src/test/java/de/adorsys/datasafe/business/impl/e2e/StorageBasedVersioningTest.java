@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Slf4j
 @DisabledIfSystemProperty(named = WithStorageProvider.SKIP_CEPH, matches = "true")
 class StorageBasedVersioningTest extends BaseE2ETest {
 
@@ -113,10 +112,6 @@ class StorageBasedVersioningTest extends BaseE2ETest {
     }
 
     private void init(WithStorageProvider.StorageDescriptor descriptor) {
-        log.info("       name: {}", descriptor.getName());
-        log.info("   location: {}", descriptor.getLocation());
-        log.info("     region: {}", descriptor.getRegion());
-        log.info("root bucket: {}", descriptor.getRootBucket());
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
                 .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);
