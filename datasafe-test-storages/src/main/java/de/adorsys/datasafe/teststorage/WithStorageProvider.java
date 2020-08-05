@@ -68,20 +68,20 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
-    private static String minioRegion = "us-east-1";
+    private static String minioRegion = "eu-central-1";
     private static String minioUrl = getDockerUri("http://localhost");
     private static String minioMappedUrl;
 
     // Note that CEPH is used to test bucket-level versioning, so you will get versioned bucket:
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
-    private static String cephRegion = "us-east-1";
+    private static String cephRegion = "eu-central-1";
     private static String cephUrl = getDockerUri("http://0.0.0.0");// not localhost!
     private static String cephMappedUrl;
 
     private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
     private static String amazonSecretAccessKey = readPropOrEnv("AWS_SECRET_KEY");
-    private static String amazonRegion = readPropOrEnv("AWS_REGION", "us-east-1");
+    private static String amazonRegion = readPropOrEnv("AWS_REGION", "eu-central-1");
     private static String amazonUrl = readPropOrEnv("AWS_URL");
     private static String amazonMappedUrl;
 
