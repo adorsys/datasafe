@@ -68,7 +68,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
-    private static String minioRegion = "eu-central-1";
+    private static String minioRegion = "us-east-1";
     private static String minioUrl = getDockerUri("http://localhost");
     private static String minioMappedUrl;
 
