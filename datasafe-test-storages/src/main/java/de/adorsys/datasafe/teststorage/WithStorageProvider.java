@@ -147,12 +147,14 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     static void shutdown() {
         log.info("Stopping containers");
         if (null != minioContainer) {
+            log.info("Stopping MINIO");
             minioContainer.stop();
             minioContainer = null;
             minio = null;
         }
 
         if (null != cephContainer) {
+            log.info("Stopping CEPH");
             cephContainer.stop();
             cephContainer = null;
             ceph = null;
