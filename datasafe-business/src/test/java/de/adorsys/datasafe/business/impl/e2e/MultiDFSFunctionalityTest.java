@@ -108,6 +108,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
             // http://localhost:1234/eu-central-1/bucket/
             endpointsByHost.put(it, endpoint + REGION + "/" + it + "/");
+            log.info("ENDPOINT IS {}", endpoint);
             endpointsByHostNoBucket.put(it, endpoint);
 
             AmazonS3 client = S3ClientFactory.getClient(
