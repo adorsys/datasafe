@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -118,7 +119,24 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
                     secretKey(it)
             );
 
-            client.createBucket(it);
+            try {
+                client.createBucket(it);
+            } catch (AmazonS3Exception ex) {
+                if (ex.getErrorCode().contains("MinioServerNotInitialized")) {
+                    long millis = 3000;
+                    log.info("we wait here for {} millis and retry due to eception :{} {}", millis, ex.getClass().toGenericString(), ex.getMessage());
+                    try {
+                        Thread.sleep(millis);
+                    } catch(Exception e) {
+
+                    }
+                    log.info("sleep finished. now retry");
+                    client.createBucket(it);
+                } else {
+                    log.info("exception by creating bucket does not look like expected");
+                    throw ex;
+                }
+            }
         });
     }
 
