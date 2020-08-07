@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.examples.business.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
@@ -85,7 +86,24 @@ class MultiDfsWithCredentialsExampleTest {
                     it.getSecretKey()
             );
 
-            client.createBucket(it.getBucketName());
+            // TODO BETTER CHECK FOR CONTAINER IS STARTED PROPERLY
+            try {
+                client.createBucket(it.getBucketName());
+            } catch (AmazonS3Exception ex) {
+                if (ex.getErrorCode().contains("MinioServerNotInitialized")) {
+                    long millis = 3000;
+                    log.info("we wait here for {} millis and retry due to eception :{} {}", millis, ex.getClass().toGenericString(), ex.getMessage());
+                    try {
+                        Thread.sleep(millis);
+                    } catch (Exception e) {
+                    }
+                    log.info("sleep finished. now retry");
+                    client.createBucket(it.getBucketName());
+                } else {
+                    log.info("exception by creating bucket does not look like expected");
+                    throw ex;
+                }
+            }
 
             if (it.equals(DIRECTORY_BUCKET)) {
                 directoryClient = client;
