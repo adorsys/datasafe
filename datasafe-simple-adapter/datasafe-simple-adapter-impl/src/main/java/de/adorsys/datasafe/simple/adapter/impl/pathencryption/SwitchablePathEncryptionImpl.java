@@ -14,9 +14,6 @@ import java.util.function.Function;
 public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
 
     public static final String NO_BUCKETPATH_ENCRYPTION = "SC-NO-BUCKETPATH-ENCRYPTION";
-    // actually the following system property does not belong here but in project datasafe-migration
-    // TODO
-    public static final String NO_BUCKETPATH_ENCRYPTION_NEW = "SC-NO-BUCKETPATH-ENCRYPTION-AFTER-MIGRATION";
 
     private boolean withPathEncryption = checkIsPathEncryptionToUse();
 
@@ -43,11 +40,7 @@ public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
     }
 
     public static boolean checkIsPathEncryptionToUse() {
-        String value = System.getProperty(NO_BUCKETPATH_ENCRYPTION_NEW);
-        if (value == null) {
-            value = System.getProperty(NO_BUCKETPATH_ENCRYPTION);
-        }
-
+        String value = System.getProperty(NO_BUCKETPATH_ENCRYPTION);
         if (value != null) {
             if (value.equalsIgnoreCase(Boolean.FALSE.toString())) {
                 log.debug("path encryption is on");

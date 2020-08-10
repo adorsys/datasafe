@@ -25,6 +25,7 @@ import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.shared.AwsClientRetry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
@@ -86,24 +87,7 @@ class MultiDfsWithCredentialsExampleTest {
                     it.getSecretKey()
             );
 
-            // TODO BETTER CHECK FOR CONTAINER IS STARTED PROPERLY
-            try {
-                client.createBucket(it.getBucketName());
-            } catch (AmazonS3Exception ex) {
-                if (ex.getErrorCode().contains("MinioServerNotInitialized")) {
-                    long millis = 3000;
-                    log.info("we wait here for {} millis and retry due to eception :{} {}", millis, ex.getClass().toGenericString(), ex.getMessage());
-                    try {
-                        Thread.sleep(millis);
-                    } catch (Exception e) {
-                    }
-                    log.info("sleep finished. now retry");
-                    client.createBucket(it.getBucketName());
-                } else {
-                    log.info("exception by creating bucket does not look like expected");
-                    throw ex;
-                }
-            }
+            AwsClientRetry.createBucketWithRetry(client, it.getBucketName());
 
             if (it.equals(DIRECTORY_BUCKET)) {
                 directoryClient = client;

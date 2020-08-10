@@ -97,18 +97,11 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("allStorages")
+    @MethodSource("storages")
     @SneakyThrows
     void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
-
-        log.info("descriptor.getLocation {}", descriptor.getLocation().asString());
-        try (Stream<AbsoluteLocation<ResolvedResource>> ls = descriptor.getStorageService().get()
-                .list(BasePrivateResource.forAbsolutePrivate(descriptor.getLocation()))
-        ) {
-            ls.forEach(it -> log.info("found: {}", descriptor.getLocation().relativize(it.location()).asString()));
-        };
 
         // SimpleDatasafeAdapter does not use user profile json files, so only keystore and pubkeys should exist:
         try (Stream<AbsoluteLocation<ResolvedResource>> ls = descriptor.getStorageService().get()

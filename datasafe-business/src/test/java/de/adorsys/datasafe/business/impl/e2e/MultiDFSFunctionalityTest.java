@@ -31,6 +31,7 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.shared.AwsClientRetry;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
@@ -82,7 +83,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     private static final String INBOX = "inboxbucket";
 
     private static final ExecutorService EXECUTOR = ExecutorServiceUtil
-            .submitterExecutesOnStarvationExecutingService(5, 5);
+        .submitterExecutesOnStarvationExecutingService(5, 5);
 
     private static Map<String, GenericContainer> minios = new HashMap<>();
     private static Map<String, String> endpointsByHost = new HashMap<>();
@@ -95,17 +96,17 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
         // Create all required minio-backed S3 buckets:
         Stream.of(CREDENTIALS, KEYSTORE, FILES_ONE, FILES_TWO, INBOX).forEach(it -> {
             GenericContainer minio = new GenericContainer("minio/minio")
-                    .withExposedPorts(9000)
-                    .withEnv("MINIO_ACCESS_KEY", accessKey(it))
-                    .withEnv("MINIO_SECRET_KEY", secretKey(it))
-                    .withCommand("server /data")
-                    .waitingFor(Wait.defaultWaitStrategy());
+                .withExposedPorts(9000)
+                .withEnv("MINIO_ACCESS_KEY", accessKey(it))
+                .withEnv("MINIO_SECRET_KEY", secretKey(it))
+                .withCommand("server /data")
+                .waitingFor(Wait.defaultWaitStrategy());
             minio.start();
             minios.put(it, minio);
 
             String endpoint = LOCALHOST + ":" + minio.getFirstMappedPort() + "/";
             log.info("Minio `{}` with endpoint `{}` and keys `{}`/`{}` has started",
-                    it, endpoint, accessKey(it), secretKey(it));
+                it, endpoint, accessKey(it), secretKey(it));
 
             // http://localhost:1234/eu-central-1/bucket/
             endpointsByHost.put(it, endpoint + REGION + "/" + it + "/");
@@ -113,30 +114,13 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
             endpointsByHostNoBucket.put(it, endpoint);
 
             AmazonS3 client = S3ClientFactory.getClient(
-                    endpoint,
-                    REGION,
-                    accessKey(it),
-                    secretKey(it)
+                endpoint,
+                REGION,
+                accessKey(it),
+                secretKey(it)
             );
 
-            // TODO BETTER CHECK FOR CONTAINER IS STARTED PROPERLYD
-            try {
-                client.createBucket(it);
-            } catch (AmazonS3Exception ex) {
-                if (ex.getErrorCode().contains("MinioServerNotInitialized")) {
-                    long millis = 3000;
-                    log.info("we wait here for {} millis and retry due to eception :{} {}", millis, ex.getClass().toGenericString(), ex.getMessage());
-                    try {
-                        Thread.sleep(millis);
-                    } catch (Exception e) {
-                    }
-                    log.info("sleep finished. now retry");
-                    client.createBucket(it);
-                } else {
-                    log.info("exception by creating bucket does not look like expected");
-                    throw ex;
-                }
-            }
+            AwsClientRetry.createBucketWithRetry(client, it);
         });
     }
 
@@ -148,42 +132,42 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     @BeforeEach
     void initDatasafe() {
         StorageService directoryStorage = new S3StorageService(
-                S3ClientFactory.getClient(
-                        endpointsByHostNoBucket.get(CREDENTIALS),
-                        REGION,
-                        accessKey(CREDENTIALS),
-                        secretKey(CREDENTIALS)
-                ),
-                CREDENTIALS,
-                EXECUTOR
+            S3ClientFactory.getClient(
+                endpointsByHostNoBucket.get(CREDENTIALS),
+                REGION,
+                accessKey(CREDENTIALS),
+                secretKey(CREDENTIALS)
+            ),
+            CREDENTIALS,
+            EXECUTOR
         );
 
         OverridesRegistry registry = new BaseOverridesRegistry();
         this.datasafeServices = DaggerDefaultDatasafeServices.builder()
-                .config(new DefaultDFSConfig(endpointsByHost.get(CREDENTIALS), new ReadStorePassword("PAZZWORT")))
-                .overridesRegistry(registry)
-                .storage(new RegexDelegatingStorage(
-                        ImmutableMap.<Pattern, StorageService>builder()
-                                .put(Pattern.compile(endpointsByHost.get(CREDENTIALS) + ".+"), directoryStorage)
-                                .put(
-                                        Pattern.compile(LOCALHOST + ".+"),
-                                        new UriBasedAuthStorageService(
-                                                acc -> new S3StorageService(
-                                                        S3ClientFactory.getClient(
-                                                                acc.getEndpoint(),
-                                                                acc.getRegion(),
-                                                                acc.getAccessKey(),
-                                                                acc.getSecretKey()
-                                                        ),
-                                                        acc.getBucketName(),
-                                                        EXECUTOR
-                                                )
-                                        )
-                                ).build())
-                ).build();
+            .config(new DefaultDFSConfig(endpointsByHost.get(CREDENTIALS), new ReadStorePassword("PAZZWORT")))
+            .overridesRegistry(registry)
+            .storage(new RegexDelegatingStorage(
+                ImmutableMap.<Pattern, StorageService>builder()
+                    .put(Pattern.compile(endpointsByHost.get(CREDENTIALS) + ".+"), directoryStorage)
+                    .put(
+                        Pattern.compile(LOCALHOST + ".+"),
+                        new UriBasedAuthStorageService(
+                            acc -> new S3StorageService(
+                                S3ClientFactory.getClient(
+                                    acc.getEndpoint(),
+                                    acc.getRegion(),
+                                    acc.getAccessKey(),
+                                    acc.getSecretKey()
+                                ),
+                                acc.getBucketName(),
+                                EXECUTOR
+                            )
+                        )
+                    ).build())
+            ).build();
 
         BucketAccessServiceImplRuntimeDelegatable.overrideWith(
-                registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())
+            registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())
         );
     }
 
@@ -236,10 +220,10 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
         assertThat(listInBucket(FILES_TWO)).hasSize(1);
         assertThat(listInBucket(KEYSTORE)).hasSize(1);
         assertThat(listInBucket(CREDENTIALS)).containsExactlyInAnyOrder(
-                "profiles/private/john",
-                "profiles/public/john",
-                "pubkeys",
-                "storagecreds");
+            "profiles/private/john",
+            "profiles/public/john",
+            "pubkeys",
+            "storagecreds");
     }
 
     private void deregisterAndValidateEmpty(UserIDAuth john) {
@@ -258,28 +242,28 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
         // User does not declare his keystore location, so we are registering his stuff separately
         datasafeServices.userProfile().registerPublic(CreateUserPublicProfile.builder()
-                .id(auth.getUserID())
-                .inbox(BasePublicResource.forAbsolutePublic(inboxLocation))
-                .publicKeys(BasePublicResource.forAbsolutePublic(pubKeysLocation))
-                .build()
+            .id(auth.getUserID())
+            .inbox(BasePublicResource.forAbsolutePublic(inboxLocation))
+            .publicKeys(BasePublicResource.forAbsolutePublic(pubKeysLocation))
+            .build()
         );
 
         datasafeServices.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
-                .id(auth)
-                .storageCredentialsKeystore(
-                        BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(CREDENTIALS) + "storagecreds")
-                )
-                .inboxWithWriteAccess(BasePrivateResource.forAbsolutePrivate(inboxLocation))
-                .keystore(
-                        BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(KEYSTORE) + "keystore")
-                )
-                // filesOneBucket is default private space, it is not directly accessible without credentials
-                .privateStorage(
-                        BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(FILES_ONE) + "private/")
-                )
-                .associatedResources(Collections.emptyList())
-                .publishPubKeysTo(BasePublicResource.forAbsolutePublic(pubKeysLocation))
-                .build()
+            .id(auth)
+            .storageCredentialsKeystore(
+                BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(CREDENTIALS) + "storagecreds")
+            )
+            .inboxWithWriteAccess(BasePrivateResource.forAbsolutePrivate(inboxLocation))
+            .keystore(
+                BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(KEYSTORE) + "keystore")
+            )
+            // filesOneBucket is default private space, it is not directly accessible without credentials
+            .privateStorage(
+                BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(FILES_ONE) + "private/")
+            )
+            .associatedResources(Collections.emptyList())
+            .publishPubKeysTo(BasePublicResource.forAbsolutePublic(pubKeysLocation))
+            .build()
         );
 
         datasafeServices.userProfile().createStorageKeystore(auth);
@@ -288,14 +272,14 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
             String endpoint = endpointsByHost.get(it);
             UserPrivateProfile profile = datasafeServices.userProfile().privateProfile(auth);
             profile.getPrivateStorage().put(
-                    id(it),
-                    new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpoint + "/"))
+                id(it),
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpoint + "/"))
             );
 
             datasafeServices.userProfile().registerStorageCredentials(
-                    auth,
-                    id(it),
-                    new StorageCredentials(accessKey(it), secretKey(it))
+                auth,
+                id(it),
+                new StorageCredentials(accessKey(it), secretKey(it))
             );
 
             datasafeServices.userProfile().updatePrivateProfile(auth, profile);
@@ -308,16 +292,16 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     private List<String> listInBucket(String bucket) {
         return S3ClientFactory.getClient(
-                endpointsByHostNoBucket.get(bucket),
-                REGION,
-                accessKey(bucket),
-                secretKey(bucket)
+            endpointsByHostNoBucket.get(bucket),
+            REGION,
+            accessKey(bucket),
+            secretKey(bucket)
         )
-                .listObjects(bucket, "")
-                .getObjectSummaries()
-                .stream()
-                .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
+            .listObjects(bucket, "")
+            .getObjectSummaries()
+            .stream()
+            .map(S3ObjectSummary::getKey)
+            .collect(Collectors.toList());
     }
 
     @SneakyThrows
@@ -337,7 +321,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     @SneakyThrows
     private String readFromPrivate(UserIDAuth user, AbsoluteLocation<ResolvedResource> location) {
         try (InputStream is = datasafeServices.privateService().read(
-                ReadRequest.forPrivate(user, location.getResource().asPrivate()))) {
+            ReadRequest.forPrivate(user, location.getResource().asPrivate()))) {
             return new String(Streams.readAll(is));
         }
     }
@@ -346,9 +330,9 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     private AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth user, StorageIdentifier id,
                                                                      String path) {
         return datasafeServices.privateService()
-                .list(ListRequest.forPrivate(user, id, path))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+            .list(ListRequest.forPrivate(user, id, path))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Not found"));
     }
 
     private static StorageIdentifier id(String endpointId) {
