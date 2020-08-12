@@ -249,7 +249,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             lsf.add("real amazon, so use bucketStyleAccess");
             amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
         }
-        log.info(lsf.toString());
+        log.info("{}", lsf.toString());
 
         if (amazonS3DFSCredentials.isNoHttps() || maxConnections > 0 || requestTimeout > 0) {
             ClientConfiguration clientConfig = new ClientConfiguration();

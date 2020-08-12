@@ -332,11 +332,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             log.info("Using {} buckets:{}", buckets.size(), buckets);
         }
 
-
         if (StringUtils.isNullOrEmpty(amazonUrl)) {
             amazonUrl = amazonProtocol + amazonDomain;
         }
-        final boolean isRealAmazon = ((amazonProtocol + amazonDomain).equals(amazonUrl) || (amazonDomain).equals(amazonUrl));
+        final boolean isRealAmazon = amazonUrl.endsWith(amazonDomain);
 
         amazonS3ClientBuilder = amazonS3ClientBuilder
             .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
