@@ -97,7 +97,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("storages")
+    @MethodSource("allStorages")
     @SneakyThrows
     void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
         myinit(descriptor);

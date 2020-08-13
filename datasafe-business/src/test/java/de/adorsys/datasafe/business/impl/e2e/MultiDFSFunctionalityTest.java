@@ -1,6 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -30,6 +31,7 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.shared.AwsClientRetry;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
@@ -81,7 +83,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     private static final String INBOX = "inboxbucket";
 
     private static final ExecutorService EXECUTOR = ExecutorServiceUtil
-            .submitterExecutesOnStarvationExecutingService(5, 5);
+        .submitterExecutesOnStarvationExecutingService(5, 5);
 
     private static Map<String, GenericContainer> minios = new HashMap<>();
     private static Map<String, String> endpointsByHost = new HashMap<>();
@@ -108,16 +110,17 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
             // http://localhost:1234/eu-central-1/bucket/
             endpointsByHost.put(it, endpoint + REGION + "/" + it + "/");
+            log.info("ENDPOINT IS {}", endpoint);
             endpointsByHostNoBucket.put(it, endpoint);
 
             AmazonS3 client = S3ClientFactory.getClient(
-                    endpoint,
-                    REGION,
-                    accessKey(it),
-                    secretKey(it)
+                endpoint,
+                REGION,
+                accessKey(it),
+                secretKey(it)
             );
 
-            client.createBucket(it);
+            AwsClientRetry.createBucketWithRetry(client, it);
         });
     }
 
@@ -289,16 +292,16 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
 
     private List<String> listInBucket(String bucket) {
         return S3ClientFactory.getClient(
-                endpointsByHostNoBucket.get(bucket),
-                REGION,
-                accessKey(bucket),
-                secretKey(bucket)
+            endpointsByHostNoBucket.get(bucket),
+            REGION,
+            accessKey(bucket),
+            secretKey(bucket)
         )
-                .listObjects(bucket, "")
-                .getObjectSummaries()
-                .stream()
-                .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
+            .listObjects(bucket, "")
+            .getObjectSummaries()
+            .stream()
+            .map(S3ObjectSummary::getKey)
+            .collect(Collectors.toList());
     }
 
     @SneakyThrows
@@ -318,7 +321,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     @SneakyThrows
     private String readFromPrivate(UserIDAuth user, AbsoluteLocation<ResolvedResource> location) {
         try (InputStream is = datasafeServices.privateService().read(
-                ReadRequest.forPrivate(user, location.getResource().asPrivate()))) {
+            ReadRequest.forPrivate(user, location.getResource().asPrivate()))) {
             return new String(Streams.readAll(is));
         }
     }

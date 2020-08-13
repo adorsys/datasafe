@@ -24,6 +24,7 @@ import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
+import de.adorsys.datasafe.types.api.shared.AwsClientRetry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
@@ -85,7 +86,7 @@ class MultiDfsWithCredentialsExampleTest {
                     it.getSecretKey()
             );
 
-            client.createBucket(it.getBucketName());
+            AwsClientRetry.createBucketWithRetry(client, it.getBucketName());
 
             if (it.equals(DIRECTORY_BUCKET)) {
                 directoryClient = client;
