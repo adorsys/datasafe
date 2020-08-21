@@ -81,14 +81,11 @@ public class VersionedDataTest extends BaseE2ETest {
     @MethodSource("allLocalDefaultStorages")
     void testVersionedWriteUsingAbsoluteAccess(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
-
         registerAndDoWritesWithDiffMessageInSameLocation();
-
         Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version> first = firstOfVersionedListRoot(jane);
         String directResult = readPrivateUsingPrivateKey(jane, first.stripVersion().asPrivate());
-
         assertThat(directResult).isEqualTo(MESSAGE_THREE);
-        assertThat(first.stripVersion().asPrivate().decryptedPath()).asString().contains(PRIVATE_FILE_PATH);
+        assertThat(first.stripVersion().asPrivate().decryptedPath().asString()).contains(PRIVATE_FILE_PATH);
         validateThereAreVersions(jane, 3);
     }
 

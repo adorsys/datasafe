@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.adorsys</groupId>
         <artifactId>datasafe</artifactId>
-        <version>1.0.0.1</version>
+        <version>1.0.1</version>
     </parent>
     <artifactId>datasafe-types-api</artifactId>
     <dependencies>
@@ -42,6 +42,16 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
