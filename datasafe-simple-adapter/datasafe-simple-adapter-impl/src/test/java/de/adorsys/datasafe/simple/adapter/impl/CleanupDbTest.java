@@ -7,6 +7,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
+import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
@@ -23,11 +24,12 @@ class CleanupDbTest extends WithStorageProvider {
 
     private SimpleDatasafeService simpleDatasafeService;
     private DFSCredentials dfsCredentials;
+    private PathEncryptionConfig pathEncryptionConfig = new PathEncryptionConfig(true);
 
     private void createSimpleService(WithStorageProvider.StorageDescriptor descriptor) {
         dfsCredentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
         if (dfsCredentials != null) {
-            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials, new MutableEncryptionConfig());
+            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials, new MutableEncryptionConfig(), pathEncryptionConfig);
         } else {
             simpleDatasafeService = new SimpleDatasafeServiceImpl();
         }

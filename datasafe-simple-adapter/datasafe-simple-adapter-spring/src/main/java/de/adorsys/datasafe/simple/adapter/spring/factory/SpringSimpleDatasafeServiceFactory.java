@@ -7,6 +7,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.impl.SimpleDatasafeServiceImpl;
+import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDatasafeEncryptionProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -53,7 +54,8 @@ public class SpringSimpleDatasafeServiceFactory {
                     amazonS3DFSCredentials.toBuilder().rootBucket(
                             amazonS3DFSCredentials.getRootBucket() + "/" + subdirBelowRoot
                     ).build(),
-                    null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig()
+                    null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig(),
+                new PathEncryptionConfig(true)
             );
         }
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
@@ -62,7 +64,8 @@ public class SpringSimpleDatasafeServiceFactory {
                     filesystemDFSCredentials.toBuilder().root(
                             filesystemDFSCredentials.getRoot() + "/" + subdirBelowRoot
                     ).build(),
-                    null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig()
+                    null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig(),
+                new PathEncryptionConfig(true)
             );
         }
         throw new SimpleAdapterException("missing switch for DFSCredentials" + dfsCredentials);

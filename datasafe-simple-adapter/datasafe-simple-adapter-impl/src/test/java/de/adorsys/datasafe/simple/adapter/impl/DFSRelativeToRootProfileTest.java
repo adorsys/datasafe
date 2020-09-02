@@ -8,6 +8,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
+import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
@@ -25,13 +26,14 @@ class DFSRelativeToRootProfileTest extends WithStorageProvider {
 
     private SimpleDatasafeService simpleDatasafeService;
     private UserIDAuth userIDAuth;
+    private PathEncryptionConfig pathEncryptionConfig = new PathEncryptionConfig(true);
 
     void createDatasafeAdapter(StorageDescriptor descriptor) {
         DFSCredentials credentials = InitFromStorageProvider.dfsFromDescriptor(descriptor);
 
         simpleDatasafeService =
                 null != credentials ?
-                        new SimpleDatasafeServiceImpl(credentials, new MutableEncryptionConfig())
+                        new SimpleDatasafeServiceImpl(credentials, new MutableEncryptionConfig(), pathEncryptionConfig)
                         : new SimpleDatasafeServiceImpl();
 
         userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPasswordTestFactory.getForString("password"));

@@ -13,21 +13,24 @@ import java.util.function.Function;
 @Slf4j
 public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
 
-    public static final String NO_BUCKETPATH_ENCRYPTION = "SC-NO-BUCKETPATH-ENCRYPTION";
-
-    private boolean withPathEncryption = checkIsPathEncryptionToUse();
+    private boolean withPathEncryption;
 
     @Inject
-    public SwitchablePathEncryptionImpl(SymmetricPathEncryptionService symmetricPathEncryptionService,
-                                        PrivateKeyService privateKeyService) {
+    public SwitchablePathEncryptionImpl(
+        Boolean withPathEncryption,
+        SymmetricPathEncryptionService symmetricPathEncryptionService,
+        PrivateKeyService privateKeyService) {
         super(symmetricPathEncryptionService, privateKeyService);
+        this.withPathEncryption = withPathEncryption;
     }
 
     @Override
     public Uri encrypt(UserIDAuth forUser, Uri path) {
         if (withPathEncryption) {
+            log.info("WITH PATH ENCRYPTION TRUE");
             return super.encrypt(forUser, path);
         }
+        log.info("WITH PATH ENCRYPTION FALSE");
         return path;
     }
 
@@ -38,22 +41,4 @@ public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
         }
         return Function.identity();
     }
-
-    public static boolean checkIsPathEncryptionToUse() {
-        String value = System.getProperty(NO_BUCKETPATH_ENCRYPTION);
-        if (value != null) {
-            if (value.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                log.debug("path encryption is on");
-                return true;
-            }
-            if (value.equalsIgnoreCase(Boolean.TRUE.toString())) {
-                log.debug("path encryption is off");
-                return false;
-            }
-            throw new RuntimeException("value " + value + " for " + NO_BUCKETPATH_ENCRYPTION + " is unknown");
-        }
-        log.debug("path encryption is on");
-        return true;
-    }
-
 }

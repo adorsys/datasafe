@@ -29,6 +29,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
 import de.adorsys.datasafe.simple.adapter.impl.DFSTestCredentialsFactory;
 import de.adorsys.datasafe.simple.adapter.impl.SimpleDatasafeServiceImpl;
+import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -89,7 +90,7 @@ class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
 
     private DefaultDatasafeServices datasafeServicesFromSimpleDatasafeAdapter(StorageDescriptor descriptor) {
         SimpleDatasafeService datasafeService = new SimpleDatasafeServiceImpl(
-            DFSTestCredentialsFactory.credentials(descriptor), new MutableEncryptionConfig()
+            DFSTestCredentialsFactory.credentials(descriptor), new MutableEncryptionConfig(), new PathEncryptionConfig(true)
         );
 
         return new DefaultDatasafeServices() {

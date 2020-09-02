@@ -6,6 +6,7 @@ import de.adorsys.datasafe.business.impl.directory.DefaultCredentialsModule;
 import de.adorsys.datasafe.business.impl.document.DefaultDocumentModule;
 import de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule;
 import de.adorsys.datasafe.business.impl.keystore.DefaultKeyStoreModule;
+import de.adorsys.datasafe.business.impl.pathencryption.DefaultPathEncryptionModule;
 import de.adorsys.datasafe.business.impl.privatestore.actions.DefaultPrivateActionsModule;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
@@ -26,7 +27,7 @@ import javax.inject.Singleton;
         DefaultKeyStoreModule.class,
         DefaultDocumentModule.class,
         SwitchableCMSEncryptionModule.class,
-        SwitchablePathEncryptionModule.class,
+        DefaultPathEncryptionModule.class,
         DefaultInboxActionsModule.class,
         DefaultPrivateActionsModule.class,
         HardcodedProfileModule.class,
@@ -61,7 +62,6 @@ public interface SwitchableDatasafeServices extends DefaultDatasafeServices {
 
         @BindsInstance
         Builder encryption(@Nullable EncryptionConfig encryptionConfig);
-
         /**
          * @return Provide NEW instance of <b>Legacy Datasafe</b> services. All dependencies except
          * annotated with {@code @Singleton} will have scope analogous to Spring {code @Prototype}.
