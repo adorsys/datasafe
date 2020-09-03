@@ -7,7 +7,6 @@ import lombok.ToString;
 // TODO: it is far more than credentials, rename it and parent class to DFSConfig in next major release
 @Builder(toBuilder = true)
 @Getter
-@ToString
 public class AmazonS3DFSCredentials extends DFSCredentials {
     private final String rootBucket;
     private final String url;

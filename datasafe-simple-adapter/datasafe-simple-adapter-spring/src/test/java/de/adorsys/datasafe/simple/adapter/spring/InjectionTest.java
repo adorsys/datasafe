@@ -100,10 +100,8 @@ public class InjectionTest extends WithStorageProvider {
             return new AbsoluteLocation<>(BasePrivateResource.forPrivate(listpath.toUri()));
         }
         if (dfsCredentials instanceof AmazonS3DFSCredentials) {
-            String root = ((AmazonS3DFSCredentials) dfsCredentials).getRootBucket();
             AmazonS3DFSCredentials a = (AmazonS3DFSCredentials) dfsCredentials;
-            log.info(a.toString());
-            return new AbsoluteLocation<>(BasePrivateResource.forPrivate(new URI(a.getUrl() + "/" + root)));
+            return new AbsoluteLocation<>(BasePrivateResource.forPrivate(new URI(a.getUrl() + "/" + a.getRootBucket())));
         }
         throw new RuntimeException("NYI");
     }
