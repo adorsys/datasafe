@@ -11,34 +11,22 @@ import javax.inject.Inject;
 import java.util.function.Function;
 
 @Slf4j
-public class SwitchablePathEncryptionImpl extends PathEncryptionImpl {
-
-    private boolean withPathEncryption;
+public class NoPathEncryptionImpl extends PathEncryptionImpl {
 
     @Inject
-    public SwitchablePathEncryptionImpl(
-        Boolean withPathEncryption,
+    public NoPathEncryptionImpl(
         SymmetricPathEncryptionService symmetricPathEncryptionService,
         PrivateKeyService privateKeyService) {
         super(symmetricPathEncryptionService, privateKeyService);
-        this.withPathEncryption = withPathEncryption;
     }
 
     @Override
     public Uri encrypt(UserIDAuth forUser, Uri path) {
-        if (withPathEncryption) {
-            log.info("WITH PATH ENCRYPTION TRUE");
-            return super.encrypt(forUser, path);
-        }
-        log.info("WITH PATH ENCRYPTION FALSE");
         return path;
     }
 
     @Override
     public Function<Uri, Uri> decryptor(UserIDAuth forUser) {
-        if (withPathEncryption) {
-            return super.decryptor(forUser);
-        }
         return Function.identity();
     }
 }

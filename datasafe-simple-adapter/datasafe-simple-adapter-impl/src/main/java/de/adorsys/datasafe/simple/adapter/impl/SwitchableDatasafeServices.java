@@ -13,7 +13,6 @@ import de.adorsys.datasafe.business.impl.storage.DefaultStorageModule;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.impl.cmsencryption.SwitchableCMSEncryptionModule;
-import de.adorsys.datasafe.simple.adapter.impl.pathencryption.SwitchablePathEncryptionModule;
 import de.adorsys.datasafe.simple.adapter.impl.profile.HardcodedProfileModule;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;

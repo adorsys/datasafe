@@ -14,7 +14,7 @@ import org.cryptomator.siv.SivMode;
  * This module is responsible for providing pathencryption of document.
  */
 @Module
-public abstract class SwitchablePathEncryptionModule {
+public abstract class NoPathEncryptionModule {
     /**
      * SivMode using for encryption and decryption in AES CGM SIV mode
      * @return SivMode
@@ -36,7 +36,7 @@ public abstract class SwitchablePathEncryptionModule {
      * and pass path with key to {@link SymmetricPathEncryptionService}
      */
     @Binds
-    abstract PathEncryption pathEncryption(SwitchablePathEncryptionImpl impl);
+    abstract PathEncryption pathEncryption(NoPathEncryptionImpl impl);
 
     /**
      * Default symmetric path encryption that encrypts URI segment-by-segment.

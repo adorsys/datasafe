@@ -28,7 +28,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
 import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
-import de.adorsys.datasafe.simple.adapter.impl.pathencryption.SwitchablePathEncryptionImpl;
+import de.adorsys.datasafe.simple.adapter.impl.pathencryption.NoPathEncryptionImpl;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
@@ -82,19 +82,21 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             this.rootAndStorage = useAmazonS3((AmazonS3DFSCredentials) dfsCredentials);
         }
 
-        BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
-        PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args ->
-            new SwitchablePathEncryptionImpl(
-                pathEncryptionConfig.withPathEncryption,
-                args.getSymmetricPathEncryptionService(),
-                args.getPrivateKeyService()));
-
-        customlyBuiltDatasafeServices = DaggerSwitchableDatasafeServices.builder()
+        SwitchableDatasafeServices.Builder switchableDatasafeService = DaggerSwitchableDatasafeServices.builder()
             .config(new DefaultDFSConfig(rootAndStorage.getSystemRoot(), universalReadStorePassword))
             .encryption(config.toEncryptionConfig())
-            .storage(getStorageService())
-            .overridesRegistry(baseOverridesRegistry)
-            .build();
+            .storage(getStorageService());
+
+        if (!pathEncryptionConfig.withPathEncryption) {
+            BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
+            PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args ->
+                new NoPathEncryptionImpl(
+                    args.getSymmetricPathEncryptionService(),
+                    args.getPrivateKeyService()));
+            switchableDatasafeService.overridesRegistry(baseOverridesRegistry);
+        }
+
+        customlyBuiltDatasafeServices = switchableDatasafeService.build();
     }
 
     public StorageService getStorageService() {
