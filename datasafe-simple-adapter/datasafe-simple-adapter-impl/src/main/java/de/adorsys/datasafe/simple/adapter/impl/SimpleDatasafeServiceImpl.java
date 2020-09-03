@@ -76,10 +76,10 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials, MutableEncryptionConfig config, PathEncryptionConfig pathEncryptionConfig) {
 
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
-            this.rootAndStorage = useFileSystem((FilesystemDFSCredentials) dfsCredentials);
+            this.rootAndStorage = useFileSystem((FilesystemDFSCredentials) dfsCredentials, pathEncryptionConfig);
         }
         if (dfsCredentials instanceof AmazonS3DFSCredentials) {
-            this.rootAndStorage = useAmazonS3((AmazonS3DFSCredentials) dfsCredentials);
+            this.rootAndStorage = useAmazonS3((AmazonS3DFSCredentials) dfsCredentials, pathEncryptionConfig);
         }
 
         SwitchableDatasafeServices.Builder switchableDatasafeService = DaggerSwitchableDatasafeServices.builder()
@@ -222,14 +222,14 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
 
-    private static SystemRootAndStorageService useAmazonS3(AmazonS3DFSCredentials dfsCredentials) {
+    private static SystemRootAndStorageService useAmazonS3(AmazonS3DFSCredentials dfsCredentials, PathEncryptionConfig pathEncryptionConfig) {
         AmazonS3DFSCredentials amazonS3DFSCredentials = dfsCredentials;
         LogStringFrame lsf = new LogStringFrame();
         lsf.add("AMAZON S3");
         lsf.add("root bucket        : " + amazonS3DFSCredentials.getRootBucket());
         lsf.add("url                : " + amazonS3DFSCredentials.getUrl());
         lsf.add("region             : " + amazonS3DFSCredentials.getRegion());
-        lsf.add("path encryption    : " + "hallo peter affe");
+        lsf.add("path encryption    : " + pathEncryptionConfig.withPathEncryption);
         lsf.add("no https           : " + amazonS3DFSCredentials.isNoHttps());
         lsf.add("threadpool size    : " + amazonS3DFSCredentials.getThreadPoolSize());
         int maxConnections = amazonS3DFSCredentials.getMaxConnections();
@@ -305,12 +305,12 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         return new SystemRootAndStorageService(systemRoot, storageService);
     }
 
-    private static SystemRootAndStorageService useFileSystem(FilesystemDFSCredentials dfsCredentials) {
+    private static SystemRootAndStorageService useFileSystem(FilesystemDFSCredentials dfsCredentials, PathEncryptionConfig pathEncryptionConfig) {
         FilesystemDFSCredentials filesystemDFSCredentials = dfsCredentials;
         LogStringFrame lsf = new LogStringFrame();
         lsf.add("FILESYSTEM");
         lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
-        lsf.add("path encryption : " + "hallo peter affe");
+        lsf.add("path encryption : " + pathEncryptionConfig.withPathEncryption);
         log.info(lsf.toString());
         URI systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
         StorageService storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));

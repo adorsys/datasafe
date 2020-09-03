@@ -51,21 +51,21 @@ public class SpringSimpleDatasafeServiceFactory {
         if (dfsCredentials instanceof AmazonS3DFSCredentials) {
             AmazonS3DFSCredentials amazonS3DFSCredentials = (AmazonS3DFSCredentials) dfsCredentials;
             return new SimpleDatasafeServiceImpl(
-                    amazonS3DFSCredentials.toBuilder().rootBucket(
-                            amazonS3DFSCredentials.getRootBucket() + "/" + subdirBelowRoot
-                    ).build(),
-                    null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig(),
-                new PathEncryptionConfig(true)
+                amazonS3DFSCredentials.toBuilder().rootBucket(
+                    amazonS3DFSCredentials.getRootBucket() + "/" + subdirBelowRoot
+                ).build(),
+                null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig(),
+                new PathEncryptionConfig(null == encryptionProperties ? true : encryptionProperties.getPathEncryption())
             );
         }
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
             FilesystemDFSCredentials filesystemDFSCredentials = (FilesystemDFSCredentials) dfsCredentials;
             return new SimpleDatasafeServiceImpl(
-                    filesystemDFSCredentials.toBuilder().root(
-                            filesystemDFSCredentials.getRoot() + "/" + subdirBelowRoot
-                    ).build(),
-                    null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig(),
-                new PathEncryptionConfig(true)
+                filesystemDFSCredentials.toBuilder().root(
+                    filesystemDFSCredentials.getRoot() + "/" + subdirBelowRoot
+                ).build(),
+                null != encryptionProperties ? encryptionProperties.getEncryption() : new MutableEncryptionConfig(),
+                new PathEncryptionConfig(null == encryptionProperties ? true : encryptionProperties.getPathEncryption())
             );
         }
         throw new SimpleAdapterException("missing switch for DFSCredentials" + dfsCredentials);
