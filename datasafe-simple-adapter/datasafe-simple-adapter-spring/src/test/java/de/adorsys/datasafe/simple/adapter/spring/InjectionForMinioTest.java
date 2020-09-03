@@ -4,6 +4,7 @@ import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.spring.annotations.UseDatasafeSpringConfiguration;
 import de.adorsys.datasafe.simple.adapter.spring.factory.SpringSimpleDatasafeServiceFactory;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDFSCredentialProperties;
+import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDatasafeEncryptionProperties;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,10 +19,13 @@ import java.util.stream.Stream;
 @Slf4j
 @ActiveProfiles("minio")
 @UseDatasafeSpringConfiguration
-public class InectionForMinioTest extends InjectionTest {
+public class InjectionForMinioTest extends InjectionTest {
 
     @Autowired
     private SpringDFSCredentialProperties dfsCredentialProperties;
+
+    @Autowired
+    private SpringDatasafeEncryptionProperties encryptionProperties;
 
     @BeforeAll
     static void startMinio() {
@@ -37,7 +41,7 @@ public class InectionForMinioTest extends InjectionTest {
     @MethodSource("minioonly")
     public void plainService(WithStorageProvider.StorageDescriptor descriptor) {
         log.info("descriptor is " + descriptor.getName());
-        SpringSimpleDatasafeServiceFactory springSimpleDatasafeServiceFactory = new SpringSimpleDatasafeServiceFactory(SpringPropertiesToDFSCredentialsUtil.dfsCredentials(dfsCredentialProperties));
+        SpringSimpleDatasafeServiceFactory springSimpleDatasafeServiceFactory = new SpringSimpleDatasafeServiceFactory(SpringPropertiesToDFSCredentialsUtil.dfsCredentials(dfsCredentialProperties), encryptionProperties);
         SimpleDatasafeService service = springSimpleDatasafeServiceFactory.getSimpleDataSafeServiceWithSubdir("subdir");
         testCreateUser(service);
     }

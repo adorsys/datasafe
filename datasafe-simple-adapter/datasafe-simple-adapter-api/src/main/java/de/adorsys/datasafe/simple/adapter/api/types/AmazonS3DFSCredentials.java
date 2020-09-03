@@ -2,10 +2,12 @@ package de.adorsys.datasafe.simple.adapter.api.types;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 // TODO: it is far more than credentials, rename it and parent class to DFSConfig in next major release
 @Builder(toBuilder = true)
 @Getter
+@ToString
 public class AmazonS3DFSCredentials extends DFSCredentials {
     private final String rootBucket;
     private final String url;
@@ -32,11 +34,7 @@ public class AmazonS3DFSCredentials extends DFSCredentials {
     @Builder.Default
     private final int requestTimeout = 0;
 
-
     public String getContainer() {
         return rootBucket.split("/")[0];
     }
-
-
-
 }

@@ -9,10 +9,12 @@ import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.impl.SimpleDatasafeServiceImpl;
 import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDatasafeEncryptionProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
+@Slf4j
 public class SpringSimpleDatasafeServiceFactory {
 
     @Autowired
@@ -33,17 +35,19 @@ public class SpringSimpleDatasafeServiceFactory {
             }
             dfsCredentials = wiredDfsCredentials;
         }
+        log.info("encryptionProperties are:{}", encryptionProperties);
     }
 
     public SpringSimpleDatasafeServiceFactory() {
         useWiredCredentials = true;
     }
 
-    public SpringSimpleDatasafeServiceFactory(DFSCredentials credentials) {
+    public SpringSimpleDatasafeServiceFactory(DFSCredentials credentials, SpringDatasafeEncryptionProperties springDatasafeEncryptionProperties) {
         if (credentials == null) {
             throw new RuntimeException("dfs credentials passed in must not be null");
         }
         dfsCredentials = credentials;
+        encryptionProperties = springDatasafeEncryptionProperties;
         useWiredCredentials = false;
     }
 
