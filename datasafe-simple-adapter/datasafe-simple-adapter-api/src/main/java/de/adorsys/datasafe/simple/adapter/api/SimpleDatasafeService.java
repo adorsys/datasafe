@@ -2,6 +2,7 @@ package de.adorsys.datasafe.simple.adapter.api;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DSDocumentStream;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
@@ -45,6 +46,8 @@ public interface SimpleDatasafeService {
     void deleteFolder(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN);
 
     List<DocumentFQN> list(UserIDAuth userIDAuth, DocumentDirectoryFQN documentDirectoryFQN, ListRecursiveFlag recursiveFlag);
+
+    InboxService getInboxService();
 
     // deletes all users and their files from storage
     void cleanupDb();

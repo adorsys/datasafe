@@ -21,6 +21,11 @@
             <artifactId>datasafe-encryption-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-inbox-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>

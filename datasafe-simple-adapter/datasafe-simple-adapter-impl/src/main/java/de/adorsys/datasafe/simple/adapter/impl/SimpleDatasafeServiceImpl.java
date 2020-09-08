@@ -15,6 +15,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
+import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
@@ -211,6 +212,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         return l.stream()
             .filter(el -> CharMatcher.is('/').countIn(el.getDatasafePath()) == numberOfSlashesExpected)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public InboxService getInboxService() {
+        return customlyBuiltDatasafeServices.inboxService();
     }
 
     @Override
