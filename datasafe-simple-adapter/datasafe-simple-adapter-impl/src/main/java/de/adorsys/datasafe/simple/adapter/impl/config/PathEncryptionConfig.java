@@ -1,8 +1,10 @@
 package de.adorsys.datasafe.simple.adapter.impl.config;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public class PathEncryptionConfig {
-    public PathEncryptionConfig(Boolean withPathEncryption) {
-        this.withPathEncryption = withPathEncryption;
-    }
-    public Boolean withPathEncryption;
+    private final Boolean withPathEncryption;
 }

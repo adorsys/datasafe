@@ -16,7 +16,6 @@ import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
-import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import lombok.SneakyThrows;
@@ -41,6 +40,7 @@ import java.util.stream.Stream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @SpringBootTest
@@ -76,11 +76,11 @@ public class InjectionTest extends WithStorageProvider {
         simpleDatasafeService.createUser(userIDAuth);
         simpleDatasafeService.storeDocument(userIDAuth, document);
 
-        try (Stream<AbsoluteLocation<ResolvedResource>> absoluteLocationStream = simpleDatasafeService.getStorageService().list(rootLocation).filter(el -> el.location().toASCIIString().contains(path))) {
-            Assertions.assertEquals(1, absoluteLocationStream.count());
+        try (Stream<AbsoluteLocation<ResolvedResource>> absoluteLocationStream = simpleDatasafeService.getStorageService().list(rootLocation)) {
+            assertEquals(1, absoluteLocationStream.filter(el -> el.location().toASCIIString().contains(path)).count());
         }
-        try (Stream<AbsoluteLocation<ResolvedResource>> absoluteLocationStream = simpleDatasafeService.getStorageService().list(rootLocation).filter(el -> el.location().toASCIIString().contains(path))) {
-            Optional<AbsoluteLocation<ResolvedResource>> first = absoluteLocationStream.findFirst();
+        try (Stream<AbsoluteLocation<ResolvedResource>> absoluteLocationStream = simpleDatasafeService.getStorageService().list(rootLocation)) {
+            Optional<AbsoluteLocation<ResolvedResource>> first = absoluteLocationStream.filter(el -> el.location().toASCIIString().contains(path)).findFirst();
 
             try (InputStream read = simpleDatasafeService.getStorageService().read(first.get())) {
                 StringWriter writer = new StringWriter();

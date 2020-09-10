@@ -88,7 +88,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             .encryption(config.toEncryptionConfig())
             .storage(getStorageService());
 
-        if (!pathEncryptionConfig.withPathEncryption) {
+        if (!pathEncryptionConfig.getWithPathEncryption()) {
             BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
             PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args ->
                 new NoPathEncryptionImpl(

@@ -2,7 +2,6 @@ package de.adorsys.datasafe.simple.adapter.api.types;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 // TODO: it is far more than credentials, rename it and parent class to DFSConfig in next major release
 @Builder(toBuilder = true)
