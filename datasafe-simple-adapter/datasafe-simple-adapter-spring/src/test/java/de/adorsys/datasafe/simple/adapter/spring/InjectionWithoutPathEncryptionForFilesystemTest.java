@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @Slf4j
 @ActiveProfiles("fs-withoutPathEncryption")
 @UseDatasafeSpringConfiguration
-public class InjectionWithoutPathEncryptionForFilesystemTest extends InjectionTest{
+public class InjectionWithoutPathEncryptionForFilesystemTest extends InjectionTest {
     @Autowired
     private SpringDFSCredentialProperties dfsCredentialProperties;
 
@@ -34,7 +34,7 @@ public class InjectionWithoutPathEncryptionForFilesystemTest extends InjectionTe
     @ParameterizedTest
     @MethodSource("fsonly")
     public void plainService(WithStorageProvider.StorageDescriptor descriptor) {
-        log.info("descriptor is " + descriptor.getName());
+        log.info("descriptor is {}", descriptor.getName());
         DFSCredentials dfsCredentials = SpringPropertiesToDFSCredentialsUtil.dfsCredentials(dfsCredentialProperties);
         SpringSimpleDatasafeServiceFactory springSimpleDatasafeServiceFactory = new SpringSimpleDatasafeServiceFactory(dfsCredentials, encryptionProperties);
         SimpleDatasafeService service = springSimpleDatasafeServiceFactory.getSimpleDataSafeServiceWithSubdir("subdir");

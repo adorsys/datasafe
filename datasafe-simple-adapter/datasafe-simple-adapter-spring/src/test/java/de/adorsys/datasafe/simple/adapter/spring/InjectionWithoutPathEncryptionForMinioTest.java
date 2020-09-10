@@ -39,7 +39,7 @@ public class InjectionWithoutPathEncryptionForMinioTest extends InjectionTest {
     @ParameterizedTest
     @MethodSource("minioonly")
     public void plainService(WithStorageProvider.StorageDescriptor descriptor) {
-        log.info("descriptor is " + descriptor.getName());
+        log.info("descriptor is {}", descriptor.getName());
         DFSCredentials dfsCredentials = SpringPropertiesToDFSCredentialsUtil.dfsCredentials(dfsCredentialProperties);
         SpringSimpleDatasafeServiceFactory springSimpleDatasafeServiceFactory = new SpringSimpleDatasafeServiceFactory(dfsCredentials, encryptionProperties);
         SimpleDatasafeService service = springSimpleDatasafeServiceFactory.getSimpleDataSafeServiceWithSubdir("subdir");
