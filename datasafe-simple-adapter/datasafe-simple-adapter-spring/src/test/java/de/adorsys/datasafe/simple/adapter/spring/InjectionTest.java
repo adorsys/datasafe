@@ -64,7 +64,7 @@ public class InjectionTest extends WithStorageProvider {
     @SneakyThrows
     void testWithoutPathEncryption(SimpleDatasafeService simpleDatasafeServiceApi, DFSCredentials dfsCredentials) {
         if (!(simpleDatasafeServiceApi instanceof SimpleDatasafeServiceImpl)) {
-            throw new RuntimeException("Did expect instance of SimpleDatasafeServiceImpl");
+            throw new TestException("Did expect instance of SimpleDatasafeServiceImpl");
         }
         AbsoluteLocation<PrivateResource> rootLocation = getPrivateResourceAbsoluteLocation(dfsCredentials);
         SimpleDatasafeServiceImpl simpleDatasafeService = (SimpleDatasafeServiceImpl) simpleDatasafeServiceApi;
@@ -81,6 +81,9 @@ public class InjectionTest extends WithStorageProvider {
         }
         try (Stream<AbsoluteLocation<ResolvedResource>> absoluteLocationStream = simpleDatasafeService.getStorageService().list(rootLocation)) {
             Optional<AbsoluteLocation<ResolvedResource>> first = absoluteLocationStream.filter(el -> el.location().toASCIIString().contains(path)).findFirst();
+            if (!first.isPresent()) {
+                throw new TestException("expeceted absoluteLocatinn stream to have at least one element");
+            }
 
             try (InputStream read = simpleDatasafeService.getStorageService().read(first.get())) {
                 StringWriter writer = new StringWriter();
@@ -103,7 +106,12 @@ public class InjectionTest extends WithStorageProvider {
             AmazonS3DFSCredentials a = (AmazonS3DFSCredentials) dfsCredentials;
             return new AbsoluteLocation<>(BasePrivateResource.forPrivate(new URI(a.getUrl() + "/" + a.getRootBucket())));
         }
-        throw new RuntimeException("NYI");
+        throw new TestException("NYI");
     }
 
+    static class TestException extends RuntimeException {
+        public TestException(String message) {
+            super(message);
+        }
+    }
 }
