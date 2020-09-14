@@ -10,7 +10,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.impl.cmsencryption.SwitchableCmsEncryptionImpl;
-import de.adorsys.datasafe.simple.adapter.impl.pathencryption.SwitchablePathEncryptionImpl;
+import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -48,7 +48,6 @@ class SimpleAdapterFeatureTest extends BaseMockitoTest {
     @BeforeEach
     @AfterEach
     void afterEach() {
-        System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, Boolean.FALSE.toString());
         System.setProperty(SwitchableCmsEncryptionImpl.NO_CMSENCRYPTION_AT_ALL, Boolean.FALSE.toString());
 
     }
@@ -69,8 +68,7 @@ class SimpleAdapterFeatureTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void testWithoutPathEncryption() {
-        System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, Boolean.TRUE.toString());
-        SimpleDatasafeServiceImpl simpleDatasafeService = new SimpleDatasafeServiceImpl();
+        SimpleDatasafeServiceImpl simpleDatasafeService = new SimpleDatasafeServiceImpl(new PathEncryptionConfig(false));
         simpleDatasafeService.createUser(userIDAuth);
         simpleDatasafeService.storeDocument(userIDAuth, document);
 
@@ -94,9 +92,8 @@ class SimpleAdapterFeatureTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void testWithoutEncryption() {
-        System.setProperty(SwitchablePathEncryptionImpl.NO_BUCKETPATH_ENCRYPTION, Boolean.TRUE.toString());
         System.setProperty(SwitchableCmsEncryptionImpl.NO_CMSENCRYPTION_AT_ALL, Boolean.TRUE.toString());
-        SimpleDatasafeServiceImpl simpleDatasafeService = new SimpleDatasafeServiceImpl();
+        SimpleDatasafeServiceImpl simpleDatasafeService = new SimpleDatasafeServiceImpl(new PathEncryptionConfig(false));
         simpleDatasafeService.createUser(userIDAuth);
         simpleDatasafeService.storeDocument(userIDAuth, document);
 

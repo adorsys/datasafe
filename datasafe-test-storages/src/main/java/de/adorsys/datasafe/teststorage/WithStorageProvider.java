@@ -470,7 +470,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             this.region = region;
             this.rootBucket = rootBucket;
 
-            log.info("StorageDescriptor name: {} location: {} region: {} root bucket: {}", this.name, this.location, this.region, this.rootBucket);
+            log.debug("StorageDescriptor name: {} location: {} region: {} root bucket: {}", this.name, this.location, this.region, this.rootBucket);
         }
 
         public String getMappedUrl() {

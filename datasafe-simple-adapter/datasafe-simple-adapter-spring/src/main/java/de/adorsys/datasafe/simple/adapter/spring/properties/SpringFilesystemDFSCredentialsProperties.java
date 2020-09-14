@@ -16,6 +16,7 @@ public class SpringFilesystemDFSCredentialsProperties {
     private final static String DEFAULT_ROOT = "datasafe-root";
     public final static String template = "\n" +
             "datasafe:\n" +
+            "  pathEncryption: (optional, default true)\n" +
             "  storeconnection:\n" +
             "    filesystem:\n" +
             "      rootbucket: (mandatory)\n";

@@ -1,0 +1,5 @@
+datasafe:
+  pathEncryption: false
+  storeconnection:
+    filesystem:
+      rootbucket: target/test-filesystem

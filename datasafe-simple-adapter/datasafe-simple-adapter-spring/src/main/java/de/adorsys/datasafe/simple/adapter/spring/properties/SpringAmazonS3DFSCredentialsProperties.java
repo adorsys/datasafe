@@ -20,6 +20,7 @@ public class SpringAmazonS3DFSCredentialsProperties {
     private final static String DEFAULT_ROOT = "datasafe-root";
     public final static String template = "\n" +
             "datasafe:\n" +
+            "  pathEncryption: (optional, default true)\n" +
             "  storeconnection:\n" +
             "    amazons3:\n" +
             "      url: (mandatory)\n" +
