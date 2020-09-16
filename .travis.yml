@@ -41,19 +41,19 @@ deploy:
       tags: true
       condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
 
-  - provider: script
-    skip_cleanup: true
-    script: /bin/bash .travis/deploy_develop_to_openshift.sh
-    on:
-      branch: develop
+#  - provider: script
+#    skip_cleanup: true
+#    script: /bin/bash .travis/deploy_develop_to_openshift.sh
+#    on:
+#      branch: develop
 
-  - provider: script
-    skip_cleanup: true
-    script: /bin/bash .travis/upload_dockerhub.sh
-    on:
-      all_branches: true
-      tags: true
-      condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
+#  - provider: script
+#    skip_cleanup: true
+#    script: /bin/bash .travis/upload_dockerhub.sh
+#    on:
+#      all_branches: true
+#      tags: true
+#      condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
 
 after_success:
   - /bin/bash .travis/codecov_bash.sh
