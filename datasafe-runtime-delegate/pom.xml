@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.adorsys</groupId>
         <artifactId>datasafe</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.3</version>
     </parent>
     <artifactId>datasafe-runtime-delegate</artifactId>
     <dependencies>
