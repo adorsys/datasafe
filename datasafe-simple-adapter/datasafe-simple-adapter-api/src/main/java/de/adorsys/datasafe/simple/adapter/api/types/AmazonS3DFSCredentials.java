@@ -32,11 +32,7 @@ public class AmazonS3DFSCredentials extends DFSCredentials {
     @Builder.Default
     private final int requestTimeout = 0;
 
-
     public String getContainer() {
         return rootBucket.split("/")[0];
     }
-
-
-
 }

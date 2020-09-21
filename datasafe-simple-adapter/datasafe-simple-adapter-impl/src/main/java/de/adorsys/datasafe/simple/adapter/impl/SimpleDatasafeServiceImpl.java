@@ -14,6 +14,8 @@ import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
+import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.simple.adapter.api.SimpleDatasafeService;
 import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
@@ -26,7 +28,8 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
-import de.adorsys.datasafe.simple.adapter.impl.pathencryption.SwitchablePathEncryptionImpl;
+import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
+import de.adorsys.datasafe.simple.adapter.impl.pathencryption.NoPathEncryptionImpl;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.storage.impl.s3.S3StorageService;
@@ -34,6 +37,7 @@ import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocationWithCapability;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -62,24 +66,38 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private SystemRootAndStorageService rootAndStorage;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
 
-    public SimpleDatasafeServiceImpl() {
-        this(DFSCredentialsFactory.getFromEnvironmnet(), new MutableEncryptionConfig());
+    public SimpleDatasafeServiceImpl(PathEncryptionConfig pathEncryptionConfig) {
+        this(DFSCredentialsFactory.getFromEnvironmnet(), new MutableEncryptionConfig(), pathEncryptionConfig);
     }
 
-    public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials, MutableEncryptionConfig config) {
+    public SimpleDatasafeServiceImpl() {
+        this(DFSCredentialsFactory.getFromEnvironmnet(), new MutableEncryptionConfig(), new PathEncryptionConfig(true));
+    }
+
+    public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials, MutableEncryptionConfig config, PathEncryptionConfig pathEncryptionConfig) {
 
         if (dfsCredentials instanceof FilesystemDFSCredentials) {
-            this.rootAndStorage = useFileSystem((FilesystemDFSCredentials) dfsCredentials);
+            this.rootAndStorage = useFileSystem((FilesystemDFSCredentials) dfsCredentials, pathEncryptionConfig);
         }
         if (dfsCredentials instanceof AmazonS3DFSCredentials) {
-            this.rootAndStorage = useAmazonS3((AmazonS3DFSCredentials) dfsCredentials);
+            this.rootAndStorage = useAmazonS3((AmazonS3DFSCredentials) dfsCredentials, pathEncryptionConfig);
         }
 
-        customlyBuiltDatasafeServices = DaggerSwitchableDatasafeServices.builder()
+        SwitchableDatasafeServices.Builder switchableDatasafeService = DaggerSwitchableDatasafeServices.builder()
             .config(new DefaultDFSConfig(rootAndStorage.getSystemRoot(), universalReadStorePassword))
             .encryption(config.toEncryptionConfig())
-            .storage(getStorageService())
-            .build();
+            .storage(getStorageService());
+
+        if (!pathEncryptionConfig.getWithPathEncryption()) {
+            BaseOverridesRegistry baseOverridesRegistry = new BaseOverridesRegistry();
+            PathEncryptionImplRuntimeDelegatable.overrideWith(baseOverridesRegistry, args ->
+                new NoPathEncryptionImpl(
+                    args.getSymmetricPathEncryptionService(),
+                    args.getPrivateKeyService()));
+            switchableDatasafeService.overridesRegistry(baseOverridesRegistry);
+        }
+
+        customlyBuiltDatasafeServices = switchableDatasafeService.build();
     }
 
     public StorageService getStorageService() {
@@ -197,6 +215,11 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
     @Override
+    public InboxService getInboxService() {
+        return customlyBuiltDatasafeServices.inboxService();
+    }
+
+    @Override
     public void cleanupDb() {
         rootAndStorage.getStorageService()
             .list(new AbsoluteLocationWithCapability<>(
@@ -205,14 +228,14 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     }
 
 
-    private static SystemRootAndStorageService useAmazonS3(AmazonS3DFSCredentials dfsCredentials) {
+    private static SystemRootAndStorageService useAmazonS3(AmazonS3DFSCredentials dfsCredentials, PathEncryptionConfig pathEncryptionConfig) {
         AmazonS3DFSCredentials amazonS3DFSCredentials = dfsCredentials;
         LogStringFrame lsf = new LogStringFrame();
         lsf.add("AMAZON S3");
         lsf.add("root bucket        : " + amazonS3DFSCredentials.getRootBucket());
         lsf.add("url                : " + amazonS3DFSCredentials.getUrl());
         lsf.add("region             : " + amazonS3DFSCredentials.getRegion());
-        lsf.add("path encryption    : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+        lsf.add("path encryption    : " + pathEncryptionConfig.getWithPathEncryption());
         lsf.add("no https           : " + amazonS3DFSCredentials.isNoHttps());
         lsf.add("threadpool size    : " + amazonS3DFSCredentials.getThreadPoolSize());
         int maxConnections = amazonS3DFSCredentials.getMaxConnections();
@@ -288,12 +311,12 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         return new SystemRootAndStorageService(systemRoot, storageService);
     }
 
-    private static SystemRootAndStorageService useFileSystem(FilesystemDFSCredentials dfsCredentials) {
+    private static SystemRootAndStorageService useFileSystem(FilesystemDFSCredentials dfsCredentials, PathEncryptionConfig pathEncryptionConfig) {
         FilesystemDFSCredentials filesystemDFSCredentials = dfsCredentials;
         LogStringFrame lsf = new LogStringFrame();
         lsf.add("FILESYSTEM");
         lsf.add("root bucket     : " + filesystemDFSCredentials.getRoot());
-        lsf.add("path encryption : " + SwitchablePathEncryptionImpl.checkIsPathEncryptionToUse());
+        lsf.add("path encryption : " + pathEncryptionConfig.getWithPathEncryption());
         log.info(lsf.toString());
         URI systemRoot = FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()).toAbsolutePath().toUri();
         StorageService storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));

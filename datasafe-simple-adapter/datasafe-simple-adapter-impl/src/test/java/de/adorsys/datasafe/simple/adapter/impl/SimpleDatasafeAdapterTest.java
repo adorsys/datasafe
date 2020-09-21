@@ -14,6 +14,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentDirectoryFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
+import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -62,7 +63,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     void mystart() {
         if (dfsCredentials != null) {
-            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials, new MutableEncryptionConfig());
+            simpleDatasafeService = new SimpleDatasafeServiceImpl(dfsCredentials, new MutableEncryptionConfig(), new PathEncryptionConfig(true));
         } else {
             simpleDatasafeService = new SimpleDatasafeServiceImpl();
         }
