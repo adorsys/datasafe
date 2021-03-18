@@ -12,15 +12,16 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
-import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Generated;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import java.io.IOError;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -90,6 +91,7 @@ class RuntimeDelegateGenerator {
                     .build();
     }
 
+    // TODO JAVA 11 whatafuck is Generated
     private void annotateAsGenerated(TypeSpec.Builder delegator) {
         delegator.addAnnotation(AnnotationSpec
                 .builder(Generated.class)

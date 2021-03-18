@@ -78,7 +78,7 @@
         <jacoco.reportPath>${basedir}/../../target/jacoco.exec</jacoco.reportPath>
         <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
 
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <graal.version>19.2.0</graal.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
@@ -95,8 +95,8 @@
         <compress.version>1.19</compress.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <testcontainers.version>1.11.2</testcontainers.version>
         <jacoco.version>0.8.4</jacoco.version>
         <commons.io.version>2.5</commons.io.version>
@@ -330,6 +330,19 @@
         <testSourceDirectory>${test.src.dir}</testSourceDirectory>
 
         <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.shared</groupId>
+                        <artifactId>maven-dependency-analyzer</artifactId>
+                        <version>1.11.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
