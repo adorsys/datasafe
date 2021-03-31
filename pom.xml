@@ -85,7 +85,7 @@
         <lombok.version>1.18.6</lombok.version>
         <gson.version>2.8.5</gson.version>
         <dagger.version>2.24</dagger.version>
-        <guava.version>27.0.1-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <picocli.version>4.0.3</picocli.version>
         <jupiter.version>5.4.1</jupiter.version>
         <junit.platform.version>1.4.1</junit.platform.version>
