@@ -92,7 +92,7 @@
         <assertj.version>3.12.2</assertj.version>
         <mockito.version>2.25.1</mockito.version>
         <surefire.version>2.22.1</surefire.version>
-        <compress.version>1.19</compress.version>
+        <compress.version>1.21</compress.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
         <maven.compiler.source>1.8</maven.compiler.source>
