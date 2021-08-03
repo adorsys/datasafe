@@ -133,3 +133,7 @@ matrix:
         - echo 'Nothing to do' # Override primary build logic
 
     # No WINDOWS here because it is in beta status yet.
+
+cache:
+  directories:
+  - $HOME/.m2
