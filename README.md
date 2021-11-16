@@ -832,7 +832,7 @@ or alternatively approach us to obtain a commercial license.
 
 ## What if I cannot adjust to the new licensing model until 01.01.2022? Can I extend the deadline?
 We understand that adjustment to licensing changes can take time and therefore are open to discuss extension options 
-on an individual basis. For inquiries please contact us as [psd2@adorsys.com](psd2:sales@adorsys.com).
+on an individual basis. For inquiries please contact us as [psd2@adorsys.com](mailto:sales@adorsys.com).
 
 ## Which versions of the product are affected?
 All versions of Datasafe after v1.0.0.1 will be affected by the licensing changes and move to a dual-licensing model.
