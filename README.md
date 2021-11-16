@@ -804,14 +804,17 @@ Under a dual-licensing model, our product is available under two licenses
 
 If you are a developer or business that would like to review our products in detail, test and implement in your 
 open-source projects and share the changes back to the community, the product repository is freely available under AGPL v3.
+
 If you are a business that would like to implement our products in a commercial setting and would like to protect your 
 individual changes, we offer the option to license our products under a commercial license.
+
 This change will still allow free access and ensure openness under AGPL v3 but with assurance of committing any 
 alterations or extensions back to the project and preventing redistribution of such implementations under commercial license.
 
 ## Will there be any differences between the open-source and commercially licensed versions of your products?
 Our public release frequency will be reduced as our focus shifts towards the continuous maintenance of the commercial version. 
 Nevertheless, we are committed to also provide open-source releases of our products on a regular basis as per our release policy.
+
 For customers with a commercial license, we will offer new intermediate releases in a more frequent pace.
 
 ## Does this mean that this product is no longer open source?
