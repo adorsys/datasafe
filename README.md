@@ -9,14 +9,17 @@
 
 Constantly evolving and extending scope, production traffic and support in open banking world call for high maintenance 
 and service investments on our part. 
+
 Henceforth, Adorsys will offer all versions higher than v1.0.0.1 of Datasafe under a dual-license model. 
 Thus, this repository will be available either under Affero GNU General Public License v.3 (AGPL v.3) or 
 alternatively under a commercial license agreement.
+
 We would like to thank all our users for their trust so far and are convinced that we will be able to provide an even 
 better service going forward.
+
 For more information, advice for your implementation project or if your use case requires more time to adapt this 
 change, please contact us at [sales@adorsys.com](mailto:sales@adorsys.com).
-For additional details please see the section “FAQ on Licensing Change”.
+For additional details please see the section [FAQ on Licensing Change](#faq-on-licensing-change).
 
 # General information
 Datasafe is a cross-platform library that allows sharing and storing data and documents securely. It encrypts
@@ -794,7 +797,7 @@ You can read JavaDoc [here](https://adorsys.github.io/datasafe/javadoc/latest/in
 
 # FAQ on Licensing Change
 
-## 1. What is a dual-licensing model?
+## What is a dual-licensing model?
 Under a dual-licensing model, our product is available under two licenses  
 - [The Affero GNU General Public License v3 (AGPL v3)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 - A proprietary commercial license
