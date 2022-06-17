@@ -101,7 +101,7 @@
         <jacoco.version>0.8.4</jacoco.version>
         <commons.io.version>2.5</commons.io.version>
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
-        <drools.version>6.5.0.Final</drools.version>
+        <drools.version>7.60.0.Final</drools.version>
         <lombok-maven-plugin.version>1.18.6.0</lombok-maven-plugin.version>
         <awaitility.version>3.0.0</awaitility.version>
         <xml-maven-plugin.version>1.0.2</xml-maven-plugin.version>
