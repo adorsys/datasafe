@@ -3,43 +3,43 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/06ae7d4cafc3012cee85/maintainability)](https://codeclimate.com/github/adorsys/datasafe/maintainability)
 
 # General information
-Datasafe is a cross-platform library that allows sharing and storing data and documents securely. It encrypts
-your data using **AES-GCM** algorithm and uses **CMS-envelopes** as encrypted content wrapper. CMS-envelope
-wraps and encrypts document encryption key using key encryption key that provides additional level of security.
-For user private files, Datasafe uses CMS-envelope with symmetric encryption of data encryption key. For files
-that are shared with other users (sent to their INBOX folder), Datasafe uses asymmetric encryption for
-data encryption key, so only recipient (or multiple recipients) can read it.
+Datasafe is a powerful library designed for encrypted and versioned storage of application files, providing an added layer of security to mission-critical, data sensitive applications. 
 
-Datasafe is built with the idea to be as configurable as possible - it uses Dagger2 for dependency injection and modular
-architecture to combine everything into the business layer, so the user can override any aspect he wants - i.e. to change
-encryption algorithm or to turn path encryption off. Each module is as independent as it is possible - to be used separately.
+Key features of Datasafe include:
 
-- Each user has private space that can reside on Amazon S3, minio, filesystem or anything else with proper adapter.
-In his private space, each document and its path is encrypted.
-- For document sharing user has inbox space, that can be accessed from outside. Another user can write the document he
-wants to share into users' inbox space using the recipients' public key so that only inbox owner can read it.
-- For storage systems that do not support file versioning natively (i.e. minio) this library provides versioning
-capability too.
+- Unique encryption keys per user, minimizing the risk of mass data breaches.
+- File path encryption for complete confidentiality of user files.
+- Versioned storage of application files, offering protection against ransomware attacks.
+- Asynchronous per-user inboxes for secure file exchange among users.
+
+## Technical Information
+Datasafe employs the AES-GCM algorithm for data encryption and uses CMS-envelopes ([RFC 5652](https://www.rfc-editor.org/rfc/rfc8933#RFC5652)) as an encrypted content wrapper.
+
+The library is highly configurable, leveraging Dagger2 for dependency injection and a modular architecture that allows for seamless integration into the business layer. This flexibility enables developers to customize various aspects, such as changing the encryption algorithm or disabling path encryption. Each module is designed for maximum independence and can be used separately if needed.
+
+Datasafe supports various storage options, including Amazon S3, Minio, and local filesystems, with the appropriate adapter. 
+
+In each user's private space, both the document and its path are encrypted. A user can write a document to the recipient's inbox space using the recipients' public key, ensuring that only the intended recipient can read a document.
+
+For storage systems lacking native file versioning support (e.g. simple file system), Datasafe provides an application layer versioning capability.
 
 Details about used encryption algorithms can be found in [security whitepaper](SECURITY.WHITEPAPER.md).
 
-## Features
-
--  Proprietary software **friendly license**
+## Technical Features
 -  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
 -  AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
 -  Secure file sharing with other users
 -  **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
--  **Client side encryption** - you own your data
+-  **Application side encryption** - storage layer does not see plain text data
 -  Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
--  File names are encrypted
--  Thorough testing
+-  Encrypted file names and file paths
+-  Thorough application logic and performance testing
 
 ## Performance
 
-Datasafe was tested for performance in Amazon cloud.
-In short, on m5.xlarge amazon instance with Datasafe library can have write throughput of 50 MiB/s and 80 MiB/s of
-read throughput, when using **Amazon S3 bucket** as backing storage (performance is CPU-bound and network-bound).
+Datasafe was tested for performance on the AWS. 
+In short, an m5.xlarge AWS instance with the Datasafe library can have write throughput of 50 MiB/s 
+and a read throughput 80 MiB/s of, when using **Amazon S3 bucket** as backing storage (performance is CPU-bound and network-bound).
 
 Detailed performance report is here:
 [Datasafe performance results](datasafe-long-run-tests/README.md)
@@ -143,12 +143,12 @@ cat private/encrypted_file_name_from_above
 
 ![list_actions](docs/demo/list_actions.gif)
 
-### REST based demo
+### REST API demo
 [Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo of project capabilities with
 instructions of how to use it (REST-api based to show how to deploy as encryption server).
 
 
-## Building project
+## Building the Project
 Without tests:
 ```bash
 mvn clean install -DskipTests=true
@@ -158,7 +158,7 @@ Full build:
 mvn clean install
 ```
 
-## Adding to your project
+## Adding to your Project
 
 Datasafe is available from maven-central repository, you can add it to your project using:
 ```xml
@@ -213,12 +213,12 @@ inbox and private space virtual folders - you get similar actions available from
 Additionally, for file versioning purposes like reading only last file version, there is [versioned privatespace](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/VersionedDatasafeServices.java)
 that supports versioned and encrypted private file storage (for storage providers that do not support versioning).
 
-# How it works
+# How it Works
 
-## Library modules
+## Library Modules
 ![Modules map](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/modules_map.puml&fmt=svg&vvv=1&sanitize=true)
 
-## Users' files - where are they?
+## Users' Files - where are they?
 
 Whenever user wants to store or read file at some location - be it inbox or his private space, following things do happen:
 1. System resolves his profile location
@@ -238,7 +238,7 @@ additionally encrypted.
 
 ![Path resolution](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/profiles/locate_profile.puml&fmt=svg&vvv=2&sanitize=true)
 
-## Storing private files
+## Storing Private Files
 
 Private files are always encrypted using users' secret symmetric key. Additionally their path is encrypted too, but
 this encryption is very special in the sense that it has form of a/b/c encrypted as
@@ -252,7 +252,7 @@ encrypted(a)/encrypted(b)/encrypted(c), so that folder traversal operations are 
 
 [Details](datasafe-privatestore)
 
-## Sharing files with another user
+## Sharing files with another User
 
 Shared files are protected using asymmetrical cryptography, so that sender encrypts file with recipients' public key
 and only recipient can read it using his private key. Paths are kept unencrypted for inbox.
@@ -265,7 +265,7 @@ and only recipient can read it using his private key. Paths are kept unencrypted
 
 [Details](datasafe-inbox)
 
-# Examples of how to use the library
+# Examples of how to Use the Library
 <!--
 To update snippets you can use embed.sh
 MacOS: Install gnused and gnugrep:
@@ -278,7 +278,7 @@ Example script usage:
 TODO: Migrate to AsciiDoc for automatic snippet embedding.
 -->
 
-## Generic Datasafe usage
+## Generic Datasafe Usage
 First, you want to create Datasafe services. This snippet provides you Datasafe that uses filesystem storage adapter:
 [Example:Create Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L46-L52)
 ```groovy
@@ -400,7 +400,7 @@ assertThat(defaultDatasafeServices.inboxService().read(
 ).hasContent("shared message");
 ```
 
-## Datasafe with file versioning
+## Datasafe with file Versioning
 Suppose we need to preserve file history, so accidental file removal won't destroy everything. In such case
 we can use storage provider that supports versioning. But if we have storage provider does not support versions
 (i.e. minio) we can turn-on software versioning, here is its usage examples;
@@ -509,7 +509,7 @@ Instant savedOnPC = versionedServices.latestPrivate()
 assertThat(savedOnPC).isAfter(savedOnMobile);
 ```
 
-## Datasafe on versioned storage
+## Datasafe on Versioned Storage
 If you have storage for user files on **versioned S3 bucket** and want to get object version when you write
 object or to read some older version encrypted object, you can follow this example of how to do that:
 [Example:Versioned storage support - writing file and reading back](datasafe-examples/datasafe-examples-versioned-s3/src/test/java/de/adorsys/datasafe/examples/business/s3/BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest.java#L138-L172)
@@ -580,13 +580,13 @@ assertThat(defaultDatasafeServices.privateService().read(
 ).hasContent("Hello 2");
 ```
 
-## Overriding Datasafe functionality
+## Overriding Datasafe Functionality
 Whenever you want to have some custom functionality of Datasafe, instead of default ones, there are
 two possible ways to achieve this:
 - using OverridesRegistry without project recompilation.
 - using Dagger2 to build a customized version of Datasafe.
 
-### Overriding functionality without recompilation
+### Overriding Functionality without Recompilation
 This approach is for classes annotated with
 [@RuntimeDelegate](datasafe-types-api/src/main/java/de/adorsys/datasafe/types/api/context/annotations/RuntimeDelegate.java)
 and it works by putting the custom implementation of a class to be overridden into
@@ -619,7 +619,7 @@ datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "fi
 assertThat(Files.walk(root)).asString().contains("file.txt");
 ```
 
-### Overriding functionality by building custom Datasafe library
+### Overriding Functionality by Building custom Datasafe Library
 This is actually the preferred way to override something or to customize Datasafe. It has no limitations because
 you can compose any Datasafe service you want using Dagger2 for dependency injection. Its major drawback is that
 you need to add a dependency to Dagger2 into your project and compile this custom library version. Because of
@@ -645,7 +645,7 @@ datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(user, "fi
 assertThat(walk(root)).asString().contains("file.txt");
 ```
 
-### Customizing Datasafe to store dynamic and user-provided credentials
+### Customizing Datasafe to store dynamic and user-provided Credentials
 In case user wants to register storage credentials himself or place keystore within credentials-protected
 location one can use this example:
 [Example:Datasafe with multi-dfs setup](datasafe-examples/datasafe-examples-multidfs/src/test/java/de/adorsys/datasafe/examples/business/s3/MultiDfsWithCredentialsExampleTest.java#L106-L220)
@@ -778,7 +778,7 @@ You can read JavaDoc [here](https://adorsys.github.io/datasafe/javadoc/latest/in
 
 # FAQ on Licensing
 
-## What is a dual-licensing model?
+## What is a Dual-Licensing Model?
 Under a dual-licensing model, our product is available under two licenses  
 - [The Affero GNU General Public License v3 (AGPL v3)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 - A proprietary commercial license
