@@ -13,27 +13,29 @@ Key features of Datasafe include:
 - Asynchronous per-user inboxes for secure file exchange among users.
 
 ## Technical Information
-Datasafe employs the AES-GCM algorithm for data encryption and uses CMS-envelopes ([RFC 5652](https://www.rfc-editor.org/rfc/rfc8933#RFC5652)) as an encrypted content wrapper.
+Datasafe employs the AES-GCM algorithm for data encryption and uses CMS-envelopes ([RFC 5652](https://www.rfc-editor.org/rfc/rfc8933#RFC5652)) as an encrypted content wrapper. More details on used encryption algorithms can be found in the [security whitepaper](SECURITY.WHITEPAPER.md).
 
 The library is highly configurable, leveraging Dagger2 for dependency injection and a modular architecture that allows for seamless integration into the business layer. This flexibility enables developers to customize various aspects, such as changing the encryption algorithm or disabling path encryption. Each module is designed for maximum independence and can be used separately if needed.
 
 Datasafe supports various storage options, including Amazon S3, Minio, and local filesystems, with the appropriate adapter. 
 
-In each user's private space, both the document and its path are encrypted. A user can write a document to the recipient's inbox space using the recipients' public key, ensuring that only the intended recipient can read a document.
+In each user's private space, both the document and its path are encrypted. A user can write a document to the recipient's inbox space using the recipient's public key, ensuring that only the intended recipient can read a document.
 
 For storage systems lacking native file versioning support (e.g. simple file system), Datasafe provides an application layer versioning capability.
 
-Details about used encryption algorithms can be found in [security whitepaper](SECURITY.WHITEPAPER.md).
-
 ## Technical Features
--  **Flexibility** - you can easily change encryption and configure or customize other aspects of library
--  AES encryption using **CMS-envelopes** for increased security and interoperability with other languages
+-  Flexibility - you can easily change encryption and configure or customize other aspects of library
+-  AES encryption using CMS-envelopes for increased security and interoperability with other languages
 -  Secure file sharing with other users
--  **Extra protection layer** - encryption using securely generated keys that are completely unrelated to your password
--  **Application side encryption** - storage layer does not see plain text data
+-  Extra protection layer - encryption using securely generated keys that are completely unrelated to your password
+-  Application side encryption - storage layer does not see plain text data
 -  Works with filesystem and Amazon S3 compatible storage - S3, minio, CEPH, etc.
 -  Encrypted file names and file paths
 -  Thorough application logic and performance testing
+
+## Deployment Model
+Followings are among others possible deployment model of the datasafe application.
+![Datasafe deployment model](./docs/demo/deployment-model.png)
 
 ## Performance
 
@@ -254,7 +256,7 @@ encrypted(a)/encrypted(b)/encrypted(c), so that folder traversal operations are 
 
 ## Sharing files with another User
 
-Shared files are protected using asymmetrical cryptography, so that sender encrypts file with recipients' public key
+Shared files are protected using asymmetrical cryptography, so that sender encrypts file with recipient's public key
 and only recipient can read it using his private key. Paths are kept unencrypted for inbox.
 
 ![How inbox diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adorsys/datasafe/develop/docs/diagrams/high-level/how_it_works_inbox.puml&fmt=svg&vvv=1&sanitize=true)
