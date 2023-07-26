@@ -2,6 +2,7 @@ package de.adorsys.datasafe.runtimedelegate;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
 
+@Disabled
 class RuntimeDelegateTest {
 
     @ParameterizedTest

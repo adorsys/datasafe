@@ -120,7 +120,8 @@
         <spring.framework.version>5.1.7.RELEASE</spring.framework.version>
         <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>
         <siv-mode.version>1.3.1</siv-mode.version>
-        <jackson.version>2.11.2</jackson.version>
+        <jackson.version>2.12.7</jackson.version>
+        <jackson-databind.version>2.12.7.1</jackson-databind.version>
         <keymanagement.version>0.0.7</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
     </properties>
@@ -280,6 +281,12 @@
                 <artifactId>testcontainers</artifactId>
                 <version>${testcontainers.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
