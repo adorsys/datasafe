@@ -121,7 +121,7 @@
         <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>
         <siv-mode.version>1.3.1</siv-mode.version>
         <jackson.version>2.11.2</jackson.version>
-        <keymanagement.version>0.0.6</keymanagement.version>
+        <keymanagement.version>0.0.7</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
     </properties>
 
