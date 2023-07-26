@@ -9,10 +9,9 @@ import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.impl.SimpleDatasafeServiceImpl;
 import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDatasafeEncryptionProperties;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.PostConstruct;
 
 @Slf4j
 public class SpringSimpleDatasafeServiceFactory {

@@ -21,6 +21,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.squareup</groupId>
             <artifactId>javapoet</artifactId>
             <scope>provided</scope>
