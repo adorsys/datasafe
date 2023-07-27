@@ -78,9 +78,10 @@
         <jacoco.reportPath>${basedir}/../../target/jacoco.exec</jacoco.reportPath>
         <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
 
-        <java.version>1.8</java.version>
         <graal.version>19.2.0</graal.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven.dependency.plugin.version>3.6.0</maven.dependency.plugin.version>
         <lombok.version>1.18.28</lombok.version>
         <gson.version>2.8.9</gson.version>
@@ -95,8 +96,6 @@
         <compress.version>1.21</compress.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
         <testcontainers.version>1.18.3</testcontainers.version>
         <jacoco.version>0.8.10</jacoco.version>
         <commons.io.version>2.5</commons.io.version>
@@ -118,12 +117,13 @@
         <mysql.version>8.0.16</mysql.version>
         <liquibase>3.6.1</liquibase>
         <spring.framework.version>5.1.7.RELEASE</spring.framework.version>
-        <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>
+        <spring.framework.boot.version>3.1.2</spring.framework.boot.version>
         <siv-mode.version>1.3.1</siv-mode.version>
         <jackson.version>2.12.7</jackson.version>
         <jackson-databind.version>2.12.7.1</jackson-databind.version>
         <keymanagement.version>0.0.7</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
     </properties>
 
     <dependencies>
@@ -333,6 +333,11 @@
                 <artifactId>HikariCP</artifactId>
                 <version>${hikari.cp}</version>
             </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
 	    </dependencies>
 	</dependencyManagement>
 
@@ -372,7 +377,24 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
                 <configuration>
-                    <argLine>${surefireArgLine}</argLine>
+<!--                    <argLine>${surefireArgLine}</argLine>-->
+                    <argLine>
+                        --add-opens java.base/java.lang=ALL-UNNAMED,
+
+                        --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,
+                        --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,
+
+                        --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,
+                        --add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED
+                    </argLine>
                 </configuration>
             </plugin>
             <plugin>

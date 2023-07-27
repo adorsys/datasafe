@@ -2,16 +2,20 @@ package de.adorsys.datasafe.rest.impl.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.resource.ResourceUrlProvider;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,8 +38,12 @@ public class MvcConfig extends WebMvcConfigurationSupport {
      */
     @Bean
     @Override
-    public RequestMappingHandlerMapping requestMappingHandlerMapping() {
-        RequestMappingHandlerMapping handlerMapping = super.requestMappingHandlerMapping();
+    public RequestMappingHandlerMapping requestMappingHandlerMapping(
+            @Qualifier("mvcContentNegotiationManager") ContentNegotiationManager contentNegotiationManager,
+            @Qualifier("mvcConversionService") FormattingConversionService conversionService,
+            @Qualifier("mvcResourceUrlProvider") ResourceUrlProvider resourceUrlProvider
+    ) {
+        RequestMappingHandlerMapping handlerMapping = super.requestMappingHandlerMapping(contentNegotiationManager, conversionService, resourceUrlProvider);
         handlerMapping.setPathMatcher(new ExtendedMatcher());
         return handlerMapping;
     }

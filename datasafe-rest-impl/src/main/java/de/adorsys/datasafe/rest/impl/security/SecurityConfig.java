@@ -1,18 +1,19 @@
 package de.adorsys.datasafe.rest.impl.security;
 
-import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,10 +23,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import static de.adorsys.datasafe.rest.impl.security.SecurityConstants.TOKEN_HEADER;
 
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableMethodSecurity(securedEnabled = true)
+public class SecurityConfig {
 
-    public static final String[] SWAGGER_RESOURCES = {
+    private static final String[] SWAGGER_RESOURCES = {
             "/v2/api-docs",
             "/configuration/ui",
             "/swagger-resources",
@@ -42,28 +43,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.securityProperties = securityProperties;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and()
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers(SWAGGER_RESOURCES).permitAll()
-                .antMatchers("/static/**").permitAll()
-                .antMatchers(SecurityConstants.AUTH_LOGIN_URL).permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityProperties))
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+        http.cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(SWAGGER_RESOURCES).permitAll()
+                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers(SecurityConstants.AUTH_LOGIN_URL).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilter(new JwtAuthorizationFilter(authenticationManager, securityProperties))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
     }
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser(securityProperties.getDefaultUser())
-                .password(passwordEncoder().encode(securityProperties.getDefaultPassword()))
-                .authorities("ROLE_USER");
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+        UserDetails user = User.withDefaultPasswordEncoder()
+                .username(securityProperties.getDefaultUser())
+                .password(passwordEncoder.encode(securityProperties.getDefaultPassword()))
+                .authorities("ROLE_USER")
+                .build();
+        return new InMemoryUserDetailsManager(user);
     }
 
     @Bean
@@ -93,17 +98,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", globalConfig);
 
         return source;
-    }
-
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Bean
-    @SneakyThrows
-    public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(authenticationManager(), securityProperties);
     }
 }

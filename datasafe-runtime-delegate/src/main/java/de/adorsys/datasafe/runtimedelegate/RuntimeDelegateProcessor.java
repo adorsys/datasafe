@@ -31,7 +31,7 @@ import static de.adorsys.datasafe.runtimedelegate.RuntimeDelegateProcessor.ANNOT
  * there is nothing associated with annotated class in {@link OverridesRegistry} - it calls default implementation.
  */
 @SupportedAnnotationTypes(ANNOTATION_CLASS)
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 public class RuntimeDelegateProcessor extends AbstractProcessor {
 
