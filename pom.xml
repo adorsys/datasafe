@@ -116,7 +116,7 @@
         <h2.database>1.4.199</h2.database>
         <mysql.version>8.0.16</mysql.version>
         <liquibase>3.6.1</liquibase>
-        <spring.framework.version>5.1.7.RELEASE</spring.framework.version>
+        <spring.framework.version>6.0.11</spring.framework.version>
         <spring.framework.boot.version>3.1.2</spring.framework.boot.version>
         <siv-mode.version>1.3.1</siv-mode.version>
         <jackson.version>2.12.7</jackson.version>
