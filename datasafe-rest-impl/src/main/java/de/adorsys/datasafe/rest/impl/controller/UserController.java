@@ -14,10 +14,6 @@ import de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExistsException;
 import de.adorsys.datasafe.rest.impl.exceptions.UserExistsException;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +33,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/user", produces = APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@Api(description = "Create and delete users")
 public class UserController {
 
     private final DefaultDatasafeServices dataSafeService;
@@ -56,11 +51,6 @@ public class UserController {
      * public-keys: ${systemRoot}/${userName}/public/keystore
      */
     @PutMapping
-    @ApiOperation("Creates new user")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User successfully created"),
-            @ApiResponse(code = 400, message = "User already exists")
-    })
     public void createUser(@Validated @RequestBody UserDTO userDTO) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(userDTO.getPassword());
         UserIDAuth auth = new UserIDAuth(new UserID(userDTO.getUserName()), readKeyPassword);
@@ -71,7 +61,6 @@ public class UserController {
     }
 
     @PostMapping("/password")
-    @ApiOperation("Change users' password")
     public void changePassword(@RequestHeader String user,
                                @RequestHeader String password,
                                @Validated @RequestBody NewPasswordDTO newPassword) {
@@ -81,7 +70,6 @@ public class UserController {
     }
 
     @GetMapping("/publicProfile")
-    @ApiOperation("Reads users' public profile")
     public UserPublicProfileDTO getPublicProfile(@RequestHeader String user,
                                                  @RequestHeader String password) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
@@ -90,7 +78,6 @@ public class UserController {
     }
 
     @GetMapping("/privateProfile")
-    @ApiOperation("Reads users' private profile")
     public UserPrivateProfileDTO getPrivateProfile(@RequestHeader String user,
                                                    @RequestHeader String password) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
@@ -99,7 +86,6 @@ public class UserController {
     }
 
     @PostMapping("/publicProfile")
-    @ApiOperation("Modifies users' public profile")
     public void updatePublicProfile(@RequestHeader String user,
                                     @RequestHeader String password,
                                     @Validated @RequestBody UserPublicProfileDTO profileDto) {
@@ -109,7 +95,6 @@ public class UserController {
     }
 
     @PostMapping("/privateProfile")
-    @ApiOperation("Modifies users' private profile")
     public void updatePrivateProfile(@RequestHeader String user,
                                      @RequestHeader String password,
                                      @Validated @RequestBody UserPrivateProfileDTO profileDto) {
@@ -119,7 +104,6 @@ public class UserController {
     }
 
     @PostMapping("/storages")
-    @ApiOperation("Adds users' storage id and credentials")
     public void addStorageCredentials(@RequestHeader String user,
                                       @RequestHeader String password,
                                       @Validated @RequestBody StorageCredsDTO creds) {
@@ -133,7 +117,6 @@ public class UserController {
     }
 
     @DeleteMapping("/storages")
-    @ApiOperation("Removes users' storage id and credentials")
     public void removeStorageCredentials(@RequestHeader String user,
                                          @RequestHeader String password,
                                          @RequestHeader String storageId) {
@@ -149,11 +132,6 @@ public class UserController {
      * @param password user password.
      */
     @DeleteMapping
-    @ApiOperation("Deletes existing user")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User successfully deleted"),
-            @ApiResponse(code = 404, message = "User does not exist")
-    })
     public void deleteUser(@RequestHeader String user,
                            @RequestHeader String password) {
         UserIDAuth auth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));

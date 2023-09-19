@@ -82,7 +82,7 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
         String token = sendAuthenticateRequest(userDTO).getResponse().getHeader(SecurityConstants.TOKEN_HEADER);
 
         mvc.perform(
-               putFileBuilder("/inbox/{path}", TEST_PATH).
+               putFileBuilder("/inbox/document/{path}", TEST_PATH).
                contentType(MediaType.MULTIPART_FORM_DATA_VALUE).
                content("file content".getBytes()).
                header("users", TEST_USER).
@@ -97,7 +97,7 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
 
         String errorMessage = mvc
                     .perform(
-                        put("/inbox/{path}", TEST_PATH).
+                        put("/inbox/document/{path}", TEST_PATH).
                         contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE).
                         header("user", TEST_USER))
                     .andExpect(status().isForbidden())

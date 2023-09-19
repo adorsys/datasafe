@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.rest.impl.dto;
 
-import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,10 +11,8 @@ import lombok.NoArgsConstructor;
 public class UserDTO {
 
     @NotBlank
-    @ApiModelProperty(value = "user name", position = 1)
     private String userName;
 
     @NotBlank
-    @ApiModelProperty(value = "password", position = 2)
     private String password;
 }

@@ -15,11 +15,6 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.resource.Versioned;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -38,7 +33,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -48,7 +42,6 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Api(description = "Operations on private documents with enabled versioning")
 public class VersionController {
 
     private final VersionedDatasafeServices versionedDatasafeServices;
@@ -56,12 +49,7 @@ public class VersionController {
     /**
      * lists latest versions of files in user's private space.
      */
-    @GetMapping(value = "/versioned/{path:.*}", produces = APPLICATION_JSON_VALUE)
-    @ApiOperation("List latest documents in user's private space")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List command successfully completed"),
-            @ApiResponse(code = 401, message = "Unauthorised")
-    })
+    @GetMapping(value = "/versioned/{*path}", produces = APPLICATION_JSON_VALUE)
     public List<String> listVersionedDocuments(@RequestHeader String user,
                                                @RequestHeader String password,
                                                @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
@@ -72,7 +60,7 @@ public class VersionController {
             List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(
                 ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
                     .map(e -> e.absolute().getResource().decryptedPath().asString())
-                    .collect(Collectors.toList());
+                    .toList();
             log.debug("List for path {} returned {} items", path, documentList.size());
             return documentList;
         } catch (AmazonS3Exception e) { // for list this exception most likely means that user credentials wrong
@@ -85,12 +73,7 @@ public class VersionController {
      * reads latest version of file from user's private space.
      */
     @SneakyThrows
-    @GetMapping(value = "/versioned/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
-    @ApiOperation("Read latest document from user's private space")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document was successfully read"),
-            @ApiResponse(code = 404, message = "Document not found")
-    })
+    @GetMapping(value = "/versioned/{*path}", produces = APPLICATION_OCTET_STREAM_VALUE)
     public void readVersionedDocument(@RequestHeader String user,
                                       @RequestHeader String password,
                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
@@ -113,11 +96,7 @@ public class VersionController {
      * writes latest version of file to user's private space.
      */
     @SneakyThrows
-    @PutMapping(value = "/versioned/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation("Write latest document to user's private space")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document was successfully written")
-    })
+    @PutMapping(value = "/versioned/{*path}", consumes = MULTIPART_FORM_DATA_VALUE)
     public void writeVersionedDocument(@RequestHeader String user,
                                        @RequestHeader String password,
                                        @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
@@ -136,11 +115,7 @@ public class VersionController {
     /**
      * deletes latest version of file from user's private space.
      */
-    @DeleteMapping("/versioned/{path:.*}")
-    @ApiOperation("Delete latest document from user's private space")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document successfully deleted")
-    })
+    @DeleteMapping("/versioned/{*path}")
     public void deleteVersionedDocument(@RequestHeader String user,
                                         @RequestHeader String password,
                                         @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
@@ -155,16 +130,10 @@ public class VersionController {
     /**
      * list of file versions.
      */
-    @GetMapping(value = "/versions/list/{path:.*}", produces = APPLICATION_JSON_VALUE)
-    @ApiOperation("List versions of document")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List command successfully completed"),
-            @ApiResponse(code = 401, message = "Unauthorised")
-    })
+    @GetMapping(value = "/versions/list/{*path}", produces = APPLICATION_JSON_VALUE)
     public List<String> versionsOf(@RequestHeader String user,
                                    @RequestHeader String password,
                                    @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
-                                   @ApiParam(defaultValue = ".")
                                    @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = Optional.ofNullable(path)
@@ -177,9 +146,11 @@ public class VersionController {
         List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> versionList =
                 versionedDatasafeServices.versionInfo()
                         .versionsOf(request)
-                        .collect(Collectors.toList());
+                        .toList();
 
         log.debug("Versions for path {} returned {} items", path, versionList.size());
-        return versionList.stream().map(a -> a.absolute().getResource().asPrivate().decryptedPath().asString()).collect(Collectors.toList());
+        return versionList.stream()
+                .map(a -> a.absolute().getResource().asPrivate().decryptedPath().asString())
+                .toList();
     }
 }
