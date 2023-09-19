@@ -231,6 +231,8 @@
                             </ignoredUsedUndeclaredDependencies>
                             <ignoredNonTestScopedDependencies>
                                 <ignoredNonTestScopedDependency>org.bouncycastle</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.slf4j</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.projectlombok</ignoredNonTestScopedDependency>
                             </ignoredNonTestScopedDependencies>
                         </configuration>
                     </execution>
