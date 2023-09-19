@@ -38,13 +38,12 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
 
     @BeforeEach
     public void setup() {
+        openMocks = MockitoAnnotations.openMocks(this);
         when(dataSafeService.inboxService()).thenReturn(inboxService);
     }
 
     @Test
     void testAuthenticateSuccess() {
-        MockitoAnnotations.initMocks(this);
-
         UserDTO userDTO = new UserDTO();
         userDTO.setUserName("username");
         userDTO.setPassword("password");

@@ -13,7 +13,7 @@ import org.mockito.MockitoAnnotations;
  */
 public abstract class BaseMockitoTest {
 
-    AutoCloseable openMocks;
+    public AutoCloseable openMocks;
 
     @BeforeEach
     public void setup() {
