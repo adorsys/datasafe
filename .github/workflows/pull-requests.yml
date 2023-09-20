@@ -19,4 +19,4 @@ jobs:
           distribution: 'adopt'
 
       - name: Build project and run default test suite
-        run: mvn verify
+        run: mvn clean verify -ntp
