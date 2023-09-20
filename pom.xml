@@ -376,8 +376,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
                 <configuration>
-                    <argLine>${surefireArgLine}</argLine>
                     <argLine>
+                        ${surefireArgLine},
                         --add-opens java.base/java.lang=ALL-UNNAMED,
 
                         --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,
