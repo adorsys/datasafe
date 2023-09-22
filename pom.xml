@@ -88,8 +88,7 @@
         <dagger.version>2.46.1</dagger.version>
         <guava.version>32.1.1-jre</guava.version>
         <picocli.version>4.0.3</picocli.version>
-        <jupiter.version>5.4.1</jupiter.version>
-        <junit.platform.version>1.4.1</junit.platform.version>
+        <jupiter.version>5.10.0</jupiter.version>
         <assertj.version>3.12.2</assertj.version>
         <mockito.version>5.5.0</mockito.version>
         <surefire.version>2.22.1</surefire.version>
@@ -255,12 +254,6 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-params</artifactId>
                 <version>${jupiter.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.platform</groupId>
-                <artifactId>junit-platform-commons</artifactId>
-                <version>${junit.platform.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
