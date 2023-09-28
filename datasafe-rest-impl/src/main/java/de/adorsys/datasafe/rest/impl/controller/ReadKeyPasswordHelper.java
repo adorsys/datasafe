@@ -1,16 +1,11 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import lombok.experimental.UtilityClass;
 
-import java.util.function.Supplier;
-
+@UtilityClass
 public class ReadKeyPasswordHelper {
     public static ReadKeyPassword getForString(String a) {
-        return new ReadKeyPassword(new Supplier<char[]>() {
-            @Override
-            public char[] get() {
-                return a.toCharArray();
-            }
-        });
+        return new ReadKeyPassword(a::toCharArray);
     }
 }

@@ -1,7 +1,6 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -95,7 +94,7 @@ class MultiDFSFunctionalityTest extends BaseMockitoTest {
     static void initDistributedMinios() {
         // Create all required minio-backed S3 buckets:
         Stream.of(CREDENTIALS, KEYSTORE, FILES_ONE, FILES_TWO, INBOX).forEach(it -> {
-            GenericContainer minio = new GenericContainer("minio/minio")
+            GenericContainer minio = new GenericContainer("minio/minio:RELEASE.2019-08-01T22-18-54Z")
                 .withExposedPorts(9000)
                 .withEnv("MINIO_ACCESS_KEY", accessKey(it))
                 .withEnv("MINIO_SECRET_KEY", secretKey(it))

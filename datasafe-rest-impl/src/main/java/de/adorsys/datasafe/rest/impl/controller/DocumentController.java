@@ -11,11 +11,7 @@ import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -46,7 +40,6 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Api(description = "Operations with private documents")
 public class DocumentController {
 
     private final DefaultDatasafeServices datasafeService;
@@ -55,12 +48,7 @@ public class DocumentController {
      * Reads user's private file.
      */
     @SneakyThrows
-    @GetMapping(value = "/document/{path:.*}", produces = APPLICATION_OCTET_STREAM_VALUE)
-    @ApiOperation("Read document from user's private space")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document was successfully read"),
-            @ApiResponse(code = 401, message = "Document not found")
-    })
+    @GetMapping(value = "/document/{*path}", produces = APPLICATION_OCTET_STREAM_VALUE)
     public void readDocument(@RequestHeader String user,
                              @RequestHeader String password,
                              @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
@@ -83,11 +71,7 @@ public class DocumentController {
      * Writes file to user's private space.
      */
     @SneakyThrows
-    @PutMapping(value = "/document/{path:.*}", consumes = MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation("Write document to user's private space")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document was successfully written")
-    })
+    @PutMapping(value = "/document/{*path}", consumes = MULTIPART_FORM_DATA_VALUE)
     public void writeDocument(@RequestHeader String user,
                               @RequestHeader String password,
                               @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
@@ -106,16 +90,10 @@ public class DocumentController {
     /**
      * lists files in user's private space.
      */
-    @GetMapping("/documents/{path:.*}")
-    @ApiOperation("List documents in user's private space")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List command successfully completed"),
-            @ApiResponse(code = 401, message = "Unauthorised")
-    })
+    @GetMapping("/documents/{*path}")
     public List<String> listDocuments(@RequestHeader String user,
                                       @RequestHeader String password,
                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
-                                      @ApiParam(defaultValue = ".")
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = Optional.ofNullable(path)
@@ -125,7 +103,7 @@ public class DocumentController {
             List<String> documentList = datasafeService.privateService().list(
                 ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
                     .map(e -> e.getResource().asPrivate().decryptedPath().asString())
-                    .collect(Collectors.toList());
+                    .toList();
             log.debug("List for path {} returned {} items", path, documentList.size());
             return documentList;
         } catch (AmazonS3Exception e) { // for list this exception most likely means that user credentials wrong
@@ -136,11 +114,7 @@ public class DocumentController {
     /**
      * deletes files from user's private space.
      */
-    @DeleteMapping("/document/{path:.*}")
-    @ApiOperation("Delete document from user's private space")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Document successfully deleted")
-    })
+    @DeleteMapping("/document/{*path}")
     public void removeDocument(@RequestHeader String user,
                                @RequestHeader String password,
                                @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,

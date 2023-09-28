@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.testcontainers.shaded.org.apache.commons.lang.time.StopWatch;
+import org.testcontainers.shaded.org.apache.commons.lang3.time.StopWatch;
 
 import java.io.InputStream;
 import java.io.OutputStream;
