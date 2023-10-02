@@ -1,0 +1,954 @@
+openapi: 3.0.1
+info:
+  title: Api Documentation
+  description: Api Documentation
+  termsOfService: urn:tos
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  version: "1.0"
+servers:
+  - url: //localhost:8080/
+tags:
+  - name: authenticate-controller
+    description: Initial authentication operations
+  - name: document-controller
+    description: Operations with private documents
+  - name: inbox-controller
+    description: Operations with inbox
+  - name: user-controller
+    description: Create and delete users
+  - name: version-controller
+    description: Operations on private documents with enabled versioning
+paths:
+  /api/authenticate:
+    post:
+      tags:
+        - authenticate-controller
+      summary: Get token for given username and password
+      operationId: authenticateUsingPOST
+      requestBody:
+        description: credentialsDTO
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+        required: true
+      responses:
+        200:
+          description: Successfully logged in
+          content: {}
+        401:
+          description: Bad credentials
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+      x-codegen-request-body-name: credentialsDTO
+  /document/{path}:
+    get:
+      tags:
+        - document-controller
+      summary: Read document from user's private space
+      operationId: readDocumentUsingGET
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+            default: DEFAULT
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Document was successfully read
+          content: {}
+        401:
+          description: Document not found
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+    put:
+      tags:
+        - document-controller
+      summary: Write document to user's private space
+      operationId: writeDocumentUsingPUT
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+            default: DEFAULT
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  description: file
+                  format: binary
+        required: true
+      responses:
+        200:
+          description: Document was successfully written
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+    delete:
+      tags:
+        - document-controller
+      summary: Delete document from user's private space
+      operationId: removeDocumentUsingDELETE
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+            default: DEFAULT
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Document successfully deleted
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+  /documents/{path}:
+    get:
+      tags:
+        - document-controller
+      summary: List documents in user's private space
+      operationId: listDocumentsUsingGET
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+            default: "."
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+            default: DEFAULT
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: List command successfully completed
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+        401:
+          description: Unauthorised
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+  /inbox/document/{path}:
+    get:
+      tags:
+        - inbox-controller
+      summary: Read document from inbox
+      operationId: readFromInboxUsingGET
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Document was successfully read
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Document not found
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+    put:
+      tags:
+        - inbox-controller
+      summary: Send document to inbox
+      operationId: writeToInboxUsingPUT
+      parameters:
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: users
+          in: header
+          description: users
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  description: file
+                  format: binary
+        required: true
+      responses:
+        200:
+          description: Document was successfully sent
+          content: {}
+        403:
+          description: Access denied
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+    delete:
+      tags:
+        - inbox-controller
+      summary: Delete document from inbox
+      operationId: deleteFromInboxUsingDELETE
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Document successfully deleted
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+  /inbox/documents/{path}:
+    get:
+      tags:
+        - inbox-controller
+      summary: List files in inbox
+      operationId: listInboxUsingGET
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+            default: "."
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: List command successfully completed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        401:
+          description: Unauthorised
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+  /user:
+    put:
+      tags:
+        - user-controller
+      summary: Creates new user
+      operationId: createUserUsingPUT
+      requestBody:
+        description: userDTO
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+        required: true
+      responses:
+        200:
+          description: User successfully created
+          content: {}
+        400:
+          description: User already exists
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+      x-codegen-request-body-name: userDTO
+    delete:
+      tags:
+        - user-controller
+      summary: Deletes existing user
+      operationId: deleteUserUsingDELETE
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User successfully deleted
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: User does not exist
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+  /user/password:
+    post:
+      tags:
+        - user-controller
+      summary: Change users' password
+      operationId: changePasswordUsingPOST
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: newPassword
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPasswordDTO'
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+      x-codegen-request-body-name: newPassword
+  /user/privateProfile:
+    get:
+      tags:
+        - user-controller
+      summary: Reads users' private profile
+      operationId: getPrivateProfileUsingGET
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPrivateProfileDTO'
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+    post:
+      tags:
+        - user-controller
+      summary: Modifies users' private profile
+      operationId: updatePrivateProfileUsingPOST
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: profileDto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPrivateProfileDTO'
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+      x-codegen-request-body-name: profileDto
+  /user/publicProfile:
+    get:
+      tags:
+        - user-controller
+      summary: Reads users' public profile
+      operationId: getPublicProfileUsingGET
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublicProfileDTO'
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+    post:
+      tags:
+        - user-controller
+      summary: Modifies users' public profile
+      operationId: updatePublicProfileUsingPOST
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: profileDto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPublicProfileDTO'
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+      x-codegen-request-body-name: profileDto
+  /user/storages:
+    post:
+      tags:
+        - user-controller
+      summary: Adds users' storage id and credentials
+      operationId: addStorageCredentialsUsingPOST
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: creds
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageCredsDTO'
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+      x-codegen-request-body-name: creds
+    delete:
+      tags:
+        - user-controller
+      summary: Removes users' storage id and credentials
+      operationId: removeStorageCredentialsUsingDELETE
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+  /versioned/{path}:
+    get:
+      tags:
+        - version-controller
+      summary: List latest documents in user's private space
+      operationId: listVersionedDocumentsUsingGET
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+            default: DEFAULT
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: List command successfully completed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        401:
+          description: Unauthorised
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+    put:
+      tags:
+        - version-controller
+      summary: Write latest document to user's private space
+      operationId: writeVersionedDocumentUsingPUT
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+            default: DEFAULT
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  description: file
+                  format: binary
+        required: true
+      responses:
+        200:
+          description: Document was successfully written
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+    delete:
+      tags:
+        - version-controller
+      summary: Delete latest document from user's private space
+      operationId: deleteVersionedDocumentUsingDELETE
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+            default: DEFAULT
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Document successfully deleted
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+  /versions/list/{path}:
+    get:
+      tags:
+        - version-controller
+      summary: List versions of document
+      operationId: versionsOfUsingGET
+      parameters:
+        - name: password
+          in: header
+          description: password
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          description: path
+          required: true
+          schema:
+            type: string
+            default: "."
+        - name: storageId
+          in: header
+          description: storageId
+          required: true
+          schema:
+            type: string
+            default: DEFAULT
+        - name: user
+          in: header
+          description: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: List command successfully completed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        401:
+          description: Unauthorised
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+      security:
+        - JWT: []
+components:
+  schemas:
+    NewPasswordDTO:
+      title: NewPasswordDTO
+      type: object
+      properties:
+        newPassword:
+          type: string
+    StorageCredsDTO:
+      title: StorageCredsDTO
+      type: object
+      properties:
+        password:
+          type: string
+        storageRegexMatcher:
+          type: string
+        username:
+          type: string
+    UserDTO:
+      title: UserDTO
+      type: object
+      properties:
+        userName:
+          type: string
+          description: user name
+        password:
+          type: string
+          description: password
+    UserPrivateProfileDTO:
+      title: UserPrivateProfileDTO
+      type: object
+      properties:
+        associatedResources:
+          type: array
+          items:
+            type: string
+        documentVersionStorage:
+          type: string
+        inboxWithFullAccess:
+          type: string
+        keystore:
+          type: string
+        privateStorage:
+          type: object
+          additionalProperties:
+            type: string
+        publishPublicKeysTo:
+          type: string
+        storageCredentialsKeystore:
+          type: string
+    UserPublicProfileDTO:
+      title: UserPublicProfileDTO
+      type: object
+      properties:
+        inbox:
+          type: string
+        publicKeys:
+          type: string

@@ -13,16 +13,19 @@ import org.mockito.MockitoAnnotations;
  */
 public abstract class BaseMockitoTest {
 
+    public AutoCloseable openMocks;
+
     @BeforeEach
     public void setup() {
+        openMocks = MockitoAnnotations.openMocks(this);
         System.setProperty("SECURE_LOGS", "off");
         System.setProperty("SECURE_SENSITIVE", "off");
-        MockitoAnnotations.initMocks(this);
     }
 
     @AfterEach
-    public void validate() {
+    public void validate() throws Exception {
         Mockito.validateMockitoUsage();
+        openMocks.close();
     }
 
     @AfterAll

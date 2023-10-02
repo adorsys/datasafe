@@ -18,7 +18,7 @@ public class TestHelper {
             "DATA".getBytes()
         );
 
-        MockMultipartHttpServletRequestBuilder builder = RestDocumentationRequestBuilders.fileUpload(path, vars).file(file);
+        MockMultipartHttpServletRequestBuilder builder = RestDocumentationRequestBuilders.multipart(path, vars).file(file);
         return builder.with(request -> {
             request.setMethod(HttpMethod.PUT.name());
             return request;

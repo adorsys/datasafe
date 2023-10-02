@@ -5,7 +5,7 @@
     <parent>
         <artifactId>datasafe</artifactId>
         <groupId>de.adorsys</groupId>
-        <version>1.0.3</version>
+        <version>2.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -168,7 +168,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.11.2</version>
         </dependency>
         <dependency>
             <groupId>org.awaitility</groupId>
@@ -180,7 +179,10 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -219,14 +221,19 @@
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>com.h2database:h2</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>javax.xml.bind:jaxb-api:jar</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>com.amazonaws</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>org.bouncycastle</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
+                            <ignoredNonTestScopedDependencies>
+                                <ignoredNonTestScopedDependency>org.bouncycastle</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.slf4j</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.projectlombok</ignoredNonTestScopedDependency>
+                            </ignoredNonTestScopedDependencies>
                         </configuration>
                     </execution>
                 </executions>

@@ -11,8 +11,8 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import jakarta.annotation.Generated;
 
-import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.ElementKind;

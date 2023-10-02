@@ -58,7 +58,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Slf4j
 class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
 
-    private static final int TIMEOUT_S = 15;
+    private static final int TIMEOUT_S = 30;
 
     private static int NUMBER_OF_TEST_USERS = 3;
     private static int NUMBER_OF_TEST_FILES = 5;

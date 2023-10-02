@@ -1,40 +1,40 @@
 package de.adorsys.datasafe.rest.impl.security;
 
-import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static de.adorsys.datasafe.rest.impl.security.SecurityConstants.TOKEN_HEADER;
 
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    public static final String[] SWAGGER_RESOURCES = {
-            "/v2/api-docs",
-            "/configuration/ui",
-            "/swagger-resources",
-            "/configuration/security",
-            "/swagger-ui.html",
-            "/webjars/**",
-            "/swagger-resources/configuration/ui",
-            "/swagger-ui.html"
-    };
+@EnableMethodSecurity(securedEnabled = true)
+public class SecurityConfig {
 
     private final SecurityProperties securityProperties;
 
@@ -42,28 +42,48 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.securityProperties = securityProperties;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and()
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers(SWAGGER_RESOURCES).permitAll()
-                .antMatchers("/static/**").permitAll()
-                .antMatchers(SecurityConstants.AUTH_LOGIN_URL).permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityProperties))
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc, AuthenticationManager authenticationManager) throws Exception {
+        MvcRequestMatcher[] SWAGGER_RESOURCES = {
+                mvc.pattern("/v2/api-docs"),
+                mvc.pattern("/configuration/ui"),
+                mvc.pattern("/swagger-resources"),
+                mvc.pattern("/configuration/security"),
+                mvc.pattern("/swagger-ui.html"),
+                mvc.pattern("/webjars/**"),
+                mvc.pattern("/swagger-resources/configuration/ui"),
+                mvc.pattern("/swagger-ui.html")
+        };
+
+        http.cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(SWAGGER_RESOURCES).permitAll()
+                        .requestMatchers(mvc.pattern("/static/**")).permitAll()
+                        .requestMatchers(mvc.pattern(SecurityConstants.AUTH_LOGIN_URL)).permitAll()
+                        .requestMatchers(mvc.pattern(HttpMethod.OPTIONS, "/**")).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilter(new JwtAuthorizationFilter(authenticationManager, securityProperties))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
     }
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser(securityProperties.getDefaultUser())
-                .password(passwordEncoder().encode(securityProperties.getDefaultPassword()))
-                .authorities("ROLE_USER");
+    @Scope("prototype")
+    @Bean
+    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector);
+    }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+        UserDetails user = User.withDefaultPasswordEncoder()
+                .username(securityProperties.getDefaultUser())
+                .password(securityProperties.getDefaultPassword())
+                .authorities("ROLE_USER")
+                .build();
+        return new InMemoryUserDetailsManager(user);
     }
 
     @Bean
@@ -75,7 +95,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put("bcrypt", new BCryptPasswordEncoder());
+        return new DelegatingPasswordEncoder("bcrypt", encoders);
     }
 
     @Bean
@@ -95,15 +117,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
     @Bean
-    @SneakyThrows
-    public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(authenticationManager(), securityProperties);
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }
