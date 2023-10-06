@@ -11,10 +11,6 @@
 
     <artifactId>datasafe-business-tests-random-actions</artifactId>
 
-    <properties>
-        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>de.adorsys</groupId>
@@ -185,9 +181,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
+                <version>${surefire.version}</version>
                 <configuration>
-                    <forkMode>once</forkMode>
                     <argLine>${testArgs}</argLine>
                 </configuration>
             </plugin>
