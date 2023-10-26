@@ -45,13 +45,13 @@ public class KeyCreationConfig {
     public static class EncryptingKeyCreationCfg {
 
         @Builder.Default
-        private final String algo = "RSA";
+        private final String algo = "ECDH";
 
         @Builder.Default
-        private final int size = 2048;
+        private final int size = 256;
 
         @Builder.Default
-        private final String sigAlgo = "SHA256withRSA";
+        private final String sigAlgo = "SHA256withECDSA";
     }
 
     @Getter
@@ -59,12 +59,12 @@ public class KeyCreationConfig {
     public static class SigningKeyCreationCfg {
 
         @Builder.Default
-        private final String algo = "RSA";
+        private final String algo = "ECDH";
 
         @Builder.Default
-        private final int size = 2048;
+        private final int size = 256;
 
         @Builder.Default
-        private final String sigAlgo = "SHA256withRSA";
+        private final String sigAlgo = "SHA256withECDSA";
     }
 }
