@@ -374,8 +374,7 @@
                         ${surefireArgLine},
                         --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,
                         --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED,
                     </argLine>
                 </configuration>
             </plugin>
