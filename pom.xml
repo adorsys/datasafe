@@ -122,6 +122,7 @@
         <keymanagement.version>0.0.9</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
         <jaxb-api.version>2.3.1</jaxb-api.version>
+        <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
     </properties>
 
     <dependencies>
@@ -554,6 +555,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
                         <configuration>
                             <!-- Exclude Dagger2 generated code -->
                             <sourceFileExcludes>**/*Dagger*</sourceFileExcludes>
