@@ -52,6 +52,9 @@ public class KeyCreationConfig {
 
         @Builder.Default
         private final String sigAlgo = "SHA256withECDSA";
+
+        @Builder.Default
+        private final String customNamedCurve = "Curve25519";
     }
 
     @Getter
@@ -66,5 +69,8 @@ public class KeyCreationConfig {
 
         @Builder.Default
         private final String sigAlgo = "SHA256withECDSA";
+
+        @Builder.Default
+        private final String customNamedCurve = "Curve25519";
     }
 }
