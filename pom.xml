@@ -113,7 +113,7 @@
         <spring.framework.boot.version>3.1.2</spring.framework.boot.version>
         <siv-mode.version>1.4.4</siv-mode.version>
         <jackson.version>2.16.1</jackson.version>
-        <keymanagement.version>0.0.9</keymanagement.version>
+        <keymanagement.version>0.0.11</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>

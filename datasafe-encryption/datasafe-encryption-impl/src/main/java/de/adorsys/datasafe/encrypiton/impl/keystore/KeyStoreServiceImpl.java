@@ -19,6 +19,8 @@ import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
 import de.adorsys.keymanagement.api.types.template.generated.Secret;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
+import org.bouncycastle.jcajce.provider.asymmetric.util.EC5Util;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -89,6 +91,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                         .keySize(encConf.getSize())
                         .prefix("ENC")
                         .password(passSupplier)
+                        .paramSpec(EC5Util.convertToSpec(CustomNamedCurves.getByName(encConf.getCustomNamedCurve())))
                         .build()
                         .repeat(keyConfig.getEncKeyNumber())
                 )
