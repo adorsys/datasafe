@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ErrorStateMatcher} from "@angular/material";
+import {ErrorStateMatcher} from "@angular/material/core";
 import {FormControl, FormGroupDirective, NgForm} from "@angular/forms";
 
 export class Env {

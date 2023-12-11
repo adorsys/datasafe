@@ -7,7 +7,7 @@ import {ApiService} from "../../service/api/api.service";
 import {CredentialsService} from "../../service/credentials/credentials.service";
 import {Router} from "@angular/router";
 import {ErrorMessageUtil} from "../../app.component";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 
 class UserFileSystem {
 
@@ -39,6 +39,7 @@ class UserFileSystem {
 
     var fullPath = "";
     var folder = "";
+    path = (path.startsWith('/')) ? path.substring(1) : path;
     path.split("/").forEach(segment => {
       fullPath += segment;
       fullPath += (fullPath === path ? "" : "/");
@@ -302,7 +303,7 @@ export class FiletreeComponent {
     this.error = '';
     this.removePathFromUiCreatedFolders(path);
     this.api.deleteDocument(path, this.creds.getCredentialsForApi())
-        .then(res => this.loadTree())
+        .then(_ => this.loadTree())
         .catch(err => this.error = 'Delete failed: ' + ErrorMessageUtil.extract(err));
   }
 
@@ -316,7 +317,7 @@ export class FiletreeComponent {
   uploadFile(event) {
     this.error = '';
     this.api.uploadDocument(event.target.files[0], event.target.files[0].name, this.creds.getCredentialsForApi())
-        .then(res => this.loadTree())
+        .then(_ => this.loadTree())
         .catch(err => {
           this.error = 'Upload failed: ' + ErrorMessageUtil.extract(err);
         });
@@ -328,7 +329,7 @@ export class FiletreeComponent {
         event.currentTarget.files[0],
         event.currentTarget.name + event.currentTarget.files[0].name,
         this.creds.getCredentialsForApi())
-        .then(res => this.loadTree())
+        .then(_ => this.loadTree())
         .catch(err => {
           this.error = 'Upload failed: ' + ErrorMessageUtil.extract(err);
         });
