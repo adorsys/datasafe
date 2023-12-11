@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {CredentialsService} from '../../service/credentials/credentials.service';
 import {Env, FieldErrorStateMatcher} from '../../app.component';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 
 export interface ApiConfigData {
   apiUrl: string;
