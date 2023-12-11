@@ -3,6 +3,8 @@
 Use `npm run-script ng:serve:web` for local development
 Use `npm run-script start` for electron development
 
+Use `ng serve -c dev` if you need to debug
+
 ### Notes
 - API url and credentials are provided by env.js file (API_URL, API_USERNAME, API_PASSWORD). 
 Credentials (API_USERNAME, API_PASSWORD) are intended for local use only. 
