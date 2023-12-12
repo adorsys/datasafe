@@ -21,7 +21,7 @@ Datasafe supports various storage options, including Amazon S3, Minio, and local
 
 In each user's private space, both the document and its path are encrypted. A user can write a document to the recipient's inbox space using the recipient's public key, ensuring that only the intended recipient can read a document.
 
-For storage systems lacking native file versioning support (e.g. simple file system), Datasafe provides an application layer versioning capability.
+For storage systems lacking native file versioning support (e.g. simple file system), datasafe provides an application layer versioning capability.
 
 ## Technical Features
 -  Flexibility - you can easily change encryption and configure or customize other aspects of library
@@ -34,21 +34,18 @@ For storage systems lacking native file versioning support (e.g. simple file sys
 -  Thorough application logic and performance testing
 
 ## Deployment Model
-Followings are among others possible deployment model of the datasafe application.
+Followings are among others possible deployment models of the datasafe application.
 ![Datasafe deployment model](./docs/demo/deployment-model.png)
 
 ## Performance
-
-Datasafe was tested for performance on the AWS. 
-In short, an m5.xlarge AWS instance with the Datasafe library can have write throughput of 50 MiB/s 
-and a read throughput 80 MiB/s of, when using **Amazon S3 bucket** as backing storage (performance is CPU-bound and network-bound).
+Datasafe was tested for performance on the AWS. In short, an m5.xlarge AWS instance with the datasafe library can have write throughput of 50 MiB/s and a read throughput 80 MiB/s of, when using **Amazon S3 bucket** as backing storage (performance is CPU-bound and network-bound).
 
 Detailed performance report is here:
 [Datasafe performance results](datasafe-long-run-tests/README.md)
 
 ## Quick demo
 ### Datasafe-CLI
-You can try Datasafe as a CLI (command-line-interface) executable for encryption of your own sensitive files.
+You can try datasafe as a CLI (command-line-interface) executable for encryption of your own sensitive files.
 Your encrypted files can be saved either in S3 bucket or local filesystem safely, because encryption will happen
 locally - on your machine (See [CLI-README](datasafe-cli/README.md) for details).
 
@@ -69,7 +66,7 @@ locally - on your machine (See [CLI-README](datasafe-cli/README.md) for details)
 ```bash
 curl -L https://github.com/adorsys/datasafe/releases/download/v0.6.0/datasafe-cli-osx-x64 > datasafe-cli && chmod +x datasafe-cli
 ```
-- Create file with your credentials (they also can be passed through commandline)
+- Create file with your credentials (they also can be passed through command line)
 
 ```bash
 echo '{"username": "john", "password": "Doe", "systemPassword": "password"}' > john.credentials
@@ -191,7 +188,7 @@ To add S3 storage provider:
 
 
 # Project overview
-In short, Datasafe [core logic](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/DefaultDatasafeServices.java)
+In short, datasafe [core logic](datasafe-business/src/main/java/de/adorsys/datasafe/business/impl/service/DefaultDatasafeServices.java)
 provides these key services:
 * [Privatespace service](datasafe-privatestore/datasafe-privatestore-impl/src/main/java/de/adorsys/datasafe/privatestore/impl/PrivateSpaceServiceImpl.java)
 that securely stores private files by encrypting them using users' secret key.
@@ -281,7 +278,7 @@ TODO: Migrate to AsciiDoc for automatic snippet embedding.
 -->
 
 ## Generic Datasafe Usage
-First, you want to create Datasafe services. This snippet provides you Datasafe that uses filesystem storage adapter:
+First, you want to create datasafe services. This snippet provides a datasafe that uses filesystem storage adapter:
 [Example:Create Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithDefaultDatasafeTest.java#L46-L52)
 ```groovy
 // this will create all Datasafe files and user documents under <temp dir path>
@@ -407,10 +404,10 @@ Suppose we need to preserve file history, so accidental file removal won't destr
 we can use storage provider that supports versioning. But if we have storage provider does not support versions
 (i.e. minio) we can turn-on software versioning, here is its usage examples;
 
-First, we will obtain versioned Datasafe services that uses filesystem storage adapter:
-[Example:Create versioned Datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L47-L53)
+First, we will obtain versioned datasafe services that uses filesystem storage adapter:
+[Example:Create versioned datasafe services](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/BaseUserOperationsTestWithVersionedDatasafeTest.java#L47-L53)
 ```groovy
-// this will create all Datasafe files and user documents under <temp dir path>
+// this will create all datasafe files and user documents under <temp dir path>
 versionedServices = DaggerVersionedDatasafeServices.builder()
         .config(new DefaultDFSConfig(root.toAbsolutePath().toUri(), "secret"::toCharArray))
         .storage(new FileSystemStorageService(root))
@@ -583,10 +580,10 @@ assertThat(defaultDatasafeServices.privateService().read(
 ```
 
 ## Overriding Datasafe Functionality
-Whenever you want to have some custom functionality of Datasafe, instead of default ones, there are
+Whenever you want to have some custom functionality of datasafe, instead of default ones, there are
 two possible ways to achieve this:
 - using OverridesRegistry without project recompilation.
-- using Dagger2 to build a customized version of Datasafe.
+- using Dagger2 to build a customized version of datasafe.
 
 ### Overriding Functionality without Recompilation
 This approach is for classes annotated with
@@ -596,7 +593,7 @@ and it works by putting the custom implementation of a class to be overridden in
 During runtime, when accessing desired functionality, the library will look into OverridesRegistry for
 custom class implementation and use it if present. This one has the advantage of not requiring recompilation of
 Datasafe library, but has a limitation of working on static dependency graph - you can't rebuild it.
-[Example:Create overridable Datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L31-L53)
+[Example:Create overridable datasafe services without recompilation](datasafe-examples/datasafe-examples-business/src/test/java/de/adorsys/datasafe/examples/business/filesystem/RuntimeOverrideOperationsTest.java#L31-L53)
 ```groovy
 // This shows how to override path encryption service, in particular we are going to disable it
 OverridesRegistry registry = new BaseOverridesRegistry();
@@ -622,11 +619,11 @@ assertThat(Files.walk(root)).asString().contains("file.txt");
 ```
 
 ### Overriding Functionality by Building custom Datasafe Library
-This is actually the preferred way to override something or to customize Datasafe. It has no limitations because
-you can compose any Datasafe service you want using Dagger2 for dependency injection. Its major drawback is that
+This is actually the preferred way to override something or to customize datasafe. It has no limitations because
+you can compose any datasafe service you want using Dagger2 for dependency injection. Its major drawback is that
 you need to add a dependency to Dagger2 into your project and compile this custom library version. Because of
 compile-time dependency injection and modular structure it is a comparatively error-free approach.
-To create custom Datasafe service we need to follow these 3 steps:
+To create custom datasafe service we need to follow these 3 steps:
 1. Create your own custom module (or modules) - see [CustomPathEncryptionModule](datasafe-examples/datasafe-examples-customize-dagger/src/main/java/de/adorsys/datasafe/examples/business/filesystem/CustomPathEncryptionModule.java)
 1. Create custom Datasafe with custom module list - see [CustomlyBuiltDatasafeServices](datasafe-examples/datasafe-examples-customize-dagger/src/main/java/de/adorsys/datasafe/examples/business/filesystem/CustomlyBuiltDatasafeServices.java)
 1. Use custom-built Datasafe as shown here:
