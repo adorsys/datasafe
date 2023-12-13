@@ -24,7 +24,7 @@ import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
  * It means that path/to/file is encrypted to cipher(path)/cipher(to)/cipher(file) and each invocation of example:
  * cipher(path) will yield same string, but cipher(path)/cipher(path) will not yield same segments -
  * it will be more like abc/cde and not like abc/abc.
- * Additionally each segment is authenticated against its parent path hash, so attacker can't
+ * Additionally, each segment is authenticated against its parent path hash, so attacker can't
  * move a/file to b/file without being detected.
  */
 @Slf4j

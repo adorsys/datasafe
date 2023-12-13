@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Cryptographic message syntax document encoder/decoder - see
  *
- * @see <a href=https://en.wikipedia.org/wiki/Cryptographic_Message_Syntax">CMS
+ * @see <a href="https://en.wikipedia.org/wiki/Cryptographic_Message_Syntax">CMS
  * wiki</a>
  */
 @Slf4j

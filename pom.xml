@@ -25,7 +25,7 @@
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>2.0.2</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -78,50 +78,59 @@
         <jacoco.reportPath>${basedir}/../../target/jacoco.exec</jacoco.reportPath>
         <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
 
-        <java.version>1.8</java.version>
         <graal.version>19.2.0</graal.version>
-        <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
-        <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
-        <lombok.version>1.18.6</lombok.version>
-        <gson.version>2.8.5</gson.version>
-        <dagger.version>2.24</dagger.version>
-        <guava.version>27.0.1-jre</guava.version>
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.dependency.plugin.version>3.6.0</maven.dependency.plugin.version>
+        <lombok.version>1.18.30</lombok.version>
+        <gson.version>2.8.9</gson.version>
+        <dagger.version>2.46.1</dagger.version>
+        <guava.version>32.1.1-jre</guava.version>
         <picocli.version>4.0.3</picocli.version>
-        <jupiter.version>5.4.1</jupiter.version>
-        <junit.platform.version>1.4.1</junit.platform.version>
+        <jupiter.version>5.10.0</jupiter.version>
         <assertj.version>3.12.2</assertj.version>
-        <mockito.version>2.25.1</mockito.version>
-        <surefire.version>2.22.1</surefire.version>
+        <mockito.version>5.5.0</mockito.version>
+        <surefire.version>3.1.2</surefire.version>
         <compress.version>1.21</compress.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <testcontainers.version>1.17.6</testcontainers.version>
-        <jacoco.version>0.8.4</jacoco.version>
+        <testcontainers.version>1.18.3</testcontainers.version>
+        <jacoco.version>0.8.10</jacoco.version>
         <commons.io.version>2.5</commons.io.version>
-        <slf4j-simple.version>1.7.25</slf4j-simple.version>
-        <drools.version>6.5.0.Final</drools.version>
-        <lombok-maven-plugin.version>1.18.6.0</lombok-maven-plugin.version>
+        <slf4j-simple.version>2.0.7</slf4j-simple.version>
+        <drools.version>9.44.0.Final</drools.version>
+        <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
         <awaitility.version>3.0.0</awaitility.version>
         <xml-maven-plugin.version>1.0.2</xml-maven-plugin.version>
-        <amazon.aws.version>1.11.538</amazon.aws.version>
+        <amazon.aws.version>1.12.402</amazon.aws.version>
         <jsr-305.version>3.0.0</jsr-305.version>
         <javax-inject.version>1</javax-inject.version>
         <javapoet.version>1.9.0</javapoet.version>
         <auto-service.version>1.0-rc4</auto-service.version>
-        <compile-testing.version>0.18</compile-testing.version>
-        <maven.jar.plugin>3.1.0</maven.jar.plugin>
-        <spring.jdbc>5.1.8.RELEASE</spring.jdbc>
+        <compile-testing.version>0.21.0</compile-testing.version>
+        <maven.jar.plugin>3.3.0</maven.jar.plugin>
         <hikari.cp>3.3.1</hikari.cp>
-        <h2.database>1.4.199</h2.database>
-        <mysql.version>8.0.16</mysql.version>
-        <liquibase>3.6.1</liquibase>
-        <spring.framework.version>5.1.7.RELEASE</spring.framework.version>
-        <spring.framework.boot.version>2.1.5.RELEASE</spring.framework.boot.version>
-        <siv-mode.version>1.3.1</siv-mode.version>
-        <jackson.version>2.11.2</jackson.version>
-        <keymanagement.version>0.0.6</keymanagement.version>
+        <h2.database>2.2.220</h2.database>
+        <mysql.version>8.1.0</mysql.version>
+        <liquibase>4.23.1</liquibase>
+        <spring.framework.version>6.0.11</spring.framework.version>
+        <spring.framework.boot.version>3.1.2</spring.framework.boot.version>
+        <siv-mode.version>1.4.4</siv-mode.version>
+        <jackson.version>2.12.7</jackson.version>
+        <jackson-databind.version>2.12.7.1</jackson-databind.version>
+        <keymanagement.version>0.0.9</keymanagement.version>
+        <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
+        <buildnumber-maven-plugin.version>1.3</buildnumber-maven-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
+        <maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
+        <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -196,6 +205,11 @@
                 <version>${javax-inject.version}</version>
             </dependency>
             <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation-api.varsion}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.squareup</groupId>
                 <artifactId>javapoet</artifactId>
                 <version>${javapoet.version}</version>
@@ -252,12 +266,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.junit.platform</groupId>
-                <artifactId>junit-platform-commons</artifactId>
-                <version>${junit.platform.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.version}</version>
@@ -274,6 +282,12 @@
                 <artifactId>testcontainers</artifactId>
                 <version>${testcontainers.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -313,12 +327,17 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>
-                <version>${spring.jdbc}</version>
+                <version>${spring.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP</artifactId>
                 <version>${hikari.cp}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
             </dependency>
 	    </dependencies>
 	</dependencyManagement>
@@ -359,7 +378,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
                 <configuration>
-                    <argLine>${surefireArgLine}</argLine>
+                    <argLine>
+                        ${surefireArgLine},
+                        --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,
+                        --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,
+                        --add-exports jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED,
+                    </argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -384,6 +408,24 @@
                                 <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-runtime-delegate</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
+                            <ignoredNonTestScopedDependencies>
+                                <ignoredNonTestScopedDependency>org.bouncycastle:bcprov-jdk15on</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.slf4j:slf4j-api:jar</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.projectlombok:lombok</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-business</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-simple-adapter-impl</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-types-api</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-storage-api</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-encryption-api</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-directory-impl</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-inbox-api</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-privatestore-api</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-directory-api</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-simple-adapter-api</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>com.google.guava:guava</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>com.google.code.gson:gson</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys.keymanagement:juggler-bouncycastle</ignoredNonTestScopedDependency>
+                            </ignoredNonTestScopedDependencies>
                         </configuration>
                     </execution>
                 </executions>
@@ -496,6 +538,14 @@
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok-maven-plugin</artifactId>
                         <version>${lombok-maven-plugin.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </dependency>
+                        </dependencies>
+
                         <executions>
                             <execution>
                                 <phase>generate-sources</phase>
@@ -512,6 +562,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
                         <configuration>
                             <!-- Exclude Dagger2 generated code -->
                             <sourceFileExcludes>**/*Dagger*</sourceFileExcludes>
@@ -529,18 +580,20 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
+                        <version>${nexus-staging-maven-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>sonatype</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
+                            <stagingProgressTimeoutMinutes>30</stagingProgressTimeoutMinutes>
                         </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>${maven-source-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -553,8 +606,13 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <configuration>
+                            <keyname>opensource@adorsys.de</keyname>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
                         </configuration>
                         <executions>
                             <execution>
@@ -563,14 +621,21 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
                         <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <additionalOptions>-Xdoclint:none</additionalOptions>
                         </configuration>
                         <executions>
                             <execution>
@@ -588,11 +653,11 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-project-info-reports-plugin</artifactId>
-                            <version>2.7</version>
+                            <version>${maven-project-info-reports-plugin.version}</version>
                         </plugin>
                         <plugin>
                             <artifactId>maven-release-plugin</artifactId>
-                            <version>2.5.2</version>
+                            <version>${maven-release-plugin.version}</version>
                             <configuration>
                                 <releaseProfiles>release</releaseProfiles>
                                 <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -602,7 +667,7 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-jar-plugin</artifactId>
-                            <version>2.6</version>
+                            <version>${maven-jar-plugin.version}</version>
                             <configuration>
                                 <archive>
                                     <manifest>
@@ -625,7 +690,7 @@
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>buildnumber-maven-plugin</artifactId>
-                            <version>1.3</version>
+                            <version>${buildnumber-maven-plugin.version}</version>
                             <executions>
                                 <execution>
                                     <phase>validate</phase>
@@ -642,7 +707,7 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-deploy-plugin</artifactId>
-                            <version>2.8.1</version>
+                            <version>${maven-deploy-plugin.version}</version>
                             <configuration>
                                 <skip>${deploy.disabled}</skip>
                             </configuration>

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
@@ -51,6 +52,7 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
 
     @BeforeEach
     public void setup() {
+        openMocks = MockitoAnnotations.openMocks(this);
         when(dataSafeService.userProfile()).thenReturn(userProfile);
         gson = new Gson();
     }
