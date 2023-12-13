@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/adorsys/datasafe/branch/develop/graph/badge.svg)](https://codecov.io/gh/adorsys/datasafe)
 [![Maintainability](https://api.codeclimate.com/v1/badges/06ae7d4cafc3012cee85/maintainability)](https://codeclimate.com/github/adorsys/datasafe/maintainability)
 
-# Datasafe: Secure, Encrypted and Versioned Data Storage Library
+# Secure, Encrypted and Versioned Data Storage Library
 
 ## Overview
 Datasafe is a robust library tailored for developers and enterprises, offering encrypted and versioned data storage. It enhances the security of data-sensitive applications, making it ideal for mission-critical usage.
@@ -21,7 +21,7 @@ Datasafe uses AES-GCM (and Chacha-Poly for large files) for encryption, with CMS
 - **Configurability**: Dagger2 for dependency injection and modular design.
 - **Storage Compatibility**: Tested with Amazon S3, Minio, CEPH, and local filesystems.
 - **User Privacy**: Encrypts both the document and its path in each user's private space.
-- **Versioning Support**: Provides application layer versioning for systems lacking native support.
+- **Versioning Support**: Provides application layer versioning for systems lacking native versioning support.
 
 ## Getting Started
 

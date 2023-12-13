@@ -34,7 +34,7 @@ the default value when prompted.
 ```
 </details>
 
-![new_profile](docs/demo/new_profile.gif)
+![new_profile](../demo/new_profile.gif)
 
 **Note**: Instead of creating file with credentials you can provide credentials directly into terminal (this is less
 secure than having credentials file, but is fine for demo purposes):
@@ -76,7 +76,7 @@ cat private/encrypted_file_name_from_above
 ```
 </details>
 
-![encrypt_decrypt_file](docs/demo/encrypt_decrypt_file.gif)
+![encrypt_decrypt_file](../demo/encrypt_decrypt_file.gif)
 
 ##### You can always list available actions in context:
 
@@ -95,8 +95,8 @@ cat private/encrypted_file_name_from_above
 ```
 </details>
 
-![list_actions](docs/demo/list_actions.gif)
+![list_actions](../demo/list_actions.gif)
 
 ### REST API demo
-[Here](datasafe-rest-impl/DEMO.md) you can find quick docker-based demo of project capabilities with
+[Here](../../datasafe-rest-impl/DEMO.md) you can find quick docker-based demo of project capabilities with
 instructions of how to use it (REST-api based to show how to deploy as encryption server).
