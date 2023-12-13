@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 
 /**
  * This is Datasafe services customized implementation.
- * Note, that despite is has {@code @Singleton} annotation, it is not real singleton, the only shared thing
+ * Note, that despite it has {@code @Singleton} annotation, it is not real singleton, the only shared thing
  * across all services instantiated using build() is bindings with {@code Singleton} in its Module.
  */
 @Singleton
