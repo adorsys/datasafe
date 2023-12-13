@@ -11,6 +11,10 @@
 
     <artifactId>last-module-codecoverage-check</artifactId>
 
+    <properties>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.adorsys</groupId>
@@ -144,7 +148,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>${maven-resources-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
