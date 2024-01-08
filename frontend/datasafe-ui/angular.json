@@ -118,5 +118,8 @@
       }
     }
   },
-  "defaultProject": "datasafe-ui"
+  "defaultProject": "datasafe-ui",
+  "cli": {
+    "analytics": false
+  }
 }
