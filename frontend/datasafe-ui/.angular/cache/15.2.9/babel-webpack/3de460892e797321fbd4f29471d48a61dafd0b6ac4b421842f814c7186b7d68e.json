@@ -1,0 +1,1 @@
+{"ast":null,"code":"\"use strict\";\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nrequire(\"core-js/features/reflect\");\nrequire(\"zone.js/dist/zone\");\nrequire(\"hammerjs\");\nrequire(\"web-animations-js\");","map":null,"metadata":{},"sourceType":"script","externalDependencies":[]}
