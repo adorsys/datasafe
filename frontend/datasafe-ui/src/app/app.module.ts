@@ -34,7 +34,7 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     RouterModule.forRoot(appRoutes)
   ],
-  entryComponents: [AppComponent, AddFolderDialog, ConfigureApiDialog],
+
   declarations: [AppComponent, UserComponent, LoginComponent, RegisterComponent, FiletreeComponent, AddFolderDialog, ConfigureApiDialog],
   bootstrap: [AppComponent],
   providers: []
