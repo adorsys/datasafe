@@ -1,4 +1,4 @@
 import 'core-js/features/reflect';
-import 'zone.js/dist/zone';
+import 'zone.js';
 import 'hammerjs';
 import 'web-animations-js';
