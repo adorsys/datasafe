@@ -48,13 +48,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc, AuthenticationManager authenticationManager) throws Exception {
         MvcRequestMatcher[] swaggerResources = {
-                mvc.pattern("/v2/api-docs"),
-                mvc.pattern("/configuration/ui"),
-                mvc.pattern("/swagger-resources"),
-                mvc.pattern("/configuration/security"),
-                mvc.pattern("/swagger-ui.html"),
-                mvc.pattern("/webjars/**"),
-                mvc.pattern("/swagger-resources/configuration/ui"),
+                mvc.pattern("/v3/api-docs"),
                 mvc.pattern("/swagger-ui.html")
         };
         http.cors(withDefaults())
