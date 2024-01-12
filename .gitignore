@@ -42,4 +42,8 @@ hs_err_pid*
 # node.js / frontend
 node_modules/
 dist/
+.angular/
+main.js.map
+package-lock.json
+
 
