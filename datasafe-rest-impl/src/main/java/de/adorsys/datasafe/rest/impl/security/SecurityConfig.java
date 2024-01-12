@@ -57,7 +57,7 @@ public class SecurityConfig {
                         .requestMatchers(swaggerResources).permitAll()
                         .requestMatchers(mvc.pattern("/static/**")).permitAll()
                         .requestMatchers(mvc.pattern(SecurityConstants.AUTH_LOGIN_URL)).permitAll()
-                        .requestMatchers(mvc.pattern(HttpMethod.OPTIONS, "/**")).permitAll()
+                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilter(new JwtAuthorizationFilter(authenticationManager, securityProperties))
