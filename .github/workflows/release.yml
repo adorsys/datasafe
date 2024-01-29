@@ -1,0 +1,37 @@
+name: Release to Maven Central
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Step 2 - Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Step 3 - Cache Docker images.
+        uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: docker-${{ runner.os }}
+
+      - name: Step 4 - Maven deploy release
+        run: ./scripts/mvn_deploy.sh
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          GPG_EXECUTABLE: gpg
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
+
+#      - name: Step 4 - Push JavaDoc to GitHub Pages
+#        run: ./scripts/push-javadoc-to-gh-pages.sh
