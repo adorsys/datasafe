@@ -25,7 +25,7 @@
 
     <groupId>de.adorsys</groupId>
     <artifactId>datasafe</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <name>datasafe</name>
     <description>Datasafe</description>
     <url>https://github.com/adorsys/datasafe</url>
@@ -73,17 +73,12 @@
         <doclint>none</doclint>
         <src.dir>src/main/java</src.dir>
         <test.src.dir>src/test/java</test.src.dir>
-
-        <!-- TODO: should be maven.multiModuleProjectDirectory but not using it because Intellij does not support it -->
-        <jacoco.reportPath>${basedir}/../../target/jacoco.exec</jacoco.reportPath>
-        <jacoco.e2e.reportPath>${basedir}/../target/jacoco-e2e.exec</jacoco.e2e.reportPath>
-
         <graal.version>19.2.0</graal.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <maven.dependency.plugin.version>3.6.0</maven.dependency.plugin.version>
-        <lombok.version>1.18.28</lombok.version>
+        <maven.dependency.plugin.version>3.6.1</maven.dependency.plugin.version>
+        <lombok.version>1.18.30</lombok.version>
         <gson.version>2.8.9</gson.version>
         <dagger.version>2.46.1</dagger.version>
         <guava.version>32.1.1-jre</guava.version>
@@ -91,19 +86,19 @@
         <jupiter.version>5.10.0</jupiter.version>
         <assertj.version>3.12.2</assertj.version>
         <mockito.version>5.5.0</mockito.version>
-        <surefire.version>2.22.1</surefire.version>
+        <surefire.version>3.1.2</surefire.version>
         <compress.version>1.21</compress.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
         <testcontainers.version>1.18.3</testcontainers.version>
-        <jacoco.version>0.8.10</jacoco.version>
+        <jacoco.version>0.8.11</jacoco.version>
         <commons.io.version>2.5</commons.io.version>
         <slf4j-simple.version>2.0.7</slf4j-simple.version>
         <drools.version>9.44.0.Final</drools.version>
         <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
         <awaitility.version>3.0.0</awaitility.version>
         <xml-maven-plugin.version>1.0.2</xml-maven-plugin.version>
-        <amazon.aws.version>1.12.402</amazon.aws.version>
+        <amazon.aws.version>1.12.646</amazon.aws.version>
         <jsr-305.version>3.0.0</jsr-305.version>
         <javax-inject.version>1</javax-inject.version>
         <javapoet.version>1.9.0</javapoet.version>
@@ -119,9 +114,18 @@
         <siv-mode.version>1.4.4</siv-mode.version>
         <jackson.version>2.12.7</jackson.version>
         <jackson-databind.version>2.12.7.1</jackson-databind.version>
-        <keymanagement.version>0.0.7</keymanagement.version>
+        <keymanagement.version>0.0.9</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
         <jaxb-api.version>2.3.1</jaxb-api.version>
+        <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
+        <buildnumber-maven-plugin.version>1.3</buildnumber-maven-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
+        <maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
+        <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -371,25 +375,14 @@
                 <configuration>
                     <argLine>
                         ${surefireArgLine},
-                        --add-opens java.base/java.lang=ALL-UNNAMED,
-
                         --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,
                         --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,
-
-                        --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,
-                        --add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED,
                     </argLine>
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven.dependency.plugin.version}</version>
                 <executions>
@@ -522,6 +515,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven.compiler.plugin.version}</version>
                         <configuration>
                             <annotationProcessorPaths>
                                 <path>
@@ -541,6 +535,14 @@
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok-maven-plugin</artifactId>
                         <version>${lombok-maven-plugin.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </dependency>
+                        </dependencies>
+
                         <executions>
                             <execution>
                                 <phase>generate-sources</phase>
@@ -557,6 +559,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
                         <configuration>
                             <!-- Exclude Dagger2 generated code -->
                             <sourceFileExcludes>**/*Dagger*</sourceFileExcludes>
@@ -574,7 +577,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
+                        <version>${nexus-staging-maven-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>sonatype</serverId>
@@ -585,7 +588,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>${maven-source-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -598,7 +601,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <configuration>
                         </configuration>
                         <executions>
@@ -614,8 +617,9 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
                         <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <additionalOptions>-Xdoclint:none</additionalOptions>
                         </configuration>
                         <executions>
                             <execution>
@@ -633,11 +637,11 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-project-info-reports-plugin</artifactId>
-                            <version>2.7</version>
+                            <version>${maven-project-info-reports-plugin.version}</version>
                         </plugin>
                         <plugin>
                             <artifactId>maven-release-plugin</artifactId>
-                            <version>2.5.2</version>
+                            <version>${maven-release-plugin.version}</version>
                             <configuration>
                                 <releaseProfiles>release</releaseProfiles>
                                 <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -647,7 +651,7 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-jar-plugin</artifactId>
-                            <version>2.6</version>
+                            <version>${maven-jar-plugin.version}</version>
                             <configuration>
                                 <archive>
                                     <manifest>
@@ -670,7 +674,7 @@
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>buildnumber-maven-plugin</artifactId>
-                            <version>1.3</version>
+                            <version>${buildnumber-maven-plugin.version}</version>
                             <executions>
                                 <execution>
                                     <phase>validate</phase>
@@ -687,7 +691,7 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-deploy-plugin</artifactId>
-                            <version>2.8.1</version>
+                            <version>${maven-deploy-plugin.version}</version>
                             <configuration>
                                 <skip>${deploy.disabled}</skip>
                             </configuration>
