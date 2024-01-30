@@ -73,10 +73,6 @@
         <doclint>none</doclint>
         <src.dir>src/main/java</src.dir>
         <test.src.dir>src/test/java</test.src.dir>
-
-        <jacoco.reportPath>${maven.multiModuleProjectDirectory}/target/jacoco.exec</jacoco.reportPath>
-        <jacoco.e2e.reportPath>${maven.multiModuleProjectDirectory}/target/jacoco-e2e.exec</jacoco.e2e.reportPath>
-
         <graal.version>19.2.0</graal.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
@@ -102,7 +98,7 @@
         <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
         <awaitility.version>3.0.0</awaitility.version>
         <xml-maven-plugin.version>1.0.2</xml-maven-plugin.version>
-        <amazon.aws.version>1.12.402</amazon.aws.version>
+        <amazon.aws.version>1.12.646</amazon.aws.version>
         <jsr-305.version>3.0.0</jsr-305.version>
         <javax-inject.version>1</javax-inject.version>
         <javapoet.version>1.9.0</javapoet.version>
