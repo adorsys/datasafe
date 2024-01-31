@@ -15,11 +15,11 @@
     <properties>
         <spring-boot.version>3.1.2</spring-boot.version>
         <springfox-swagger.version>2.9.2</springfox-swagger.version>
-        <jjwt.version>0.10.5</jjwt.version>
+        <jjwt.version>0.12.4</jjwt.version>
         <spring-restdocs.version>3.0.0</spring-restdocs.version>
         <asciidoctor-maven-plugin.version>2.2.4</asciidoctor-maven-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-        <jakarta.validation-api.varsion>3.0.2</jakarta.validation-api.varsion>
+        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
     </properties>
 
     <dependencies>
@@ -60,11 +60,6 @@
             <version>${spring-boot.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>2.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
             <version>${spring-boot.version}</version>
@@ -81,20 +76,11 @@
             <version>${spring-boot.version}</version>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>${jakarta.validation-api.varsion}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jakarta.validation-api.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

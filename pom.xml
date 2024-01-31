@@ -112,8 +112,7 @@
         <spring.framework.version>6.0.11</spring.framework.version>
         <spring.framework.boot.version>3.1.2</spring.framework.boot.version>
         <siv-mode.version>1.4.4</siv-mode.version>
-        <jackson.version>2.12.7</jackson.version>
-        <jackson-databind.version>2.12.7.1</jackson-databind.version>
+        <jackson.version>2.16.1</jackson.version>
         <keymanagement.version>0.0.9</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
         <jaxb-api.version>2.3.1</jaxb-api.version>
@@ -333,6 +332,27 @@
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+                <scope>test</scope>
             </dependency>
 	    </dependencies>
 	</dependencyManagement>

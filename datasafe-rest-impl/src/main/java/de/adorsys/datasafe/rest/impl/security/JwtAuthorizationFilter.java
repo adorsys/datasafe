@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,9 +20,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -74,19 +75,20 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken tryAuthenticate(String token) {
         byte[] signingKey = securityProperties.getJwtSecret().getBytes();
+        SecretKey secret = Keys.hmacShaKeyFor(signingKey);
 
         Jws<Claims> parsedToken = Jwts.parser()
-                .setSigningKey(signingKey)
-                .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""));
+                .verifyWith(secret).build()
+                .parseSignedClaims(token.replace(SecurityConstants.TOKEN_PREFIX, ""));
 
         String username = parsedToken
-                .getBody()
+                .getPayload()
                 .getSubject();
 
-        List<SimpleGrantedAuthority> authorities = ((List<?>) parsedToken.getBody()
+        List<SimpleGrantedAuthority> authorities = ((List<?>) parsedToken.getPayload()
                 .get(SecurityConstants.ROLES_NAME)).stream()
                 .map(authority -> new SimpleGrantedAuthority((String) authority))
-                .collect(Collectors.toList());
+                .toList();
 
         if (!Strings.isNullOrEmpty(username)) {
             return new UsernamePasswordAuthenticationToken(username, null, authorities);
