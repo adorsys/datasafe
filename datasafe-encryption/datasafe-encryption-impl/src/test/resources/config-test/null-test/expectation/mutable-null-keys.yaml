@@ -17,12 +17,14 @@ keys:
     algo: AES
     size: 256
   encrypting:
-    algo: RSA
-    size: 2048
-    sigAlgo: SHA256withRSA
+    algo: ECDH
+    size: 256
+    sigAlgo: SHA256withECDSA
+    curve: Curve25519
   signing:
-    algo: RSA
-    size: 2048
-    sigAlgo: SHA256withRSA
+    algo: ECDH
+    size: 256
+    sigAlgo: SHA256withECDSA
+    curve: Curve25519
 cms:
   algo: cms-algo1
