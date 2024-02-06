@@ -8,6 +8,7 @@ import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.DecryptorFac
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
 import de.adorsys.datasafe.encrypiton.impl.utils.ProviderUtils;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -82,10 +83,10 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     @SneakyThrows
     public JceKeyAgreeRecipientInfoGenerator getJceKeyAgreeRecipientInfoGenerator(KeyPair senderKeyPair, PublicKeyIDWithPublicKey publicKeyWithId) {
         var jceKeyAgreeRecipientInfoGenerator = new JceKeyAgreeRecipientInfoGenerator(
-                CMSAlgorithm.ECDH_SHA1KDF,
+                CMSAlgorithm.ECDH_SHA256KDF,
                 senderKeyPair.getPrivate(),
                 senderKeyPair.getPublic(),
-                CMSAlgorithm.AES128_WRAP);
+                encryptionConfig.getAlgorithm());
         jceKeyAgreeRecipientInfoGenerator.addRecipient(publicKeyWithId.getKeyID().getValue().getBytes(), publicKeyWithId.getPublicKey());
         return jceKeyAgreeRecipientInfoGenerator;
     }
