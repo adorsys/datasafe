@@ -13,6 +13,9 @@ import org.springframework.http.MediaType;
 
 import java.io.ByteArrayOutputStream;
 
+import static de.adorsys.datasafe.rest.impl.controller.BaseTokenDatasafeEndpointTest.TEST_PASS;
+import static de.adorsys.datasafe.rest.impl.controller.BaseTokenDatasafeEndpointTest.TEST_USER;
+import static de.adorsys.datasafe.rest.impl.controller.BaseTokenDatasafeEndpointTest.TEST_USER_RECIPIENT;
 import static de.adorsys.datasafe.rest.impl.controller.TestHelper.putFileBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,8 +29,6 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
 
     private static final String DEFAULT_TEST_USERNAME = "username";
     private static final String DEFAULT_TEST_PASSWORD = "password";
-
-    private static final String TEST_USER = "test";
     private static final String TEST_PATH = "test.txt";
 
     @MockBean
@@ -81,12 +82,14 @@ public class AuthenticateControllerTest extends BaseDatasafeEndpointTest {
         String token = sendAuthenticateRequest(userDTO).getResponse().getHeader(SecurityConstants.TOKEN_HEADER);
 
         mvc.perform(
-               putFileBuilder("/inbox/document/{path}", TEST_PATH).
-               contentType(MediaType.MULTIPART_FORM_DATA_VALUE).
-               content("file content".getBytes()).
-               header("users", TEST_USER).
-               header(SecurityConstants.TOKEN_HEADER, token))
-           .andExpect(status().isOk());
+                putFileBuilder("/inbox/document/{path}", TEST_PATH)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                        .content("file content".getBytes())
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("recipients", TEST_USER_RECIPIENT)
+                        .header(SecurityConstants.TOKEN_HEADER, token))
+                .andExpect(status().isOk());
     }
 
     @SneakyThrows

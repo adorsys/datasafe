@@ -15,6 +15,9 @@ public abstract class BaseTokenDatasafeEndpointTest extends BaseDatasafeEndpoint
     static final String PASSWORD_DESCRIPTION = "datasafe user's password";
 
     static final String TEST_USER = "test";
+
+    static final String TEST_USER_RECIPIENT = "recipient";
+
     static final ReadKeyPassword TEST_PASS = ReadKeyPasswordHelper.getForString("test");
     String token;
 
