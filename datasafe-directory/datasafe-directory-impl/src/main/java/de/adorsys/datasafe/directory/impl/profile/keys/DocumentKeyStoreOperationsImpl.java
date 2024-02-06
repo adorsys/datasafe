@@ -25,7 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.io.OutputStream;
 import java.security.Key;
+import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.util.List;
 import java.util.Set;
 
@@ -101,6 +103,16 @@ public class DocumentKeyStoreOperationsImpl implements DocumentKeyStoreOperation
         log.debug("Updating users' '{}' document keystore ReadKeyPassword", forUser.getUserID());
         AbsoluteLocation<PrivateResource> location = keystoreLocationWithAccess(forUser);
         genericOper.updateReadKeyPassword(keyStore(forUser), location, forUser, newPassword);
+    }
+
+    @Override
+    @SneakyThrows
+    public KeyPair getKeyPair(UserIDAuth forUser) {
+        KeyStore keyStore = keyStore(forUser);
+        KeyStoreAuth auth = keystoreAuth(forUser, forUser.getReadKeyPassword());
+        List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(new KeyStoreAccess(keyStore, auth));
+        Key key = genericOper.getKey(() -> keyStore(forUser), forUser, publicKeys.get(0).getKeyID().getValue());
+        return new KeyPair(publicKeys.get(0).getPublicKey(), (PrivateKey) key);
     }
 
     private AbsoluteLocation<PrivateResource> keystoreLocationWithAccess(UserIDAuth forUser) {

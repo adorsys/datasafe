@@ -8,6 +8,7 @@ import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.global.Version;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -194,12 +195,15 @@ class BasicFunctionalityIT extends BaseE2EIT {
     void testMultipleRecipientsSharing(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
+        UserIDAuth owner = registerUser("owner");
+
         UserIDAuth john = registerUser("john");
         UserIDAuth jane = registerUser("jane");
         UserIDAuth jamie = registerUser("jamie");
 
         String multiShareFile = "multishare.txt";
-        try (OutputStream os = writeToInbox.write(WriteRequest.forDefaultPublic(
+        try (OutputStream os = writeToInbox.write(WriteInboxRequest.forDefaultPublic(
+                owner,
                 ImmutableSet.of(john.getUserID(), jane.getUserID(), jamie.getUserID()),
                 multiShareFile))
         ) {
@@ -217,6 +221,8 @@ class BasicFunctionalityIT extends BaseE2EIT {
     void testMultipleRecipientsSharingLargeChunk(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
+        UserIDAuth owner = registerUser("owner");
+
         UserIDAuth john = registerUser("john");
         UserIDAuth jane = registerUser("jane");
         UserIDAuth jamie = registerUser("jamie");
@@ -224,7 +230,8 @@ class BasicFunctionalityIT extends BaseE2EIT {
         String multiShareFile = "multishare.txt";
         byte[] bytes = new byte[LARGE_SIZE];
         ThreadLocalRandom.current().nextBytes(bytes);
-        try (OutputStream os = writeToInbox.write(WriteRequest.forDefaultPublic(
+        try (OutputStream os = writeToInbox.write(WriteInboxRequest.forDefaultPublic(
+                owner,
                 ImmutableSet.of(john.getUserID(), jane.getUserID(), jamie.getUserID()),
                 multiShareFile))
         ) {
@@ -253,7 +260,7 @@ class BasicFunctionalityIT extends BaseE2EIT {
 
         String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource().asPrivate());
 
-        sendToInbox(john.getUserID(), SHARED_FILE_PATH, privateContentJane);
+        sendToInbox(jane, john.getUserID(), SHARED_FILE_PATH, privateContentJane);
 
         AbsoluteLocation<ResolvedResource> inboxJohn = getFirstFileInInbox(john);
 
@@ -308,9 +315,9 @@ class BasicFunctionalityIT extends BaseE2EIT {
 
         registerJohnAndJane();
 
-        writeDataToInbox(jane, "root.file", MESSAGE_ONE);
-        writeDataToInbox(jane, "level1/file", MESSAGE_ONE);
-        writeDataToInbox(jane, "level1/level2/file", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "root.file", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "level1/file", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "level1/level2/file", MESSAGE_ONE);
 
         assertInboxSpaceList(jane, "", "root.file", "level1/file", "level1/level2/file");
         assertInboxSpaceList(jane, "./", "root.file", "level1/file", "level1/level2/file");

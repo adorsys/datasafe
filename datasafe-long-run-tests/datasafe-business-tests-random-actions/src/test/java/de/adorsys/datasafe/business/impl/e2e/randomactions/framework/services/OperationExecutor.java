@@ -16,6 +16,7 @@ import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -52,7 +53,7 @@ public class OperationExecutor {
     private final Map<OperationType, Consumer<Operation>> handlers = ImmutableMap.<OperationType, Consumer<Operation>>builder()
             .put(OperationType.CREATE_USER, this::doCreate)
             .put(OperationType.WRITE, this::doWrite)
-            .put(OperationType.SHARE, this::doWrite)
+            .put(OperationType.SHARE, this::doShare)
             .put(OperationType.READ, this::doRead)
             .put(OperationType.LIST, this::doList)
             .put(OperationType.DELETE, this::doDelete)
@@ -154,6 +155,18 @@ public class OperationExecutor {
     }
 
     @SneakyThrows
+    private void doShare(Operation oper) {
+        UserSpec user = requireUser(oper);
+
+        UserIDAuth auth = new UserIDAuth(oper.getUserId(), ReadKeyPasswordTestFactory.getForString(oper.getUserId()));
+        UserSpec sender = new UserSpec(auth, new ContentGenerator(fileContentSize));
+
+        try (OutputStream os = openShareStream(sender, user, oper)) {
+            ByteStreams.copy(user.getGenerator().generate(oper.getContentId().getId()), os);
+        }
+    }
+
+    @SneakyThrows
     private void doRead(Operation oper) {
         UserSpec user = requireUser(oper);
 
@@ -204,16 +217,17 @@ public class OperationExecutor {
         privateSpace.remove(request);
     }
 
-    private OutputStream openWriteStream(UserSpec user, Operation oper) {
-        if (StorageType.INBOX.equals(oper.getStorageType())) {
-            return inboxService.write(WriteRequest.forDefaultPublic(
-                    oper.getRecipients().stream()
-                            .map(it -> requireUser(it).getAuth().getUserID())
-                            .collect(Collectors.toSet()),
-                    oper.getLocation())
-            );
-        }
+    private OutputStream openShareStream(UserSpec sender, UserSpec user, Operation oper) {
+        return inboxService.write(WriteInboxRequest.forDefaultPublic(
+                user.getAuth(),
+                oper.getRecipients().stream()
+                        .map(it -> requireUser(it).getAuth().getUserID())
+                        .collect(Collectors.toSet()),
+                oper.getLocation())
+        );
+    }
 
+    private OutputStream openWriteStream(UserSpec user, Operation oper) {
         return privateSpace.write(WriteRequest.forDefaultPrivate(user.getAuth(), oper.getLocation()));
     }
 

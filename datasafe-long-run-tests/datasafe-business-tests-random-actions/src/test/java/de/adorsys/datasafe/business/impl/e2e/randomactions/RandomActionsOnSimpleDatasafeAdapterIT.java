@@ -33,6 +33,7 @@ import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
@@ -169,7 +170,7 @@ class RandomActionsOnSimpleDatasafeAdapterIT extends BaseRandomActions {
                     }
 
                     @Override
-                    public OutputStream write(WriteRequest<Set<UserID>, PublicResource> request) {
+                    public OutputStream write(WriteInboxRequest<UserIDAuth, Set<UserID>, PublicResource> request) {
                         throw new IllegalStateException("Not implemented");
                     }
                 };

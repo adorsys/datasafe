@@ -8,7 +8,7 @@ import de.adorsys.datasafe.rest.impl.exceptions.UnauthorizedException;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import jakarta.servlet.http.HttpServletResponse;
@@ -52,12 +52,15 @@ public class InboxController {
      */
     @SneakyThrows
     @PutMapping(value = "/inbox/document/{*path}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public void writeToInbox(@RequestHeader Set<String> users,
+    public void writeToInbox(@RequestHeader String user,
+                             @RequestHeader String password,
+                             @RequestHeader Set<String> recipients,
                              @PathVariable String path,
                              @RequestParam("file") MultipartFile file) {
+        UserIDAuth fromUser = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
+        Set<UserID> toUsers = recipients.stream().map(UserID::new).collect(Collectors.toSet());
         path = path.replaceAll("^/", "");
-        Set<UserID> toUsers = users.stream().map(UserID::new).collect(Collectors.toSet());
-        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path));
+        try (OutputStream os = dataSafeService.inboxService().write(WriteInboxRequest.forDefaultPublic(fromUser, toUsers, path));
              InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
         }

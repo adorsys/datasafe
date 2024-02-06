@@ -3,7 +3,7 @@ package de.adorsys.datasafe.cli.commands.inbox;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
@@ -41,7 +41,8 @@ public class Share implements Runnable {
     public void run() {
         try (OutputStream os = inbox.getCli().datasafe().inboxService()
                 .write(
-                        WriteRequest.forDefaultPublic(
+                        WriteInboxRequest.forDefaultPublic(
+                                inbox.getCli().auth(),
                                 recipients.stream().map(UserID::new).collect(Collectors.toSet()),
                                 filename
                         )

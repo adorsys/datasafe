@@ -5,7 +5,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
@@ -60,12 +60,14 @@ class BasicFunctionalityWithPasswordChangeIT extends BaseE2EIT {
     void testMultipleRecipientsSharing(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
+        UserIDAuth sender = registerUser("sender");
+
         UserIDAuth john = registerUser("john");
         UserIDAuth jane = registerUser("jane");
         UserIDAuth jamie = registerUser("jamie");
 
         String multiShareFile = "multishare.txt";
-        multishareFiles(john, jane, jamie, multiShareFile);
+        multishareFiles(sender, john, jane, jamie, multiShareFile);
 
         Stream.of(john, jane, jamie).forEach(
                 it -> checkUpdatedCredsWorkAndOldDont(
@@ -102,7 +104,7 @@ class BasicFunctionalityWithPasswordChangeIT extends BaseE2EIT {
 
         String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource().asPrivate());
 
-        sendToInbox(john.getUserID(), SHARED_FILE_PATH, privateContentJane);
+        sendToInbox(jane, john.getUserID(), SHARED_FILE_PATH, privateContentJane);
 
         AbsoluteLocation<ResolvedResource> inboxJohn = getFirstFileInInbox(john);
 
@@ -188,8 +190,9 @@ class BasicFunctionalityWithPasswordChangeIT extends BaseE2EIT {
     }
 
     @SneakyThrows
-    private void multishareFiles(UserIDAuth userOne, UserIDAuth userTwo, UserIDAuth userThree, String multiShareFile) {
-        try (OutputStream os = writeToInbox.write(WriteRequest.forDefaultPublic(
+    private void multishareFiles(UserIDAuth sender, UserIDAuth userOne, UserIDAuth userTwo, UserIDAuth userThree, String multiShareFile) {
+        try (OutputStream os = writeToInbox.write(WriteInboxRequest.forDefaultPublic(
+                sender,
                 ImmutableSet.of(userOne.getUserID(), userTwo.getUserID(), userThree.getUserID()),
                 multiShareFile))
         ) {

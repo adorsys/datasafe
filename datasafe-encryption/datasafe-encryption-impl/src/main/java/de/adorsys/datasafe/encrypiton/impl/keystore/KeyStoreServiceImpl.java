@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
@@ -30,6 +31,7 @@ import javax.inject.Inject;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.security.spec.ECParameterSpec;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -84,6 +86,8 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
         EncryptingKeyCreationCfg encConf = keyConfig.getEncrypting();
         Supplier<char[]> passSupplier = () -> keyStoreAuth.getReadKeyPassword().getValue();
+        ECParameterSpec paramSpec = Strings.isNullOrEmpty(encConf.getCurve()) ?
+                null : EC5Util.convertToSpec(CustomNamedCurves.getByName(encConf.getCurve()));
         KeySetTemplate template = KeySetTemplate.builder()
                 .generatedEncryptionKeys(Encrypting.with()
                         .algo(encConf.getAlgo())
@@ -91,7 +95,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                         .keySize(encConf.getSize())
                         .prefix("ENC")
                         .password(passSupplier)
-                        .paramSpec(EC5Util.convertToSpec(CustomNamedCurves.getByName(encConf.getCustomNamedCurve())))
+                        .paramSpec(paramSpec)
                         .build()
                         .repeat(keyConfig.getEncKeyNumber())
                 )

@@ -23,6 +23,7 @@ import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
@@ -117,9 +118,9 @@ public abstract class BaseE2EIT extends WithStorageProvider {
     }
 
     @SneakyThrows
-    protected void writeDataToInbox(UserIDAuth auth, String path, String data) {
+    protected void writeDataToInbox(UserIDAuth owner, UserIDAuth auth, String path, String data) {
         try (OutputStream stream = writeToInbox.write(
-            WriteRequest.forDefaultPublic(Collections.singleton(auth.getUserID()), path)
+            WriteInboxRequest.forDefaultPublic(owner, Collections.singleton(auth.getUserID()), path)
         )) {
 
             stream.write(data.getBytes(UTF_8));
@@ -191,9 +192,9 @@ public abstract class BaseE2EIT extends WithStorageProvider {
     }
 
     @SneakyThrows
-    protected void sendToInbox(UserID to, String filename, String data) {
+    protected void sendToInbox(UserIDAuth from, UserID to, String filename, String data) {
         try (OutputStream stream = writeToInbox.write(
-            WriteRequest.forDefaultPublic(Collections.singleton(to), "./" + filename)
+            WriteInboxRequest.forDefaultPublic(from, Collections.singleton(to), "./" + filename)
         )) {
             stream.write(data.getBytes());
         }
