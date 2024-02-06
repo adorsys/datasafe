@@ -183,6 +183,7 @@ public class MutableEncryptionConfig {
             private String algo;
             private Integer size;
             private String sigAlgo;
+            private String curve;
 
             KeyCreationConfig.EncryptingKeyCreationCfg toEncryptingKeyCreationCfg() {
                 KeyCreationConfig.EncryptingKeyCreationCfg.EncryptingKeyCreationCfgBuilder builder =
@@ -199,6 +200,10 @@ public class MutableEncryptionConfig {
                     builder.sigAlgo(sigAlgo);
                 }
 
+                if (null != curve) {
+                    builder.curve(curve);
+                }
+
                 return builder.build();
             }
         }
@@ -209,6 +214,7 @@ public class MutableEncryptionConfig {
             private String algo;
             private Integer size;
             private String sigAlgo;
+            private String curve;
 
             KeyCreationConfig.SigningKeyCreationCfg toSigningKeyCreationCfg() {
                 KeyCreationConfig.SigningKeyCreationCfg.SigningKeyCreationCfgBuilder builder =
@@ -223,6 +229,10 @@ public class MutableEncryptionConfig {
 
                 if (null != sigAlgo) {
                     builder.sigAlgo(sigAlgo);
+                }
+
+                if (null != curve) {
+                    builder.curve(curve);
                 }
 
                 return builder.build();

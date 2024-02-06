@@ -5,6 +5,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.AuthPathEncryptionSecre
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
 
 import java.security.Key;
+import java.security.KeyPair;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,4 +46,6 @@ public interface PrivateKeyService {
      * {@code keyIds} that are missing - they are silently ignored and not returned in result.
      */
     Map<String, Key> keysByIds(UserIDAuth forUser, Set<String> keyIds);
+
+    KeyPair getKeyPair(UserIDAuth forUser);
 }

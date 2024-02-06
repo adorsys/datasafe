@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
+import java.security.KeyPair;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -27,9 +28,9 @@ public class SwitchableCmsEncryptionImpl extends CMSEncryptionServiceImpl {
     }
 
     @Override
-    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyIDWithPublicKey> publicKeys) {
+    public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyIDWithPublicKey> publicKeys, KeyPair senderKeyPair) {
         if (withCmsEncryption) {
-            return super.buildEncryptionOutputStream(dataContentStream, publicKeys);
+            return super.buildEncryptionOutputStream(dataContentStream, publicKeys, senderKeyPair);
         }
         return dataContentStream;
     }

@@ -11,6 +11,7 @@ import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataParser;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
 import org.bouncycastle.cms.CMSException;
@@ -19,6 +20,7 @@ import org.bouncycastle.cms.RecipientInfoGenerator;
 import org.bouncycastle.cms.RecipientInformationStore;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKEKRecipientInfoGenerator;
+import org.bouncycastle.cms.jcajce.JceKeyAgreeRecipientInfoGenerator;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 
 import javax.crypto.SecretKey;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
+import java.security.KeyPair;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -57,16 +60,34 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
     @Override
     @SneakyThrows
     public OutputStream buildEncryptionOutputStream(OutputStream dataContentStream,
-                                                    Set<PublicKeyIDWithPublicKey> publicKeys) {
+                                                    Set<PublicKeyIDWithPublicKey> publicKeys,
+                                                    KeyPair senderKeyPair) {
         return streamEncrypt(
                 dataContentStream,
-                publicKeys.stream().map(
-                        it -> new JceKeyTransRecipientInfoGenerator(
-                                it.getKeyID().getValue().getBytes(), it.getPublicKey()
-                        )
-                ).collect(Collectors.toSet()),
+                publicKeys.stream().map(it -> getRecipientInfoGenerator(it, senderKeyPair)).collect(Collectors.toSet()),
                 encryptionConfig.getAlgorithm()
         );
+    }
+
+    private RecipientInfoGenerator getRecipientInfoGenerator(PublicKeyIDWithPublicKey keyWithId, KeyPair senderKeyPair) {
+        if ("RSA".equals(keyWithId.getPublicKey().getAlgorithm())) {
+            return new JceKeyTransRecipientInfoGenerator(keyWithId.getKeyID().getValue().getBytes(), keyWithId.getPublicKey());
+        }
+        if (Set.of("ECDH", "EC").contains(keyWithId.getPublicKey().getAlgorithm())) {
+            return getJceKeyAgreeRecipientInfoGenerator(senderKeyPair, keyWithId);
+        }
+        return null;
+    }
+
+    @SneakyThrows
+    public JceKeyAgreeRecipientInfoGenerator getJceKeyAgreeRecipientInfoGenerator(KeyPair senderKeyPair, PublicKeyIDWithPublicKey publicKeyWithId) {
+        var jceKeyAgreeRecipientInfoGenerator = new JceKeyAgreeRecipientInfoGenerator(
+                CMSAlgorithm.ECDH_SHA1KDF,
+                senderKeyPair.getPrivate(),
+                senderKeyPair.getPublic(),
+                CMSAlgorithm.AES128_WRAP);
+        jceKeyAgreeRecipientInfoGenerator.addRecipient(publicKeyWithId.getKeyID().getValue().getBytes(), publicKeyWithId.getPublicKey());
+        return jceKeyAgreeRecipientInfoGenerator;
     }
 
     /**

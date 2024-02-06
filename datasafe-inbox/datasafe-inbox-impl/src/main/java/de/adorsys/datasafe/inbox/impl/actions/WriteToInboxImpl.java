@@ -1,12 +1,14 @@
 package de.adorsys.datasafe.inbox.impl.actions;
 
+import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.inbox.api.actions.WriteToInbox;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 
@@ -24,13 +26,16 @@ import java.util.stream.Collectors;
 public class WriteToInboxImpl implements WriteToInbox {
 
     private final PublicKeyService publicKeyService;
+
+    private final PrivateKeyService privateKeyService;
     private final ResourceResolver resolver;
     private final EncryptedDocumentWriteService writer;
 
     @Inject
-    public WriteToInboxImpl(PublicKeyService publicKeyService, ResourceResolver resolver,
+    public WriteToInboxImpl(PublicKeyService publicKeyService, PrivateKeyService privateKeyService, ResourceResolver resolver,
                             EncryptedDocumentWriteService writer) {
         this.publicKeyService = publicKeyService;
+        this.privateKeyService = privateKeyService;
         this.resolver = resolver;
         this.writer = writer;
     }
@@ -41,13 +46,13 @@ public class WriteToInboxImpl implements WriteToInbox {
      * @return Stream sink for data to be shared and encrypted
      */
     @Override
-    public OutputStream write(WriteRequest<Set<UserID>, PublicResource> request) {
-        // No access check - anyone who knows user id can send a message to that user
+    public OutputStream write(WriteInboxRequest<UserIDAuth, Set<UserID>, PublicResource> request) {
         return writer.write(
-                request.getOwner().stream().collect(Collectors.toMap(
+                request.getRecipients().stream().collect(Collectors.toMap(
                         publicKeyService::publicKey,
                         it -> resolver.resolveRelativeToPublicInbox(it, request.getLocation())
-                ))
+                )),
+                privateKeyService.getKeyPair(request.getOwner())
         );
     }
 }

@@ -8,6 +8,7 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
 
 import java.io.OutputStream;
+import java.security.KeyPair;
 import java.util.Map;
 
 /**
@@ -22,7 +23,7 @@ public interface EncryptedDocumentWriteService {
      * @param recipientsWithInbox Map of (recipient public key - recipients' inbox) of users with whom to share file.
      * @return Sink where you can send unencrypted data that will be encrypted and stored
      */
-    OutputStream write(Map<PublicKeyIDWithPublicKey, AbsoluteLocation> recipientsWithInbox);
+    OutputStream write(Map<PublicKeyIDWithPublicKey, AbsoluteLocation> recipientsWithInbox, KeyPair senderKeyPair);
 
     /**
      * Writes and encrypts data using symmetric cryptography.

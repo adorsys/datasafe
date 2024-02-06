@@ -21,9 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Sets;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
-import org.bouncycastle.cms.RecipientInfoGenerator;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
-import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
+import org.bouncycastle.cms.jcajce.JceKeyAgreeRecipientInfoGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,10 +41,14 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Key;
+import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.MessageDigest;
+import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 import static de.adorsys.datasafe.encrypiton.impl.cmsencryption.KeyStoreUtil.getKeys;
@@ -83,9 +86,10 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream, Sets.newHashSet(
-                Arrays.asList(getPublicKeyIDWithPublicKey(keyStoreAccess1), getPublicKeyIDWithPublicKey(keyStoreAccess2))
-        ));
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
+                Sets.newHashSet(Arrays.asList(getPublicKeyIDWithPublicKey(keyStoreAccess1), getPublicKeyIDWithPublicKey(keyStoreAccess2))),
+                getKeyPair(keyStoreAccess3, "Suzanne")
+        );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
         encryptionStream.close();
@@ -117,11 +121,15 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
+        KeyStoreAccess keyStoreAccessSender = getKeyStoreAccess("Sender");
+
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(
+                outputStream,
                 Collections.singleton(new PublicKeyIDWithPublicKey(
                         publicKeyIDWithPublicKey.getKeyID(),
                         publicKeyIDWithPublicKey.getPublicKey()
-                ))
+                )),
+                getKeyPair(keyStoreAccessSender, "Sender")
         );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
@@ -148,11 +156,14 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
         gen.open(outputStream, new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC)
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
 
+        KeyStoreAccess keyStoreAccessSender = getKeyStoreAccess("Sender");
+
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
                 Collections.singleton(new PublicKeyIDWithPublicKey(
                         publicKeyIDWithPublicKey.getKeyID(),
                         publicKeyIDWithPublicKey.getPublicKey()
-                ))
+                )),
+                getKeyPair(keyStoreAccessSender, "Sender")
         );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
@@ -170,12 +181,19 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        RecipientInfoGenerator recipientInfo1 = new JceKeyTransRecipientInfoGenerator("key1".getBytes(), publicKeyIDWithPublicKey.getPublicKey());
-        RecipientInfoGenerator recipientInfo2 = new JceKeyTransRecipientInfoGenerator("key2".getBytes(), publicKeyIDWithPublicKey.getPublicKey());
+        KeyStoreAccess keyStoreAccessSender = getKeyStoreAccess("Sender");
+        KeyPair senderKeyPair = getKeyPair(keyStoreAccessSender, "Sender");
+
+        JceKeyAgreeRecipientInfoGenerator keyAgreeRecipientInfoGenerator = new JceKeyAgreeRecipientInfoGenerator(
+                CMSAlgorithm.ECDH_SHA1KDF,
+                senderKeyPair.getPrivate(),
+                senderKeyPair.getPublic(),
+                CMSAlgorithm.AES128_WRAP);
+        keyAgreeRecipientInfoGenerator.addRecipient("key1".getBytes(), publicKeyIDWithPublicKey.getPublicKey());
+        keyAgreeRecipientInfoGenerator.addRecipient("key2".getBytes(), publicKeyIDWithPublicKey.getPublicKey());
 
         CMSEnvelopedDataStreamGenerator gen = new CMSEnvelopedDataStreamGenerator();
-        gen.addRecipientInfoGenerator(recipientInfo1);
-        gen.addRecipientInfoGenerator(recipientInfo2);
+        gen.addRecipientInfoGenerator(keyAgreeRecipientInfoGenerator);
         gen.open(outputStream, new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC)
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME).build());
 
@@ -183,7 +201,8 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
                 Collections.singleton(new PublicKeyIDWithPublicKey(
                         publicKeyIDWithPublicKey.getKeyID(),
                         publicKeyIDWithPublicKey.getPublicKey()
-                ))
+                )),
+                senderKeyPair
         );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
@@ -202,11 +221,15 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
 
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        KeyStoreAccess keyStoreAccessSender = getKeyStoreAccess("Sender");
+
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(outputStream,
                 Collections.singleton(new PublicKeyIDWithPublicKey(
                         publicKeyIDWithPublicKey.getKeyID(),
                         publicKeyIDWithPublicKey.getPublicKey()
-                ))
+                )),
+                getKeyPair(keyStoreAccessSender, "Sender")
         );
 
         encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
@@ -228,6 +251,15 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
 
         return new KeyStoreAccess(keyStore, keyStoreAuth);
+    }
+
+    @SneakyThrows
+    private static KeyPair getKeyPair(KeyStoreAccess keyStoreAccess, String label) {
+        KeyStore keyStore = keyStoreAccess.getKeyStore();
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString(label);
+        List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(keyStoreAccess);
+        Key key = keyStore.getKey(publicKeys.get(0).getKeyID().getValue(), readKeyPassword.getValue());
+        return new KeyPair(publicKeys.get(0).getPublicKey(), (PrivateKey) key);
     }
 
     private static KeyStoreAccess getKeyStoreAccess() {
@@ -262,12 +294,15 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
         File encryptedFile = new File(encryptedFilePath);
         FileOutputStream fosEnFile = new FileOutputStream(encryptedFile);
 
+        KeyStoreAccess keyStoreAccessSender = getKeyStoreAccess("Sender");
+
         OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(
                 fosEnFile,
                 Collections.singleton(new PublicKeyIDWithPublicKey(
                         publicKeyIDWithPublicKey.getKeyID(),
                         publicKeyIDWithPublicKey.getPublicKey()
-                ))
+                )),
+                getKeyPair(keyStoreAccessSender, "Sender")
         );
 
         Files.copy(Paths.get(testFilePath), encryptionStream);

@@ -5,6 +5,7 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKe
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 
 import java.security.Key;
+import java.security.KeyPair;
 import java.util.List;
 import java.util.Set;
 
@@ -42,4 +43,6 @@ public interface DocumentKeyStoreOperations {
      * @return Key aliases from keystore.
      */
     Set<String> readAliases(UserIDAuth forUser);
+
+    KeyPair getKeyPair(UserIDAuth forUser);
 }

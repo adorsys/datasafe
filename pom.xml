@@ -74,13 +74,13 @@
         <src.dir>src/main/java</src.dir>
         <test.src.dir>src/test/java</test.src.dir>
         <graal.version>19.2.0</graal.version>
-        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.dependency.plugin.version>3.6.1</maven.dependency.plugin.version>
         <lombok.version>1.18.30</lombok.version>
         <gson.version>2.8.9</gson.version>
-        <dagger.version>2.46.1</dagger.version>
+        <dagger.version>2.50</dagger.version>
         <guava.version>32.1.1-jre</guava.version>
         <picocli.version>4.0.3</picocli.version>
         <jupiter.version>5.10.0</jupiter.version>
