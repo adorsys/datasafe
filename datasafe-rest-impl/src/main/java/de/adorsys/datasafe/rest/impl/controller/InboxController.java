@@ -57,9 +57,9 @@ public class InboxController {
                              @RequestHeader Set<String> recipients,
                              @PathVariable String path,
                              @RequestParam("file") MultipartFile file) {
+        path = path.replaceAll("^/", "");
         UserIDAuth fromUser = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         Set<UserID> toUsers = recipients.stream().map(UserID::new).collect(Collectors.toSet());
-        path = path.substring(1);
         try (OutputStream os = dataSafeService.inboxService().write(WriteInboxRequest.forDefaultPublic(fromUser, toUsers, path));
              InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
@@ -76,8 +76,8 @@ public class InboxController {
                               @RequestHeader String password,
                               @PathVariable String path,
                               HttpServletResponse response) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
-        path = path.substring(1);
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         // this is needed for swagger, produces is just a directive:
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
@@ -96,6 +96,7 @@ public class InboxController {
     public void deleteFromInbox(@RequestHeader String user,
                                 @RequestHeader String password,
                                 @PathVariable String path) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
@@ -110,10 +111,8 @@ public class InboxController {
     public List<String> listInbox(@RequestHeader String user,
                                   @RequestHeader String password,
                                   @PathVariable(required = false) String path) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
-        path = Optional.ofNullable(path)
-                .map(it -> it.replaceAll("^\\.$", ""))
-                .orElse("./");
         try {
             List<String> inboxList = dataSafeService.inboxService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                     .map(e -> e.getResource().asPrivate().decryptedPath().asString())

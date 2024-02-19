@@ -1,232 +1,432 @@
 {
   "info": {
-    "_postman_id": "54d63510-b402-4a2c-b518-50e79a04d569",
+    "_postman_id": "db124a60-8dee-44e6-9bf0-97d18e0a9c14",
     "name": "Datasafe",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "18419826"
   },
   "item": [
     {
-      "name": "authenticate",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "name": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\"userName\":\"username\",\"password\":\"password\"}"
+      "name": "user",
+      "item": [
+        {
+          "name": "authenticate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  "",
+                  "pm.collectionVariables.set(\"token\", pm.response.headers.get('token'))",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              },
+              {
+                "key": "Origin",
+                "value": "http://localhost:8080",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"userName\":\"username\",\"password\":\"password\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/authenticate",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "authenticate"
+              ]
+            }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{host}}/api/authenticate",
-          "host": [
-            "{{host}}"
+        {
+          "name": "delete user Alice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "api",
-            "authenticate"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "create user",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "name": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/user",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
           },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n\t\"userName\":\"ver\",\n\t\"password\":\"ver\"\n}"
+          "response": []
         },
-        "url": {
-          "raw": "{{host}}/user",
-          "host": [
-            "{{host}}"
+        {
+          "name": "delete user Bob",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "user"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "delete user",
-      "request": {
-        "method": "DELETE",
-        "header": [
-          {
-            "key": "Content-Type",
-            "name": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "user",
+                "value": "Bob",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/user",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
           },
-          {
-            "key": "user",
-            "value": "Max",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "123",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/user/",
-          "host": [
-            "{{host}}"
-          ],
-          "path": [
-            "user",
-            ""
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "store document",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/octet-stream",
-            "type": "text"
-          },
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "file",
-          "file": {
-            "src": "/Users/maxim/tx/store/a.txt"
-          }
+          "response": []
         },
-        "url": {
-          "raw": "{{host}}/document/test11.txt",
-          "host": [
-            "{{host}}"
+        {
+          "name": "create user Alice",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "document",
-            "test11.txt"
-          ]
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"userName\":\"Alice\",\n\t\"password\":\"123\"\n}"
+            },
+            "url": {
+              "raw": "{{host}}/user",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create user Bob",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"userName\":\"Bob\",\n\t\"password\":\"123\"\n}"
+            },
+            "url": {
+              "raw": "{{host}}/user",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "list documents",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "user",
-            "value": "vvv",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "vvv",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/documents/",
-          "host": [
-            "{{host}}"
+      "name": "private",
+      "item": [
+        {
+          "name": "store document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "documents",
-            ""
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "read document",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/octet-stream",
-            "type": "text"
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              },
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "postman-cloud:///1eeb44d1-546d-4870-ae7e-c2f44aeee23e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/document/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "document",
+                "test.txt"
+              ]
+            }
           },
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/document/test11.txt",
-          "host": [
-            "{{host}}"
+          "response": []
+        },
+        {
+          "name": "list documents",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  "",
+                  "var rb = JSON.parse(responseBody);",
+                  "",
+                  "pm.test(\"response contains one file\", () => {",
+                  "    pm.expect(rb.length).to.eql(1);",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "document",
-            "test11.txt"
-          ]
-        }
-      },
-      "response": [
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/documents",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "documents"
+              ]
+            }
+          },
+          "response": []
+        },
         {
           "name": "read document",
-          "originalRequest": {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  "",
+                  "pm.test(\"file content is read\", () => {",
+                  "    pm.expect(responseBody).to.eql(\"hello world!\");",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
             "method": "GET",
             "header": [
               {
@@ -236,455 +436,730 @@
               },
               {
                 "key": "user",
-                "value": "ddd",
+                "value": "Alice",
                 "type": "text"
               },
               {
                 "key": "password",
-                "value": "ddd",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "{{host}}/document/deep/path/test.txt",
+              "raw": "{{host}}/document/test.txt",
               "host": [
                 "{{host}}"
               ],
               "path": [
                 "document",
-                "deep",
-                "path",
                 "test.txt"
               ]
             }
           },
-          "status": "OK",
-          "code": 200,
-          "_postman_previewlanguage": "plain",
-          "header": [
+          "response": []
+        },
+        {
+          "name": "delete document",
+          "event": [
             {
-              "key": "Transfer-Encoding",
-              "value": "chunked"
-            },
-            {
-              "key": "Date",
-              "value": "Fri, 24 May 2019 11:50:22 GMT"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
             }
           ],
-          "cookie": [],
-          "body": "test"
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/document/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "document",
+                "test.txt"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "delete document",
-      "request": {
-        "method": "DELETE",
-        "header": [
-          {
-            "key": "user",
-            "value": "iii",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "iii",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/document/deep/path/test2.txt",
-          "host": [
-            "{{host}}"
+      "name": "versioned",
+      "item": [
+        {
+          "name": "versioned write",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "document",
-            "deep",
-            "path",
-            "test2.txt"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "send to inbox",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/octet-stream",
-            "type": "text"
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              },
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "postman-cloud:///1eeb44d1-546d-4870-ae7e-c2f44aeee23e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/versioned/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "versioned",
+                "test.txt"
+              ]
+            }
           },
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "file",
-          "file": {
-            "src": "/Users/maxim/test.txt"
-          }
+          "response": []
         },
-        "url": {
-          "raw": "{{host}}/inbox/test2.txt",
-          "host": [
-            "{{host}}"
+        {
+          "name": "versioned write 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "inbox",
-            "test2.txt"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "inbox read",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              },
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "postman-cloud:///1eeb4517-de20-4860-b895-814e47ad657f"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/versioned/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "versioned",
+                "test.txt"
+              ]
+            }
           },
-          {
-            "key": "password",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "Accept",
-            "value": "application/octet-stream",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/inbox/test2.txt",
-          "host": [
-            "{{host}}"
-          ],
-          "path": [
-            "inbox",
-            "test2.txt"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "inbox delete",
-      "request": {
-        "method": "DELETE",
-        "header": [
-          {
-            "key": "user",
-            "value": "iii",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "iii",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/inbox/test2.txt",
-          "host": [
-            "{{host}}"
-          ],
-          "path": [
-            "inbox",
-            "test2.txt"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "inbox list",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "Accept",
-            "value": "application/json",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/inbox/",
-          "host": [
-            "{{host}}"
-          ],
-          "path": [
-            "inbox",
-            ""
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "version list",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "user",
-            "type": "text",
-            "value": "ver"
-          },
-          {
-            "key": "password",
-            "type": "text",
-            "value": "ver"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          },
-          {
-            "key": "Accept",
-            "value": "application/json",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/versions/list/",
-          "host": [
-            "{{host}}"
-          ],
-          "path": [
-            "versions",
-            "list",
-            ""
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "versioned read",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          },
-          {
-            "key": "Accept",
-            "value": "application/octet-stream",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/versioned/test10.txt",
-          "host": [
-            "{{host}}"
-          ],
-          "path": [
-            "versioned",
-            "test10.txt"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "versioned delete",
-      "request": {
-        "method": "DELETE",
-        "header": [
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          },
-          {
-            "key": "Accept",
-            "value": "application/json",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/versioned/test4.txt",
-          "host": [
-            "{{host}}"
-          ],
-          "path": [
-            "versioned",
-            "test4.txt"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "versioned write",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/octet-stream",
-            "type": "text"
-          },
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "file",
-          "file": {
-            "src": "/Users/maxim/parallel_transactions_merge_logic_fix.patch"
-          }
+          "response": []
         },
-        "url": {
-          "raw": "{{host}}/versioned/test10.txt",
-          "host": [
-            "{{host}}"
+        {
+          "name": "versioned list (last version)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  "",
+                  "var rb = JSON.parse(responseBody);",
+                  "",
+                  "pm.test(\"response contains one file\", () => {",
+                  "    pm.expect(rb.length).to.eql(1);",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "versioned",
-            "test10.txt"
-          ]
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/versioned/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "versioned",
+                "test.txt"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "versions list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  "",
+                  "var rb = JSON.parse(responseBody);",
+                  "",
+                  "pm.test(\"response contains one file\", () => {",
+                  "    pm.expect(rb.length).to.eql(2);",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "user",
+                "type": "text",
+                "value": "Alice"
+              },
+              {
+                "key": "password",
+                "type": "text",
+                "value": "123"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/versions/list/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "versions",
+                "list",
+                "test.txt"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "versioned read (last version)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  "",
+                  "pm.test(\"file content is read\", () => {",
+                  "    pm.expect(responseBody).to.eql(\"yet another file\");",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/octet-stream",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/versioned/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "versioned",
+                "test.txt"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "versioned delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/versioned/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "versioned",
+                "test.txt"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "versioned list",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "user",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "password",
-            "value": "ver",
-            "type": "text"
-          },
-          {
-            "key": "token",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InVzZXJuYW1lIiwiZXhwIjoxNTYxMzA0MTA4LCJyb2wiOlsiUk9MRV9VU0VSIl19.Ungu5hob8mbwb7GfWfvqj1VsrNNv1pN6UEMJYJHSAHBicRlsYVbRAE7Ju_N1nnjdoZ6TSs4hireff92SkXvesQ",
-            "type": "text"
-          },
-          {
-            "key": "Accept",
-            "value": "application/json",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{host}}/versioned/",
-          "host": [
-            "{{host}}"
+      "name": "inbox",
+      "item": [
+        {
+          "name": "send to inbox",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "versioned",
-            ""
-          ]
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "user",
+                "value": "Alice",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "recipients",
+                "value": "Bob",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "postman-cloud:///1eeb44d1-546d-4870-ae7e-c2f44aeee23e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/inbox/document/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "inbox",
+                "document",
+                "test.txt"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "inbox list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  "",
+                  "var rb = JSON.parse(responseBody);",
+                  "",
+                  "pm.test(\"response contains one file\", () => {",
+                  "    pm.expect(rb.length).to.eql(1);",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "user",
+                "value": "Bob",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/inbox/documents",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "inbox",
+                "documents"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "inbox read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  "",
+                  "pm.test(\"file content is read\", () => {",
+                  "    pm.expect(responseBody).to.eql(\"hello world!\");",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "user",
+                "value": "Bob",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/octet-stream",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/inbox/document/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "inbox",
+                "document",
+                "test.txt"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "inbox delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Success', function() {",
+                  "    pm.response.to.have.status(200)",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "user",
+                "value": "Bob",
+                "type": "text"
+              },
+              {
+                "key": "password",
+                "value": "123",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/inbox/document/test.txt",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "inbox",
+                "document",
+                "test.txt"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "host",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": ""
     }
   ]
 }

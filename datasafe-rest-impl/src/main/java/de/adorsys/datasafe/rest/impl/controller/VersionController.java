@@ -32,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -55,7 +54,7 @@ public class VersionController {
                                                @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                                @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
-        path = Optional.ofNullable(path).orElse("./");
+        path = path.replaceAll("^/", "");
         try {
             List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(
                 ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
@@ -79,6 +78,7 @@ public class VersionController {
                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                       @PathVariable String path,
                                       HttpServletResponse response) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         ReadRequest<UserIDAuth, PrivateResource> request =
                 ReadRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
@@ -102,6 +102,7 @@ public class VersionController {
                                        @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                        @PathVariable String path,
                                        @RequestParam("file") MultipartFile file) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         WriteRequest<UserIDAuth, PrivateResource> request =
                 WriteRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
@@ -120,6 +121,7 @@ public class VersionController {
                                         @RequestHeader String password,
                                         @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                         @PathVariable String path) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         RemoveRequest<UserIDAuth, PrivateResource> request =
                 RemoveRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
@@ -136,9 +138,7 @@ public class VersionController {
                                    @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                    @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
-        path = Optional.ofNullable(path)
-                .map(it -> it.replaceAll("^\\.$", ""))
-                .orElse("./");
+        path = path.replaceAll("^/", "");
 
         ListRequest<UserIDAuth, PrivateResource> request =
                 ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
