@@ -113,9 +113,6 @@ public class InboxController {
                                   @PathVariable(required = false) String path) {
         path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
-        path = Optional.ofNullable(path)
-                .map(it -> it.replaceAll("^\\.$", ""))
-                .orElse("./");
         try {
             List<String> inboxList = dataSafeService.inboxService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                     .map(e -> e.getResource().asPrivate().decryptedPath().asString())
