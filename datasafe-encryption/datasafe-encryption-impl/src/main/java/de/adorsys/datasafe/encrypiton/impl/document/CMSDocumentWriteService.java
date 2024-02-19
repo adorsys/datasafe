@@ -18,6 +18,7 @@ import lombok.SneakyThrows;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.KeyPair;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
     }
 
     @Override
-    public OutputStream write(Map<PublicKeyIDWithPublicKey, AbsoluteLocation> recipientsWithInbox) {
+    public OutputStream write(Map<PublicKeyIDWithPublicKey, AbsoluteLocation> recipientsWithInbox, KeyPair senderKeyPair) {
 
         int maxChunkSize = recipientsWithInbox.values().stream()
                 .map(writeService::flushChunkSize)
@@ -59,7 +60,8 @@ public class CMSDocumentWriteService implements EncryptedDocumentWriteService {
 
         OutputStream encryptionSink = cms.buildEncryptionOutputStream(
                 dfsSink,
-                recipientsWithInbox.keySet()
+                recipientsWithInbox.keySet(),
+                senderKeyPair
         );
 
         return new CloseCoordinatingStream(encryptionSink, ImmutableList.of(encryptionSink, dfsSink));

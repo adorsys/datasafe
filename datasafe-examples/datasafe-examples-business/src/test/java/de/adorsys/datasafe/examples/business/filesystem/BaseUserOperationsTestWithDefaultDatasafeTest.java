@@ -10,6 +10,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
@@ -121,13 +122,16 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
     @SneakyThrows
     void shareWithJane() {
         // BEGIN_SNIPPET:Send file to INBOX
+        // create sender user
+        UserIDAuth sender = registerUser("sender");
+
         // create Jane, so her INBOX does exist
         UserIDAuth jane = registerUser("jane");
         UserID janeUsername = new UserID("jane");
 
         // We send message "Hello John" to John just by his username
         try (OutputStream os = defaultDatasafeServices.inboxService()
-                .write(WriteRequest.forDefaultPublic(Collections.singleton(janeUsername), "hello.txt"))) {
+                .write(WriteInboxRequest.forDefaultPublic(sender, Collections.singleton(janeUsername), "hello.txt"))) {
             os.write("Hello Jane".getBytes(StandardCharsets.UTF_8));
         }
         // END_SNIPPET
@@ -143,6 +147,8 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
     @SneakyThrows
     void shareWithJaneAndJamie() {
         // BEGIN_SNIPPET:Send file to INBOX - multiple users
+        // create Jack, who wants to send a file to Jane and Jamie
+        UserIDAuth jack = registerUser("jack");
         // create Jane, so her INBOX does exist
         UserIDAuth jane = registerUser("jane");
         // create Jamie, so his INBOX does exist
@@ -150,7 +156,7 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
 
         // We send message to both users by using their username:
         try (OutputStream os = defaultDatasafeServices.inboxService().write(
-                WriteRequest.forDefaultPublic(ImmutableSet.of(jane.getUserID(), jamie.getUserID()), "hello.txt"))
+                WriteInboxRequest.forDefaultPublic(jack, ImmutableSet.of(jane.getUserID(), jamie.getUserID()), "hello.txt"))
         ) {
             os.write("Hello Jane and Jamie".getBytes(StandardCharsets.UTF_8));
         }
@@ -206,13 +212,16 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
     @Test
     void listInbox() {
         // BEGIN_SNIPPET:List INBOX
+        // creating sender user
+        UserIDAuth sender = registerUser("sender");
+
         // creating new user
         UserIDAuth user = registerUser("john");
         UserID johnUsername = new UserID("john");
 
         // let's share 2 messages:
-        shareMessage(johnUsername, "home/my/secret.txt", "Hi there");
-        shareMessage(johnUsername, "home/watch/films.txt", "Films you will like");
+        shareMessage(sender, johnUsername, "home/my/secret.txt", "Hi there");
+        shareMessage(sender, johnUsername, "home/watch/films.txt", "Films you will like");
 
         // Here's how to list inbox folder root
         List<AbsoluteLocation<ResolvedResource>> johnsInboxFilesInRoot = defaultDatasafeServices.inboxService()
@@ -265,12 +274,15 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
     @Test
     void readFromInbox() {
         // BEGIN_SNIPPET:Read file from INBOX
+        // creating sender user
+        UserIDAuth sender = registerUser("sender");
+
         // creating new user
         UserIDAuth user = registerUser("john");
         UserID johnUsername = new UserID("john");
 
         // let's create 1 file:
-        shareMessage(johnUsername, "home/my/shared.txt", "shared message");
+        shareMessage(sender, johnUsername, "home/my/shared.txt", "shared message");
 
         // Lets list our INBOX
         List<AbsoluteLocation<ResolvedResource>> johnsInboxFilesInMy = defaultDatasafeServices.inboxService()
@@ -298,9 +310,9 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
     }
 
     @SneakyThrows
-    private void shareMessage(UserID forUser, String messageName, String message) {
+    private void shareMessage(UserIDAuth fromUser, UserID forUser, String messageName, String message) {
         try (OutputStream os = defaultDatasafeServices.inboxService()
-                .write(WriteRequest.forDefaultPublic(Collections.singleton(forUser), messageName))) {
+                .write(WriteInboxRequest.forDefaultPublic(fromUser, Collections.singleton(forUser), messageName))) {
             os.write(message.getBytes(StandardCharsets.UTF_8));
         }
     }

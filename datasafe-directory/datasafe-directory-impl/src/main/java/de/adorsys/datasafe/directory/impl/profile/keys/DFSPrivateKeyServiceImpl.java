@@ -14,6 +14,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import java.security.Key;
+import java.security.KeyPair;
 import java.security.KeyStoreException;
 import java.security.UnrecoverableKeyException;
 import java.util.Collection;
@@ -98,6 +99,11 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                         keyId -> keyId,
                         keyId -> keyStoreOper.getKey(forUser, keyId))
                 );
+    }
+
+    @Override
+    public KeyPair getKeyPair(UserIDAuth forUser) {
+        return keyStoreOper.getKeyPair(forUser);
     }
 
     protected SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {

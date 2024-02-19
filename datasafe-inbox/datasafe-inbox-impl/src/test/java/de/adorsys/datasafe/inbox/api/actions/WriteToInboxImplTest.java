@@ -1,13 +1,15 @@
 package de.adorsys.datasafe.inbox.api.actions;
 
+import de.adorsys.datasafe.directory.api.profile.keys.PrivateKeyService;
 import de.adorsys.datasafe.directory.api.profile.keys.PublicKeyService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.inbox.impl.actions.WriteToInboxImpl;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
@@ -20,6 +22,7 @@ import org.mockito.Mock;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
+import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.Collections;
 import java.util.Set;
@@ -33,14 +36,20 @@ class WriteToInboxImplTest extends BaseMockitoTest {
     private static final URI ABSOLUTE_PATH = URI.create("s3://absolute");
 
     private UserID auth = new UserID("");
+    private UserIDAuth ownerAuth = new UserIDAuth("owner", ()  -> "pass".toCharArray());
 
     private PublicKeyIDWithPublicKey publicKeyWithId;
+
+    private KeyPair senderKeyPair;
 
     @Mock
     private PublicKey publicKey;
 
     @Mock
     private PublicKeyService publicKeyService;
+
+    @Mock
+    private PrivateKeyService privateKeyService;
 
     @Mock
     private ResourceResolver resolver;
@@ -60,12 +69,13 @@ class WriteToInboxImplTest extends BaseMockitoTest {
     @SneakyThrows
     void write() {
         AbsoluteLocation<PublicResource> resource = BasePublicResource.forAbsolutePublic(ABSOLUTE_PATH);
-        WriteRequest<Set<UserID>, PublicResource> request = WriteRequest
-                .forDefaultPublic(Collections.singleton(auth), ABSOLUTE_PATH);
+        WriteInboxRequest<UserIDAuth, Set<UserID>, PublicResource> request = WriteInboxRequest
+                .forDefaultPublic(ownerAuth, Collections.singleton(auth), ABSOLUTE_PATH);
         when(publicKeyService.publicKey(auth)).thenReturn(publicKeyWithId);
+        when(privateKeyService.getKeyPair(ownerAuth)).thenReturn(senderKeyPair);
         when(resolver.resolveRelativeToPublicInbox(auth, request.getLocation())).thenReturn(resource);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(writeService.write(Collections.singletonMap(publicKeyWithId, resource))).thenReturn(outputStream);
+        when(writeService.write(Collections.singletonMap(publicKeyWithId, resource), senderKeyPair)).thenReturn(outputStream);
 
         inbox.write(request).write(BYTES.getBytes());
 

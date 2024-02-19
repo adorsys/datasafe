@@ -7,6 +7,7 @@ import javax.crypto.SecretKey;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
+import java.security.KeyPair;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -25,7 +26,8 @@ public interface CMSEncryptionService {
      * @return Encrypted stream that wraps {@code dataContentStream}
      * @apiNote Closes underlying stream when result is closed
      */
-    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyIDWithPublicKey> publicKeys);
+    OutputStream buildEncryptionOutputStream(OutputStream dataContentStream, Set<PublicKeyIDWithPublicKey> publicKeys,
+                                             KeyPair senderKeyPair);
 
     /**
      * Builds symmetrically encrypted stream.

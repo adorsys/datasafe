@@ -8,7 +8,7 @@ import de.adorsys.datasafe.rest.impl.exceptions.UnauthorizedException;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import jakarta.servlet.http.HttpServletResponse;
@@ -52,11 +52,15 @@ public class InboxController {
      */
     @SneakyThrows
     @PutMapping(value = "/inbox/document/{*path}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public void writeToInbox(@RequestHeader Set<String> users,
+    public void writeToInbox(@RequestHeader String user,
+                             @RequestHeader String password,
+                             @RequestHeader Set<String> recipients,
                              @PathVariable String path,
                              @RequestParam("file") MultipartFile file) {
-        Set<UserID> toUsers = users.stream().map(UserID::new).collect(Collectors.toSet());
-        try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path));
+        path = path.replaceAll("^/", "");
+        UserIDAuth fromUser = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
+        Set<UserID> toUsers = recipients.stream().map(UserID::new).collect(Collectors.toSet());
+        try (OutputStream os = dataSafeService.inboxService().write(WriteInboxRequest.forDefaultPublic(fromUser, toUsers, path));
              InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
         }
@@ -72,6 +76,7 @@ public class InboxController {
                               @RequestHeader String password,
                               @PathVariable String path,
                               HttpServletResponse response) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         // this is needed for swagger, produces is just a directive:
@@ -91,6 +96,7 @@ public class InboxController {
     public void deleteFromInbox(@RequestHeader String user,
                                 @RequestHeader String password,
                                 @PathVariable String path) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
@@ -105,10 +111,8 @@ public class InboxController {
     public List<String> listInbox(@RequestHeader String user,
                                   @RequestHeader String password,
                                   @PathVariable(required = false) String path) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
-        path = Optional.ofNullable(path)
-                .map(it -> it.replaceAll("^\\.$", ""))
-                .orElse("./");
         try {
             List<String> inboxList = dataSafeService.inboxService().list(ListRequest.forDefaultPrivate(userIDAuth, path))
                     .map(e -> e.getResource().asPrivate().decryptedPath().asString())
