@@ -5,7 +5,7 @@ import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.metainfo.version.impl.version.types.DFSVersion;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -50,7 +50,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allLocalDefaultStorages")
-    void testVersionedWriteTopLevel(WithStorageProvider.StorageDescriptor descriptor) {
+    void testVersionedWriteTopLevel(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerAndDoWritesWithDiffMessageInSameLocation();
@@ -64,7 +64,7 @@ public class VersionedDataTest extends BaseE2ETest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("allLocalDefaultStorages")
-    void testUserIsRemovedWithFiles(WithStorageProvider.StorageDescriptor descriptor) {
+    void testUserIsRemovedWithFiles(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");
         john = registerUser(userJohn.getValue());
@@ -79,7 +79,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allLocalDefaultStorages")
-    void testVersionedWriteUsingAbsoluteAccess(WithStorageProvider.StorageDescriptor descriptor) {
+    void testVersionedWriteUsingAbsoluteAccess(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
         registerAndDoWritesWithDiffMessageInSameLocation();
         Versioned<AbsoluteLocation<PrivateResource>, ResolvedResource, Version> first = firstOfVersionedListRoot(jane);
@@ -91,7 +91,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allLocalDefaultStorages")
-    void testVersionedRemove(WithStorageProvider.StorageDescriptor descriptor) {
+    void testVersionedRemove(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerAndDoWritesWithDiffMessageInSameLocation();
@@ -107,7 +107,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allLocalDefaultStorages")
-    void testVersionsOf(WithStorageProvider.StorageDescriptor descriptor) {
+    void testVersionsOf(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerAndDoWritesWithDiffMessageInSameLocation();
@@ -127,7 +127,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allLocalDefaultStorages")
-    void testVersionsOfDirectPath(WithStorageProvider.StorageDescriptor descriptor) {
+    void testVersionsOfDirectPath(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerAndDoWritesWithDiffMessageInSameLocation();
@@ -148,7 +148,7 @@ public class VersionedDataTest extends BaseE2ETest {
     // this test imitates removal of old file versions
     @ParameterizedTest
     @MethodSource("allLocalDefaultStorages")
-    void testOldRemoval(WithStorageProvider.StorageDescriptor descriptor) {
+    void testOldRemoval(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerAndDoWritesWithDiffMessageInSameLocation();
@@ -177,7 +177,7 @@ public class VersionedDataTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allLocalDefaultStorages")
-    void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
+    void listingValidation(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane();
@@ -258,7 +258,7 @@ public class VersionedDataTest extends BaseE2ETest {
         return versionedDocusafeServices.latestPrivate().listWithDetails(ListRequest.forDefaultPrivate(owner, "./"));
     }
 
-    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+    private void init(WithStorageProviderIT.StorageDescriptor descriptor) {
         VersionedDatasafeServices datasafeServices = DatasafeServicesProvider
                 .versionedDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
 

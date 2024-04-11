@@ -14,7 +14,7 @@ import de.adorsys.datasafe.business.impl.e2e.randomactions.framework.services.St
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileRegistrationService;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.privatestore.api.PrivateSpaceService;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.provider.Arguments;
@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Execution2 [Action1,Action2,Action3] -- Action1 - Thread pool - Execute [Action3,Action1,Action1] on shared user set
  * Execution3 [Action1,Action2,Action3] -- Action1 /
  */
-public abstract class BaseRandomActions extends WithStorageProvider {
+public abstract class BaseRandomActions extends WithStorageProviderIT {
 
     public static final String DISABLE_RANDOM_ACTIONS_TEST = "DISABLE_RANDOM_ACTIONS_TEST";
     public static final String ENABLE_MULTI_BUCKET_TEST = "ENABLE_MULTI_BUCKET_TEST";

@@ -5,7 +5,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
@@ -31,7 +31,7 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("fsOnly")
-    void compareKeyStoreTypes(WithStorageProvider.StorageDescriptor descriptor) {
+    void compareKeyStoreTypes(WithStorageProviderIT.StorageDescriptor descriptor) {
         long tUBER = test(descriptor, "johnUber", "UBER");
         long tBCFKS = test(descriptor, "johnBCFKS", "BCFKS");
         log.info("UBER  test took: {}", tUBER);
@@ -42,7 +42,7 @@ public class KeyStoreTypeCompareTest extends BaseE2ETest {
 
 
     @SneakyThrows
-    long test(WithStorageProvider.StorageDescriptor descriptor, String userName, String keystoreType) {
+    long test(WithStorageProviderIT.StorageDescriptor descriptor, String userName, String keystoreType) {
         init(descriptor, keystoreType);
         UserID user = new UserID(userName);
         assertThat(profileRetrievalService.userExists(user)).isFalse();

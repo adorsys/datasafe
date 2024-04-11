@@ -6,7 +6,7 @@ import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.StorageService;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -56,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Multithreaded test of basic operations.
  */
 @Slf4j
-class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
+class BasicFunctionalityWithConcurrencyTestIT extends BaseE2ETest {
 
     private static final int TIMEOUT_S = 30;
 
@@ -98,7 +98,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
     @SneakyThrows
     @ParameterizedTest(name = "Run #{index} service storage: {0} with data size: {1} bytes and {2} threads.")
     @MethodSource("differentThreadsTestOptions")
-    void writeToPrivateListPrivateInDifferentThreads(WithStorageProvider.StorageDescriptor descriptor, int size, int poolSize) {
+    void writeToPrivateListPrivateInDifferentThreads(WithStorageProviderIT.StorageDescriptor descriptor, int size, int poolSize) {
         init(descriptor);
 
         Path testFile = tempTestFileFolder.resolve(UUID.randomUUID().toString());
@@ -287,7 +287,7 @@ class BasicFunctionalityWithConcurrencyTest extends BaseE2ETest {
         return arguments.stream();
     }
 
-    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+    private void init(WithStorageProviderIT.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
                 .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);

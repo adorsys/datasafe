@@ -11,7 +11,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
 import de.adorsys.datasafe.simple.adapter.impl.SimpleDatasafeServiceImpl;
 import de.adorsys.datasafe.simple.adapter.spring.annotations.UseDatasafeSpringConfiguration;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ContextConfiguration
 @SpringBootConfiguration
 @UseDatasafeSpringConfiguration
-public class InjectionTest extends WithStorageProvider {
+public class InjectionTest extends WithStorageProviderIT {
 
     public void testCreateUser(SimpleDatasafeService datasafeService) {
         assertThat(datasafeService).isNotNull();

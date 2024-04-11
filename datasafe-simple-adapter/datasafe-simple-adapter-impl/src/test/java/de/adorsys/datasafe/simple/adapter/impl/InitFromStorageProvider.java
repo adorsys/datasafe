@@ -4,7 +4,7 @@ import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class InitFromStorageProvider {
 
-    public DFSCredentials dfsFromDescriptor(WithStorageProvider.StorageDescriptor descriptor) {
+    public DFSCredentials dfsFromDescriptor(WithStorageProviderIT.StorageDescriptor descriptor) {
         if (descriptor == null) {
             return null;
         }

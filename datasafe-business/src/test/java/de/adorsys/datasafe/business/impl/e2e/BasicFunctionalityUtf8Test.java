@@ -1,7 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
@@ -24,7 +24,7 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void readPrivateContentWithUnicode(WithStorageProvider.StorageDescriptor descriptor) {
+    void readPrivateContentWithUnicode(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         jane = registerUser("jane");
@@ -41,7 +41,7 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void readPrivateContentWithUnicodeUsingUnicodePath(WithStorageProvider.StorageDescriptor descriptor) {
+    void readPrivateContentWithUnicodeUsingUnicodePath(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         jane = registerUser("jane");
@@ -59,7 +59,7 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void listingPrivatePathWithUnicode(WithStorageProvider.StorageDescriptor descriptor) {
+    void listingPrivatePathWithUnicode(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane();
@@ -83,7 +83,7 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void readInboxContentWithUnicodeUsingUnicodePath(WithStorageProvider.StorageDescriptor descriptor) {
+    void readInboxContentWithUnicodeUsingUnicodePath(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         jane = registerUser("jane");
@@ -102,7 +102,7 @@ class BasicFunctionalityUtf8Test extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void listingInboxPathWithUnicode(WithStorageProvider.StorageDescriptor descriptor) {
+    void listingInboxPathWithUnicode(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane();

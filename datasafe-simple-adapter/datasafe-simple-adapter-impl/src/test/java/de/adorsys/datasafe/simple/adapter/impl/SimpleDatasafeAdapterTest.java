@@ -15,7 +15,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.api.types.ListRecursiveFlag;
 import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-class SimpleDatasafeAdapterTest extends WithStorageProvider {
+class SimpleDatasafeAdapterTest extends WithStorageProviderIT {
 
     private SimpleDatasafeService simpleDatasafeService;
     private UserIDAuth userIDAuth;
@@ -75,7 +75,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @ParameterizedTest
     @MethodSource("minioOnly")
     @SneakyThrows
-    void justCreateAndDeleteUserForMinioOnly(WithStorageProvider.StorageDescriptor descriptor) {
+    void justCreateAndDeleteUserForMinioOnly(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
 
@@ -95,7 +95,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @ParameterizedTest
     @MethodSource("allStorages")
     @SneakyThrows
-    void justCreateAndDeleteUser(WithStorageProvider.StorageDescriptor descriptor) {
+    void justCreateAndDeleteUser(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
 
@@ -114,7 +114,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    void writeAndReadFile(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFile(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         String content = "content of document";
@@ -132,7 +132,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    void writeAndReadFileWithPasswordChange(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFileWithPasswordChange(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         String content = "content of document";
@@ -158,7 +158,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    void writeAndReadFileWithSlash(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFileWithSlash(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         String content = "content of document";
@@ -177,7 +177,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    void writeAndReadFiles(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFiles(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         DocumentDirectoryFQN root = new DocumentDirectoryFQN("affe");
@@ -225,7 +225,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("storages")
-    void writeAndReadFilesAsStream(WithStorageProvider.StorageDescriptor descriptor) {
+    void writeAndReadFilesAsStream(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
 
@@ -250,7 +250,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
 
     @ParameterizedTest
     @MethodSource("storages")
-    void testTwoUsers(WithStorageProvider.StorageDescriptor descriptor) {
+    void testTwoUsers(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
         mystart();
         UserIDAuth userIDAuth2 = new UserIDAuth(new UserID("peter2"), ReadKeyPasswordTestFactory.getForString("password2"));
@@ -302,7 +302,7 @@ class SimpleDatasafeAdapterTest extends WithStorageProvider {
     @ParameterizedTest
     @MethodSource("minioOnly")
     @SneakyThrows
-    void testExhaustedInputStream(WithStorageProvider.StorageDescriptor descriptor) {
+    void testExhaustedInputStream(WithStorageProviderIT.StorageDescriptor descriptor) {
         myinit(descriptor);
 
         if (!(dfsCredentials instanceof AmazonS3DFSCredentials)) {

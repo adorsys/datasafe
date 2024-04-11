@@ -19,7 +19,7 @@ import de.adorsys.datasafe.privatestore.api.actions.ReadFromPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.RemoveFromPrivate;
 import de.adorsys.datasafe.privatestore.api.actions.WriteToPrivate;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RequiredArgsConstructor
-public abstract class BaseE2ETest extends WithStorageProvider {
+public abstract class BaseE2ETest extends WithStorageProviderIT {
 
     protected static final String PRIVATE_COMPONENT = "private";
     protected static final String PRIVATE_FILES_COMPONENT = PRIVATE_COMPONENT + "/files";
@@ -252,7 +252,7 @@ public abstract class BaseE2ETest extends WithStorageProvider {
     }
 
     @SneakyThrows
-    protected void assertRootDirIsEmpty(WithStorageProvider.StorageDescriptor descriptor) {
+    protected void assertRootDirIsEmpty(WithStorageProviderIT.StorageDescriptor descriptor) {
         try (Stream<AbsoluteLocation<ResolvedResource>> ls = descriptor.getStorageService().get()
             .list(
                 new AbsoluteLocation<>(BasePrivateResource.forPrivate(descriptor.getLocation())))

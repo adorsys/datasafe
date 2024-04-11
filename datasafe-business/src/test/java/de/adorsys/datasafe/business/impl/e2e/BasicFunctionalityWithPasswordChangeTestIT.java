@@ -3,7 +3,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -28,12 +28,12 @@ import static de.adorsys.datasafe.business.impl.e2e.Const.SHARED_FILE_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
+class BasicFunctionalityWithPasswordChangeTestIT extends BaseE2ETest {
 
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("allStorages")
-    void testUserIsRemovedWithFiles(WithStorageProvider.StorageDescriptor descriptor) {
+    void testUserIsRemovedWithFiles(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");
         john = registerUser(userJohn.getValue());
@@ -57,7 +57,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("allStorages")
-    void testMultipleRecipientsSharing(WithStorageProvider.StorageDescriptor descriptor) {
+    void testMultipleRecipientsSharing(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         UserIDAuth john = registerUser("john");
@@ -79,7 +79,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
     @ParameterizedTest
     @MethodSource("allStorages")
     void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
-            WithStorageProvider.StorageDescriptor descriptor) {
+            WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane();
@@ -124,7 +124,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
+    void listingValidation(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane();
@@ -207,7 +207,7 @@ class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
         return newAuth;
     }
 
-    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+    private void init(WithStorageProviderIT.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
                 .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);

@@ -9,7 +9,7 @@ import de.adorsys.datasafe.simple.adapter.api.types.DSDocument;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentContent;
 import de.adorsys.datasafe.simple.adapter.api.types.DocumentFQN;
 import de.adorsys.datasafe.simple.adapter.impl.config.PathEncryptionConfig;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DFSRelativeToRootProfileTest extends WithStorageProvider {
+class DFSRelativeToRootProfileTest extends WithStorageProviderIT {
 
     private SimpleDatasafeService simpleDatasafeService;
     private UserIDAuth userIDAuth;
@@ -44,7 +44,7 @@ class DFSRelativeToRootProfileTest extends WithStorageProvider {
     @ParameterizedTest
     @MethodSource("allDefaultStorages")
     @SneakyThrows
-    void createWriteAndDeleteUserCleansAllNeeded(WithStorageProvider.StorageDescriptor descriptor) {
+    void createWriteAndDeleteUserCleansAllNeeded(WithStorageProviderIT.StorageDescriptor descriptor) {
         createDatasafeAdapter(descriptor);
 
         DSDocument document = new DSDocument(new DocumentFQN("c.txt"), new DocumentContent("Hello".getBytes()));

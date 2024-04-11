@@ -13,7 +13,7 @@ import de.adorsys.datasafe.storage.impl.db.DatabaseConnectionRegistry;
 import de.adorsys.datasafe.storage.impl.db.DatabaseCredentials;
 import de.adorsys.datasafe.storage.impl.db.DatabaseStorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SchemeDelegationWithDbTest extends WithStorageProvider {
+class SchemeDelegationWithDbTestIT extends WithStorageProviderIT {
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
 

@@ -50,7 +50,7 @@ import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
  */
 @Slf4j
 @Getter
-public abstract class WithStorageProvider extends BaseMockitoTest {
+public abstract class WithStorageProviderIT extends BaseMockitoTest {
     // to make tests possible for minio, ceph AND amazon by setting AWS_PROPERTIES
     // we check for amazon and NOT amazon by the following two strings
     private static final String amazonDomain = "s3.amazonaws.com";
@@ -103,7 +103,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     @BeforeAll
     static void init(@TempDir Path tempDir) {
         log.info("Executing init");
-        WithStorageProvider.tempDir = tempDir;
+        WithStorageProviderIT.tempDir = tempDir;
 
         minioStorage = Suppliers.memoize(() -> {
             startMinio();
@@ -460,7 +460,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         private final String region;
         private final String rootBucket;
 
-        public StorageDescriptor(WithStorageProvider.StorageDescriptorName name, Supplier<StorageService> storageService, Uri location, String accessKey, String secretKey, String region, String rootBucket) {
+        public StorageDescriptor(WithStorageProviderIT.StorageDescriptorName name, Supplier<StorageService> storageService, Uri location, String accessKey, String secretKey, String region, String rootBucket) {
             this.name = name;
             this.storageService = storageService;
             this.location = location;

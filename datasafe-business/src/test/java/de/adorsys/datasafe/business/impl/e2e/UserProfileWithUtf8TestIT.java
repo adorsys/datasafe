@@ -8,7 +8,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.SchemeDelegatingStorage;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.impl.fs.FileSystemStorageService;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import static de.adorsys.datasafe.types.api.shared.Dirs.computeRelativePreventingDoubleUrlEncode;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserProfileWithUtf8Test extends WithStorageProvider {
+class UserProfileWithUtf8TestIT extends WithStorageProviderIT {
 
     private Path fsPath;
     private Uri minioPath;

@@ -4,7 +4,7 @@ import de.adorsys.datasafe.simple.adapter.api.exceptions.SimpleAdapterException;
 import de.adorsys.datasafe.simple.adapter.api.types.AmazonS3DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.DFSCredentials;
 import de.adorsys.datasafe.simple.adapter.api.types.FilesystemDFSCredentials;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class DFSTestCredentialsFactory {
 
-    public DFSCredentials credentials(WithStorageProvider.StorageDescriptor descriptor) {
+    public DFSCredentials credentials(WithStorageProviderIT.StorageDescriptor descriptor) {
         switch (descriptor.getName()) {
             case FILESYSTEM: {
                 log.info("uri:" + descriptor.getRootBucket());

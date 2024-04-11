@@ -4,7 +4,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.storage.api.StorageService;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
@@ -65,7 +65,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("fsOnly")
-    void testDFSPasswordClearance(WithStorageProvider.StorageDescriptor descriptor) {
+    void testDFSPasswordClearance(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
@@ -154,7 +154,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void testDFSBasedProfileStorage(WithStorageProvider.StorageDescriptor descriptor) {
+    void testDFSBasedProfileStorage(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");
         assertThat(profileRetrievalService.userExists(userJohn)).isFalse();
@@ -173,7 +173,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("fsOnly")
-    void testUserIsRemovedWithFiles(WithStorageProvider.StorageDescriptor descriptor) {
+    void testUserIsRemovedWithFiles(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
         UserID userJohn = new UserID("john");
         john = registerUser(userJohn.getValue());
@@ -191,7 +191,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("allStorages")
-    void testMultipleRecipientsSharing(WithStorageProvider.StorageDescriptor descriptor) {
+    void testMultipleRecipientsSharing(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         UserIDAuth john = registerUser("john");
@@ -214,7 +214,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("allStorages")
-    void testMultipleRecipientsSharingLargeChunk(WithStorageProvider.StorageDescriptor descriptor) {
+    void testMultipleRecipientsSharingLargeChunk(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         UserIDAuth john = registerUser("john");
@@ -242,7 +242,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
     @ParameterizedTest
     @MethodSource("allStorages")
     void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInbox(
-            WithStorageProvider.StorageDescriptor descriptor) {
+            WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane();
@@ -273,7 +273,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void listingValidation(WithStorageProvider.StorageDescriptor descriptor) {
+    void listingValidation(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane();
@@ -303,7 +303,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-    void listingInboxValidation(WithStorageProvider.StorageDescriptor descriptor) {
+    void listingInboxValidation(WithStorageProviderIT.StorageDescriptor descriptor) {
         init(descriptor);
 
         registerJohnAndJane();
@@ -372,7 +372,7 @@ class BasicFunctionalityTest extends BaseE2ETest {
         }
     }
 
-    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+    private void init(WithStorageProviderIT.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
                 .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);

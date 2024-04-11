@@ -6,7 +6,7 @@ import de.adorsys.datasafe.simple.adapter.spring.annotations.UseDatasafeSpringCo
 import de.adorsys.datasafe.simple.adapter.spring.factory.SpringSimpleDatasafeServiceFactory;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDFSCredentialProperties;
 import de.adorsys.datasafe.simple.adapter.spring.properties.SpringDatasafeEncryptionProperties;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,13 +32,13 @@ public class InjectionWithoutPathEncryptionForMinioTest extends InjectionTest {
         System.setProperty("MINIO_URL", minio().getMappedUrl());
     }
 
-    private static Stream<WithStorageProvider.StorageDescriptor> minioonly() {
+    private static Stream<WithStorageProviderIT.StorageDescriptor> minioonly() {
         return Stream.of(minio());
     }
 
     @ParameterizedTest
     @MethodSource("minioonly")
-    public void plainService(WithStorageProvider.StorageDescriptor descriptor) {
+    public void plainService(WithStorageProviderIT.StorageDescriptor descriptor) {
         log.info("descriptor is {}", descriptor.getName());
         DFSCredentials dfsCredentials = SpringPropertiesToDFSCredentialsUtil.dfsCredentials(dfsCredentialProperties);
         SpringSimpleDatasafeServiceFactory springSimpleDatasafeServiceFactory = new SpringSimpleDatasafeServiceFactory(dfsCredentials, encryptionProperties);

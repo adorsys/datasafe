@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.teststorage.WithStorageProvider;
+import de.adorsys.datasafe.teststorage.WithStorageProviderIT;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.actions.RemoveRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisabledIfSystemProperty(named = WithStorageProvider.SKIP_CEPH, matches = "true")
-class StorageBasedVersioningTest extends BaseE2ETest {
+@DisabledIfSystemProperty(named = WithStorageProviderIT.SKIP_CEPH, matches = "true")
+class StorageBasedVersioningTestIT extends BaseE2ETest {
 
     private static final String FILE = "file.txt";
 
@@ -107,7 +107,7 @@ class StorageBasedVersioningTest extends BaseE2ETest {
         return new String(os.toByteArray(), StandardCharsets.UTF_8);
     }
 
-    private void init(WithStorageProvider.StorageDescriptor descriptor) {
+    private void init(WithStorageProviderIT.StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
                 .defaultDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation());
         initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);
