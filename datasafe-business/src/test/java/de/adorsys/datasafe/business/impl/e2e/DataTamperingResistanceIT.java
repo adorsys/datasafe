@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * attacker is unable to modify encrypted text without being detected.
  */
 @Slf4j
-class DataTamperingResistanceTest extends BaseE2ETest {
+class DataTamperingResistanceIT extends BaseE2ETest {
 
     private static final Set<Character> NOT_TO_REPLACE_IN_PATH = ImmutableSet.of('=', '/');
 

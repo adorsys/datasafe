@@ -32,32 +32,32 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SchemeDelegationTest extends WithStorageProvider {
-
-    private Path fsPath;
-    private Uri minioPath;
-    private StorageService minio;
-    private StorageService filesystem;
-    private DefaultDatasafeServices datasafeServices;
-
-    @BeforeEach
-    void initialize(@TempDir Path tempDir) {
-        WithStorageProvider.StorageDescriptor minioDescriptor = minio();
-        this.fsPath = tempDir;
-        this.minio = minioDescriptor.getStorageService().get();
-        this.filesystem = new FileSystemStorageService(tempDir);
-        this.minioPath = minioDescriptor.getLocation();
-        StorageService multiDfs = new SchemeDelegatingStorage(
-                ImmutableMap.of(
-                        "s3", minio,
-                        "file", filesystem
-                )
-        );
-
         this.datasafeServices = DaggerDefaultDatasafeServices
                 .builder()
                 .config(new ProfilesOnFsDataOnMinio(minioPath, tempDir))
-                .storage(multiDfs)
+
+        class SchemeDelegationTest extends WithStorageProvider {
+
+            private Path fsPath;
+            private Uri minioPath;
+            private StorageService minio;
+            private StorageService filesystem;
+            private DefaultDatasafeServices datasafeServices;
+
+            @BeforeEach
+            void initialize(@TempDir Path tempDir) {
+                WithStorageProvider.StorageDescriptor minioDescriptor = minio();
+                this.fsPath = tempDir;
+                this.minio = minioDescriptor.getStorageService().get();
+                this.filesystem = new FileSystemStorageService(tempDir);
+                this.minioPath = minioDescriptor.getLocation();
+                StorageService multiDfs = new SchemeDelegatingStorage(
+                        ImmutableMap.of(
+                                "s3", minio,
+                                "file", filesystem
+                        )
+                );
+     .storage(multiDfs)
                 .build();
     }
 

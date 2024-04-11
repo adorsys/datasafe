@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import static de.adorsys.datasafe.types.api.shared.Dirs.computeRelativePreventingDoubleUrlEncode;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserProfileWithUtf8Test extends WithStorageProvider {
+class UserProfileWithUtf8IT extends WithStorageProvider {
 
     private Path fsPath;
     private Uri minioPath;
