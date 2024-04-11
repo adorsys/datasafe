@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ProfileContainsDatasafeVersionTest extends BaseE2ETest {
+class ProfileContainsDatasafeVersionTest extends BaseE2EIT {
 
     @Test
     @SneakyThrows

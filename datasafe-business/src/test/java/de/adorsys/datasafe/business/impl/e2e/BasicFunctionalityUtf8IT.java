@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests that validates basic functionality - storing data to inbox, privatespace, listing files, etc. using UTF-8 paths.
  */
 @Slf4j
-class BasicFunctionalityUtf8IT extends BaseE2ETest {
+class BasicFunctionalityUtf8IT extends BaseE2EIT {
 
     private static final String MESSAGE_ONE = "Hello here 1";
     private static final String FOLDER = "folder1";
