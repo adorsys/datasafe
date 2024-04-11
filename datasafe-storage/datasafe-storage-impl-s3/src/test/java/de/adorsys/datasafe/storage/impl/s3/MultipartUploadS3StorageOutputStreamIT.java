@@ -30,7 +30,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class MultipartUploadS3StorageOutputStreamTest extends BaseMockitoTest {
+class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
     private final byte[] shortChunk = randomBytes(100);
     private final byte[] exactOneMultipartChunk = randomBytes(BUFFER_SIZE);
