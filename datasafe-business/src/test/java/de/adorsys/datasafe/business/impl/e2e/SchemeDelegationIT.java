@@ -1,5 +1,4 @@
 package de.adorsys.datasafe.business.impl.e2e;
-
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
@@ -32,7 +31,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SchemeDelegationTest extends WithStorageProvider {
+class SchemeDelegationIT extends WithStorageProvider {
 
     private Path fsPath;
     private Uri minioPath;
