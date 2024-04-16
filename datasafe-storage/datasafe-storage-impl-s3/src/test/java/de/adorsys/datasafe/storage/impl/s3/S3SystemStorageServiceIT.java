@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 //TODO: Extract stuff related container start/stop/clear to separate class. Used in datasafe-business and in datasafe-storage-impl-s3
-class S3SystemStorageServiceTest extends BaseMockitoTest {
+class S3SystemStorageServiceIT extends BaseMockitoTest {
 
     private static final String FILE = "file";
     private static final String MESSAGE = "hello";
