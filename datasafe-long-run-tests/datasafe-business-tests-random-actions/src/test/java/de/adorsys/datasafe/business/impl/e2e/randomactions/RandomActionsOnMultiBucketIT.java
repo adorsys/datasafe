@@ -16,7 +16,7 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
 
 @Slf4j
 @EnabledIfSystemProperty(named = ENABLE_MULTI_BUCKET_TEST, matches = "true")
-class RandomActionsOnMultiBucketTest extends BaseRandomActions {
+class RandomActionsOnMultiBucketIT extends BaseRandomActions {
 
     @ParameterizedTest
     @MethodSource("actionsOnStoragesAndThreadsAndFilesizes")

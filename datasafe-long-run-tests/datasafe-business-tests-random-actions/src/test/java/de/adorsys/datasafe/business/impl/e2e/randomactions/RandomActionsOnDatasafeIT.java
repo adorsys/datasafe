@@ -23,7 +23,7 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
  */
 @Slf4j
 @DisabledIfSystemProperty(named = DISABLE_RANDOM_ACTIONS_TEST, matches = "true")
-class RandomActionsOnDatasafeTest extends BaseRandomActions {
+class RandomActionsOnDatasafeIT extends BaseRandomActions {
 
     @ParameterizedTest
     @MethodSource("actionsOnStoragesAndThreadsAndFilesizes")

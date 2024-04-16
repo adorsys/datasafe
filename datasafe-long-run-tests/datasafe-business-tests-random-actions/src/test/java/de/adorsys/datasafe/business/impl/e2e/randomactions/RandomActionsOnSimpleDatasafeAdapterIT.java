@@ -68,7 +68,7 @@ import static de.adorsys.datasafe.business.impl.e2e.randomactions.framework.Base
  * Imitates close-to-production SimpleDatasafeAdapter deployment.
  */
 @DisabledIfSystemProperty(named = DISABLE_RANDOM_ACTIONS_TEST, matches = "true")
-class RandomActionsOnSimpleDatasafeAdapterTest extends BaseRandomActions {
+class RandomActionsOnSimpleDatasafeAdapterIT extends BaseRandomActions {
 
     @ParameterizedTest
     @MethodSource("actionsOnStoragesAndThreadsAndFilesizes")
