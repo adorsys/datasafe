@@ -24,7 +24,7 @@ import java.io.OutputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-public class KeyStoreTypeCompareTest extends BaseE2ETest {
+public class KeyStoreTypeCompareIT extends BaseE2EIT {
     private final static int NUMBER_WRITES = 100;
     private final static int NUMBER_READS = 100;
 

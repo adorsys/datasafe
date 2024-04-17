@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @Slf4j
 @DisabledIfSystemProperty(named = "SKIP_CEPH", matches = "true")
-class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageTest {
+class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageIT{
 
     private static final String MY_OWN_FILE_TXT = "my/own/file.txt";
 

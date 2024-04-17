@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 @Slf4j
 @ActiveProfiles("fs-withoutPathEncryption")
 @UseDatasafeSpringConfiguration
-public class InjectionWithoutPathEncryptionForFilesystemTest extends InjectionTest {
+public class InjectionWithoutPathEncryptionForFilesystemIT extends InjectionIT {
     @Autowired
     private SpringDFSCredentialProperties dfsCredentialProperties;
 
