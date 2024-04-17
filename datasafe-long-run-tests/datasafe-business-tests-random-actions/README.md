@@ -8,7 +8,7 @@ Tests can be disabled using (for performance reasons):
 `DISABLE_RANDOM_ACTIONS_TEST` system property equal to `true`
 
 Tests for Datasafe:
- - [RandomActionsOnDatasafeTest](src/test/java/de/adorsys/datasafe/business/impl/e2e/randomactions/RandomActionsOnDatasafeTest.java)
+ - [RandomActionsOnDatasafeIT](src/test/java/de/adorsys/datasafe/business/impl/e2e/randomactions/RandomActionsOnDatasafeIT.java)
 
 Tests for Datasafe-wrapper:
  - [RandomActionsOnSimpleDatasafeAdapterTest](src/test/java/de/adorsys/datasafe/business/impl/e2e/randomactions/RandomActionsOnSimpleDatasafeAdapterTest.java)
@@ -47,13 +47,13 @@ This way, we achieve parallel execution of random actions and can calculate perf
 These tests run on test plan matrix of (Content-size x Thread-count). 
 As the result they produce following output in logs:
 ```text
-12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeTest - ==== Statistics for FILESYSTEM with 11 threads and 3 Mb filesize: ====
-12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeTest - WRITE : StatisticService.Percentiles(stat={50=398.0, 99=629.78, 90=493.8, 75=436.0, 95=515.9}, throughputPerThread=2.4650780608052587)
-12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeTest - LIST : StatisticService.Percentiles(stat={50=2.0, 99=12.0, 90=7.0, 75=4.0, 95=8.0}, throughputPerThread=389.06752411575565)
-12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeTest - SHARE : StatisticService.Percentiles(stat={50=1987.5, 99=4022.18, 90=3323.7, 75=2448.0, 95=3456.65}, throughputPerThread=0.5068871369708885)
-12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeTest - CREATE_USER : StatisticService.Percentiles(stat={50=461.0, 99=830.83, 90=658.3, 75=544.0, 95=754.15}, throughputPerThread=2.048340843916428)
-12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeTest - READ : StatisticService.Percentiles(stat={50=511.0, 99=690.92, 90=602.6, 75=551.0, 95=646.0}, throughputPerThread=1.9656450727288677)
-12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeTest - DELETE : StatisticService.Percentiles(stat={50=3.0, 99=8.05, 90=4.0, 75=4.0, 95=5.0}, throughputPerThread=397.5903614457831)
+12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeIT - ==== Statistics for FILESYSTEM with 11 threads and 3 Mb filesize: ====
+12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeIT - WRITE : StatisticService.Percentiles(stat={50=398.0, 99=629.78, 90=493.8, 75=436.0, 95=515.9}, throughputPerThread=2.4650780608052587)
+12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeIT - LIST : StatisticService.Percentiles(stat={50=2.0, 99=12.0, 90=7.0, 75=4.0, 95=8.0}, throughputPerThread=389.06752411575565)
+12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeIT - SHARE : StatisticService.Percentiles(stat={50=1987.5, 99=4022.18, 90=3323.7, 75=2448.0, 95=3456.65}, throughputPerThread=0.5068871369708885)
+12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeIT - CREATE_USER : StatisticService.Percentiles(stat={50=461.0, 99=830.83, 90=658.3, 75=544.0, 95=754.15}, throughputPerThread=2.048340843916428)
+12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeIT - READ : StatisticService.Percentiles(stat={50=511.0, 99=690.92, 90=602.6, 75=551.0, 95=646.0}, throughputPerThread=1.9656450727288677)
+12:51:36.383 [main] INFO de.adorsys.datasafe.business.impl.e2e.randomactions.RandomActionsOnDatasafeIT - DELETE : StatisticService.Percentiles(stat={50=3.0, 99=8.05, 90=4.0, 75=4.0, 95=5.0}, throughputPerThread=397.5903614457831)
 ```
 Where, 
 ```text

@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ContextConfiguration
 @SpringBootConfiguration
 @UseDatasafeSpringConfiguration
-public class InjectionTest extends WithStorageProvider {
+public class InjectionIT extends WithStorageProvider {
 
     public void testCreateUser(SimpleDatasafeService datasafeService) {
         assertThat(datasafeService).isNotNull();

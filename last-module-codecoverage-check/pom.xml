@@ -7,6 +7,7 @@
         <groupId>de.adorsys</groupId>
         <version>2.0.2-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>last-module-codecoverage-check</artifactId>

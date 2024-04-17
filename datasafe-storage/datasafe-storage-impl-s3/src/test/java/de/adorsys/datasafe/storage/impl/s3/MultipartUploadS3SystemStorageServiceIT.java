@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
-public class MultipartUploadS3SystemStorageServiceTest extends S3SystemStorageServiceTest {
+public class MultipartUploadS3SystemStorageServiceIT extends S3SystemStorageServiceIT {
 
     @TempDir
     protected Path tempDir;

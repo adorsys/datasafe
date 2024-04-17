@@ -24,7 +24,7 @@ jobs:
           key: docker-${{ runner.os }}
 
       - name: Step 4 - Build & Test
-        run: mvn clean verify -ntp
+        run: mvn clean verify -ntp -PIT
 
       - name: Step 5 - Deploy Snapshot
         run: ./scripts/mvn_deploy.sh

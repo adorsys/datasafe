@@ -28,7 +28,7 @@ import static de.adorsys.datasafe.business.impl.e2e.Const.SHARED_FILE_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class BasicFunctionalityWithPasswordChangeTest extends BaseE2ETest {
+class BasicFunctionalityWithPasswordChangeIT extends BaseE2EIT {
 
     @SneakyThrows
     @ParameterizedTest
