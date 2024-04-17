@@ -70,7 +70,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * access `credentialsBucket` that has user profile and his storage access keystore.
  */
 @Slf4j
-class MultiDFSFunctionalityTest extends BaseMockitoTest {
+class MultiDFSFunctionalityIT extends BaseMockitoTest {
 
     private static final String REGION = "eu-central-1";
     private static final String LOCALHOST = getDockerUri("http://127.0.0.1");

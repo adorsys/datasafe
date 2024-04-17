@@ -1,5 +1,4 @@
 package de.adorsys.datasafe.business.impl.e2e;
-
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,33 +29,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.adorsys.datasafe.types.api.shared.Dirs.computeRelativePreventingDoubleUrlEncode;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserProfileWithUtf8Test extends WithStorageProvider {
+class SchemeDelegationIT extends WithStorageProvider {
 
     private Path fsPath;
     private Uri minioPath;
     private StorageService minio;
+    private StorageService filesystem;
     private DefaultDatasafeServices datasafeServices;
 
     @BeforeEach
     void initialize(@TempDir Path tempDir) {
-        StorageDescriptor minioDescriptor = minio();
+        WithStorageProvider.StorageDescriptor minioDescriptor = minio();
         this.fsPath = tempDir;
         this.minio = minioDescriptor.getStorageService().get();
+        this.filesystem = new FileSystemStorageService(tempDir);
         this.minioPath = minioDescriptor.getLocation();
-
         StorageService multiDfs = new SchemeDelegatingStorage(
                 ImmutableMap.of(
                         "s3", minio,
-                        "file", new FileSystemStorageService(tempDir)
+                        "file", filesystem
                 )
         );
 
         this.datasafeServices = DaggerDefaultDatasafeServices
                 .builder()
-                .config(new ProfilesOnFsDataOnMinio(minioPath, new Uri(tempDir.toUri())))
+                .config(new ProfilesOnFsDataOnMinio(minioPath, tempDir))
                 .storage(multiDfs)
                 .build();
     }
@@ -74,50 +74,38 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
             os.write("Hello".getBytes());
         }
 
-        // Profiles are on FS - note that raw file path has `+` instead of space
-        assertThat(listFs(fsPath))
-                .extracting(it -> computeRelativePreventingDoubleUrlEncode(fsPath, it))
-                .containsExactlyInAnyOrder(
-                        "",
-                        "prüfungs",
-                        "prüfungs/мой профиль+:приватный-$&=john",
-                        "prüfungs/мой профиль+:публичный-$&=john");
+        // Profiles are on FS
+        assertThat(listFs())
+                .extracting(it -> fsPath.relativize(it))
+                .extracting(Path::toString)
+                .containsExactlyInAnyOrder("", "public-john", "private-john");
         // File and keystore/pub keys are on minio
         assertThat(listMinio())
                 .extracting(it -> minioPath.relativize(it.location()))
-                .extracting(Uri::asString)
-                .contains(
-                        "users/john/root prüfungs+?=/тест:тест&/private/keystore",
-                        "users/john/root prüfungs+?=/тест:тест&/public/pubkeys"
-                )
-                .anyMatch(it -> it.startsWith(
-                        "users/john/root prüfungs+?=/тест:тест&/private/files/")
-                )
+                .extracting(it -> it.asURI().toString())
+                .contains("users/john/private/keystore", "users/john/public/pubkeys")
+                .anyMatch(it -> it.startsWith("users/john/private/files/"))
                 .hasSize(3);
     }
 
     private List<AbsoluteLocation<ResolvedResource>> listMinio() {
         try (Stream<AbsoluteLocation<ResolvedResource>> ls =
-                     minio.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(minioPath.resolve(""))))
-        ) {
+                     minio.list(new AbsoluteLocation<>(BasePrivateResource.forPrivate(minioPath.resolve(""))))) {
             return ls.collect(Collectors.toList());
         }
     }
 
-    @SneakyThrows
-    private List<Path> listFs(Path fsPath) {
+    private List<Path> listFs() throws IOException {
         try (Stream<Path> ls = Files.walk(fsPath)) {
             return ls.collect(Collectors.toList());
         }
     }
 
-
-
     static class ProfilesOnFsDataOnMinio extends DefaultDFSConfig {
 
-        private final Uri profilesPath;
+        private final Path profilesPath;
 
-        ProfilesOnFsDataOnMinio(Uri minioBucketPath, Uri profilesPath) {
+        ProfilesOnFsDataOnMinio(Uri minioBucketPath, Path profilesPath) {
             super(minioBucketPath, new ReadStorePassword("PAZZWORT"));
             this.profilesPath = profilesPath;
         }
@@ -125,22 +113,15 @@ class UserProfileWithUtf8Test extends WithStorageProvider {
         @Override
         public AbsoluteLocation publicProfile(UserID forUser) {
             return new AbsoluteLocation<>(
-                    BasePrivateResource.forPrivate(profilesPath.resolve(
-                            "prüfungs/мой профиль+:публичный-$&=" + forUser.getValue()))
+                    BasePrivateResource.forPrivate(profilesPath.resolve("public-" + forUser.getValue()).toUri())
             );
         }
 
         @Override
         public AbsoluteLocation privateProfile(UserID forUser) {
             return new AbsoluteLocation<>(
-                    BasePrivateResource.forPrivate(
-                            profilesPath.resolve("prüfungs/мой профиль+:приватный-$&=" + forUser.getValue()))
+                    BasePrivateResource.forPrivate(profilesPath.resolve("private-" + forUser.getValue()).toUri())
             );
-        }
-
-        @Override
-        protected Uri userRoot(UserID userID) {
-            return super.userRoot(userID).resolve("root prüfungs+?=/тест:тест&/");
         }
     }
 }

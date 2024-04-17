@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SchemeDelegationWithDbTest extends WithStorageProvider {
+class SchemeDelegationWithDbIT extends WithStorageProvider {
 
     private static final Set<String> ALLOWED_TABLES = ImmutableSet.of("users", "private_profiles", "public_profiles");
 
