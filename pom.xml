@@ -87,7 +87,7 @@
         <assertj.version>3.12.2</assertj.version>
         <mockito.version>5.5.0</mockito.version>
         <surefire.version>3.1.2</surefire.version>
-        <compress.version>1.21</compress.version>
+        <compress.version>1.26.0</compress.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <deploy.disabled>false</deploy.disabled>
         <testcontainers.version>1.18.3</testcontainers.version>
