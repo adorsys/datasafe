@@ -44,3 +44,4 @@ node_modules/
 dist/
 cache/
 
+/frontend/datasafe-ui/package-lock.json
