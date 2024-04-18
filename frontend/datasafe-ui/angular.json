@@ -40,7 +40,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -53,6 +52,17 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
             }
           }
         },
@@ -64,6 +74,9 @@
           "configurations": {
             "production": {
               "browserTarget": "my-app:build:production"
+            },
+            "dev": {
+              "browserTarget": "my-app:build:dev"
             }
           }
         },

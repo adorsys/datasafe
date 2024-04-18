@@ -26,10 +26,13 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static de.adorsys.datasafe.rest.impl.security.SecurityConstants.TOKEN_HEADER;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -44,7 +47,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc, AuthenticationManager authenticationManager) throws Exception {
-        MvcRequestMatcher[] SWAGGER_RESOURCES = {
+        MvcRequestMatcher[] swaggerResources = {
                 mvc.pattern("/v2/api-docs"),
                 mvc.pattern("/configuration/ui"),
                 mvc.pattern("/swagger-resources"),
@@ -54,11 +57,10 @@ public class SecurityConfig {
                 mvc.pattern("/swagger-resources/configuration/ui"),
                 mvc.pattern("/swagger-ui.html")
         };
-
-        http.cors(AbstractHttpConfigurer::disable)
+        http.cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(SWAGGER_RESOURCES).permitAll()
+                        .requestMatchers(swaggerResources).permitAll()
                         .requestMatchers(mvc.pattern("/static/**")).permitAll()
                         .requestMatchers(mvc.pattern(SecurityConstants.AUTH_LOGIN_URL)).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/**")).permitAll()
@@ -77,8 +79,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails user = User.withDefaultPasswordEncoder()
+    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+        UserDetails user = User.builder().passwordEncoder(encoder::encode)
                 .username(securityProperties.getDefaultUser())
                 .password(securityProperties.getDefaultPassword())
                 .authorities("ROLE_USER")
@@ -101,19 +103,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        configuration.addExposedHeader(TOKEN_HEADER);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        CorsConfiguration authConfig = new CorsConfiguration().applyPermitDefaultValues();
-        authConfig.addExposedHeader(TOKEN_HEADER);
-        source.registerCorsConfiguration(SecurityConstants.AUTH_LOGIN_URL, authConfig);
-
-        CorsConfiguration globalConfig = new CorsConfiguration().applyPermitDefaultValues();
-        globalConfig.addAllowedMethod(HttpMethod.OPTIONS);
-        globalConfig.addAllowedMethod(HttpMethod.PUT);
-        globalConfig.addAllowedMethod(HttpMethod.DELETE);
-        source.registerCorsConfiguration("/**", globalConfig);
-
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 

@@ -58,7 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * filesBucketOne, filesBucketTwo.
  */
 @Slf4j
-class MultiDfsWithCredentialsExampleTest {
+class MultiDfsWithCredentialsExampleIT{
 
     private static final String REGION = "eu-central-1";
     private static final ExecutorService EXECUTOR = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);

@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Tests that validates basic functionality - storing data to inbox, privatespace, listing files, etc.
  */
 @Slf4j
-class BasicFunctionalityTest extends BaseE2ETest {
+class BasicFunctionalityIT extends BaseE2EIT {
 
     private static final int LARGE_SIZE = 10 * 1024 * 1024 + 100;
 

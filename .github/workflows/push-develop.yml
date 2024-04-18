@@ -1,0 +1,53 @@
+name: Develop branch build
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  develop-build-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Step 2 - Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Step 3 - Cache Docker images.
+        uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: docker-${{ runner.os }}
+
+      - name: Step 4 - Build & Test
+        run: mvn clean verify -ntp -PIT
+
+      - name: Step 5 - Deploy Snapshot
+        run: ./scripts/mvn_deploy.sh
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          GPG_EXECUTABLE: gpg
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
+
+      - name: Step 6 - Upload coverage unittests reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          gcov_ignore: '!*datasafe-business*'
+          flags: unittests
+          verbose: true
+
+      - name: Step 7 - Upload coverage e2e tests reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          gcov_include: '*datasafe-business*'
+          flags: e2e_tests
+          verbose: true

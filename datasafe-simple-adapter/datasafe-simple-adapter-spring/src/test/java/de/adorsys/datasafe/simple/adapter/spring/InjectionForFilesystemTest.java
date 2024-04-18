@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("filesystem")
-public class InjectionForFilesystemTest extends InjectionTest {
+public class InjectionForFilesystemTest extends InjectionIT {
 
     @Autowired
     SimpleDatasafeService datasafeService;

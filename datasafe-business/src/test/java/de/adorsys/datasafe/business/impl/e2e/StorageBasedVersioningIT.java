@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisabledIfSystemProperty(named = WithStorageProvider.SKIP_CEPH, matches = "true")
-class StorageBasedVersioningTest extends BaseE2ETest {
+class StorageBasedVersioningIT extends BaseE2EIT {
 
     private static final String FILE = "file.txt";
 
