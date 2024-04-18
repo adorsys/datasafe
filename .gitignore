@@ -42,4 +42,5 @@ hs_err_pid*
 # node.js / frontend
 node_modules/
 dist/
+cache/
 
