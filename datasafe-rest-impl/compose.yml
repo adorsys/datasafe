@@ -1,5 +1,16 @@
-version: '3.3'
 services:
+  datasafe:
+    build:
+      args:
+        JAR_FILE: "datasafe-rest-impl-2.0.2-SNAPSHOT.jar"
+#    image: adorsys/datasafe
+    environment:
+      EXPOSE_API_CREDS: true
+      DEFAULT_USER: username
+      DEFAULT_PASSWORD: password
+      USE_FILESYSTEM: file:///Users/max/Desktop/datasafe
+    ports:
+      - 8080:8080
   db:
     image: mysql:5.7
     restart: always

@@ -3,9 +3,11 @@ package de.adorsys.datasafe.rest.impl.config;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-@ConfigurationProperties(prefix = "datasafe")
 @Data
+@Configuration
+@ConfigurationProperties(prefix = "datasafe")
 public class DatasafeProperties {
 
     /**
