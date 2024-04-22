@@ -20,10 +20,10 @@ export class CredentialsService {
   constructor() { }
 
   setCredentials(username: string, password: string) {
-    this.credentials = new Credentials(username, password)
+    this.credentials = new Credentials(username, password);
   }
 
-  getCredentialsForApi() : Credentials {
-    return this.credentials
+  getCredentialsForApi(): Credentials {
+    return this.credentials;
   }
 }

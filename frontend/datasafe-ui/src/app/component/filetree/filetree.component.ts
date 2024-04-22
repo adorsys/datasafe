@@ -3,11 +3,11 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component, Inject, Injectable} from '@angular/core';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ApiService} from "../../service/api/api.service";
-import {CredentialsService} from "../../service/credentials/credentials.service";
-import {Router} from "@angular/router";
-import {ErrorMessageUtil} from "../../app.component";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {ApiService} from '../../service/api/api.service';
+import {CredentialsService} from '../../service/credentials/credentials.service';
+import {Router} from '@angular/router';
+import {ErrorMessageUtil} from '../../app.component';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 
 class UserFileSystem {
 
@@ -19,43 +19,43 @@ class UserFileSystem {
     this.fs.clear();
 
     // maintain consistent order
-    files.concat(Array.from(this.uiCreatedFolders).map(it => it + "/"))
+    files.concat(Array.from(this.uiCreatedFolders).map(it => it + '/'))
         .sort()
         .forEach(it => this.addEntry(it));
   }
 
-  rootLevelNodes() : string[] {
-    let res = new Set<string>();
+  rootLevelNodes(): string[] {
+    const res = new Set<string>();
 
     this.fs.forEach((value, key) => {
-      let split = key.split("/", 2);
-      res.add(split[0] + (split.length > 1 ? "/" : ""));
+      const split = key.split('/', 2);
+      res.add(split[0] + (split.length > 1 ? '/' : ''));
     });
 
-    return Array.from(res)
+    return Array.from(res);
   }
 
   private addEntry(path: string) {
 
-    var fullPath = "";
-    var folder = "";
+    let fullPath = '';
+    let folder = '';
     path = (path.startsWith('/')) ? path.substring(1) : path;
-    path.split("/").forEach(segment => {
+    path.split('/').forEach(segment => {
       fullPath += segment;
-      fullPath += (fullPath === path ? "" : "/");
+      fullPath += (fullPath === path ? '' : '/');
 
-      let name = (((fullPath === path) && (!path.endsWith("/"))) ? segment : segment + "/");
+      const name = (((fullPath === path) && (!path.endsWith('/'))) ? segment : segment + '/');
       this.putToFolder(folder, name);
-      folder = fullPath
-    })
+      folder = fullPath;
+    });
   }
 
   private putToFolder(folder: string, name: string) {
-    if ("" === name || "/" === name) {
+    if ('' === name || '/' === name) {
       name = null;
     }
 
-    if (folder === "") {
+    if (folder === '') {
       folder = name;
       name = null;
     }
@@ -76,15 +76,15 @@ export class DynamicFlatNode {
       isLoading: boolean;
 
     constructor(path: string) {
-      let level = path.split("/").length - 1;
-      if (path.endsWith("/")) {
+      let level = path.split('/').length - 1;
+      if (path.endsWith('/')) {
         level = level - 1;
       }
 
-      this.name = path.replace(/\/$/, "").match(/(.+\/)*([^\/]+)$/)[2];
+      this.name = path.replace(/\/$/, '').match(/(.+\/)*([^\/]+)$/)[2];
       this.path = path;
       this.level = level;
-      this.expandable = path.endsWith("/");
+      this.expandable = path.endsWith('/');
     }
 }
 
@@ -93,7 +93,7 @@ export class DynamicDatabase {
   storageTree = new UserFileSystem();
 
   loadData(api: ApiService, creds: CredentialsService, filetreeComponent: FiletreeComponent, router: Router) {
-    api.listDocuments("", creds.getCredentialsForApi())
+    api.listDocuments('', creds.getCredentialsForApi())
         .then(res => {
           this.storageTree.buildFs(<Array<string>> res);
 
@@ -111,7 +111,7 @@ export class DynamicDatabase {
   }
 
   rebuildView(filetreeComponent: FiletreeComponent) {
-    let paths = this.memoizedFs();
+    const paths = this.memoizedFs();
 
     this.storageTree.buildFs(Array.from(paths));
     filetreeComponent.dataSource.data = this.storageTree.rootLevelNodes()
@@ -119,14 +119,14 @@ export class DynamicDatabase {
   }
 
   private memoizedFs() {
-    let paths = new Set<string>();
+    const paths = new Set<string>();
     this.storageTree.fs.forEach((values, key) => {
       paths.add(key);
       values.forEach(file => {
         if (null != file) {
           paths.add(key + file);
         }
-      })
+      });
     });
     return paths;
   }
@@ -158,7 +158,7 @@ export class DynamicDataSource {
   }
 
   private keepExpandedNodesState() {
-    let toExpand = new Set<string>(this.expandedMemoize);
+    const toExpand = new Set<string>(this.expandedMemoize);
     let expanded = false;
     do {
       expanded = false;
@@ -169,7 +169,7 @@ export class DynamicDataSource {
             expanded = true;
             toExpand.delete(node.path);
           });
-    } while (toExpand.size != 0 && expanded);
+    } while (toExpand.size !== 0 && expanded);
   }
 
   constructor(private treeControl: FlatTreeControl<DynamicFlatNode>,
@@ -254,10 +254,10 @@ export class FiletreeComponent {
 
   treeControl: FlatTreeControl<DynamicFlatNode>;
   dataSource: DynamicDataSource;
+  error: any;
   getLevel = (node: DynamicFlatNode) => node.level;
   isExpandable = (node: DynamicFlatNode) => node.expandable;
   hasChild = (_: number, _nodeData: DynamicFlatNode) => _nodeData.expandable;
-  error: any;
 
   constructor(private database: DynamicDatabase, private api: ApiService, private creds: CredentialsService,
               private router: Router, public dialog: MatDialog) {
@@ -270,19 +270,19 @@ export class FiletreeComponent {
   addUiFolderWithPath(path: string) {
     const dialogRef = this.dialog.open(AddFolderDialog, {
       width: '250px',
-      data: {folderPath: ""}
+      data: {folderPath: ''}
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this.database.storageTree.uiCreatedFolders.add("" !== path ? path + result : result);
+        this.database.storageTree.uiCreatedFolders.add('' !== path ? path + result : result);
         this.database.rebuildView(this);
       }
     });
   }
 
   addUiFolder() {
-    this.addUiFolderWithPath("");
+    this.addUiFolderWithPath('');
   }
 
   addUiFolderWithpathFromName(event) {
@@ -308,8 +308,8 @@ export class FiletreeComponent {
   }
 
   private removePathFromUiCreatedFolders(path: string) {
-    let pathPrefix = path.replace(/\/$/, "");
-    let toRemove = Array.from(this.database.storageTree.uiCreatedFolders)
+    const pathPrefix = path.replace(/\/$/, '');
+    const toRemove = Array.from(this.database.storageTree.uiCreatedFolders)
         .filter(it => it.startsWith(pathPrefix));
     toRemove.forEach(remove => this.database.storageTree.uiCreatedFolders.delete(remove));
   }

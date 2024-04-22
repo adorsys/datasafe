@@ -45,3 +45,4 @@ dist/
 cache/
 
 /frontend/datasafe-ui/package-lock.json
+/datasafe-rest-impl/ROOT_BUCKET/

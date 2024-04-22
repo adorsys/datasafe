@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {ApiService} from '../../service/api/api.service';
 import {CredentialsService} from '../../service/credentials/credentials.service';
@@ -29,7 +29,7 @@ class PasswordsMatchControl extends FormControl {
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
 
     constructor(public router: Router, private api: ApiService, private fb: FormBuilder,
                 private creds: CredentialsService) {
@@ -51,21 +51,21 @@ export class RegisterComponent implements OnInit {
         username: this.userNameControl,
         passwords: this.passwordControl,
         matchPasswords: this.passwordMatchControl
-    }, {validator: RegisterComponent.checkPasswords});
-
+    }, {
+        validators: [RegisterComponent.checkPasswords]
+    });
 
     fieldMatcher = new FieldErrorStateMatcher();
     parentOrFieldMatcher = new ParentOrFieldErrorStateMatcher();
 
-    private static checkPasswords(group: FormGroup) { // here we have the 'passwords' group
-        const matchControl = <PasswordsMatchControl>group.controls.matchPasswords;
-        const pass = group.controls.passwords.value;
-        const confirmPass = matchControl.value;
+    private static checkPasswords(): ValidatorFn { // here we have the 'passwords' group
+        return (group: FormGroup): ValidationErrors | null => {
+            const matchControl = <PasswordsMatchControl>group.controls.matchPasswords;
+            const pass = group.controls.passwords.value;
+            const confirmPass = matchControl.value;
 
-        return (matchControl.Hidden || pass === confirmPass) ? null : {notSame: true}
-    }
-
-    ngOnInit() {
+            return (matchControl.Hidden || pass === confirmPass) ? null : {notSame: true};
+        };
     }
 
     public handleCreateUserClick() {
@@ -74,7 +74,7 @@ export class RegisterComponent implements OnInit {
         }
 
         this.api.createUser(this.userNameControl.value, this.passwordControl.value)
-            .then(res => {
+            .then(() => {
                 this.creds.setCredentials(this.userNameControl.value, this.passwordControl.value);
                 this.router.navigate(['/user']);
             })

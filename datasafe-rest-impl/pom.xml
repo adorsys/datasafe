@@ -163,7 +163,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <build>
-                <finalName>${project.artifactId}-${project.version}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
