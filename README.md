@@ -1,5 +1,6 @@
+[![Build Status](https://travis-ci.com/adorsys/datasafe.svg?branch=develop)](https://travis-ci.com/adorsys/datasafe)
 [![codecov](https://codecov.io/gh/adorsys/datasafe/branch/develop/graph/badge.svg)](https://codecov.io/gh/adorsys/datasafe)
-[![Maintainability](https://codeclimate.com/github/adorsys/datasafe.png)](https://codeclimate.com/github/adorsys/datasafe/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/06ae7d4cafc3012cee85/maintainability)](https://codeclimate.com/github/adorsys/datasafe/maintainability)
 
 # Secure, Encrypted and Versioned Data Storage Library
 
