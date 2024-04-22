@@ -42,4 +42,7 @@ hs_err_pid*
 # node.js / frontend
 node_modules/
 dist/
+cache/
 
+/frontend/datasafe-ui/package-lock.json
+/datasafe-rest-impl/ROOT_BUCKET/

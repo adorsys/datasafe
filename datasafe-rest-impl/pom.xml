@@ -20,9 +20,15 @@
         <asciidoctor-maven-plugin.version>2.2.4</asciidoctor-maven-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
+        <springdoc-openapi-starter-webmvc-ui.version>2.3.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
+        </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-business</artifactId>
@@ -157,7 +163,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <build>
-                <finalName>${project.artifactId}-${project.version}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>

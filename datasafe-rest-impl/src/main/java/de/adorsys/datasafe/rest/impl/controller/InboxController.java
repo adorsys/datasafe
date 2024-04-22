@@ -55,6 +55,7 @@ public class InboxController {
     public void writeToInbox(@RequestHeader Set<String> users,
                              @PathVariable String path,
                              @RequestParam("file") MultipartFile file) {
+        path = path.replaceAll("^/", "");
         Set<UserID> toUsers = users.stream().map(UserID::new).collect(Collectors.toSet());
         try (OutputStream os = dataSafeService.inboxService().write(WriteRequest.forDefaultPublic(toUsers, path));
              InputStream is = file.getInputStream()) {
@@ -72,6 +73,7 @@ public class InboxController {
                               @RequestHeader String password,
                               @PathVariable String path,
                               HttpServletResponse response) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         // this is needed for swagger, produces is just a directive:
@@ -91,6 +93,7 @@ public class InboxController {
     public void deleteFromInbox(@RequestHeader String user,
                                 @RequestHeader String password,
                                 @PathVariable String path) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
         RemoveRequest<UserIDAuth, PrivateResource> request = RemoveRequest.forPrivate(userIDAuth, resource);
@@ -105,6 +108,7 @@ public class InboxController {
     public List<String> listInbox(@RequestHeader String user,
                                   @RequestHeader String password,
                                   @PathVariable(required = false) String path) {
+        path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))

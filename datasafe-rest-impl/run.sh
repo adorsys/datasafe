@@ -7,7 +7,7 @@ if [[ -z "$API_URL" ]]; then
 fi
 
 # Bind API url and credentials, sed -i won't work because of OC user permissions
-sed 's!${API_URL}!'"$API_URL"'!g' "$APP_HOME/frontend/env.js" > /tmp/env.js && mv /tmp/env.js "$APP_HOME/frontend/env.js"
+sed 's!${API_URL}!'"$API_URL"'!g' "$APP_HOME/frontend/env.prod.js" > /tmp/env.js && mv /tmp/env.js "$APP_HOME/frontend/env.js"
 
 # do not expose sensitive data by default
 LOGIN=""

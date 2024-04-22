@@ -19,7 +19,29 @@ To **run** demo:
 
 ## Building and running demo
 
-### Building
+### Run it with Docker Compose
+The easiest way to run Datasafe Rest Application is using Docker Compose. By default, it works with filesystem with root
+directory `datasafe-rest-impl/ROOT_BUCKET`.
+Build it with:
+``` bash
+# build backend
+mvn clean package
+
+# build frontend
+cd frontend/datasafe-ui
+npm i
+ng build --deploy-url /static/ --base-href /static/
+mv dist ../../datasafe-rest-impl/target/dist
+
+# build image and start datasafe in docker
+docker compose up datasafe
+```
+
+Frontend is available at http://localhost:8080/static/index.html
+
+### Alternatively you can use shell scripts to build and run datasafe with different types of storages
+
+#### Building
 
 -  Build from sources
 
@@ -34,7 +56,7 @@ cd datasafe-rest-impl
 docker pull adorsys/datasafe && docker tag adorsys/datasafe datasafe-rest-test:latest
 ```
 
-### Running
+#### Running
 
 Run using local filesystem, all data will be stored in `target/ROOT_BUCKET` folder:
 ```bash

@@ -1,6 +1,0 @@
-apiVersion: "v1"
-kind: "ImageStream"
-metadata:
-  name: "datasafe-rest-service"
-spec:
-  dockerImageRepository: "datasafe-rest-service"

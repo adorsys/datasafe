@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM ibm-semeru-runtimes:open-21-jre
 
 ARG JAR_FILE
 ENV JAR_FILE ${JAR_FILE}

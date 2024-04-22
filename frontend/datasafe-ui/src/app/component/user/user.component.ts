@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
-import {CredentialsService} from "../../service/credentials/credentials.service";
-import {ApiService} from "../../service/api/api.service";
+import {Router} from '@angular/router';
+import {CredentialsService} from '../../service/credentials/credentials.service';
+import {ApiService} from '../../service/api/api.service';
 
 @Component({
   selector: 'app-user',
@@ -19,11 +19,11 @@ export class UserComponent implements OnInit {
 
   ngOnInit() {
     if (null == this.creds.getCredentialsForApi()) {
-      this.router.navigate([''])
+      this.router.navigate(['']);
     }
   }
 
   doLogout() {
-    this.router.navigate([''])
+    this.router.navigate(['']);
   }
 }

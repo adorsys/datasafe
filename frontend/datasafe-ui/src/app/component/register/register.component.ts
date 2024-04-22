@@ -1,14 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
-import {ApiService} from "../../service/api/api.service";
-import {CredentialsService} from "../../service/credentials/credentials.service";
-import {ErrorMessageUtil, FieldErrorStateMatcher, ParentOrFieldErrorStateMatcher} from "../../app.component";
+import {Component} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {ApiService} from '../../service/api/api.service';
+import {CredentialsService} from '../../service/credentials/credentials.service';
+import {ErrorMessageUtil, FieldErrorStateMatcher, ParentOrFieldErrorStateMatcher} from '../../app.component';
 
 class PasswordsMatchControl extends FormControl {
 
     constructor(private hidden: boolean) {
-        super('', [])
+        super('', []);
     }
 
     get Hidden(): boolean {
@@ -29,7 +29,11 @@ class PasswordsMatchControl extends FormControl {
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
+
+    constructor(public router: Router, private api: ApiService, private fb: FormBuilder,
+                private creds: CredentialsService) {
+    }
 
     userNameControl = new FormControl('', [
         Validators.required,
@@ -47,37 +51,33 @@ export class RegisterComponent implements OnInit {
         username: this.userNameControl,
         passwords: this.passwordControl,
         matchPasswords: this.passwordMatchControl
-    }, {validator: RegisterComponent.checkPasswords});
-
+    }, {
+        validators: [RegisterComponent.checkPasswords]
+    });
 
     fieldMatcher = new FieldErrorStateMatcher();
     parentOrFieldMatcher = new ParentOrFieldErrorStateMatcher();
 
-    constructor(public router: Router, private api: ApiService, private fb: FormBuilder,
-                private creds: CredentialsService) {
-    }
+    private static checkPasswords(): ValidatorFn { // here we have the 'passwords' group
+        return (group: FormGroup): ValidationErrors | null => {
+            const matchControl = <PasswordsMatchControl>group.controls.matchPasswords;
+            const pass = group.controls.passwords.value;
+            const confirmPass = matchControl.value;
 
-    ngOnInit() {
+            return (matchControl.Hidden || pass === confirmPass) ? null : {notSame: true};
+        };
     }
 
     public handleCreateUserClick() {
         if (!this.registerForm.valid) {
-            return
+            return;
         }
 
         this.api.createUser(this.userNameControl.value, this.passwordControl.value)
-            .then(res => {
+            .then(() => {
                 this.creds.setCredentials(this.userNameControl.value, this.passwordControl.value);
-                this.router.navigate(['/user'])
+                this.router.navigate(['/user']);
             })
             .catch(error => this.registerForm.setErrors({'createFailed': ErrorMessageUtil.extract(error)}));
-    }
-
-    private static checkPasswords(group: FormGroup) { // here we have the 'passwords' group
-        let matchControl = <PasswordsMatchControl>group.controls.matchPasswords;
-        let pass = group.controls.passwords.value;
-        let confirmPass = matchControl.value;
-
-        return (matchControl.Hidden || pass === confirmPass) ? null : {notSame: true}
     }
 }
