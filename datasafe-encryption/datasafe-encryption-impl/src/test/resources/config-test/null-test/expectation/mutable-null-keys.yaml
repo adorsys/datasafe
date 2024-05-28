@@ -20,11 +20,11 @@ keys:
     algo: ECDH
     size: 256
     sigAlgo: SHA256withECDSA
-    curve: Curve25519
+    curve: secp256r1
   signing:
     algo: ECDH
     size: 256
     sigAlgo: SHA256withECDSA
-    curve: Curve25519
+    curve: secp256r1
 cms:
   algo: cms-algo1

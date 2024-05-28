@@ -85,7 +85,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
                 CMSAlgorithm.ECDH_SHA256KDF,
                 senderKeyPair.getPrivate(),
                 senderKeyPair.getPublic(),
-                CMSAlgorithm.AES128_WRAP);
+                CMSAlgorithm.AES256_WRAP);
         jceKeyAgreeRecipientInfoGenerator.addRecipient(publicKeyWithId.getKeyID().getValue().getBytes(), publicKeyWithId.getPublicKey());
         return jceKeyAgreeRecipientInfoGenerator;
     }

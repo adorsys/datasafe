@@ -24,9 +24,9 @@ public class KeyAgreeDecryptor extends Decryptor {
 
     @Override
     @SneakyThrows
-    public InputStream decryptionStream(Key key) {
+    public InputStream decryptionStream(Key privateKey) {
         return recipientInfo
-                .getContentStream(new JceKeyAgreeEnvelopedRecipient((PrivateKey) key))
+                .getContentStream(new JceKeyAgreeEnvelopedRecipient((PrivateKey) privateKey))
                 .getContentStream();
     }
 }
