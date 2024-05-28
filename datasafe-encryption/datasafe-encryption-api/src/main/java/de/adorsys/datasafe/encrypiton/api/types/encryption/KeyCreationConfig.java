@@ -71,6 +71,6 @@ public class KeyCreationConfig {
         private final String sigAlgo = "SHA256withECDSA";
 
         @Builder.Default
-        private final String curve = "Curve25519";
+        private final String curve = "secp256r1";
     }
 }
