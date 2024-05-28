@@ -64,14 +64,18 @@ class InboxControllerTest extends BaseTokenDatasafeEndpointTest {
                 ),
                 requestHeaders(
                         headerWithName("token").description(TOKEN_DESCRIPTION),
-                        headerWithName("users").description("recipients array")
+                        headerWithName("user").description(USER_DESCRIPTION),
+                        headerWithName("password").description(PASSWORD_DESCRIPTION),
+                        headerWithName("recipients").description("recipients array")
                 )
         );
 
         mvc.perform(putFileBuilder("/inbox/document/{path}", TEST_PATH)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-                .header("users", TEST_USER)
-                .header("token", token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("recipients", TEST_USER_RECIPIENT)
+                        .header("token", token)
         )
                 .andExpect(status().isOk())
                 .andDo(document);

@@ -86,11 +86,12 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
     void readInboxContentWithUnicodeUsingUnicodePath(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
+        john = registerUser("john");
         jane = registerUser("jane");
 
 
         String unicodeMessage = "привет мир!";
-        writeDataToInbox(jane, " привет/prüfungsdokument=/файл:&? с пробелом.док", unicodeMessage);
+        writeDataToInbox(john, jane, " привет/prüfungsdokument=/файл:&? с пробелом.док", unicodeMessage);
 
         String inboxContentJane = readInboxUsingPrivateKey(
                 jane,
@@ -107,9 +108,9 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
 
         registerJohnAndJane();
 
-        writeDataToInbox(jane, "prüfungsdokument.doc+doc", MESSAGE_ONE);
-        writeDataToInbox(jane, "уровень1/?файл+doc", MESSAGE_ONE);
-        writeDataToInbox(jane, "уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "prüfungsdokument.doc+doc", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "уровень1/?файл+doc", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
 
         assertInboxSpaceList(jane, "", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
         assertInboxSpaceList(jane, "./", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");

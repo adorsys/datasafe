@@ -1,7 +1,8 @@
 package de.adorsys.datasafe.inbox.api.actions;
 
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
-import de.adorsys.datasafe.types.api.actions.WriteRequest;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.resource.PublicResource;
 
 import java.io.OutputStream;
@@ -19,5 +20,5 @@ public interface WriteToInbox {
      * @return Stream that will get encrypted and stored within user INBOX.
      * @apiNote Returned stream should be closed properly
      */
-    OutputStream write(WriteRequest<Set<UserID>, PublicResource> request);
+    OutputStream write(WriteInboxRequest<UserIDAuth, Set<UserID>, PublicResource> request);
 }

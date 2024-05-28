@@ -3,6 +3,7 @@ package de.adorsys.datasafe.business.impl.e2e;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
+import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
@@ -82,7 +83,7 @@ class DataTamperingResistanceIT extends BaseE2EIT {
     @SneakyThrows
     void testInboxDocumentContentTamperResistance() {
         try (OutputStream os = writeToInbox.write(
-                WriteRequest.forDefaultPublic(Collections.singleton(john.getUserID()), FILENAME))
+                WriteInboxRequest.forDefaultPublic(jane, Collections.singleton(john.getUserID()), FILENAME))
         ) {
             os.write(FILE_TEXT.getBytes(StandardCharsets.UTF_8));
         }

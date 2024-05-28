@@ -20,7 +20,9 @@ keys:
     algo: enc-algo
     size: 13
     sigAlgo: srv-sig-algo
+    curve: curve
   signing:
     algo: sig-algo
     size: 14
     sigAlgo: srv-sig-algo
+    curve: curve

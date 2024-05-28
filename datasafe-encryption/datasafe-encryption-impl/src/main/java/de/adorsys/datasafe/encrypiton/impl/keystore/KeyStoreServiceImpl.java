@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.encrypiton.impl.keystore;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
@@ -19,6 +20,8 @@ import de.adorsys.keymanagement.api.types.template.generated.Encrypting;
 import de.adorsys.keymanagement.api.types.template.generated.Secret;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
+import org.bouncycastle.jcajce.provider.asymmetric.util.EC5Util;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -28,6 +31,7 @@ import javax.inject.Inject;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.security.spec.ECParameterSpec;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -82,6 +86,8 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
         EncryptingKeyCreationCfg encConf = keyConfig.getEncrypting();
         Supplier<char[]> passSupplier = () -> keyStoreAuth.getReadKeyPassword().getValue();
+        ECParameterSpec paramSpec = Strings.isNullOrEmpty(encConf.getCurve()) ?
+                null : EC5Util.convertToSpec(CustomNamedCurves.getByName(encConf.getCurve()));
         KeySetTemplate template = KeySetTemplate.builder()
                 .generatedEncryptionKeys(Encrypting.with()
                         .algo(encConf.getAlgo())
@@ -89,6 +95,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
                         .keySize(encConf.getSize())
                         .prefix("ENC")
                         .password(passSupplier)
+                        .paramSpec(paramSpec)
                         .build()
                         .repeat(keyConfig.getEncKeyNumber())
                 )

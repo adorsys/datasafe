@@ -74,13 +74,13 @@
         <src.dir>src/main/java</src.dir>
         <test.src.dir>src/test/java</test.src.dir>
         <graal.version>19.2.0</graal.version>
-        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.dependency.plugin.version>3.6.1</maven.dependency.plugin.version>
         <lombok.version>1.18.30</lombok.version>
         <gson.version>2.8.9</gson.version>
-        <dagger.version>2.46.1</dagger.version>
+        <dagger.version>2.50</dagger.version>
         <guava.version>32.1.1-jre</guava.version>
         <picocli.version>4.0.3</picocli.version>
         <jupiter.version>5.10.0</jupiter.version>
@@ -113,7 +113,7 @@
         <spring.framework.boot.version>3.1.2</spring.framework.boot.version>
         <siv-mode.version>1.4.4</siv-mode.version>
         <jackson.version>2.16.1</jackson.version>
-        <keymanagement.version>0.0.9</keymanagement.version>
+        <keymanagement.version>0.0.11</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
@@ -719,6 +719,16 @@
 			</build>
 		</profile>
     </profiles>
+
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <distributionManagement>
         <repository>
