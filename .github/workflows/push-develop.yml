@@ -36,18 +36,5 @@ jobs:
           GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
           GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
 
-      - name: Step 6 - Upload coverage unittests reports to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          exclude: '*datasafe-business*'
-          flags: unittests
-          verbose: true
-
-      - name: Step 7 - Upload coverage e2e tests reports to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          exclude: '!*datasafe-business*'
-          flags: e2e_tests
-          verbose: true
+  call-codecov-workflow:
+    uses: ./.github/workflows/codecov.yml
