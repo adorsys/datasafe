@@ -1,6 +1,8 @@
 name: Develop branch build
 on:
-  workflow_call:
+  workflow_run:
+    workflows: ["pull-request-job", "develop-build-job"]
+    types: [completed]
 
 jobs:
   codecov-job:

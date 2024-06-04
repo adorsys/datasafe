@@ -26,6 +26,3 @@ jobs:
 
       - name: Step 4 - Build & Test
         run: mvn clean verify -ntp -PIT
-
-  call-codecov-workflow:
-    uses: ./.github/workflows/codecov.yml
