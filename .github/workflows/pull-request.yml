@@ -28,17 +28,17 @@ jobs:
         run: mvn clean verify -ntp -PIT
 
       - name: Step 5 - Upload coverage unittests reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          gcov_ignore: '!*datasafe-business*'
+          exclude: '*datasafe-business*'
           flags: unittests
           verbose: true
 
       - name: Step 6 - Upload coverage e2e tests reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          gcov_include: '*datasafe-business*'
+          exclude: '!*datasafe-business*'
           flags: e2e_tests
           verbose: true

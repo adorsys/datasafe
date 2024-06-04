@@ -37,17 +37,17 @@ jobs:
           GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
 
       - name: Step 6 - Upload coverage unittests reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          gcov_ignore: '!*datasafe-business*'
+          exclude: '*datasafe-business*'
           flags: unittests
           verbose: true
 
       - name: Step 7 - Upload coverage e2e tests reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          gcov_include: '*datasafe-business*'
+          exclude: '!*datasafe-business*'
           flags: e2e_tests
           verbose: true
