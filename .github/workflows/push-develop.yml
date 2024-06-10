@@ -26,6 +26,13 @@ jobs:
       - name: Step 4 - Build & Test
         run: mvn clean verify -ntp -PIT
 
+      - name: Step 5 - Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
       - name: Step 5 - Deploy Snapshot
         run: ./scripts/mvn_deploy.sh
         env:
@@ -35,19 +42,3 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
           GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
-
-      - name: Step 6 - Upload coverage unittests reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          gcov_ignore: '!*datasafe-business*'
-          flags: unittests
-          verbose: true
-
-      - name: Step 7 - Upload coverage e2e tests reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          gcov_include: '*datasafe-business*'
-          flags: e2e_tests
-          verbose: true
