@@ -7,8 +7,13 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.google.common.base.CharMatcher;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.Resources;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
@@ -50,9 +55,12 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,16 +70,18 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
     private static final String AMAZON_URL = "https://.*s3.amazonaws.com";
     private static final ReadStorePassword universalReadStorePassword = new ReadStorePassword("secret");
     private static final String S3_PREFIX = "s3://";
-
+    private static final String yamlFixture = "config/mutable.yaml";
+    private static ObjectMapper mapper = createMapper();
+    private static MutableEncryptionConfig config = readResource(mapper, yamlFixture, MutableEncryptionConfig.class);
     private SystemRootAndStorageService rootAndStorage;
     private DefaultDatasafeServices customlyBuiltDatasafeServices;
 
     public SimpleDatasafeServiceImpl(PathEncryptionConfig pathEncryptionConfig) {
-        this(DFSCredentialsFactory.getFromEnvironmnet(), new MutableEncryptionConfig(), pathEncryptionConfig);
+        this(DFSCredentialsFactory.getFromEnvironmnet(), config, pathEncryptionConfig);
     }
 
     public SimpleDatasafeServiceImpl() {
-        this(DFSCredentialsFactory.getFromEnvironmnet(), new MutableEncryptionConfig(), new PathEncryptionConfig(true));
+        this(DFSCredentialsFactory.getFromEnvironmnet(), config, new PathEncryptionConfig(true));
     }
 
     public SimpleDatasafeServiceImpl(DFSCredentials dfsCredentials, MutableEncryptionConfig config, PathEncryptionConfig pathEncryptionConfig) {
@@ -322,6 +332,20 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         StorageService storageService = new FileSystemStorageService(FileSystems.getDefault().getPath(filesystemDFSCredentials.getRoot()));
         log.info("build DFS to FILESYSTEM with root " + filesystemDFSCredentials.getRoot());
         return new SystemRootAndStorageService(systemRoot, storageService);
+    }
+    private static <T> T readResource(ObjectMapper mapper, String path, Class<T> type) {
+        try (Reader reader = Resources.asCharSource(Resources.getResource(path), StandardCharsets.UTF_8).openStream()) {
+            return mapper.readValue(reader, type);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ObjectMapper createMapper() {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory().enable(YAMLGenerator.Feature.MINIMIZE_QUOTES));
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return mapper;
     }
 
 

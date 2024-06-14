@@ -1,0 +1,28 @@
+keystore:
+  type: store-type
+  encryptionAlgo: store-enc
+  pbkdf:
+    pbkdf2:
+      algo: pbkdf-algo
+      saltLength: 2
+      iterCount: 3
+  macAlgo: store-mac
+  passwordKeysAlgo: store-pwd-keys
+keys:
+  encKeyNumber: 1
+  signKeyNumber: 2
+  secret:
+    algo: sec-algo
+    size: 12
+  encrypting:
+    algo: enc-algo
+    size: 13
+    sigAlgo: srv-sig-algo
+    curve: curve
+  signing:
+    algo: sig-algo
+    size: 14
+    sigAlgo: srv-sig-algo
+    curve: curve
+cms:
+  algo: cms-algo1
