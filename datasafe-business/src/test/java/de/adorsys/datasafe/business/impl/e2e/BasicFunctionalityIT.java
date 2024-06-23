@@ -1,8 +1,14 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.google.common.io.Resources;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.teststorage.WithStorageProvider;
 import de.adorsys.datasafe.types.api.actions.ListRequest;
@@ -21,11 +27,11 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.UnrecoverableKeyException;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +60,7 @@ class BasicFunctionalityIT extends BaseE2EIT {
 
     private StorageService storage;
     private Uri location;
+    private static ObjectMapper mapper = createMapper();
 
 
     /**
@@ -277,6 +284,37 @@ class BasicFunctionalityIT extends BaseE2EIT {
         removeFromPrivate(jane, privateJane.getResource().asPrivate());
         removeFromInbox(john, inboxJohn.getResource().asPrivate());
     }
+    @ParameterizedTest
+    @MethodSource("allStorages")
+    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInboxCustom( WithStorageProvider.StorageDescriptor descriptor) {
+        String yamlFixture = "config/mutable.yaml";
+        customInit(descriptor, yamlFixture);
+
+        registerJohnAndJane();
+
+        writeDataToPrivate(jane, PRIVATE_FILE_PATH, MESSAGE_ONE);
+
+        AbsoluteLocation<ResolvedResource> privateJane = getFirstFileInPrivate(jane);
+
+        String privateContentJane = readPrivateUsingPrivateKey(jane, privateJane.getResource().asPrivate());
+
+        sendToInbox(jane, john.getUserID(), SHARED_FILE_PATH, privateContentJane);
+
+        AbsoluteLocation<ResolvedResource> inboxJohn = getFirstFileInInbox(john);
+
+        String result = readInboxUsingPrivateKey(john, inboxJohn.getResource().asPrivate());
+
+        assertThat(result).isEqualTo(MESSAGE_ONE);
+        assertThat(privateJane.getResource().asPrivate().decryptedPath())
+                .extracting(Uri::toASCIIString).isEqualTo(PRIVATE_FILE_PATH);
+        assertThat(privateJane.getResource().asPrivate().encryptedPath())
+                .extracting(Uri::toASCIIString).isNotEqualTo(PRIVATE_FILE_PATH);
+        validateInboxStructAndEncryption(inboxJohn);
+        validatePrivateStructAndEncryption(privateJane);
+
+        removeFromPrivate(jane, privateJane.getResource().asPrivate());
+        removeFromInbox(john, inboxJohn.getResource().asPrivate());
+    }
 
     @ParameterizedTest
     @MethodSource("allStorages")
@@ -386,5 +424,29 @@ class BasicFunctionalityIT extends BaseE2EIT {
 
         this.location = descriptor.getLocation();
         this.storage = descriptor.getStorageService().get();
+    }
+    private void customInit(WithStorageProvider.StorageDescriptor descriptor, String yamlFixture) {
+        MutableEncryptionConfig config = readResource(mapper, yamlFixture, MutableEncryptionConfig.class);
+        DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
+                .customConfigDatasafeServices(descriptor.getStorageService().get(), descriptor.getLocation(), config);
+        initialize(DatasafeServicesProvider.dfsConfig(descriptor.getLocation()), datasafeServices);
+
+        this.location = descriptor.getLocation();
+        this.storage = descriptor.getStorageService().get();
+    }
+
+    private static <T> T readResource(ObjectMapper mapper, String path, Class<T> type) {
+        try (Reader reader = Resources.asCharSource(Resources.getResource(path), StandardCharsets.UTF_8).openStream()) {
+            return mapper.readValue(reader, type);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ObjectMapper createMapper() {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory().enable(YAMLGenerator.Feature.MINIMIZE_QUOTES));
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return mapper;
     }
 }
