@@ -4,10 +4,10 @@ keystore:
   encryptionAlgo: AES256_KWP
   pbkdf:
     scrypt:
-      cost: 1
-      blockSize: 2
-      parallelization: 3
-      saltLength: 32
+      cost: 16384
+      blockSize: 8
+      parallelization: 1
+      saltLength: 16
   macAlgo: HmacSHA3_512
   passwordKeysAlgo: PBEWithHmacSHA256AndAES_256
 keys:
@@ -15,16 +15,16 @@ keys:
   signKeyNumber: 2
   secret:
     algo: AES
-    size: 512
+    size: 256
   encrypting:
     algo: RSA
-    size: 256
+    size: 2048
     sigAlgo: SHA256withRSA
-#    curve:
+#    curve: NULL
   signing:
     algo: RSA
-    size: 256
+    size: 2048
     sigAlgo: SHA256withRSA
-#    curve: curve
+#    curve: NULL
 cms:
-  algo: SHA256withRSA
+  algo: AES256_GCM
