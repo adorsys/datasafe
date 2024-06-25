@@ -107,7 +107,7 @@
         <maven.jar.plugin>3.3.0</maven.jar.plugin>
         <hikari.cp>3.3.1</hikari.cp>
         <h2.database>2.2.220</h2.database>
-        <mysql.version>8.1.0</mysql.version>
+        <mysql.version>8.3.0</mysql.version>
         <liquibase>4.23.1</liquibase>
         <spring.framework.version>6.0.11</spring.framework.version>
         <spring.framework.boot.version>3.1.2</spring.framework.boot.version>
