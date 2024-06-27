@@ -119,4 +119,15 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, keyID);
         Assertions.assertNotNull(secretKey);
     }
+    @Test
+    void removeKey() {
+        KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(1).encKeyNumber(0).build();
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
+        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+
+        KeyID keyID = KeystoreUtil.keyIdByPrefix(keyStore, DOCUMENT_KEY_ID_PREFIX);
+        keyStoreService.removeKey(keyStoreAccess, keyID.getValue());
+        SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, keyID);
+        Assertions.assertNull(secretKey);
+    }
 }
