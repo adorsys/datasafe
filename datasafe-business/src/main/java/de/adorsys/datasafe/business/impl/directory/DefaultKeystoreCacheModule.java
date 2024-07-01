@@ -4,7 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dagger.Module;
 import dagger.Provides;
-import de.adorsys.datasafe.directory.impl.profile.keys.DefaultKeyStoreCache;
+import de.adorsys.datasafe.directory.impl.profile.keys.DefaultKeyStoreCacheRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.keys.KeyStoreCache;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
@@ -42,7 +42,7 @@ public abstract class DefaultKeystoreCacheModule {
                 .expireAfterWrite(60, TimeUnit.MINUTES)
                 .build();
 
-        return new DefaultKeyStoreCache(
+        return new DefaultKeyStoreCacheRuntimeDelegatable(
                 registry,
                 cachePubKeys.get().asMap(),
                 cacheKeystore.get().asMap(),
