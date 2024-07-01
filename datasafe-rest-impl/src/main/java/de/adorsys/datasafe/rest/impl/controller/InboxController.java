@@ -12,6 +12,8 @@ import de.adorsys.datasafe.types.api.actions.WriteInboxRequest;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -52,10 +54,10 @@ public class InboxController {
      */
     @SneakyThrows
     @PutMapping(value = "/inbox/document/{*path}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public void writeToInbox(@RequestHeader String user,
-                             @RequestHeader String password,
-                             @RequestHeader Set<String> recipients,
-                             @PathVariable String path,
+    public void writeToInbox(@RequestHeader @NotBlank String user,
+                             @RequestHeader @NotBlank  String password,
+                             @RequestHeader Set<@NotBlank String> recipients,
+                             @PathVariable @NotBlank String path,
                              @RequestParam("file") MultipartFile file) {
         UserIDAuth fromUser = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         Set<UserID> toUsers = recipients.stream().map(UserID::new).collect(Collectors.toSet());
@@ -72,9 +74,9 @@ public class InboxController {
      */
     @SneakyThrows
     @GetMapping(value = "/inbox/document/{*path}", produces = APPLICATION_OCTET_STREAM_VALUE)
-    public void readFromInbox(@RequestHeader String user,
-                              @RequestHeader String password,
-                              @PathVariable String path,
+    public void readFromInbox(@RequestHeader @NotBlank String user,
+                              @RequestHeader @NotBlank  String password,
+                              @PathVariable @NotBlank String path,
                               HttpServletResponse response) {
         path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
@@ -93,9 +95,9 @@ public class InboxController {
      * Deletes file from users' INBOX.
      */
     @DeleteMapping("/inbox/document/{*path}")
-    public void deleteFromInbox(@RequestHeader String user,
-                                @RequestHeader String password,
-                                @PathVariable String path) {
+    public void deleteFromInbox(@RequestHeader @NotBlank String user,
+                                @RequestHeader @NotBlank String password,
+                                @PathVariable @NotBlank String path) {
         path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         PrivateResource resource = BasePrivateResource.forPrivate(path);
@@ -108,8 +110,8 @@ public class InboxController {
      * list files in users' INBOX.
      */
     @GetMapping(value = "/inbox/documents/{*path}", produces = APPLICATION_JSON_VALUE)
-    public List<String> listInbox(@RequestHeader String user,
-                                  @RequestHeader String password,
+    public List<String> listInbox(@RequestHeader @NotBlank String user,
+                                  @RequestHeader @NotBlank String password,
                                   @PathVariable(required = false) String path) {
         path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));

@@ -14,6 +14,7 @@ import de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExistsException;
 import de.adorsys.datasafe.rest.impl.exceptions.UserExistsException;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -61,8 +62,8 @@ public class UserController {
     }
 
     @PostMapping("/password")
-    public void changePassword(@RequestHeader String user,
-                               @RequestHeader String password,
+    public void changePassword(@RequestHeader @NotBlank String user,
+                               @RequestHeader @NotBlank String password,
                                @Validated @RequestBody NewPasswordDTO newPassword) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
@@ -70,24 +71,24 @@ public class UserController {
     }
 
     @GetMapping("/publicProfile")
-    public UserPublicProfileDTO getPublicProfile(@RequestHeader String user,
-                                                 @RequestHeader String password) {
+    public UserPublicProfileDTO getPublicProfile(@RequestHeader @NotBlank String user,
+                                                 @RequestHeader @NotBlank String password) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         return UserPublicProfileDTO.from(dataSafeService.userProfile().publicProfile(auth.getUserID()));
     }
 
     @GetMapping("/privateProfile")
-    public UserPrivateProfileDTO getPrivateProfile(@RequestHeader String user,
-                                                   @RequestHeader String password) {
+    public UserPrivateProfileDTO getPrivateProfile(@RequestHeader @NotBlank String user,
+                                                   @RequestHeader @NotBlank String password) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         return UserPrivateProfileDTO.from(dataSafeService.userProfile().privateProfile(auth));
     }
 
     @PostMapping("/publicProfile")
-    public void updatePublicProfile(@RequestHeader String user,
-                                    @RequestHeader String password,
+    public void updatePublicProfile(@RequestHeader @NotBlank String user,
+                                    @RequestHeader @NotBlank String password,
                                     @Validated @RequestBody UserPublicProfileDTO profileDto) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
@@ -95,8 +96,8 @@ public class UserController {
     }
 
     @PostMapping("/privateProfile")
-    public void updatePrivateProfile(@RequestHeader String user,
-                                     @RequestHeader String password,
+    public void updatePrivateProfile(@RequestHeader @NotBlank String user,
+                                     @RequestHeader @NotBlank String password,
                                      @Validated @RequestBody UserPrivateProfileDTO profileDto) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
@@ -104,8 +105,8 @@ public class UserController {
     }
 
     @PostMapping("/storages")
-    public void addStorageCredentials(@RequestHeader String user,
-                                      @RequestHeader String password,
+    public void addStorageCredentials(@RequestHeader @NotBlank String user,
+                                      @RequestHeader @NotBlank String password,
                                       @Validated @RequestBody StorageCredsDTO creds) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
@@ -117,9 +118,9 @@ public class UserController {
     }
 
     @DeleteMapping("/storages")
-    public void removeStorageCredentials(@RequestHeader String user,
-                                         @RequestHeader String password,
-                                         @RequestHeader String storageId) {
+    public void removeStorageCredentials(@RequestHeader @NotBlank String user,
+                                         @RequestHeader @NotBlank String password,
+                                         @RequestHeader @NotBlank String storageId) {
         ReadKeyPassword readKeyPassword = ReadKeyPasswordHelper.getForString(password);
         UserIDAuth auth = new UserIDAuth(new UserID(user), readKeyPassword);
         dataSafeService.userProfile().deregisterStorageCredentials(auth, new StorageIdentifier(storageId));
@@ -132,8 +133,8 @@ public class UserController {
      * @param password user password.
      */
     @DeleteMapping
-    public void deleteUser(@RequestHeader String user,
-                           @RequestHeader String password) {
+    public void deleteUser(@RequestHeader @NotBlank String user,
+                           @RequestHeader @NotBlank String password) {
         UserIDAuth auth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         if (!dataSafeService.userProfile().userExists(auth.getUserID())) {
             throw new UserDoesNotExistsException("user '" + auth.getUserID().getValue() + "' does not exists");

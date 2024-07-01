@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ public class AuthenticateController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping(SecurityConstants.AUTH_LOGIN_URL)
-    public void authenticate(@RequestBody UserDTO credentialsDTO, HttpServletResponse response)  {
+    public void authenticate(@RequestBody @Validated UserDTO credentialsDTO, HttpServletResponse response)  {
         String username = credentialsDTO.getUserName();
         String password = credentialsDTO.getPassword();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
