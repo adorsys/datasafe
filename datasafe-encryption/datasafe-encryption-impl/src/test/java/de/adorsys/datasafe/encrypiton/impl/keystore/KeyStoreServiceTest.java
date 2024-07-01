@@ -69,7 +69,24 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         // One additional secret key being generated for path encryption and one for private doc encryption.
         Assertions.assertEquals(4, list.size());
     }
+    @Test
+    void updateKeyStoreReadKeyPassword() throws Exception {
+        KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(0).encKeyNumber(1).build();
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
+        KeyStoreAuth newKeystoreAuth = new KeyStoreAuth(new ReadStorePassword("newstorepass"), new ReadKeyPassword("newkeypass".toCharArray()));
+        KeyStore updatedKeyStore = keyStoreService.updateKeyStoreReadKeyPassword(keyStore, keyStoreAuth, newKeystoreAuth);
+        Assertions.assertEquals("newkeypass", newKeystoreAuth.getReadKeyPassword().getValue());
+    }
+    @Test
+    void addPasswordBasedSecretKey() {
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
+        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
 
+        keyStoreService.addPasswordBasedSecretKey(keyStoreAccess, "alias", "secret".toCharArray());
+        SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID("alias"));
+
+        Assertions.assertEquals("secret", new String(secretKey.getEncoded()));
+    }
     @Test
     void getPublicKeys() {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
