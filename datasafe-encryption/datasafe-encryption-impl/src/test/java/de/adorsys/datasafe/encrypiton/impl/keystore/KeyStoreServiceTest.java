@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.SecretKey;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,7 +76,7 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
         KeyStoreAuth newKeystoreAuth = new KeyStoreAuth(new ReadStorePassword("newstorepass"), new ReadKeyPassword("newkeypass".toCharArray()));
         KeyStore updatedKeyStore = keyStoreService.updateKeyStoreReadKeyPassword(keyStore, keyStoreAuth, newKeystoreAuth);
-        Assertions.assertEquals("newkeypass", newKeystoreAuth.getReadKeyPassword().getValue());
+        Assertions.assertTrue(Arrays.equals("newkeypass".toCharArray(), newKeystoreAuth.getReadKeyPassword().getValue()));
     }
     @Test
     void addPasswordBasedSecretKey() {
