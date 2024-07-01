@@ -4,6 +4,7 @@ import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import lombok.Getter;
 
 import javax.inject.Inject;
@@ -20,7 +21,7 @@ public class DefaultUserProfileCache implements UserProfileCache {
     private final Map<UserID, UserPrivateProfile> privateProfile;
 
     @Inject
-    public DefaultUserProfileCache(Map<UserID, UserPublicProfile> publicProfile,
+    public DefaultUserProfileCache(OverridesRegistry registry, Map<UserID, UserPublicProfile> publicProfile,
                                    Map<UserID, UserPrivateProfile> privateProfile) {
         this.publicProfile = publicProfile;
         this.privateProfile = privateProfile;
