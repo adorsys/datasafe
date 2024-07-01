@@ -10,9 +10,9 @@ import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalServ
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileStorageCredentialsService;
 import de.adorsys.datasafe.directory.api.profile.operations.ProfileUpdatingService;
 import de.adorsys.datasafe.directory.api.resource.ResourceResolver;
-import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImplRuntimeDelegatable;
-import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileStorageCredentialsServiceImplRuntimeDelegatable;
-import de.adorsys.datasafe.directory.impl.profile.resource.ResourceResolverImplRuntimeDelegatable;
+import de.adorsys.datasafe.directory.impl.profile.operations.DFSBasedProfileStorageImpl;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileStorageCredentialsServiceImpl;
+import de.adorsys.datasafe.directory.impl.profile.resource.ResourceResolverImpl;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 
@@ -58,17 +58,17 @@ public abstract class HardcodedProfileModule {
      * Storage credentials access.
      */
     @Binds
-    abstract ProfileStorageCredentialsService profileStorageCredentialsService(ProfileStorageCredentialsServiceImplRuntimeDelegatable impl);
+    abstract ProfileStorageCredentialsService profileStorageCredentialsService(ProfileStorageCredentialsServiceImpl impl);
 
     /**
      * Resource resolver that simply prepends relevant path segment from profile based on location type.
      */
     @Binds
-    abstract ResourceResolver resourceResolver(ResourceResolverImplRuntimeDelegatable impl);
+    abstract ResourceResolver resourceResolver(ResourceResolverImpl impl);
 
     /**
      * Aggregate service for profile operations.
      */
     @Binds
-    abstract ProfileOperations profileService(DFSBasedProfileStorageImplRuntimeDelegatable impl);
+    abstract ProfileOperations profileService(DFSBasedProfileStorageImpl impl);
 }

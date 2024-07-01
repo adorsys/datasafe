@@ -3,6 +3,7 @@ package de.adorsys.datasafe.directory.impl.profile.keys;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import lombok.Getter;
 
 import javax.inject.Inject;
@@ -23,7 +24,7 @@ public class DefaultKeyStoreCache implements KeyStoreCache {
 
     @Inject
     public DefaultKeyStoreCache(
-            Map<UserID, List<PublicKeyIDWithPublicKey>> publicKeys,
+            OverridesRegistry registry, Map<UserID, List<PublicKeyIDWithPublicKey>> publicKeys,
             Map<UserID, KeyStore> keystore,
             Map<UserID, KeyStore> storageAccess) {
         this.publicKeys = publicKeys;

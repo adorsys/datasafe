@@ -6,8 +6,8 @@ import dagger.Provides;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.keystore.PublicKeySerde;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImplRuntimeDelegatable;
-import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImplRuntimeDelegatable;
+import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.encrypiton.impl.keystore.PublicKeySerdeImpl;
 import de.adorsys.keymanagement.api.Juggler;
 import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
@@ -44,12 +44,12 @@ public abstract class DefaultKeyStoreModule {
      * Default public key serializer.
      */
     @Binds
-    public abstract PublicKeySerde publicKeySerde(PublicKeySerdeImplRuntimeDelegatable impl);
+    public abstract PublicKeySerde publicKeySerde(PublicKeySerdeImpl impl);
 
     /**
      * If no external configuration provided ({@link KeyStoreConfig}), BouncyCastle BCFKS key store type is
      * used by default.
      */
     @Binds
-    public abstract KeyStoreService keyStoreService(KeyStoreServiceImplRuntimeDelegatable impl);
+    public abstract KeyStoreService keyStoreService(KeyStoreServiceImpl impl);
 }

@@ -5,10 +5,10 @@ import dagger.Module;
 import dagger.Provides;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.PathEncryption;
 import de.adorsys.datasafe.encrypiton.api.pathencryption.encryption.SymmetricPathEncryptionService;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.IntegrityPreservingUriEncryptionRuntimeDelegatable;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImplRuntimeDelegatable;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.IntegrityPreservingUriEncryption;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptionImpl;
 import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathEncryptorDecryptor;
-import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathSegmentEncryptorDecryptorRuntimeDelegatable;
+import de.adorsys.datasafe.encrypiton.impl.pathencryption.PathSegmentEncryptorDecryptor;
 import org.cryptomator.siv.SivMode;
 
 /**
@@ -30,7 +30,7 @@ public abstract class DefaultPathEncryptionModule {
      * Default path encryption that uses Base64-urlsafe path serialization and AES-CGM-SIV mode for encryption
      */
     @Binds
-    abstract PathEncryptorDecryptor pathEncryptorDecryptor(PathSegmentEncryptorDecryptorRuntimeDelegatable impl);
+    abstract PathEncryptorDecryptor pathEncryptorDecryptor(PathSegmentEncryptorDecryptor impl);
 
     /**
      * By default simply use
@@ -38,11 +38,11 @@ public abstract class DefaultPathEncryptionModule {
      * and pass path with key to {@link SymmetricPathEncryptionService}
      */
     @Binds
-    abstract PathEncryption pathEncryption(PathEncryptionImplRuntimeDelegatable impl);
+    abstract PathEncryption pathEncryption(PathEncryptionImpl impl);
 
     /**
      * Default symmetric path encryption that encrypts URI segment-by-segment.
      */
     @Binds
-    abstract SymmetricPathEncryptionService symmetricPathEncryptionService(IntegrityPreservingUriEncryptionRuntimeDelegatable impl);
+    abstract SymmetricPathEncryptionService symmetricPathEncryptionService(IntegrityPreservingUriEncryption impl);
 }
