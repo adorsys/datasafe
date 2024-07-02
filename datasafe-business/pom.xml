@@ -187,11 +187,10 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.15.4</version>
+            <version>${jackson.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -232,6 +231,9 @@
                                 <ignoredUnusedDeclaredDependency>javax.xml.bind:jaxb-api:jar</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredUsedUndeclaredDependencies>
+                                <ignoredUsedUndeclaredDependency>com.fasterxml.jackson.core:jackson-annotations</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>com.fasterxml.jackson.core:jackson-core</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>com.fasterxml.jackson.core:jackson-databind</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>com.amazonaws</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>org.bouncycastle</ignoredUsedUndeclaredDependency>

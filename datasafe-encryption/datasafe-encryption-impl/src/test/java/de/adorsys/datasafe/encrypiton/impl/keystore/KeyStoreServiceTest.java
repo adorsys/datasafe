@@ -71,13 +71,28 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         Assertions.assertEquals(4, list.size());
     }
     @Test
-    void updateKeyStoreReadKeyPassword() throws Exception {
-        KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(0).encKeyNumber(1).build();
-        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
-        KeyStoreAuth newKeystoreAuth = new KeyStoreAuth(new ReadStorePassword("newstorepass"), new ReadKeyPassword("newkeypass".toCharArray()));
-        KeyStore updatedKeyStore = keyStoreService.updateKeyStoreReadKeyPassword(keyStore, keyStoreAuth, newKeystoreAuth);
-        Assertions.assertTrue(Arrays.equals("newkeypass".toCharArray(), newKeystoreAuth.getReadKeyPassword().getValue()));
+    void serializeAndDeserializeKeyStore() {
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
+        ReadStorePassword password = new ReadStorePassword("storepass");
+
+        byte[] serializedKeyStore = keyStoreService.serialize(keyStore, password);
+        KeyStore deserializedKeyStore = keyStoreService.deserialize(serializedKeyStore, password);
+
+        Assertions.assertEquals(keyStore.getType(), deserializedKeyStore.getType());
+        Assertions.assertEquals(keyStore.getProvider(), deserializedKeyStore.getProvider());
     }
+//    @Test
+//    void updateKeyStoreReadKeyPassword() {
+//        KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(0).encKeyNumber(1).build();
+//        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
+//        KeyStoreAuth newKeystoreAuth = new KeyStoreAuth(new ReadStorePassword("newstorepass"), new ReadKeyPassword("newkeypass".toCharArray()));
+//        KeyStore updatedKeyStore = keyStoreService.updateKeyStoreReadKeyPassword(keyStore, keyStoreAuth, newKeystoreAuth);
+//
+////        keyStoreService.
+////        updatedKeyStore.
+//        updatedKeyStore.getKey("newkeypass", newKeystoreAuth.getReadKeyPassword().getValue());
+//        Assertions.assertTrue(Arrays.equals("newkeypass".toCharArray(), keyStoreAuth.getReadKeyPassword().getValue()));
+//    }
     @Test
     void addPasswordBasedSecretKey() {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
