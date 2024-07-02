@@ -27,7 +27,6 @@ public class BasePrivateResource implements PrivateResource {
         this.encryptedPath = EMPTY_URI;
     }
 
-    // TODO: Hide it
     public BasePrivateResource(Uri containerUri) {
         this.container = containerUri;
         this.decryptedPath = EMPTY_URI;
