@@ -1,7 +1,10 @@
 package de.adorsys.datasafe.directory.impl.profile.dfs;
 
+import de.adorsys.datasafe.directory.api.types.CreateUserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
+import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.types.api.resource.Uri;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -37,6 +40,15 @@ public class DefaultDFSConfigTest {
         Assertions.assertEquals(new Uri(uriString + "/"), result1);
         Uri result2 = DefaultDFSConfig.addTrailingSlashIfNeeded(result1);
         Assertions.assertEquals(new Uri(uriString + "/"), result2);
+    }
+    @Test
+    @SneakyThrows
+    public void createDefaultPublicTemplate() {
+        ReadStorePassword systemPassword = new ReadStorePassword("storePassword");
+        DefaultDFSConfig config = new DefaultDFSConfig(new URI(uriString), systemPassword);
+        CreateUserPublicProfile template = config.defaultPublicTemplate(new UserID("user1"));
+        Assertions.assertEquals(new UserID("user1"), template.getId());
+
     }
 
 }
