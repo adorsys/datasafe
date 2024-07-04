@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class PublicKeySerdeImplTest extends BaseMockitoTest {
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(
+    private final KeyStoreService keyStoreService = new KeyStoreServiceImpl(
             EncryptionConfig.builder().build().getKeystore(),
             DaggerBCJuggler.builder().build()
     );
@@ -40,7 +40,7 @@ public class PublicKeySerdeImplTest extends BaseMockitoTest {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
 
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-        PublicKeySerdeImpl publicKeySerde = mock(PublicKeySerdeImpl.class);
+        PublicKeySerdeImpl publicKeySerde = new PublicKeySerdeImpl();
 
         List<PublicKeyIDWithPublicKey> publicKeys = keyStoreService.getPublicKeys(keyStoreAccess);
 
