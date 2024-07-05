@@ -81,18 +81,7 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         Assertions.assertEquals(keyStore.getType(), deserializedKeyStore.getType());
         Assertions.assertEquals(keyStore.getProvider(), deserializedKeyStore.getProvider());
     }
-//    @Test
-//    void updateKeyStoreReadKeyPassword() {
-//        KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(0).encKeyNumber(1).build();
-//        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
-//        KeyStoreAuth newKeystoreAuth = new KeyStoreAuth(new ReadStorePassword("newstorepass"), new ReadKeyPassword("newkeypass".toCharArray()));
-//        KeyStore updatedKeyStore = keyStoreService.updateKeyStoreReadKeyPassword(keyStore, keyStoreAuth, newKeystoreAuth);
-//
-////        keyStoreService.
-////        updatedKeyStore.
-//        updatedKeyStore.getKey("newkeypass", newKeystoreAuth.getReadKeyPassword().getValue());
-//        Assertions.assertTrue(Arrays.equals("newkeypass".toCharArray(), keyStoreAuth.getReadKeyPassword().getValue()));
-//    }
+
     @Test
     void addPasswordBasedSecretKey() {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
