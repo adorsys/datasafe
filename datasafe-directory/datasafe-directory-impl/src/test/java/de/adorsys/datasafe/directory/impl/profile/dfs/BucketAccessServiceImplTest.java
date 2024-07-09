@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BucketAccessServiceImplTest extends BaseMockitoTest {
 
     private static final String ABSOLUTE_BUCKET = "s3://bucket";
-    private final Uri uri = new Uri(ABSOLUTE_BUCKET);
 
     private UserIDAuth auth = new UserIDAuth(new UserID(""), ReadKeyPasswordTestFactory.getForString(""));
 
