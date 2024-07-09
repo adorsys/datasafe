@@ -200,9 +200,9 @@ public class MutableEncryptionConfig {
                     builder.sigAlgo(sigAlgo);
                 }
 
-                if(null != curve) {
+
                     builder.curve(curve);
-                }
+
 
                 return builder.build();
             }
@@ -231,9 +231,9 @@ public class MutableEncryptionConfig {
                     builder.sigAlgo(sigAlgo);
                 }
 
-                if (null != curve) {
+
                     builder.curve(curve);
-                }
+
 
                 return builder.build();
             }

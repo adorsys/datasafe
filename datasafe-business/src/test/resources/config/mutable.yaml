@@ -20,11 +20,11 @@ keys:
     algo: RSA
     size: 2048
     sigAlgo: SHA256withRSA
-#    curve: NULL
+#    curve:
   signing:
     algo: RSA
     size: 2048
     sigAlgo: SHA256withRSA
-#    curve: NULL
+#    curve:
 cms:
   algo: AES256_GCM
