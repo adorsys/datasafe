@@ -125,15 +125,14 @@
         <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+        <spring-restdocs-core.version>3.0.0</spring-restdocs-core.version>
+        <spring.framework.security.version>6.1.2</spring.framework.security.version>
+        <tomcat-embed-core.version>10.1.11</tomcat-embed-core.version>
+        <jackson-databind.version>2.12.7.1</jackson-databind.version>
+        <junit.version>4.13.2</junit.version>
+        <jetbrains-annotations.version>17.0.0</jetbrains-annotations.version>
+        <bouncycastle.bcprov-jdk18on.version>1.78.1</bouncycastle.bcprov-jdk18on.version>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <dependencyManagement>
         <dependencies>
@@ -333,6 +332,11 @@
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.bouncycastle</groupId>-->
+<!--                <artifactId>bcprov-jdk18on</artifactId>-->
+<!--                <version>${bouncycastle.bcprov-jdk18on.version}</version>-->
+<!--            </dependency>-->
 	    </dependencies>
 	</dependencyManagement>
 
@@ -396,15 +400,26 @@
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>org.projectlombok:lombok</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-privatestore-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-directory-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-inbox-impl</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-privatestore-impl</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>com.amazonaws:aws-java-sdk-s3</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>com.amazonaws:aws-java-sdk-core</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-directory-impl</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-inbox-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-encryption-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-storage-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-types-api</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                             <ignoredUnusedDeclaredDependencies>
-                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-runtime-delegate</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredNonTestScopedDependencies>
-                                <ignoredNonTestScopedDependency>org.bouncycastle:bcprov-jdk15on</ignoredNonTestScopedDependency>
+<!--                                <ignoredNonTestScopedDependency>org.bouncycastle:bcprov-jdk15on</ignoredNonTestScopedDependency>-->
                                 <ignoredNonTestScopedDependency>org.slf4j:slf4j-api:jar</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>org.projectlombok:lombok</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>de.adorsys:datasafe-business</ignoredNonTestScopedDependency>
@@ -420,6 +435,17 @@
                                 <ignoredNonTestScopedDependency>com.google.guava:guava</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>com.google.code.gson:gson</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>de.adorsys.keymanagement:juggler-bouncycastle</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.junit.jupiter:junit-jupiter-api</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.testcontainers:testcontainers</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.junit.jupiter:junit-jupiter-params</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-storage-impl-s3</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-storage-impl-fs</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>com.amazonaws:aws-java-sdk-s3</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>com.amazonaws:aws-java-sdk-core</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>org.springframework:spring-beans</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-inbox-impl</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>de.adorsys:datasafe-privatestore-impl</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>com.fasterxml.jackson.core:jackson-databind</ignoredNonTestScopedDependency>
                             </ignoredNonTestScopedDependencies>
                         </configuration>
                     </execution>

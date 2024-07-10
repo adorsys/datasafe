@@ -64,11 +64,6 @@
 
         <dependency>
             <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-metainfo-version-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
             <artifactId>datasafe-metainfo-version-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -110,35 +105,6 @@
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-simple-adapter-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-simple-adapter-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-simple-adapter-spring</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>de.adorsys</groupId>
-            <artifactId>datasafe-runtime-delegate</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
         </dependency>
 
 
