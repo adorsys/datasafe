@@ -332,11 +332,6 @@
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.bouncycastle</groupId>-->
-<!--                <artifactId>bcprov-jdk18on</artifactId>-->
-<!--                <version>${bouncycastle.bcprov-jdk18on.version}</version>-->
-<!--            </dependency>-->
 	    </dependencies>
 	</dependencyManagement>
 
@@ -419,7 +414,6 @@
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredNonTestScopedDependencies>
-<!--                                <ignoredNonTestScopedDependency>org.bouncycastle:bcprov-jdk15on</ignoredNonTestScopedDependency>-->
                                 <ignoredNonTestScopedDependency>org.slf4j:slf4j-api:jar</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>org.projectlombok:lombok</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>de.adorsys:datasafe-business</ignoredNonTestScopedDependency>
