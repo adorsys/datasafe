@@ -13,8 +13,8 @@ class KeyStoreAuthTest extends BaseMockitoTest {
     @Test
     void noPasswords() {
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(null, null);
-        assertThrows(KeyStoreAuthException.class, () -> keyStoreAuth.getReadKeyPassword());
-        assertThrows(KeyStoreAuthException.class, () -> keyStoreAuth.getReadKeyPassword());
+        assertThrows(KeyStoreAuthException.class, keyStoreAuth::getReadKeyPassword);
+        assertThrows(KeyStoreAuthException.class, keyStoreAuth::getReadStorePassword);
     }
 
     @Test

@@ -4,6 +4,7 @@ import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.BasePublicResource;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,12 @@ class BucketAccessServiceImplTest extends BaseMockitoTest {
         assertThat(bucketAccessService.publicAccessFor(
                 auth.getUserID(),
                 BasePublicResource.forAbsolutePublic(ABSOLUTE_BUCKET).getResource()).location().asURI()
+        ).asString().isEqualTo(ABSOLUTE_BUCKET);
+    }
+    @Test
+    void withSystemAccess() {
+        assertThat(bucketAccessService.withSystemAccess(
+                BasePublicResource.forAbsolutePublic(ABSOLUTE_BUCKET)).location().asURI()
         ).asString().isEqualTo(ABSOLUTE_BUCKET);
     }
 }

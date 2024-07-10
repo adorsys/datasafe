@@ -1,6 +1,11 @@
 package de.adorsys.datasafe.encrypiton.impl.cmsencryption;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.Resources;
 import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.CmsEncryptionConfig;
@@ -28,17 +33,10 @@ import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Key;
@@ -118,6 +116,48 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
     @Test
     @SneakyThrows
     void cmsStreamEnvelopeEncryptAndDecryptTest() {
+        PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        KeyStoreAccess keyStoreAccessSender = getKeyStoreAccess("Sender");
+
+        OutputStream encryptionStream = cmsEncryptionService.buildEncryptionOutputStream(
+                outputStream,
+                Collections.singleton(new PublicKeyIDWithPublicKey(
+                        publicKeyIDWithPublicKey.getKeyID(),
+                        publicKeyIDWithPublicKey.getPublicKey()
+                )),
+                getKeyPair(keyStoreAccessSender, "Sender")
+        );
+
+        encryptionStream.write(TEST_MESSAGE_CONTENT.getBytes());
+        encryptionStream.close();
+
+        byte[] byteArray = outputStream.toByteArray();
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+        InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(
+                inputStream, keyIds -> getKeys(keyIds, keyStoreAccess)
+        );
+        byte[] actualResult = toByteArray(decryptionStream);
+
+        assertThat(TEST_MESSAGE_CONTENT).isEqualTo(new String(actualResult));
+    }
+    @Test
+    @SneakyThrows
+    void cmsStreamEnvelopeEncryptAndDecryptTestCustom() {
+        ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("readkeypassword");
+        ReadStorePassword readStorePassword = new ReadStorePassword("readstorepassword");
+
+        KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
+        KeyCreationConfig config = KeyCreationConfig.builder()
+                .signing(KeyCreationConfig.SigningKeyCreationCfg.builder().algo("RSA").size(2048).sigAlgo( "SHA256withRSA").curve(null).build())
+                .encrypting(KeyCreationConfig.EncryptingKeyCreationCfg.builder().algo("RSA").size(2048).sigAlgo("SHA256withRSA").curve(null).build())
+                .build();
+
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
+        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+
         PublicKeyIDWithPublicKey publicKeyIDWithPublicKey = keyStoreService.getPublicKeys(keyStoreAccess).get(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 

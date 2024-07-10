@@ -6,6 +6,7 @@ import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
+import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
@@ -23,6 +24,14 @@ public class DatasafeServicesProvider {
         return DaggerDefaultDatasafeServices
                 .builder()
                 .config(dfsConfig(systemRoot))
+                .storage(storageService)
+                .build();
+    }
+    public static DefaultDatasafeServices customConfigDatasafeServices(StorageService storageService, Uri systemRoot, MutableEncryptionConfig config) {
+        return DaggerDefaultDatasafeServices
+                .builder()
+                .config(dfsConfig(systemRoot))
+                .encryption(config.toEncryptionConfig())
                 .storage(storageService)
                 .build();
     }

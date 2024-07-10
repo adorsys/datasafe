@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.SecretKey;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,7 +70,28 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         // One additional secret key being generated for path encryption and one for private doc encryption.
         Assertions.assertEquals(4, list.size());
     }
+    @Test
+    void serializeAndDeserializeKeyStore() {
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
+        ReadStorePassword password = new ReadStorePassword("storepass");
 
+        byte[] serializedKeyStore = keyStoreService.serialize(keyStore, password);
+        KeyStore deserializedKeyStore = keyStoreService.deserialize(serializedKeyStore, password);
+
+        Assertions.assertEquals(keyStore.getType(), deserializedKeyStore.getType());
+        Assertions.assertEquals(keyStore.getProvider(), deserializedKeyStore.getProvider());
+    }
+
+    @Test
+    void addPasswordBasedSecretKey() {
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
+        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+
+        keyStoreService.addPasswordBasedSecretKey(keyStoreAccess, "alias", "secret".toCharArray());
+        SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, new KeyID("alias"));
+
+        Assertions.assertEquals("secret", new String(secretKey.getEncoded()));
+    }
     @Test
     void getPublicKeys() {
         KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, KeyCreationConfig.builder().build());
@@ -118,5 +140,16 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         KeyID keyID = KeystoreUtil.keyIdByPrefix(keyStore, DOCUMENT_KEY_ID_PREFIX);
         SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, keyID);
         Assertions.assertNotNull(secretKey);
+    }
+    @Test
+    void removeKey() {
+        KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(1).encKeyNumber(0).build();
+        KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, config);
+        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+
+        KeyID keyID = KeystoreUtil.keyIdByPrefix(keyStore, DOCUMENT_KEY_ID_PREFIX);
+        keyStoreService.removeKey(keyStoreAccess, keyID.getValue());
+        SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, keyID);
+        Assertions.assertNull(secretKey);
     }
 }
