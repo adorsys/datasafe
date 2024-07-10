@@ -38,7 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-class SimpleAdapterFeatureIT extends BaseMockitoTest {
+class SimpleAdapterFeatureTest extends BaseMockitoTest {
 
     private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPasswordTestFactory.getForString("password"));
     private String content = "content of document";
