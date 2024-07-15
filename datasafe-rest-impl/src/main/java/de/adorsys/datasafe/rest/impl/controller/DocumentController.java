@@ -12,6 +12,8 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -49,11 +51,16 @@ public class DocumentController {
      */
     @SneakyThrows
     @GetMapping(value = "/document/{*path}", produces = APPLICATION_OCTET_STREAM_VALUE)
-    public void readDocument(@RequestHeader String user,
-                             @RequestHeader String password,
+    public void readDocument(@RequestHeader @NotBlank String user,
+                             @RequestHeader @NotBlank String password,
                              @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
-                             @PathVariable String path,
+                             @PathVariable @NotBlank String path,
                              HttpServletResponse response) {
+        // Validate and sanitize path
+        if (path.contains("..")) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         ReadRequest<UserIDAuth, PrivateResource> request =
             ReadRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
@@ -72,11 +79,16 @@ public class DocumentController {
      */
     @SneakyThrows
     @PutMapping(value = "/document/{*path}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public void writeDocument(@RequestHeader String user,
-                              @RequestHeader String password,
+    public void writeDocument(@RequestHeader @NotBlank String user,
+                              @RequestHeader @NotBlank String password,
                               @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                               @PathVariable String path,
-                              @RequestParam("file") MultipartFile file) {
+                              @RequestParam("file") @NotNull MultipartFile file) {
+        // Validate and sanitize path
+        if (path.contains("..")) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         WriteRequest<UserIDAuth, PrivateResource> request =
                 WriteRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
@@ -91,14 +103,20 @@ public class DocumentController {
      * lists files in user's private space.
      */
     @GetMapping("/documents/{*path}")
-    public List<String> listDocuments(@RequestHeader String user,
-                                      @RequestHeader String password,
+    public List<String> listDocuments(@RequestHeader @NotBlank String user,
+                                      @RequestHeader @NotBlank String password,
                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                       @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = Optional.ofNullable(path)
                 .map(it -> it.replaceAll("^\\.$", ""))
                 .orElse("./");
+
+        // Validate and sanitize path
+        if (path.contains("..")) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+
         try {
             List<String> documentList = datasafeService.privateService().list(
                 ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
@@ -115,10 +133,16 @@ public class DocumentController {
      * deletes files from user's private space.
      */
     @DeleteMapping("/document/{*path}")
-    public void removeDocument(@RequestHeader String user,
-                               @RequestHeader String password,
+    public void removeDocument(@RequestHeader @NotBlank String user,
+                               @RequestHeader @NotBlank String password,
                                @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
-                               @PathVariable String path) {
+                               @PathVariable @NotBlank String path) {
+
+        // Validate and sanitize path
+        if (path.contains("..")) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         RemoveRequest<UserIDAuth, PrivateResource> request =
             RemoveRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);

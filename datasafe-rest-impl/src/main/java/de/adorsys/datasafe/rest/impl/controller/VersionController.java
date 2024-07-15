@@ -16,6 +16,7 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.resource.Versioned;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -49,10 +50,10 @@ public class VersionController {
      * lists latest versions of files in user's private space.
      */
     @GetMapping(value = "/versioned/{*path}", produces = APPLICATION_JSON_VALUE)
-    public List<String> listVersionedDocuments(@RequestHeader String user,
-                                               @RequestHeader String password,
+    public List<String> listVersionedDocuments(@RequestHeader @NotBlank String user,
+                                               @RequestHeader @NotBlank String password,
                                                @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
-                                               @PathVariable(required = false) String path) {
+                                               @PathVariable(required = false)  String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         path = path.replaceAll("^/", "");
         try {
@@ -73,10 +74,10 @@ public class VersionController {
      */
     @SneakyThrows
     @GetMapping(value = "/versioned/{*path}", produces = APPLICATION_OCTET_STREAM_VALUE)
-    public void readVersionedDocument(@RequestHeader String user,
-                                      @RequestHeader String password,
+    public void readVersionedDocument(@RequestHeader @NotBlank String user,
+                                      @RequestHeader @NotBlank String password,
                                       @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
-                                      @PathVariable String path,
+                                      @PathVariable @NotBlank String path,
                                       HttpServletResponse response) {
         path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
@@ -97,10 +98,10 @@ public class VersionController {
      */
     @SneakyThrows
     @PutMapping(value = "/versioned/{*path}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public void writeVersionedDocument(@RequestHeader String user,
-                                       @RequestHeader String password,
+    public void writeVersionedDocument(@RequestHeader @NotBlank String user,
+                                       @RequestHeader @NotBlank String password,
                                        @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
-                                       @PathVariable String path,
+                                       @PathVariable @NotBlank String path,
                                        @RequestParam("file") MultipartFile file) {
         path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
@@ -117,10 +118,10 @@ public class VersionController {
      * deletes latest version of file from user's private space.
      */
     @DeleteMapping("/versioned/{*path}")
-    public void deleteVersionedDocument(@RequestHeader String user,
-                                        @RequestHeader String password,
+    public void deleteVersionedDocument(@RequestHeader @NotBlank String user,
+                                        @RequestHeader @NotBlank String password,
                                         @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
-                                        @PathVariable String path) {
+                                        @PathVariable @NotBlank String path) {
         path = path.replaceAll("^/", "");
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         RemoveRequest<UserIDAuth, PrivateResource> request =
@@ -133,8 +134,8 @@ public class VersionController {
      * list of file versions.
      */
     @GetMapping(value = "/versions/list/{*path}", produces = APPLICATION_JSON_VALUE)
-    public List<String> versionsOf(@RequestHeader String user,
-                                   @RequestHeader String password,
+    public List<String> versionsOf(@RequestHeader @NotBlank String user,
+                                   @RequestHeader @NotBlank String password,
                                    @RequestHeader(defaultValue = StorageIdentifier.DEFAULT_ID) String storageId,
                                    @PathVariable(required = false) String path) {
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
