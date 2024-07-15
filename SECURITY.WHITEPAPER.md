@@ -27,18 +27,18 @@ CMS Encryption:
 
 With the latest release, Datasafe has transitioned from RSA to Elliptic Curve Cryptography (ECC) to enhance security and performance. This section details the new ECC implementation:
 
-### Encryption and Signing
+#### Encryption and Signing
 
 - **Encryption Algorithm**: ECDH (Elliptic Curve Diffie-Hellman) with curve `secp256r1`.
 - **Signing Algorithm**: SHA256withECDSA (Elliptic Curve Digital Signature Algorithm) with curve `secp256r1`.
 
-### Benefits of ECC
+#### Benefits of ECC
 
 - **Security**: ECC offers stronger security per bit compared to RSA, making it more resistant to cryptographic attacks.
 - **Performance**: ECC algorithms generally require less computational power and are faster.
 - **Key Size**: ECC achieves comparable security to RSA with much smaller key sizes (256 bits for ECC vs. 2048 bits for RSA), resulting in reduced storage and transmission requirements.
 
-### Implementation Details
+#### Implementation Details
 <details>
 <summary>Dynamically choosing between RSA and ECC</summary>
 
@@ -57,6 +57,25 @@ in the updated implementation, the getRecipientInfoGenerator method dynamically 
 
 </details>
 
+## Release Notes
+
+##### ECC Integration
+
+#### Added
+- **Elliptic Curve Cryptography (ECC)**:
+    - Implemented ECC for improved security and performance.
+    - Encryption Algorithm: ECDH (Elliptic Curve Diffie-Hellman) with curve `secp256r1`.
+    - Signing Algorithm: SHA256withECDSA (Elliptic Curve Digital Signature Algorithm) with curve `secp256r1`.
+
+#### Changed
+- **Encryption and Signing**:
+    - Transitioned from RSA to ECC, enhancing security and reducing key sizes.
+
+#### Improved
+- **Security**:
+    - ECC offers stronger security per bit compared to RSA.
+- **Key Size Reduction**:
+    - ECC achieves comparable security to RSA with much smaller key sizes, reducing storage and transmission requirements.
 ## General information
 Datasafe is a flexible encryption library. It uses different encryption algorithms. They can be 
 configured by client application. Under the hood Datasafe uses BouncyCastle library to perform encryption.
