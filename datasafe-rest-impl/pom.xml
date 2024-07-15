@@ -19,7 +19,6 @@
         <spring-restdocs.version>3.0.0</spring-restdocs.version>
         <asciidoctor-maven-plugin.version>2.2.4</asciidoctor-maven-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.3.0</springdoc-openapi-starter-webmvc-ui.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
     </properties>
@@ -83,12 +82,12 @@
             <version>${spring-boot.version}</version>
             <optional>true</optional>
         </dependency>
-
         <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-            <version>${jakarta.validation-api.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
