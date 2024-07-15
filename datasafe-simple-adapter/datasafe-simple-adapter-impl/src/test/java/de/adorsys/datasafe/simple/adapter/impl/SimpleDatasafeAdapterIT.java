@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-class SimpleDatasafeAdapterTest extends WithStorageProvider {
+class SimpleDatasafeAdapterIT extends WithStorageProvider {
 
     private SimpleDatasafeService simpleDatasafeService;
     private UserIDAuth userIDAuth;

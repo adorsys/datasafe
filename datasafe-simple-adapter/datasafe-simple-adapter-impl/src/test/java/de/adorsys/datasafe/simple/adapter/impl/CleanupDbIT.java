@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CleanupDbTest extends WithStorageProvider {
+class CleanupDbIT extends WithStorageProvider {
 
     private SimpleDatasafeService simpleDatasafeService;
     private DFSCredentials dfsCredentials;
