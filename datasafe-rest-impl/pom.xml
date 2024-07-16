@@ -32,6 +32,7 @@
         <spring.framework.restdocs.version>3.0.0</spring.framework.restdocs.version>
         <mockito.version>5.5.0</mockito.version>
         <jakarta.version>6.0.0</jakarta.version>
+        <slf4j.version>2.0.7</slf4j.version>
     </properties>
 
     <dependencies>
@@ -187,6 +188,16 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
             <version>${spring.framework.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- TEST -->
