@@ -8,6 +8,19 @@
         <version>2.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <junit.version>4.13.2</junit.version>
+        <amazon.aws.version>1.12.646</amazon.aws.version>
+        <guava.version>32.1.1-jre</guava.version>
+        <jetbrains.annotations.version>17.0.0</jetbrains.annotations.version>
+        <testcontainers.version>1.18.3</testcontainers.version>
+        <bouncycastle.bcprov.version>1.78.1</bouncycastle.bcprov.version>
+        <dagger.version>2.50</dagger.version>
+        <siv-mode.version>1.4.4</siv-mode.version>
+        <jsr-305.version>3.0.0</jsr-305.version>
+        <slf4j-simple.version>2.0.7</slf4j-simple.version>
+        <spring.framework.version>6.0.11</spring.framework.version>
+    </properties>
 
     <artifactId>datasafe-simple-adapter-impl</artifactId>
     <dependencies>
@@ -34,6 +47,51 @@
             <artifactId>datasafe-storage-impl-fs</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-simple.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${amazon.aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>${amazon.aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncycastle.bcprov.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.dagger</groupId>
+            <artifactId>dagger</artifactId>
+            <version>${dagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr-305.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cryptomator</groupId>
+            <artifactId>siv-mode</artifactId>
+            <version>${siv-mode.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.framework.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -76,55 +134,20 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>17.0.0</version>
+            <version>${jetbrains.annotations.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.18.3</version>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.646</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.12.646</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.78.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.dagger</groupId>
-            <artifactId>dagger</artifactId>
-            <version>2.50</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.cryptomator</groupId>
-            <artifactId>siv-mode</artifactId>
-            <version>1.4.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>32.1.1-jre</version>
         </dependency>
     </dependencies>
 

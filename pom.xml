@@ -431,11 +431,6 @@
                                 <ignoredUnusedDeclaredDependency>com.mysql:mysql-connector-j</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>jakarta.servlet:jakarta.servlet-api</ignoredUnusedDeclaredDependency>
-<!--                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-api</ignoredUnusedDeclaredDependency>-->
-<!--                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-impl</ignoredUnusedDeclaredDependency>-->
-<!--                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-spring</ignoredUnusedDeclaredDependency>-->
-<!--                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-runtime-delegate</ignoredUnusedDeclaredDependency>-->
-<!--                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-api</ignoredUnusedDeclaredDependency>-->
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredNonTestScopedDependencies>
                                 <ignoredNonTestScopedDependency>org.bouncycastle:bcprov-jdk15on</ignoredNonTestScopedDependency>
