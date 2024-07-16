@@ -11,6 +11,12 @@
 
     <artifactId>datasafe-simple-adapter-spring</artifactId>
 
+    <properties>
+        <spring.framework.version>6.1.10</spring.framework.version>
+        <spring.framework.boot.version>3.3.1</spring.framework.boot.version>
+        <snakeyaml.version>2.2</snakeyaml.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -85,7 +91,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>2.1</version>
+            <version>${snakeyaml.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -128,6 +134,11 @@
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>
