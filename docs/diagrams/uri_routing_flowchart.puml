@@ -1,0 +1,18 @@
+@startuml
+
+!include <C4/C4_Context>
+
+Person(user, "User", "Uses the DataSafe storage API")
+System(datasafestorage, "DataSafe Storage API", "Provides a unified interface for interacting with various storage backends")
+System_Ext(s3, "AWS S3", "Cloud storage service")
+System_Ext(filesystem, "Local File System", "Local storage")
+System_Ext(otherstorage, "Other Storage Service", "Generic storage service")
+
+Rel(user, datasafestorage, "Uses", "API Calls")
+Rel(datasafestorage, s3, "Delegates", "Storage Operations")
+Rel(datasafestorage, filesystem, "Delegates", "Storage Operations")
+Rel(datasafestorage, otherstorage, "Delegates", "Storage Operations")
+
+SHOW_LEGEND()
+
+@enduml

@@ -2,12 +2,14 @@ package de.adorsys.datasafe.storage.api;
 
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
+import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -42,8 +44,49 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
         when(getService.apply(argumentCaptor.capture())).thenReturn(storage);
         tested = new UriBasedAuthStorageService(getService);
     }
+    @Test
+    void testDefaultConstructor() {
+        UriBasedAuthStorageService service = new UriBasedAuthStorageService(getService);
+        assertThat(service).isNotNull();
+    }
 
-    @MethodSource("fixture")
+    @Test
+    void testCustomConstructor() {
+        Function<URI, String[]> segmentator = uri -> new String[] {"region", "bucket"};
+        UriBasedAuthStorageService service = new UriBasedAuthStorageService(getService, segmentator);
+        assertThat(service).isNotNull();
+    }
+    @Test
+    void testRegionExtractor() {
+        Function<URI, String[]> segmentator = uri -> new String[] {"region", "bucket"};
+        UriBasedAuthStorageService service = new UriBasedAuthStorageService(getService, segmentator);
+
+        URI uri = URI.create("http://host.com/region/bucket");
+        String region = service.regionExtractor.apply(uri);
+        assertThat(region).isEqualTo("region");
+    }
+
+    @Test
+    void testBucketExtractor() {
+        Function<URI, String[]> segmentator = uri -> new String[] {"region", "bucket"};
+        UriBasedAuthStorageService service = new UriBasedAuthStorageService(getService, segmentator);
+
+        URI uri = URI.create("http://host.com/region/bucket");
+        String bucket = service.bucketExtractor.apply(uri);
+        assertThat(bucket).isEqualTo("bucket");
+    }
+
+    @Test
+    void testEndpointExtractor() {
+        Function<URI, String[]> segmentator = uri -> new String[] {"region", "bucket"};
+        UriBasedAuthStorageService service = new UriBasedAuthStorageService(getService, segmentator);
+
+        URI uri = URI.create("http://host.com:8080/region/bucket");
+        String endpoint = service.endpointExtractor.apply(uri);
+        assertThat(endpoint).isEqualTo("http://host.com:8080/");
+    }
+
+        @MethodSource("fixture")
     @ParameterizedTest
     void objectExists(MappedItem item) {
         tested.objectExists(item.getUri());

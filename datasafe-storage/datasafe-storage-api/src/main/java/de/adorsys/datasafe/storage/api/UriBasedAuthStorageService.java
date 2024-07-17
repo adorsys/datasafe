@@ -19,9 +19,9 @@ import java.util.function.Function;
 public class UriBasedAuthStorageService extends BaseDelegatingStorage {
 
     private final Map<AccessId, StorageService> clientByItsAccessKey = new ConcurrentHashMap<>();
-    private final Function<URI, String> bucketExtractor;
-    private final Function<URI, String> regionExtractor;
-    private final Function<URI, String> endpointExtractor;
+    final Function<URI, String> bucketExtractor;
+    final Function<URI, String> regionExtractor;
+    final Function<URI, String> endpointExtractor;
 
     // Builder to create S3 or other kind of Storage service
     private final Function<AccessId, StorageService> storageServiceBuilder;
