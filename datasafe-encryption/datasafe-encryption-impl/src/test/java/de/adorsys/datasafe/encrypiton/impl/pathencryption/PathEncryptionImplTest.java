@@ -17,28 +17,26 @@ import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.Mock;
 
 import javax.crypto.SecretKey;
 import java.security.KeyStore;
+import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class PathEncryptionImplTest extends BaseMockitoTest {
-    String uriString = "https://192.168.178.0.1:9090/minio/first/folder";
     private final KeyStoreService keyStoreService = new KeyStoreServiceImpl(
             EncryptionConfig.builder().build().getKeystore(),
             DaggerBCJuggler.builder().build()
     );
+    String uriString = "https://192.168.178.0.1:9090/minio/first/folder";
+    PathEncryptionImpl pathEncryption;
     @Mock
     private SymmetricPathEncryptionService symmetricPathEncryptionService;
     @Mock
     private PrivateKeyService privateKeyService;
-
-    PathEncryptionImpl pathEncryption;
-
-
 
     @BeforeEach
     void setUp() {
@@ -53,19 +51,25 @@ public class PathEncryptionImplTest extends BaseMockitoTest {
         KeyID keyID = new KeyID("secret");
 
         KeyCreationConfig config = KeyCreationConfig.builder().signKeyNumber(0).encKeyNumber(1).build();
-        KeyStore keystore = keyStoreService.createKeyStore(keyStoreAuth,config);
+        KeyStore keystore = keyStoreService.createKeyStore(keyStoreAuth, config);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keystore, keyStoreAuth);
 
         SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, keyID);
         SecretKeyIDWithKey secretKeyID = new SecretKeyIDWithKey(keyID, secretKey);
 
         when(symmetricPathEncryptionService.encrypt(any(), any())).thenReturn(new Uri(uriString + ".enc"));
-        when(privateKeyService.pathEncryptionSecretKey(any())).thenReturn(new AuthPathEncryptionSecretKey(secretKeyID,secretKeyID));
+        when(symmetricPathEncryptionService.decrypt(any(), any())).thenReturn(new Uri(uriString));
+        when(privateKeyService.pathEncryptionSecretKey(any())).thenReturn(new AuthPathEncryptionSecretKey(secretKeyID, secretKeyID));
 
         UserID user = new UserID("user1");
         UserIDAuth userAuth = new UserIDAuth(user, readKeyPassword);
 
         Uri encryptedPath = pathEncryption.encrypt(userAuth, new Uri(uriString));
         Assertions.assertEquals(encryptedPath, new Uri(uriString + ".enc"));
+
+        Function<Uri, Uri> decrypt = pathEncryption.decryptor(userAuth);
+        Uri decryptedPath = decrypt.apply(encryptedPath);
+        Assertions.assertEquals(decryptedPath, new Uri(uriString));
+
     }
 }
