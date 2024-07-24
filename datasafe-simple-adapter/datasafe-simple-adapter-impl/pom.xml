@@ -16,11 +16,11 @@
         <amazon.aws.version>1.12.646</amazon.aws.version>
         <guava.version>32.1.1-jre</guava.version>
         <jetbrains.annotations.version>17.0.0</jetbrains.annotations.version>
-        <testcontainers.version>1.19.8</testcontainers.version>
         <bouncycastle.bcprov.version>1.78.1</bouncycastle.bcprov.version>
         <dagger.version>2.50</dagger.version>
         <siv-mode.version>1.4.4</siv-mode.version>
         <jsr-305.version>3.0.0</jsr-305.version>
+	<testcontainers.version>1.19.8</testcontainers.version>
     </properties>
 
     <dependencies>
