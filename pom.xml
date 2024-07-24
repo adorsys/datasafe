@@ -367,16 +367,17 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                        <configuration>
+                            <configLocation>checkstyle.xml</configLocation>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <encoding>UTF-8</encoding>
+                            <consoleOutput>true</consoleOutput>
+                            <failsOnError>true</failsOnError>
+                            <linkXRef>false</linkXRef>
+                            <outputFile>${project.basedir}/target/checkstyle-report.xml</outputFile>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <encoding>UTF-8</encoding>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                    <format>html</format>
-                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
@@ -401,9 +402,11 @@
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
-                    <effort>Max</effort>
                     <xmlOutput>true</xmlOutput>
                     <failOnError>false</failOnError>
+                    <xmlOutput>true</xmlOutput> <!-- Generate XML reports -->
+                    <htmlOutput>true</htmlOutput> <!-- Generate HTML reports -->
+                    <outputDirectory>${project.basedir}/target/</outputDirectory>
                 </configuration>
                 <dependencies>
                     <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
