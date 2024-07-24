@@ -20,7 +20,6 @@
         <dagger.version>2.50</dagger.version>
         <siv-mode.version>1.4.4</siv-mode.version>
         <jsr-305.version>3.0.0</jsr-305.version>
-	<testcontainers.version>1.18.3</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -136,8 +135,6 @@
 	<dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
