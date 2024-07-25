@@ -154,6 +154,11 @@
             <scope>test</scope>
             <version>${spring-restdocs.version}</version>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.26.22</version>
+        </dependency>
     </dependencies>
 
     <profiles>

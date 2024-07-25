@@ -1,15 +1,5 @@
 package de.adorsys.datasafe.teststorage;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
-import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
-import com.amazonaws.util.StringUtils;
 import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -30,7 +20,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
+import software.amazon.awssdk.services.s3.model.*;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
@@ -92,9 +89,9 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static GenericContainer cephContainer;
 
     private static Path tempDir;
-    private static AmazonS3 minio;
-    private static AmazonS3 ceph;
-    private static AmazonS3 amazonS3;
+    private static S3Client minio;
+    private static S3Client ceph;
+    private static S3Client amazonS3;
 
     private static Supplier<Void> cephStorage;
     private static Supplier<Void> minioStorage;
@@ -219,6 +216,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             minio()
         ).filter(Objects::nonNull);
     }
+    //Removed the @ValueSource and allLocalDefaultStorages(), allLocalStorages(), allDefaultStorages(), and allStorages() methods,
+    // They are not directly related to the migration to the AWS SDK for Java v2.
 
     protected static StorageDescriptor fs() {
         return new StorageDescriptor(
@@ -300,7 +299,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         );
     }
 
-    private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
+    private void removeObjectFromS3(S3Client s3, String bucket, String prefix) {
         // if bucket name contains slashes then move all after first slash to prefix
         String[] parts = bucket.split("/", 2);
         if (parts.length == 2) {
@@ -308,49 +307,57 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             prefix = parts[1] + "/" + prefix;
         }
         String lambdafinalBucket = bucket;
-        amazonS3.listObjects(bucket, prefix)
-            .getObjectSummaries()
-            .forEach(it -> {
-                log.debug("Remove {}", it.getKey());
-                amazonS3.deleteObject(lambdafinalBucket, it.getKey());
+        ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
+                .bucket(lambdafinalBucket)
+                .prefix(prefix);
+        ListObjectsV2Response response;
+        do {
+            response = s3.listObjectsV2(requestBuilder.build());
+            response.contents().forEach(it -> {
+                log.debug("Remove {}", it.key());
+                DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                        .bucket(lambdafinalBucket)
+                        .key(it.key())
+                        .build();
+                s3.deleteObject(deleteRequest);
             });
+            requestBuilder.continuationToken(response.nextContinuationToken());
+        } while (response.isTruncated());
     }
 
     private static void initS3() {
         log.info("Initializing S3");
-        if (Strings.isNullOrEmpty(amazonAccessKeyID)) {
+
+        if (amazonAccessKeyID == null || amazonAccessKeyID.isEmpty()) {
             return;
         }
 
-        AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
-            .withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
-            );
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(amazonAccessKeyID, amazonSecretAccessKey);
+
+        S3Client amazonS3 = S3Client.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .endpointOverride(URI.create(amazonUrl)) // Set endpoint
+                .region(Region.of(amazonRegion)) // Set region
+                .build();
 
         if (buckets.size() > 1) {
             log.info("Using {} buckets:{}", buckets.size(), buckets);
         }
 
-        if (StringUtils.isNullOrEmpty(amazonUrl)) {
+        if (amazonUrl == null || amazonUrl.isEmpty()) {
             amazonUrl = amazonProtocol + amazonDomain;
         }
+
         final boolean isRealAmazon = amazonUrl.endsWith(amazonDomain);
 
-        amazonS3ClientBuilder = amazonS3ClientBuilder
-            .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
-            .withEndpointConfiguration(
-                new AwsClientBuilder.EndpointConfiguration(amazonUrl, amazonRegion)
-            );
-        if (isRealAmazon) {
-            amazonMappedUrl = amazonProtocol + primaryBucket + "." + amazonDomain;
-        } else {
+        if (!isRealAmazon) {
             amazonMappedUrl = amazonUrl + "/";
-            amazonS3ClientBuilder.enablePathStyleAccess();
+        } else {
+            amazonMappedUrl = amazonProtocol + primaryBucket + "." + amazonDomain;
         }
 
-        amazonS3 = amazonS3ClientBuilder.build();
-
-        log.info("Amazon mapped URL:" + amazonMappedUrl);
+//        amazonS3 = amazonS3ClientBuilder.build();
+        log.info("Amazon mapped URL: " + amazonMappedUrl);
     }
 
     private static void startMinio() {
@@ -366,20 +373,14 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         Integer mappedPort = minioContainer.getMappedPort(9000);
         minioMappedUrl = minioUrl + ":" + mappedPort;
         log.info("Minio mapped URL:" + minioMappedUrl);
-        minio = AmazonS3ClientBuilder.standard()
-            .withEndpointConfiguration(
-                new AwsClientBuilder.EndpointConfiguration(minioMappedUrl, minioRegion)
-            )
-            .withCredentials(
-                new AWSStaticCredentialsProvider(
-                    new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)
-                )
-            )
-            .enablePathStyleAccess()
-            .build();
+        minio = S3Client.builder()
+                .endpointOverride(URI.create(minioMappedUrl))
+                .region(Region.of(minioRegion))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(minioAccessKeyID, minioSecretAccessKey)))
+                .build();
 
-
-        buckets.forEach(minio::createBucket);
+        buckets.forEach(bucket -> minio.createBucket(CreateBucketRequest.builder().bucket(bucket).build()));
     }
 
     private static void startCeph() {
@@ -403,28 +404,25 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         Integer mappedPort = cephContainer.getMappedPort(8000);
         cephMappedUrl = cephUrl + ":" + mappedPort;
         log.info("Ceph mapped URL:" + cephMappedUrl);
-        ceph = AmazonS3ClientBuilder.standard()
-            .withEndpointConfiguration(
-                new AwsClientBuilder.EndpointConfiguration(cephMappedUrl, cephRegion)
-            )
-            .withCredentials(
-                new AWSStaticCredentialsProvider(
-                    new BasicAWSCredentials(cephAccessKeyID, cephSecretAccessKey)
-                )
-            )
-            .enablePathStyleAccess()
-            .build();
+        ceph = S3Client.builder()
+                .endpointOverride(URI.create(cephMappedUrl))
+                .region(Region.of(cephRegion))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(cephAccessKeyID, cephSecretAccessKey)))
+                .build();
 
-        ceph.createBucket(buckets.get(0));
+        ceph.createBucket(CreateBucketRequest.builder()
+                .bucket(buckets.get(0))
+                .build());
         // curiously enough CEPH docs are incorrect, looks like they do support version id:
         // https://github.com/ceph/ceph/blame/bc065cae7857c352ca36d5f06cdb5107cf72ed41/src/rgw/rgw_rest_s3.cc
         // so for versioned local tests we can use CEPH
-        ceph.setBucketVersioningConfiguration(
-            new SetBucketVersioningConfigurationRequest(
-                primaryBucket,
-                new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
-            )
-        );
+        ceph.putBucketVersioning(PutBucketVersioningRequest.builder()
+                .bucket(primaryBucket)
+                .versioningConfiguration(VersioningConfiguration.builder()
+                        .status(BucketVersioningStatus.ENABLED)
+                        .build())
+                .build());
     }
 
     /**

@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -14,6 +13,7 @@ import de.adorsys.datasafe.types.api.resource.StorageVersion;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -73,7 +73,7 @@ class StorageBasedVersioningIT extends BaseE2EIT {
         writeAndGetVersion(jane, FILE, "Hello 3");
 
         removeByVersion(jane, FILE, new StorageVersion(oldVersion));
-        assertThrows(AmazonS3Exception.class, () -> readByVersion(jane, FILE, new StorageVersion(oldVersion)));
+        assertThrows(S3Exception.class, () -> readByVersion(jane, FILE, new StorageVersion(oldVersion)));
         assertThat(readPrivateUsingPrivateKey(jane, BasePrivateResource.forPrivate(FILE))).isEqualTo("Hello 3");
     }
 

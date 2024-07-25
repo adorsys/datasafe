@@ -1,7 +1,5 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
@@ -47,9 +45,17 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.security.UnrecoverableKeyException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -112,12 +118,13 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
             log.info("ENDPOINT IS {}", endpoint);
             endpointsByHostNoBucket.put(it, endpoint);
 
-            AmazonS3 client = S3ClientFactory.getClient(
-                endpoint,
-                REGION,
-                accessKey(it),
-                secretKey(it)
-            );
+            S3Client client = S3Client.builder()
+                    .endpointOverride(URI.create(endpoint))
+                    .region(Region.of(REGION))
+                    .credentialsProvider(StaticCredentialsProvider.create(
+                            AwsBasicCredentials.create(accessKey(it), secretKey(it))
+                    ))
+                    .build();
 
             AwsClientRetry.createBucketWithRetry(client, it);
         });
@@ -290,18 +297,25 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
     }
 
     private List<String> listInBucket(String bucket) {
-        return S3ClientFactory.getClient(
-            endpointsByHostNoBucket.get(bucket),
-            REGION,
-            accessKey(bucket),
-            secretKey(bucket)
-        )
-            .listObjects(bucket, "")
-            .getObjectSummaries()
-            .stream()
-            .map(S3ObjectSummary::getKey)
-            .collect(Collectors.toList());
+        S3Client client = S3Client.builder()
+                .endpointOverride(URI.create(endpointsByHostNoBucket.get(bucket)))
+                .region(Region.of(REGION))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(accessKey(bucket), secretKey(bucket))
+                ))
+                .build();
+
+        ListObjectsV2Request request = ListObjectsV2Request.builder()
+                .bucket(bucket)
+                .build();
+
+        ListObjectsV2Response response = client.listObjectsV2(request);
+        return response.contents()
+                .stream()
+                .map(S3Object::key)
+                .collect(Collectors.toList());
     }
+
 
     @SneakyThrows
     private void writeToPrivate(UserIDAuth user, StorageIdentifier id, String path, String data) {

@@ -21,18 +21,19 @@
 
 package de.adorsys.datasafe.storage.impl.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.UploadPartRequest;
-import com.amazonaws.services.s3.model.UploadPartResult;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.UploadPartRequest;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.UploadPartResponse;
 
 import java.io.ByteArrayInputStream;
 import java.util.concurrent.Callable;
 
 @Slf4j
-public class UploadChunkResultCallable implements Callable<UploadPartResult> {
+public class UploadChunkResultCallable implements Callable<UploadPartResponse> {
 
-    private final AmazonS3 amazonS3;
+    private final S3Client s3;
 
     private final int contentLength;
 
@@ -49,7 +50,7 @@ public class UploadChunkResultCallable implements Callable<UploadPartResult> {
     private byte[] content;
 
     UploadChunkResultCallable(ChunkUploadRequest request) {
-        this.amazonS3 = request.getAmazonS3();
+        this.s3 = request.getS3();
         this.content = request.getContent();
         this.contentLength = request.getContentSize();
         this.partNumber = request.getChunkNumberCounter();
@@ -62,16 +63,17 @@ public class UploadChunkResultCallable implements Callable<UploadPartResult> {
     }
 
     @Override
-    public UploadPartResult call() {
+    public UploadPartResponse call() {
         log.trace("Upload chunk result call with part: {}", partNumber);
         try {
-            return amazonS3.uploadPart(new UploadPartRequest()
-                    .withBucketName(bucketName).withKey(fileName)
-                    .withUploadId(chunkId)
-                    .withInputStream(new ByteArrayInputStream(content))
-                    .withPartNumber(partNumber).withLastPart(last)
-                    .withPartSize(contentLength)
-            );
+            UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .uploadId(chunkId)
+                    .partNumber(partNumber)
+                    .build();
+
+            return s3.uploadPart(uploadPartRequest, RequestBody.fromBytes(content));
         } finally {
             // Release the memory, as the callable may still live inside the
             // CompletionService which would cause

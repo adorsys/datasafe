@@ -1,11 +1,5 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.UploadPartRequest;
-import com.amazonaws.services.s3.model.UploadPartResult;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +8,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.testcontainers.shaded.com.google.common.io.ByteStreams;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -25,10 +22,7 @@ import static de.adorsys.datasafe.storage.impl.s3.MultipartUploadS3StorageOutput
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
@@ -37,13 +31,15 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
     private final byte[] multipartChunkWithTail = randomBytes(BUFFER_SIZE + 100);
 
     @Mock
-    private AmazonS3 amazonS3;
+    private S3Client s3;
 
     @Mock
     private ExecutorService executorService;
 
     @Captor
     private ArgumentCaptor<InputStream> bytesSentDirectly;
+    @Captor
+    private ArgumentCaptor<RequestBody> requestBodyCaptor;
 
     @Captor
     private ArgumentCaptor<UploadPartRequest> uploadChunk;
@@ -55,21 +51,35 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
         tested = new MultipartUploadS3StorageOutputStream(
                 "bucket",
                 "s3://path/to/file.txt",
-                amazonS3,
+                s3,
                 executorService,
+                "upload-id",
                 Collections.emptyList()
         );
 
-        when(amazonS3.putObject(anyString(), anyString(), bytesSentDirectly.capture(), any()))
-                .thenReturn(new PutObjectResult());
-        when(amazonS3.initiateMultipartUpload(any())).thenReturn(new InitiateMultipartUploadResult());
+
+        when(s3.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(PutObjectResponse.builder().build());
+        when(s3.createMultipartUpload(any(CreateMultipartUploadRequest.class)))
+                .thenReturn(CreateMultipartUploadResponse.builder()
+                        .bucket("bucket")
+                        .key("s3://path/to/file.txt")
+                        .uploadId("upload-id")
+                        .build());
         doAnswer(inv -> {
             inv.getArgument(0, Runnable.class).run();
             return null;
-        }).when(executorService).execute(any());
-        when(amazonS3.uploadPart(uploadChunk.capture())).thenReturn(new UploadPartResult());
-        when(amazonS3.completeMultipartUpload(any())).thenReturn(new CompleteMultipartUploadResult());
+        }).when(executorService).submit(any(Runnable.class));
+        when(s3.uploadPart(any(UploadPartRequest.class), any(RequestBody.class)))
+                .thenReturn(UploadPartResponse.builder()
+                        .eTag("etag")
+                        .build());
+        when(s3.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
+                .thenReturn(CompleteMultipartUploadResponse.builder()
+                        .versionId("version-id")
+                        .build());
     }
+
 
     @Test
     @SneakyThrows
@@ -113,13 +123,14 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
         tested.close();
 
-        assertThat(bytesSentDirectly.getAllValues()).isEmpty();
+        verify(s3, never()).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        verify(s3, times(2)).uploadPart(uploadChunk.capture(), requestBodyCaptor.capture());
         assertThat(uploadChunk.getAllValues()).hasSize(2);
-        assertThat(uploadChunk.getAllValues().get(0).getInputStream())
+        assertThat(requestBodyCaptor.getAllValues().get(0).contentStreamProvider().newStream())
                 .hasContent(new String(Arrays.copyOfRange(multipartChunkWithTail, 0, BUFFER_SIZE)));
-        assertThat(uploadChunk.getAllValues().get(1).getInputStream())
+        assertThat(requestBodyCaptor.getAllValues().get(1).contentStreamProvider().newStream())
                 .hasContent(new String(Arrays.copyOfRange(
-                        multipartChunkWithTail, BUFFER_SIZE, multipartChunkWithTail.length)
+                                multipartChunkWithTail, BUFFER_SIZE, multipartChunkWithTail.length)
                         )
                 );
     }
@@ -131,13 +142,14 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
         tested.close();
 
-        assertThat(bytesSentDirectly.getAllValues()).isEmpty();
+        verify(s3, never()).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        verify(s3, times(2)).uploadPart(uploadChunk.capture(), requestBodyCaptor.capture());
         assertThat(uploadChunk.getAllValues()).hasSize(2);
-        assertThat(uploadChunk.getAllValues().get(0).getInputStream())
+        assertThat(requestBodyCaptor.getAllValues().get(0).contentStreamProvider().newStream())
                 .hasContent(new String(Arrays.copyOfRange(multipartChunkWithTail, 10, 10 + BUFFER_SIZE)));
-        assertThat(uploadChunk.getAllValues().get(1).getInputStream())
+        assertThat(requestBodyCaptor.getAllValues().get(1).contentStreamProvider().newStream())
                 .hasContent(new String(Arrays.copyOfRange(
-                        multipartChunkWithTail, 10 + BUFFER_SIZE, multipartChunkWithTail.length)
+                                multipartChunkWithTail, 10 + BUFFER_SIZE, multipartChunkWithTail.length)
                         )
                 );
     }
@@ -171,9 +183,10 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
         tested.close();
 
-        assertThat(bytesSentDirectly.getAllValues()).isEmpty();
-        assertThat(uploadChunk.getAllValues()).hasSize(1);
-        assertThat(uploadChunk.getAllValues().get(0).getInputStream()).hasContent(new String(exactOneMultipartChunk));
+        verify(s3, never()).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        verify(s3).uploadPart(uploadChunk.capture(), requestBodyCaptor.capture());
+        assertThat(uploadChunk.getValue().partNumber()).isEqualTo(1);
+        assertThat(requestBodyCaptor.getValue().contentStreamProvider().newStream()).hasContent(new String(exactOneMultipartChunk));
     }
 
     @Test
@@ -183,18 +196,24 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
         tested.close();
 
-        assertThat(bytesSentDirectly.getAllValues()).isEmpty();
+        verify(s3, never()).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        verify(s3, times(2)).uploadPart(uploadChunk.capture(), requestBodyCaptor.capture());
         assertThat(uploadChunk.getAllValues()).hasSize(2);
-        assertThat(uploadChunk.getAllValues().get(0).getInputStream())
+        assertThat(requestBodyCaptor.getAllValues().get(0).contentStreamProvider().newStream())
                 .hasContent(new String(Arrays.copyOfRange(multipartChunkWithTail, 0, BUFFER_SIZE)));
 
         // we are setting size parameter that limits number of bytes read by s3 client:
-        int partialPartSize = (int) uploadChunk.getAllValues().get(1).getPartSize();
+        long partialPartSizeLong = uploadChunk.getAllValues().get(1).contentLength();
+        if (partialPartSizeLong > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Part size too large to fit in an int: " + partialPartSizeLong);
+        }
+        int partialPartSize = (int) partialPartSizeLong;
+
         byte[] partialChunk = new byte[partialPartSize];
-        ByteStreams.readFully(uploadChunk.getAllValues().get(1).getInputStream(), partialChunk, 0, partialPartSize);
+        ByteStreams.readFully(requestBodyCaptor.getAllValues().get(1).contentStreamProvider().newStream(), partialChunk, 0, partialPartSize);
         assertThat(new String(partialChunk))
                 .isEqualTo(new String(Arrays.copyOfRange(
-                        multipartChunkWithTail, BUFFER_SIZE, multipartChunkWithTail.length)
+                                multipartChunkWithTail, BUFFER_SIZE, multipartChunkWithTail.length)
                         )
                 );
     }

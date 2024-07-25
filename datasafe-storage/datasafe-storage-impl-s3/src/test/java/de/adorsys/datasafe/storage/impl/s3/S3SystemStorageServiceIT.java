@@ -1,11 +1,5 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
@@ -23,8 +17,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,8 +43,8 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     private static String accessKeyID = "admin";
     private static String secretAccessKey = "password";
     private static String url = getDockerUri("http://localhost");
-    private static BasicAWSCredentials creds = new BasicAWSCredentials(accessKeyID, secretAccessKey);
-    private static AmazonS3 s3;
+    private static AwsBasicCredentials creds = AwsBasicCredentials.create(accessKeyID, secretAccessKey);
+    private static S3Client s3;
     private static AbsoluteLocation<PrivateResource> root;
     private static AbsoluteLocation<PrivateResource> fileWithMsg;
 
@@ -66,13 +67,13 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
         Integer mappedPort = minio.getMappedPort(9000);
         log.info("Mapped port: " + mappedPort);
         String region = "eu-central-1";
-        s3 = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(url + ":" + mappedPort, region))
-                .withCredentials(new AWSStaticCredentialsProvider(creds))
-                .enablePathStyleAccess()
+        s3 = S3Client.builder()
+                .endpointOverride(URI.create(url + ":" + mappedPort))
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(creds))
                 .build();
 
-        s3.createBucket(bucketName);
+        s3.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
         root = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("s3://" + bucketName)));
         fileWithMsg = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("./" + FILE))
                 .resolveFrom(root));
@@ -101,11 +102,13 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     void testListOutOfStandardListFilesLimit() {
         int numberOfFilesOverLimit = 1010;
         for (int i = 0; i < numberOfFilesOverLimit; i++) {
-            s3.putObject(bucketName, "over_limit/" + FILE + i, MESSAGE);
+            s3.putObject(PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key("over_limit/" + FILE + i)
+                    .build(), RequestBody.fromBytes(MESSAGE.getBytes()));
 
             log.trace("Save #" + i + " file");
         }
-
         assertThat(storageService.list(
                 new AbsoluteLocation<>(
                         BasePrivateResource.forPrivate(new Uri("s3://" + bucketName + "/over_limit")))))
@@ -114,9 +117,15 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
 
     @Test
     void listDeepLevel() {
-        s3.putObject(bucketName, "root.txt", "txt1");
-        s3.putObject(bucketName, "deeper/level1.txt", "txt2");
-        s3.putObject(bucketName, "deeper/more/level2.txt", "txt3");
+        s3.putObject(PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key("deeper/level1.txt")
+                .build(), RequestBody.fromBytes("txt2".getBytes()));
+        s3.putObject(PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key("deeper/more/level2.txt")
+                .build(), RequestBody.fromBytes("txt3".getBytes()));
+
 
         List<AbsoluteLocation<ResolvedResource>> resources = storageService.list(
                 new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("s3://" + bucketName + "/deeper")))
@@ -159,7 +168,10 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
 
         storageService.remove(fileWithMsg);
 
-        assertThrows(AmazonS3Exception.class, () -> s3.getObject(bucketName, FILE));
+        assertThrows(S3Exception.class, () -> s3.getObject(GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(FILE)
+                .build()));
     }
 
     @Test
@@ -172,13 +184,22 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
 
         storageService.remove(rootOfFiles);
 
-        assertThrows(AmazonS3Exception.class, () -> s3.getObject(bucketName, "root/file1.txt"));
-        assertThrows(AmazonS3Exception.class, () -> s3.getObject(bucketName, "root/file2.txt"));
+        assertThrows(S3Exception.class, () -> s3.getObject(GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key("root/file1.txt")
+                .build()));
+        assertThrows(S3Exception.class, () -> s3.getObject(GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key("root/file2.txt")
+                .build()));
     }
 
     @SneakyThrows
     private void createFileWithMessage(String path) {
-        s3.putObject(bucketName, path, MESSAGE);
+        s3.putObject(PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(path)
+                .build(), RequestBody.fromBytes(MESSAGE.getBytes()));
     }
 
     @SneakyThrows
@@ -195,15 +216,23 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
         }
     }
 
-    private void removeObjectFromS3(AmazonS3 amazonS3, String bucket, String prefix) {
-        amazonS3.listObjects(bucket, prefix)
-                .getObjectSummaries()
-                .forEach(it -> {
-                    log.debug("Remove {}", it.getKey());
-                    amazonS3.deleteObject(bucket, it.getKey());
-                });
+    private void removeObjectFromS3(S3Client s3, String bucket, String prefix) {
+        ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
+                .bucket(bucket)
+                .prefix(prefix);
+        ListObjectsV2Response response;
+        do {
+            response = s3.listObjectsV2(requestBuilder.build());
+            response.contents().forEach(obj -> {
+                log.debug("Remove {}", obj.key());
+                s3.deleteObject(DeleteObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(obj.key())
+                        .build());
+            });
+            requestBuilder.continuationToken(response.nextContinuationToken());
+        } while (response.isTruncated());
     }
-
     @AfterAll
     public static void afterAll() {
         log.info("Stopping containers");

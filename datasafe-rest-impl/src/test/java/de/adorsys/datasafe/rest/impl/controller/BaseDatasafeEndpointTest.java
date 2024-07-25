@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.rest.impl.dto.UserDTO;
@@ -18,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -33,7 +33,7 @@ public abstract class BaseDatasafeEndpointTest extends BaseMockitoTest {
     protected MockMvc mvc;
 
     @MockBean
-    protected AmazonS3 s3;
+    protected S3Client s3Client;
 
     @MockBean
     protected StorageService storageService;

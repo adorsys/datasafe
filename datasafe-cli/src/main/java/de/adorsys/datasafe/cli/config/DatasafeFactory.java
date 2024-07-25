@@ -1,12 +1,5 @@
 package de.adorsys.datasafe.cli.config;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.collect.ImmutableMap;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -29,7 +22,12 @@ import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.experimental.Delegate;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
 
@@ -80,15 +78,12 @@ public class DatasafeFactory {
 
     private static StorageService amazonS3() {
         return new UriBasedAuthStorageService(
-                acc -> new S3StorageService(
-                        S3ClientFactory.getAmazonClient(
-                                acc.getRegion(),
-                                acc.getAccessKey(),
-                                acc.getSecretKey()
-                        ),
-                        // Bucket name is encoded in first path segment
-                        acc.getBucketName(),
-                        ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
+                acc -> getStorageService(
+                        acc.getAccessKey(),
+                        acc.getSecretKey(),
+                        acc.getEndpoint(),
+                        acc.getRegion(),
+                        acc.getBucketName()
                 ),
                 uri -> (uri.getHost() + "/" + uri.getPath().replaceFirst("^/", "")).split("/")
         );
@@ -103,37 +98,20 @@ public class DatasafeFactory {
             super(null);
             this.delegate = new RegexAccessServiceWithStorageCredentialsImpl(storageKeyStoreOperations);
         }
+
     }
 
     private static S3StorageService getStorageService(String accessKey, String secretKey, String url, String region,
                                                       String bucket) {
-        AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
-                .withCredentials(
-                        new AWSStaticCredentialsProvider(
-                                new BasicAWSCredentials(
-                                        accessKey,
-                                        secretKey))
-                )
-                .enablePathStyleAccess();
-
-        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
-                url,
-                region
-        );
-        amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
-
-        if (! url.toLowerCase().startsWith("https")) {
-            log.info("Creating S3 client without https");
-            ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.HTTP);
-            clientConfig.disableSocketProxy();
-            amazonS3ClientBuilder.withClientConfiguration(clientConfig);
-        }
-
-        AmazonS3 amazons3 = amazonS3ClientBuilder.build();
+        AwsBasicCredentials creds = AwsBasicCredentials.create(accessKey, secretKey);
+        S3Client s3 = S3Client.builder()
+                .endpointOverride(URI.create(url))
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(creds))
+                .build();
 
         return new S3StorageService(
-                amazons3,
+                s3,
                 bucket,
                 ExecutorServiceUtil
                         .submitterExecutesOnStarvationExecutingService(
@@ -141,6 +119,5 @@ public class DatasafeFactory {
                                 5
                         )
         );
-    }
-}
+    }}
 

@@ -1,13 +1,5 @@
 package de.adorsys.datasafe.examples.business.s3;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
-import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
@@ -29,12 +21,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -52,7 +53,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageIT{
     private static final String SECRET_KEY = "secret";
 
     private static GenericContainer cephContainer;
-    private static AmazonS3 cephS3;
+    private static S3Client cephS3;
     private static String cephMappedUrl;
 
     private DefaultDatasafeServices defaultDatasafeServices;
@@ -84,28 +85,24 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageIT{
         // URL for S3 API/bucket root:
         cephMappedUrl = getDockerUri("http://0.0.0.0") + ":" + mappedPort;
         log.info("Ceph mapped URL: {}", cephMappedUrl);
-        cephS3 = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration(cephMappedUrl, "us-east-1")
-                )
-                .withCredentials(
-                        new AWSStaticCredentialsProvider(
-                                new BasicAWSCredentials(ACCESS_KEY, SECRET_KEY)
-                        )
-                )
-                .enablePathStyleAccess()
+        cephS3 = S3Client.builder()
+                .endpointOverride(URI.create(cephMappedUrl))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(ACCESS_KEY, SECRET_KEY)
+                ))
                 .build();
 
         // Create bucket in CEPH that will support versioning
-        cephS3.createBucket(VERSIONED_BUCKET_NAME);
-        cephS3.setBucketVersioningConfiguration(
-                new SetBucketVersioningConfigurationRequest(
-                        VERSIONED_BUCKET_NAME,
-                        new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
-                )
-        );
-
-
+        cephS3.createBucket(CreateBucketRequest.builder()
+                .bucket(VERSIONED_BUCKET_NAME)
+                .build());
+        cephS3.setBucketVersioning(SetBucketVersioningConfigurationRequest.builder()
+                .bucket(VERSIONED_BUCKET_NAME)
+                .versioningConfiguration(BucketVersioningConfiguration.builder()
+                        .status(BucketVersioningConfiguration.Status.ENABLED)
+                        .build())
+                .build());
     }
 
     @AfterAll
@@ -192,24 +189,36 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageIT{
         writeToPrivate(user, MY_OWN_FILE_TXT, "Hello 2");
 
         // now, we read old file version
-        assertThat(defaultDatasafeServices.privateService().read(
-                ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
-        ).hasContent("Hello 1");
+        assertThat(new String(cephS3.getObject(GetObjectRequest.builder()
+                        .bucket(VERSIONED_BUCKET_NAME)
+                        .key(MY_OWN_FILE_TXT)
+                        .versionId(versionId)
+                        .build())
+                .readAllBytes(), StandardCharsets.UTF_8))
+                .isEqualTo("Hello 1");
 
         // now, we remove old file version
-        defaultDatasafeServices.privateService().remove(
-                RemoveRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId))
-        );
+        cephS3.deleteObject(DeleteObjectRequest.builder()
+                .bucket(VERSIONED_BUCKET_NAME)
+                .key(MY_OWN_FILE_TXT)
+                .versionId(versionId)
+                .build());
 
         // it is removed from storage, so when we read it we get exception
-        assertThrows(AmazonS3Exception.class, () -> defaultDatasafeServices.privateService().read(
-                ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
-        );
+        assertThatThrownBy(() -> cephS3.getObject(GetObjectRequest.builder()
+                .bucket(VERSIONED_BUCKET_NAME)
+                .key(MY_OWN_FILE_TXT)
+                .versionId(versionId)
+                .build()))
+                .isInstanceOf(NoSuchKeyException.class);
 
         // but latest file version is still available
-        assertThat(defaultDatasafeServices.privateService().read(
-                ReadRequest.forDefaultPrivate(user, MY_OWN_FILE_TXT))
-        ).hasContent("Hello 2");
+        assertThat(new String(cephS3.getObject(GetObjectRequest.builder()
+                        .bucket(VERSIONED_BUCKET_NAME)
+                        .key(MY_OWN_FILE_TXT)
+                        .build())
+                .readAllBytes(), StandardCharsets.UTF_8))
+                .isEqualTo("Hello 2");
         // END_SNIPPET
     }
 
