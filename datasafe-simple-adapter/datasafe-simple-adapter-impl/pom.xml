@@ -13,7 +13,6 @@
 
     <properties>
         <junit.version>4.13.2</junit.version>
-        <amazon.aws.version>1.12.646</amazon.aws.version>
         <guava.version>32.1.1-jre</guava.version>
         <jetbrains.annotations.version>17.0.0</jetbrains.annotations.version>
         <bouncycastle.bcprov.version>1.78.1</bouncycastle.bcprov.version>
@@ -52,7 +51,7 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j-simple.version}</version>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>${amazon.aws.version}</version>
@@ -120,7 +119,7 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -132,7 +131,7 @@
             <version>${jetbrains.annotations.version}</version>
             <scope>test</scope>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
         </dependency>

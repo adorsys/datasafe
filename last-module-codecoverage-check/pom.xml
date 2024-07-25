@@ -111,7 +111,18 @@
             <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-       
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-simple-adapter-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-simple-adapter-spring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
 
@@ -214,6 +225,8 @@
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-storage-impl-s3</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-types-api</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-spring</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
 
                         </configuration>

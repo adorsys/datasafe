@@ -110,7 +110,7 @@
         <mysql.version>8.4.0</mysql.version>
         <liquibase>4.23.1</liquibase>
         <siv-mode.version>1.4.4</siv-mode.version>
-        <jackson.version>2.17.1</jackson.version>
+        <jackson.version>2.16.1</jackson.version>
         <keymanagement.version>0.0.11</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
         <jaxb-api.version>2.3.1</jaxb-api.version>
@@ -397,7 +397,7 @@
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>org.projectlombok:lombok</ignoredUsedUndeclaredDependency>
-				<ignoredUsedUndeclaredDependency>de.adorsys:datasafe-privatestore-api</ignoredUsedUndeclaredDependency>
+				                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-privatestore-api</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-directory-api</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-types-api</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-inbox-impl</ignoredUsedUndeclaredDependency>
@@ -415,8 +415,8 @@
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-runtime-delegate</ignoredUnusedDeclaredDependency>
-				<ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-validation</ignoredUnusedDeclaredDependency>
-				<ignoredUnusedDeclaredDependency>de.adorsys:datasafe-business</ignoredUnusedDeclaredDependency>
+				                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-validation</ignoredUnusedDeclaredDependency>
+				                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-business</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-devtools</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>io.jsonwebtoken:jjwt-impl</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>io.jsonwebtoken:jjwt-jackson</ignoredUnusedDeclaredDependency>
@@ -443,7 +443,7 @@
                                 <ignoredNonTestScopedDependency>com.google.guava:guava</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>com.google.code.gson:gson</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>de.adorsys.keymanagement:juggler-bouncycastle</ignoredNonTestScopedDependency>
-				<ignoredNonTestScopedDependency>org.junit.jupiter:junit-jupiter-api</ignoredNonTestScopedDependency>
+				                <ignoredNonTestScopedDependency>org.junit.jupiter:junit-jupiter-api</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>de.adorsys:datasafe-storage-impl-s3</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>org.testcontainers:testcontainers</ignoredNonTestScopedDependency>
                                 <ignoredNonTestScopedDependency>de.adorsys:datasafe-storage-impl-fs</ignoredNonTestScopedDependency>

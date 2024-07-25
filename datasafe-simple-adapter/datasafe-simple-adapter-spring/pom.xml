@@ -14,7 +14,7 @@
     <properties>
         <spring.framework.version>6.1.10</spring.framework.version>
         <spring.framework.boot.version>3.3.1</spring.framework.boot.version>
-	<junit.version>4.13.2</junit.version>
+        <junit.version>4.13.2</junit.version>
         <jetbrains.annotations.version>17.0.0</jetbrains.annotations.version>
     </properties>
 
@@ -97,6 +97,13 @@
         </dependency>
         <dependency>
             <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-business</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
             <artifactId>datasafe-types-api</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -128,7 +135,7 @@
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -158,6 +165,7 @@
                             <failOnWarning>false</failOnWarning>
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-business</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>
