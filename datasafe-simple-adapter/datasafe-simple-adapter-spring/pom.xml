@@ -14,7 +14,6 @@
     <properties>
         <spring.framework.version>6.1.10</spring.framework.version>
         <spring.framework.boot.version>3.3.1</spring.framework.boot.version>
-        <junit.version>4.13.2</junit.version>
         <jetbrains.annotations.version>17.0.0</jetbrains.annotations.version>
     </properties>
 
@@ -134,12 +133,6 @@
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
