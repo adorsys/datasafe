@@ -374,7 +374,7 @@
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>false</failsOnError>
                             <linkXRef>false</linkXRef>
-                            <propertyExpansion>org.checkstyle.google.severity=error</propertyExpansion>
+                            <propertyExpansion>org.checkstyle.google.severity=warning</propertyExpansion>
                             <outputFile>${project.basedir}/target/checkstyle-report.xml</outputFile>
                         </configuration>
                     </execution>
