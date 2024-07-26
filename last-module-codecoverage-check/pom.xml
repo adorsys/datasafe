@@ -114,6 +114,11 @@
 
         <dependency>
             <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-simple-adapter-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys</groupId>
             <artifactId>datasafe-simple-adapter-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -121,6 +126,18 @@
             <groupId>de.adorsys</groupId>
             <artifactId>datasafe-simple-adapter-spring</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys</groupId>
+            <artifactId>datasafe-runtime-delegate</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -227,6 +244,9 @@
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-impl</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-spring</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-runtime-delegate</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-api</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
 
                         </configuration>
