@@ -123,7 +123,7 @@
         <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-        <checkstyle-maven-plugin.version>3.2.0</checkstyle-maven-plugin.version>
+        <checkstyle-maven-plugin.version>3.4.0</checkstyle-maven-plugin.version>
         <checkstyle-dependency.version>10.17.0</checkstyle-dependency.version>
         <spotbugs-maven-plugin.version>4.8.6.2</spotbugs-maven-plugin.version>
         <spotbugs.version>4.8.6</spotbugs.version>
@@ -372,8 +372,9 @@
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
-                            <failsOnError>true</failsOnError>
+                            <failsOnError>false</failsOnError>
                             <linkXRef>false</linkXRef>
+                            <propertyExpansion>org.checkstyle.google.severity=error</propertyExpansion>
                             <outputFile>${project.basedir}/target/checkstyle-report.xml</outputFile>
                         </configuration>
                     </execution>
