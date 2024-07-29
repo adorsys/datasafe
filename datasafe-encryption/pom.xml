@@ -15,4 +15,11 @@
         <module>datasafe-encryption-api</module>
         <module>datasafe-encryption-impl</module>
     </modules>
+    <dependencies>
+        <dependency>
+            <groupId>de.adorsys.keymanagement</groupId>
+            <artifactId>bouncycastle-adapter</artifactId>
+            <version>0.0.11</version>
+        </dependency>
+    </dependencies>
 </project>
