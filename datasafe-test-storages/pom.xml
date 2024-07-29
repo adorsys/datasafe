@@ -80,11 +80,7 @@
             <artifactId>s3</artifactId>
             <version>2.26.22</version>
         </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>protocol-core</artifactId>
-            <version>2.26.23</version>
-        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
