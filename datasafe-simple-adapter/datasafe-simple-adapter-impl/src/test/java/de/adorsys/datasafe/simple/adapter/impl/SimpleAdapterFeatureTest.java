@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 @Slf4j
 class SimpleAdapterFeatureTest extends BaseMockitoTest {
-    
+
     private UserIDAuth userIDAuth = new UserIDAuth(new UserID("peter"), ReadKeyPasswordTestFactory.getForString("password"));
     private String content = "content of document";
     private String path = "a/b/c.txt";

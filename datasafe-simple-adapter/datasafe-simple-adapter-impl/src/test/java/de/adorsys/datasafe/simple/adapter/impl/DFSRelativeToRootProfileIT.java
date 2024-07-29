@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DFSRelativeToRootProfileTest extends WithStorageProvider {
+class DFSRelativeToRootProfileIT extends WithStorageProvider {
 
     private SimpleDatasafeService simpleDatasafeService;
     private UserIDAuth userIDAuth;
