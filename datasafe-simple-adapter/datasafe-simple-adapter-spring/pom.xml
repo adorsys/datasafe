@@ -14,7 +14,6 @@
     <properties>
         <spring.framework.version>6.1.10</spring.framework.version>
         <spring.framework.boot.version>3.3.1</spring.framework.boot.version>
-        <jetbrains.annotations.version>17.0.0</jetbrains.annotations.version>
     </properties>
 
     <dependencies>
@@ -134,12 +133,6 @@
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>${jetbrains.annotations.version}</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 
@@ -156,6 +149,11 @@
                         </goals>
                         <configuration>
                             <failOnWarning>false</failOnWarning>
+                            <ignoredUsedUndeclaredDependencies>
+                                <ignoredUsedUndeclaredDependency>org.jetbrains:annotations</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-storage-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-types-api</ignoredUsedUndeclaredDependency>
+                            </ignoredUsedUndeclaredDependencies>
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-business</ignoredUnusedDeclaredDependency>

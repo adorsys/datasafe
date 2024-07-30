@@ -410,6 +410,16 @@
                                 <ignoredUsedUndeclaredDependency>de.adorsys.keymanagement:api</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-storage-api</ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-directory-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>com.amazonaws:aws-java-sdk-s3</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>com.amazonaws:aws-java-sdk-core</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.jetbrains:annotations</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.springframework.security:spring-security-config</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.springframework.security:spring-security-web</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency> org.springframework:spring-web</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.springframework.security:spring-security-core</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.springframework:spring-beans</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.springframework:spring-context</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.springframework:spring-webmvc</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
@@ -426,6 +436,9 @@
                                 <ignoredUnusedDeclaredDependency>com.fasterxml.jackson.core:jackson-annotations</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>com.fasterxml.jackson.core:jackson-databind</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-security</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-web</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-actuator</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-configuration-processor</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredNonTestScopedDependencies>
                                 <ignoredNonTestScopedDependency>org.bouncycastle:bcprov-jdk15on</ignoredNonTestScopedDependency>
