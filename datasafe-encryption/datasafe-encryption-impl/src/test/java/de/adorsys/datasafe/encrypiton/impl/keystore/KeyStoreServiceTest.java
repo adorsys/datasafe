@@ -8,11 +8,11 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.impl.KeystoreUtil;
-import de.adorsys.datasafe.encrypiton.impl.utils.ProviderUtils;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+import de.adorsys.keymanagement.adapter.modules.generator.GeneratorModule_ProviderFactory;
 import de.adorsys.keymanagement.api.Juggler;
 import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
 import de.adorsys.keymanagement.api.types.KeySetTemplate;
@@ -59,7 +59,7 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         Assertions.assertEquals(4, list.size());
 
         Assertions.assertEquals("BCFKS", keyStore.getType());
-        Assertions.assertEquals(ProviderUtils.bcProvider, keyStore.getProvider());
+        Assertions.assertEquals(GeneratorModule_ProviderFactory.provider(), keyStore.getProvider());
     }
 
     @Test

@@ -6,8 +6,8 @@ import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKe
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.Decryptor;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.decryptors.DecryptorFactory;
 import de.adorsys.datasafe.encrypiton.impl.cmsencryption.exceptions.DecryptionException;
-import de.adorsys.datasafe.encrypiton.impl.utils.ProviderUtils;
 import de.adorsys.datasafe.types.api.context.annotations.RuntimeDelegate;
+import de.adorsys.keymanagement.adapter.modules.generator.GeneratorModule_ProviderFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -145,7 +145,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
         return generator.open(
                 dataContentStream,
-                new JceCMSContentEncryptorBuilder(algorithm).setProvider(ProviderUtils.bcProvider).build()
+                new JceCMSContentEncryptorBuilder(algorithm).setProvider(GeneratorModule_ProviderFactory.provider()).build()
         );
     }
 }
