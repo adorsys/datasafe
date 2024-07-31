@@ -25,10 +25,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.OutputStream;
 import java.net.URI;
@@ -97,12 +94,8 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageIT{
         cephS3.createBucket(CreateBucketRequest.builder()
                 .bucket(VERSIONED_BUCKET_NAME)
                 .build());
-        cephS3.setBucketVersioning(SetBucketVersioningConfigurationRequest.builder()
-                .bucket(VERSIONED_BUCKET_NAME)
-                .versioningConfiguration(BucketVersioningConfiguration.builder()
-                        .status(BucketVersioningConfiguration.Status.ENABLED)
-                        .build())
-                .build());
+        cephS3.createBucket(req -> req.bucket(VERSIONED_BUCKET_NAME));
+        cephS3.putBucketVersioning(req -> req.bucket(VERSIONED_BUCKET_NAME).versioningConfiguration(req1 -> req1.status(BucketVersioningStatus.ENABLED)));
     }
 
     @AfterAll
