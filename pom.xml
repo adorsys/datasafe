@@ -419,7 +419,7 @@
 				                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-business</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-devtools</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>io.jsonwebtoken:jjwt-impl</ignoredUnusedDeclaredDependency>
-                          Optimize dependency management by excluding unused transitive dependencies      <ignoredUnusedDeclaredDependency>io.jsonwebtoken:jjwt-jackson</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>io.jsonwebtoken:jjwt-jackson</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>com.mysql:mysql-connector-j</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>jakarta.servlet:jakarta.servlet-api</ignoredUnusedDeclaredDependency>
