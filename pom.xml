@@ -110,7 +110,7 @@
         <mysql.version>8.4.0</mysql.version>
         <liquibase>4.23.1</liquibase>
         <siv-mode.version>1.4.4</siv-mode.version>
-        <jackson.version>2.16.1</jackson.version>
+        <jackson.version>2.17.1</jackson.version>
         <keymanagement.version>0.0.11</keymanagement.version>
         <jakarta.annotation-api.varsion>2.1.1</jakarta.annotation-api.varsion>
         <jaxb-api.version>2.3.1</jaxb-api.version>
