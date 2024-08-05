@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
 import java.security.KeyPair;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -145,7 +146,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
         return generator.open(
                 dataContentStream,
-                new JceCMSContentEncryptorBuilder(algorithm).setProvider(GeneratorModule_ProviderFactory.provider()).build()
+                new JceCMSContentEncryptorBuilder(algorithm).setProvider(GeneratorModule_ProviderFactory.provider()).setSecureRandom(new SecureRandom()).build()
         );
     }
 }
