@@ -371,7 +371,7 @@
                             <configLocation>checkstyle.xml</configLocation>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                             <encoding>UTF-8</encoding>
-                            <consoleOutput>true</consoleOutput>
+                            <consoleOutput>false</consoleOutput>
                             <failsOnError>false</failsOnError>
                             <linkXRef>false</linkXRef>
                             <propertyExpansion>org.checkstyle.google.severity=warning</propertyExpansion>
@@ -403,7 +403,6 @@
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
-                    <xmlOutput>true</xmlOutput>
                     <failOnError>false</failOnError>
                     <xmlOutput>true</xmlOutput> <!-- Generate XML reports -->
                     <htmlOutput>true</htmlOutput> <!-- Generate HTML reports -->
