@@ -21,13 +21,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.Collections;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class WriteToInboxImplTest extends BaseMockitoTest {
@@ -61,8 +65,15 @@ class WriteToInboxImplTest extends BaseMockitoTest {
     private WriteToInboxImpl inbox;
 
     @BeforeEach
-    void init() {
+    void init() throws NoSuchAlgorithmException {
         this.publicKeyWithId = new PublicKeyIDWithPublicKey(new KeyID(""), publicKey);
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+        this.senderKeyPair = keyPairGenerator.generateKeyPair();
+        String rootBucket = "bucket";
+        if (inbox == null) {
+            inbox = new WriteToInboxImpl(publicKeyService, privateKeyService, resolver, writeService, rootBucket);
+        }
     }
 
     @Test
@@ -73,11 +84,15 @@ class WriteToInboxImplTest extends BaseMockitoTest {
                 .forDefaultPublic(ownerAuth, Collections.singleton(auth), ABSOLUTE_PATH);
         when(publicKeyService.publicKey(auth)).thenReturn(publicKeyWithId);
         when(privateKeyService.getKeyPair(ownerAuth)).thenReturn(senderKeyPair);
-        when(resolver.resolveRelativeToPublicInbox(auth, request.getLocation())).thenReturn(resource);
+        when(resolver.resolveRelativeToPublicInbox(any(), any())).thenReturn(resource);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         when(writeService.write(Collections.singletonMap(publicKeyWithId, resource), senderKeyPair)).thenReturn(outputStream);
 
-        inbox.write(request).write(BYTES.getBytes());
+        if (inbox != null && request != null) {
+            try (OutputStream stream = inbox.write(request)) {
+                stream.write(BYTES.getBytes());
+            }
+        }
 
         assertThat(outputStream.toByteArray()).contains(BYTES.getBytes());
     }

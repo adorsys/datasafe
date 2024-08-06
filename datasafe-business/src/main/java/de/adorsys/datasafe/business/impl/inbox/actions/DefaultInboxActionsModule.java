@@ -2,6 +2,7 @@ package de.adorsys.datasafe.business.impl.inbox.actions;
 
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 import de.adorsys.datasafe.inbox.api.InboxService;
 import de.adorsys.datasafe.inbox.api.actions.ListInbox;
 import de.adorsys.datasafe.inbox.api.actions.ReadFromInbox;
@@ -35,6 +36,11 @@ public abstract class DefaultInboxActionsModule {
     /**
      * By default, writes file into users' INBOX using his public key (no privatespace access required).
      */
+    @Provides
+    static String provideRootBucket() {
+        return "datasafe-root";
+    }
+
     @Binds
     abstract WriteToInbox writeInbox(WriteToInboxImplRuntimeDelegatable impl);
 
