@@ -48,10 +48,12 @@ import java.util.stream.Collectors;
 public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
     private ASNCmsEncryptionConfig encryptionConfig;
+    private SecureRandom secureRandom;
 
     @Inject
     public CMSEncryptionServiceImpl(ASNCmsEncryptionConfig encryptionConfig) {
         this.encryptionConfig = encryptionConfig;
+        this.secureRandom = new SecureRandom();
     }
 
     /**
@@ -146,7 +148,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
         return generator.open(
                 dataContentStream,
-                new JceCMSContentEncryptorBuilder(algorithm).setProvider(GeneratorModule_ProviderFactory.provider()).setSecureRandom(new SecureRandom()).build()
+                new JceCMSContentEncryptorBuilder(algorithm).setProvider(GeneratorModule_ProviderFactory.provider()).setSecureRandom( this.secureRandom).build()
         );
     }
 }
