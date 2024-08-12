@@ -25,7 +25,6 @@ import de.adorsys.datasafe.types.api.callback.PhysicalVersionCallback;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.utils.CustomizableByteArrayOutputStream;
 import de.adorsys.datasafe.types.api.utils.Obfuscate;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +32,11 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -53,7 +52,6 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     private S3Client s3;
 
-    private String multiPartUploadId;
 
     // The minimum size for a multi part request is 5 MB, hence the buffer size of 5 MB
     static final int BUFFER_SIZE = 1024 * 1024 * 5;
@@ -70,14 +68,13 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     private final List<? extends ResourceWriteCallback> callbacks;
 
     public MultipartUploadS3StorageOutputStream(String bucketName, String objectKey, S3Client s3,
-                                         ExecutorService executorService, String multiPartUploadId,
+                                         ExecutorService executorService,
                                          List<? extends ResourceWriteCallback> callbacks) {
         this.bucketName = bucketName;
         this.objectName = objectKey;
         this.s3 = s3;
         this.completionService = new ExecutorCompletionService<>(executorService);
         this.callbacks = callbacks;
-        this.multiPartUploadId = multiPartUploadId;
 
         log.debug("Write to bucket: {} with name: {}", Obfuscate.secure(bucketName), Obfuscate.secure(objectName));
     }
@@ -140,7 +137,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                         .contentSize(size)
                         .bucketName(bucketName)
                         .objectName(objectName)
-                        .uploadId(multiPartUploadId)
+                        .uploadId(multiPartUploadResult.uploadId())
                         .chunkNumberCounter(partCounter)
                         .lastChunk(false)
                         .build()
@@ -155,22 +152,26 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
 
     @SneakyThrows
     private void finishSimpleUpload() {
-//        ObjectMetadata objectMetadata = ObjectMetadata.builder()
-//                .contentLength(currentOutputStream.size())
-//                .build();
+        int size = currentOutputStream.size();
         byte[] content = currentOutputStream.getBufferOrCopy();
 
         // Release the memory
         currentOutputStream = null;
 
-        PutObjectResponse upload = s3.putObject(
-                PutObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(objectName)
-                        .contentLength((long) content.length)
-                        .build(),
-                RequestBody.fromBytes(content));
-        notifyCommittedVersionIfPresent(upload.versionId());
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectName)
+                .contentLength((long) size)
+                .build();
+        try {
+            s3.putObject(putObjectRequest, RequestBody.fromInputStream(new ByteArrayInputStream(content, 0, size), size));
+        } catch (Exception e) {
+            log.error("Failed to put object to S3: {}", e.getMessage(), e);
+            throw e;
+        }
+
+
+        notifyCommittedVersionIfPresent(null);
 
         log.debug("Finished simple upload");
     }
@@ -179,18 +180,21 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         sendLastChunkOfMultipartIfNeeded();
 
         try {
-            List<CompletedPart> partETags = getMultiPartsUploadResults();
+            List<CompletedPart> completedParts = getMultiPartsUploadResults();
 
-            CompleteMultipartUploadResponse upload = s3.completeMultipartUpload(CompleteMultipartUploadRequest.builder()
+            log.debug("Send multipart request to S3");
+            CompleteMultipartUploadRequest completeRequest = CompleteMultipartUploadRequest.builder()
                     .bucket(bucketName)
                     .key(objectName)
-                    .uploadId(multiPartUploadId)
+                    .uploadId(multiPartUploadResult.uploadId())
                     .multipartUpload(CompletedMultipartUpload.builder()
-                            .parts(partETags)
+                            .parts(completedParts)
                             .build())
-                    .build());
+                    .build();
 
-            notifyCommittedVersionIfPresent(upload.versionId());
+            CompleteMultipartUploadResponse uploadResponse = s3.completeMultipartUpload(completeRequest);
+
+            notifyCommittedVersionIfPresent(uploadResponse.eTag());
 
             log.debug("Finished multi part upload");
         } catch (ExecutionException e) {
@@ -226,7 +230,7 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                         .contentSize(size)
                         .bucketName(bucketName)
                         .objectName(objectName)
-                        .uploadId(multiPartUploadId)
+                        .uploadId(multiPartUploadResult.uploadId())
                         .chunkNumberCounter(partCounter)
                         .lastChunk(true)
                         .build()
@@ -248,14 +252,18 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         if (multiPartUploadResult == null) {
 
             log.debug("Initiate multi part");
-            CreateMultipartUploadResponse multiPartUploadResult = s3.createMultipartUpload(
-                    CreateMultipartUploadRequest.builder()
-                            .bucket(bucketName)
-                            .key(objectName)
-                            .build()
-            );
-            this.multiPartUploadResult = multiPartUploadResult;
-            this.multiPartUploadId = multiPartUploadResult.uploadId();
+            CreateMultipartUploadRequest initiateRequest = CreateMultipartUploadRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectName)
+                    .build();
+
+            try {
+                multiPartUploadResult = s3.createMultipartUpload(initiateRequest);
+            } catch (S3Exception e) {
+                log.error("Failed to initiate multipart upload", e);
+                // Handle the exception as needed
+                throw e; // or handle accordingly
+            }
         }
     }
 
@@ -263,30 +271,30 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
         log.debug("Abort multi part");
 
         if (isMultiPartUpload()) {
-            s3.abortMultipartUpload(
-                    AbortMultipartUploadRequest.builder()
-                            .bucket(bucketName)
-                            .key(objectName)
-                            .uploadId(multiPartUploadId)
-                            .build()
-            );
+            AbortMultipartUploadRequest abortRequest = AbortMultipartUploadRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectName)
+                    .uploadId(multiPartUploadResult.uploadId())
+                    .build();
+
+            s3.abortMultipartUpload(abortRequest);
         }
     }
 
     private List<CompletedPart> getMultiPartsUploadResults() throws ExecutionException, InterruptedException {
         List<CompletedPart> result = new ArrayList<>(partCounter);
-        for (int i = 0; i < partCounter; i++) {
-            UploadPartResponse partResponse = completionService.take().get();
-            int partNumber = i + 1; // Part numbers start from 1
+        for (int i = 1; i <= partCounter; i++) {
+            UploadPartResponse completedPart = completionService.take().get();
             result.add(CompletedPart.builder()
-                    .partNumber(partNumber)
-                    .eTag(partResponse.eTag())
+                    .partNumber(i)
+                    .eTag(completedPart.eTag())
                     .build());
 
             log.debug("Get upload part #{} from {}", i, partCounter);
         }
         return result;
     }
+
     private CustomizableByteArrayOutputStream newOutputStream() {
         return new CustomizableByteArrayOutputStream(32, BUFFER_SIZE, 0.5);
     }

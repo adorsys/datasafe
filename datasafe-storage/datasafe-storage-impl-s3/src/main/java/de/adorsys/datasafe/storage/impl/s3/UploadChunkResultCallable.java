@@ -45,7 +45,7 @@ public class UploadChunkResultCallable implements Callable<UploadPartResponse> {
 
     private final String fileName;
 
-    private final String chunkId;
+    private final String uploadId;
 
     private byte[] content;
 
@@ -57,9 +57,9 @@ public class UploadChunkResultCallable implements Callable<UploadPartResponse> {
         this.last = request.isLastChunk();
         this.bucketName = request.getBucketName();
         this.fileName = request.getObjectName();
-        this.chunkId = request.getUploadId();
+        this.uploadId = request.getUploadId();
 
-        log.debug("Chunk upload request: {}", request.toString());
+        log.debug("Chunk upload request: {}", request);
     }
 
     @Override
@@ -69,8 +69,9 @@ public class UploadChunkResultCallable implements Callable<UploadPartResponse> {
             UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
                     .bucket(bucketName)
                     .key(fileName)
-                    .uploadId(chunkId)
+                    .uploadId(uploadId)
                     .partNumber(partNumber)
+                    .contentLength((long) contentLength)
                     .build();
 
             return s3.uploadPart(uploadPartRequest, RequestBody.fromBytes(content));

@@ -47,7 +47,8 @@
     },
     {
       "pattern": "lib/commons-logging-1.1.3.jar"
-    },
+    }
+  ,
     {
       "pattern": "lib/dagger-2.17.jar"
     },

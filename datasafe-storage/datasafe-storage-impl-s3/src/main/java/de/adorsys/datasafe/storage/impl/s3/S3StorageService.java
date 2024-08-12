@@ -106,13 +106,13 @@ public class S3StorageService implements StorageService {
         log.debug("Write data by path: {}", locationWithCallback.getWrapped().location());
 
         String bucketName = router.bucketName(locationWithCallback.getWrapped());
-        String key = router.resourceKey(locationWithCallback.getWrapped()); // <--- Define key here
+        String key = router.resourceKey(locationWithCallback.getWrapped());
         return new MultipartUploadS3StorageOutputStream(
-                bucketName, // String
-                key, // String
-                s3, // S3Client
-                executorService, // ExecutorService
-                locationWithCallback.getWrapped().location().getPath(), // String
+                bucketName,
+                key,
+                s3,
+                executorService,
+                //locationWithCallback.getWrapped().location().getPath(),
                 locationWithCallback.getCallbacks() // List of ResourceWriteCallback
         );
     }
@@ -127,7 +127,7 @@ public class S3StorageService implements StorageService {
         String bucketName = router.bucketName(location);
         execute(
                 location,
-                key -> s3.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(key).build()),
+                key -> doRemove(bucketName, key),
                 (key, version) -> s3.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(key).versionId(version.getVersionId()).build())
         );
     }

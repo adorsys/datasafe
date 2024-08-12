@@ -45,9 +45,6 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
@@ -55,7 +52,6 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.security.UnrecoverableKeyException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -118,13 +114,12 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
             log.info("ENDPOINT IS {}", endpoint);
             endpointsByHostNoBucket.put(it, endpoint);
 
-            S3Client client = S3Client.builder()
-                    .endpointOverride(URI.create(endpoint))
-                    .region(Region.of(REGION))
-                    .credentialsProvider(StaticCredentialsProvider.create(
-                            AwsBasicCredentials.create(accessKey(it), secretKey(it))
-                    ))
-                    .build();
+            S3Client client = S3ClientFactory.getClient(
+                    endpoint,
+                    REGION,
+                    accessKey(it),
+                    secretKey(it)
+            );
 
             AwsClientRetry.createBucketWithRetry(client, it);
         });
@@ -297,19 +292,17 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
     }
 
     private List<String> listInBucket(String bucket) {
-        S3Client client = S3Client.builder()
-                .endpointOverride(URI.create(endpointsByHostNoBucket.get(bucket)))
-                .region(Region.of(REGION))
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey(bucket), secretKey(bucket))
-                ))
-                .build();
-
+        S3Client s3 = S3ClientFactory.getClient(
+                endpointsByHostNoBucket.get(bucket),
+                REGION,
+                accessKey(bucket),
+                secretKey(bucket)
+        );
         ListObjectsV2Request request = ListObjectsV2Request.builder()
                 .bucket(bucket)
                 .build();
+        ListObjectsV2Response response = s3.listObjectsV2(request);
 
-        ListObjectsV2Response response = client.listObjectsV2(request);
         return response.contents()
                 .stream()
                 .map(S3Object::key)

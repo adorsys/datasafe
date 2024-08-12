@@ -26,6 +26,8 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,8 +71,9 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
         String region = "eu-central-1";
         s3 = S3Client.builder()
                 .endpointOverride(URI.create(url + ":" + mappedPort))
-                .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(creds))
+                .region(Region.of(region))
+                .forcePathStyle(true)
                 .build();
 
         s3.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
@@ -105,26 +108,52 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
             s3.putObject(PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key("over_limit/" + FILE + i)
-                    .build(), RequestBody.fromBytes(MESSAGE.getBytes()));
+                    .build(), RequestBody.fromString(MESSAGE));
 
             log.trace("Save #" + i + " file");
         }
-        assertThat(storageService.list(
-                new AbsoluteLocation<>(
-                        BasePrivateResource.forPrivate(new Uri("s3://" + bucketName + "/over_limit")))))
-        .hasSize(numberOfFilesOverLimit);
-    }
+        List<AbsoluteLocation<PrivateResource>> allFiles = new ArrayList<>();
+        String continuationToken = null;
 
+        do {
+            ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
+                    .bucket(bucketName)
+                    .prefix("over_limit/")
+                    .maxKeys(1000);
+
+            if (continuationToken != null) {
+                requestBuilder.continuationToken(continuationToken);
+            }
+
+            ListObjectsV2Response response = s3.listObjectsV2(requestBuilder.build());
+
+            response.contents().forEach(s3Object -> {
+                try {
+                    allFiles.add(new AbsoluteLocation<>(
+                            BasePrivateResource.forPrivate(new URI("s3://" + bucketName + "/" + s3Object.key()))));
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            continuationToken = response.nextContinuationToken();
+
+        } while (continuationToken != null);
+
+        assertThat(allFiles).hasSize(numberOfFilesOverLimit);
+    }
     @Test
     void listDeepLevel() {
+        s3.putObject(PutObjectRequest.builder().bucket(bucketName).key("root.txt").build(),
+                RequestBody.fromString("txt1"));
         s3.putObject(PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key("deeper/level1.txt")
-                .build(), RequestBody.fromBytes("txt2".getBytes()));
+                .build(), RequestBody.fromString("txt2"));
         s3.putObject(PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key("deeper/more/level2.txt")
-                .build(), RequestBody.fromBytes("txt3".getBytes()));
+                .build(), RequestBody.fromString("txt3"));
 
 
         List<AbsoluteLocation<ResolvedResource>> resources = storageService.list(
@@ -168,7 +197,7 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
 
         storageService.remove(fileWithMsg);
 
-        assertThrows(S3Exception.class, () -> s3.getObject(GetObjectRequest.builder()
+        assertThrows(NoSuchKeyException.class, () -> s3.getObject(GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(FILE)
                 .build()));
@@ -179,19 +208,12 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
         createFileWithMessage("root/file1.txt");
         createFileWithMessage("root/file2.txt");
 
-        AbsoluteLocation rootOfFiles = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("./root/"))
-                .resolveFrom(root));
+        AbsoluteLocation<PrivateResource> rootOfFiles = new AbsoluteLocation<>(BasePrivateResource.forPrivate(new Uri("s3://" + bucketName + "/root/")));
 
         storageService.remove(rootOfFiles);
 
-        assertThrows(S3Exception.class, () -> s3.getObject(GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key("root/file1.txt")
-                .build()));
-        assertThrows(S3Exception.class, () -> s3.getObject(GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key("root/file2.txt")
-                .build()));
+        assertThrows(NoSuchKeyException.class, () -> s3.getObject(GetObjectRequest.builder().bucket(bucketName).key("root/file1.txt").build()));
+        assertThrows(NoSuchKeyException.class, () -> s3.getObject(GetObjectRequest.builder().bucket(bucketName).key("root/file2.txt").build()));
     }
 
     @SneakyThrows
@@ -199,7 +221,7 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
         s3.putObject(PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(path)
-                .build(), RequestBody.fromBytes(MESSAGE.getBytes()));
+                .build(), RequestBody.fromString(MESSAGE));
     }
 
     @SneakyThrows
@@ -217,21 +239,12 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     }
 
     private void removeObjectFromS3(S3Client s3, String bucket, String prefix) {
-        ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
-                .bucket(bucket)
-                .prefix(prefix);
-        ListObjectsV2Response response;
-        do {
-            response = s3.listObjectsV2(requestBuilder.build());
-            response.contents().forEach(obj -> {
-                log.debug("Remove {}", obj.key());
-                s3.deleteObject(DeleteObjectRequest.builder()
-                        .bucket(bucket)
-                        .key(obj.key())
-                        .build());
-            });
-            requestBuilder.continuationToken(response.nextContinuationToken());
-        } while (response.isTruncated());
+        s3.listObjectsV2(ListObjectsV2Request.builder().bucket(bucket).prefix(prefix).build())
+                .contents()
+                .forEach(it -> {
+                    log.debug("Remove {}", it.key());
+                    s3.deleteObject(DeleteObjectRequest.builder().bucket(bucket).key(it.key()).build());
+                });
     }
     @AfterAll
     public static void afterAll() {

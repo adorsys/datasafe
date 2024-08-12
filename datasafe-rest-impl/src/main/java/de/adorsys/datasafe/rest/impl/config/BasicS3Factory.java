@@ -12,17 +12,10 @@ public class BasicS3Factory implements S3Factory {
 
     @Override
     public S3Client getClient(String endpointUrl, String region, String accessKey, String secretKey) {
-        return S3Client.builder()
-                .endpointOverride(URI.create(endpointUrl))
-                .region(Region.of(region))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
-                .build();
+        return S3ClientFactory.getClient(endpointUrl, region, accessKey, secretKey);
     }
     @Override
     public S3Client getAmazonClient(String region, String accessKey, String secretKey) {
-        return S3Client.builder()
-                .region(Region.of(region))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
-                .build();
+        return S3ClientFactory.getAmazonClient(region, accessKey, secretKey);
     }
 }

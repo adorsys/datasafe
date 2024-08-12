@@ -19,9 +19,9 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
 import static de.adorsys.datasafe.storage.impl.s3.MultipartUploadS3StorageOutputStream.BUFFER_SIZE;
+import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
@@ -53,31 +53,22 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
                 "s3://path/to/file.txt",
                 s3,
                 executorService,
-                "upload-id",
                 Collections.emptyList()
         );
 
 
-        when(s3.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+        when(s3.putObject(any(PutObjectRequest.class), requestBodyCaptor.capture()))
                 .thenReturn(PutObjectResponse.builder().build());
         when(s3.createMultipartUpload(any(CreateMultipartUploadRequest.class)))
-                .thenReturn(CreateMultipartUploadResponse.builder()
-                        .bucket("bucket")
-                        .key("s3://path/to/file.txt")
-                        .uploadId("upload-id")
-                        .build());
+                .thenReturn(CreateMultipartUploadResponse.builder().uploadId("testUploadId").build());
         doAnswer(inv -> {
             inv.getArgument(0, Runnable.class).run();
             return null;
-        }).when(executorService).submit(any(Runnable.class));
-        when(s3.uploadPart(any(UploadPartRequest.class), any(RequestBody.class)))
-                .thenReturn(UploadPartResponse.builder()
-                        .eTag("etag")
-                        .build());
+        }).when(executorService).execute(any());
+        when(s3.uploadPart(any(UploadPartRequest.class), requestBodyCaptor.capture()))
+                .thenReturn(UploadPartResponse.builder().eTag("testETag").build());
         when(s3.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
-                .thenReturn(CompleteMultipartUploadResponse.builder()
-                        .versionId("version-id")
-                        .build());
+                .thenReturn(CompleteMultipartUploadResponse.builder().build());
     }
 
 
@@ -87,9 +78,8 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
         tested.write(shortChunk, 0 , shortChunk.length);
 
         tested.close();
-
         verify(executorService, never()).submit(any(UploadChunkResultCallable.class));
-        assertThat(bytesSentDirectly.getValue()).hasContent(new String(shortChunk));
+        verify(s3).putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
 
     @Test
@@ -99,10 +89,14 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
         tested.close();
 
-        verify(executorService, never()).submit(any(UploadChunkResultCallable.class));
-        assertThat(bytesSentDirectly.getValue()).hasContent(
-                new String(Arrays.copyOfRange(shortChunk, 10, shortChunk.length))
-        );
+        verify(s3).putObject(any(PutObjectRequest.class), requestBodyCaptor.capture());
+        verify(s3, never()).uploadPart(any(UploadPartRequest.class), any(RequestBody.class));
+
+        RequestBody capturedBody = requestBodyCaptor.getValue();
+        byte[] capturedContent = toByteArray(capturedBody.contentStreamProvider().newStream());
+
+        assertThat(new String(capturedContent))
+                .isEqualTo(new String(Arrays.copyOfRange(shortChunk, 10, shortChunk.length)));
     }
 
     @Test
@@ -112,8 +106,7 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
         tested.close();
 
-        assertThat(bytesSentDirectly.getAllValues()).isEmpty();
-        assertThat(uploadChunk.getAllValues()).hasSize(1);
+        assertThat(requestBodyCaptor.getAllValues()).hasSize(1);
     }
 
     @Test
@@ -161,8 +154,13 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
         tested.close();
 
-        verify(executorService, never()).submit(any(UploadChunkResultCallable.class));
-        assertThat(bytesSentDirectly.getValue()).hasContent("");
+        verify(executorService, never()).execute(any(Runnable.class));
+        verify(s3).putObject(any(PutObjectRequest.class), requestBodyCaptor.capture());
+
+        RequestBody capturedBody = requestBodyCaptor.getValue();
+        byte[] capturedContent = toByteArray(capturedBody.contentStreamProvider().newStream());
+
+        assertThat(capturedContent).isEmpty();
     }
 
     @Test
@@ -172,10 +170,14 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
 
         tested.close();
 
-        verify(executorService, never()).submit(any(UploadChunkResultCallable.class));
-        assertThat(bytesSentDirectly.getValue()).hasContent(new String(shortChunk));
-    }
+        verify(executorService, never()).execute(any(Runnable.class));
+        verify(s3).putObject(any(PutObjectRequest.class), requestBodyCaptor.capture());
 
+        RequestBody capturedBody = requestBodyCaptor.getValue();
+        byte[] capturedContent = toByteArray(capturedBody.contentStreamProvider().newStream());
+
+        assertThat(new String(capturedContent)).isEqualTo(new String(shortChunk));
+    }
     @Test
     @SneakyThrows
     void writeByteByByteChunkedExactChunk() {
@@ -223,8 +225,13 @@ class MultipartUploadS3StorageOutputStreamIT extends BaseMockitoTest {
     void writeZeroSized() {
         tested.close();
 
-        verify(executorService, never()).submit(any(UploadChunkResultCallable.class));
-        assertThat(bytesSentDirectly.getValue()).hasContent("");
+        verify(executorService, never()).execute(any(Runnable.class));
+        verify(s3).putObject(any(PutObjectRequest.class), requestBodyCaptor.capture());
+
+        RequestBody capturedBody = requestBodyCaptor.getValue();
+        byte[] capturedContent = toByteArray(capturedBody.contentStreamProvider().newStream());
+
+        assertThat(new String(capturedContent)).isEmpty();
     }
 
 

@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.util.StringUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,6 +25,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.*;
 
@@ -306,57 +308,59 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             bucket = parts[0];
             prefix = parts[1] + "/" + prefix;
         }
-        String lambdafinalBucket = bucket;
-        ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
-                .bucket(lambdafinalBucket)
-                .prefix(prefix);
-        ListObjectsV2Response response;
-        do {
-            response = s3.listObjectsV2(requestBuilder.build());
-            response.contents().forEach(it -> {
-                log.debug("Remove {}", it.key());
-                DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                        .bucket(lambdafinalBucket)
-                        .key(it.key())
-                        .build();
-                s3.deleteObject(deleteRequest);
-            });
-            requestBuilder.continuationToken(response.nextContinuationToken());
-        } while (response.isTruncated());
+        String finalBucket = bucket;
+
+        ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder()
+                .bucket(finalBucket)
+                .prefix(prefix)
+                .build();
+
+        ListObjectsResponse listObjectsResponse = s3.listObjects(listObjectsRequest);
+
+        listObjectsResponse.contents().forEach(s3Object -> {
+            log.debug("Remove {}", s3Object.key());
+            s3.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(finalBucket)
+                    .key(s3Object.key())
+                    .build());
+        });
     }
 
     private static void initS3() {
         log.info("Initializing S3");
 
-        if (amazonAccessKeyID == null || amazonAccessKeyID.isEmpty()) {
+        if (Strings.isNullOrEmpty(amazonAccessKeyID)) {
             return;
         }
 
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(amazonAccessKeyID, amazonSecretAccessKey);
-
-        S3Client amazonS3 = S3Client.builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create(amazonUrl)) // Set endpoint
-                .region(Region.of(amazonRegion)) // Set region
-                .build();
+        S3ClientBuilder s3ClientBuilder = S3Client.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(amazonAccessKeyID, amazonSecretAccessKey)
+                ));
 
         if (buckets.size() > 1) {
             log.info("Using {} buckets:{}", buckets.size(), buckets);
         }
 
-        if (amazonUrl == null || amazonUrl.isEmpty()) {
+        if (StringUtils.isNullOrEmpty(amazonUrl)) {
             amazonUrl = amazonProtocol + amazonDomain;
         }
 
         final boolean isRealAmazon = amazonUrl.endsWith(amazonDomain);
+        s3ClientBuilder = s3ClientBuilder
+                .region(Region.of(amazonRegion))
+                .endpointOverride(URI.create(amazonUrl));
 
-        if (!isRealAmazon) {
-            amazonMappedUrl = amazonUrl + "/";
-        } else {
+        if (isRealAmazon) {
             amazonMappedUrl = amazonProtocol + primaryBucket + "." + amazonDomain;
+        } else {
+            amazonMappedUrl = amazonUrl + "/";
+            s3ClientBuilder.serviceConfiguration(S3Configuration.builder()
+                    .pathStyleAccessEnabled(true)
+                    .build());
         }
+        amazonS3 = s3ClientBuilder.build();
 
-//        amazonS3 = amazonS3ClientBuilder.build();
         log.info("Amazon mapped URL: " + amazonMappedUrl);
     }
 
@@ -377,9 +381,12 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .endpointOverride(URI.create(minioMappedUrl))
                 .region(Region.of(minioRegion))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(minioAccessKeyID, minioSecretAccessKey)))
+                        AwsBasicCredentials.create(minioAccessKeyID, minioSecretAccessKey)
+                ))
+                .serviceConfiguration(S3Configuration.builder()
+                        .pathStyleAccessEnabled(true)
+                        .build())
                 .build();
-
         buckets.forEach(bucket -> minio.createBucket(CreateBucketRequest.builder().bucket(bucket).build()));
     }
 
@@ -408,7 +415,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
                 .endpointOverride(URI.create(cephMappedUrl))
                 .region(Region.of(cephRegion))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(cephAccessKeyID, cephSecretAccessKey)))
+                        AwsBasicCredentials.create(cephAccessKeyID, cephSecretAccessKey)
+                ))
+                .serviceConfiguration(S3Configuration.builder()
+                        .pathStyleAccessEnabled(true)
+                        .build())
                 .build();
 
         ceph.createBucket(CreateBucketRequest.builder()

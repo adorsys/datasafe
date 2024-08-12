@@ -78,12 +78,15 @@ public class DatasafeFactory {
 
     private static StorageService amazonS3() {
         return new UriBasedAuthStorageService(
-                acc -> getStorageService(
-                        acc.getAccessKey(),
-                        acc.getSecretKey(),
-                        acc.getEndpoint(),
-                        acc.getRegion(),
-                        acc.getBucketName()
+                acc -> new S3StorageService(
+                        S3ClientFactory.getAmazonClient(
+                                acc.getRegion(),
+                                acc.getAccessKey(),
+                                acc.getSecretKey()
+                        ),
+                        // Bucket name is encoded in first path segment
+                        acc.getBucketName(),
+                        ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
                 ),
                 uri -> (uri.getHost() + "/" + uri.getPath().replaceFirst("^/", "")).split("/")
         );
@@ -103,12 +106,14 @@ public class DatasafeFactory {
 
     private static S3StorageService getStorageService(String accessKey, String secretKey, String url, String region,
                                                       String bucket) {
-        AwsBasicCredentials creds = AwsBasicCredentials.create(accessKey, secretKey);
         S3Client s3 = S3Client.builder()
                 .endpointOverride(URI.create(url))
                 .region(Region.of(region))
-                .credentialsProvider(StaticCredentialsProvider.create(creds))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(accessKey, secretKey)
+                ))
                 .build();
+
 
         return new S3StorageService(
                 s3,
