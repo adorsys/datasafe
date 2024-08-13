@@ -382,7 +382,7 @@ defaultDatasafeServices.privateService().remove(
 );
 
 // it is removed from storage, so when we read it we get exception
-assertThrows(AmazonS3Exception.class, () -> defaultDatasafeServices.privateService().read(
+assertThrows(S3Exception.class, () -> defaultDatasafeServices.privateService().read(
         ReadRequest.forDefaultPrivateWithVersion(user, MY_OWN_FILE_TXT, new StorageVersion(versionId)))
 );
 

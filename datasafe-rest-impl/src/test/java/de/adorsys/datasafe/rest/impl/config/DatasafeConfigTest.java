@@ -1,7 +1,5 @@
 package de.adorsys.datasafe.rest.impl.config;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
@@ -16,6 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.io.ByteArrayInputStream;
 
@@ -46,26 +48,40 @@ class DatasafeConfigTest extends BaseMockitoTest {
     @Autowired
     private StorageService storageService;
 
-    @MockBean
-    private AmazonS3 amazonS3;
+//    @MockBean
+//    private AmazonS3 amazonS3;
 
     @Mock
-    private AmazonS3 amazonS3FromFactory;
+    private S3Client s3ClientFromFactory;
 
     @MockBean
     private S3Factory s3Factory;
 
     @BeforeEach
     void prepare() {
-        S3Object object = new S3Object();
-        object.setObjectContent(new ByteArrayInputStream(BASIC_STORAGE_ANSWER.getBytes(UTF_8)));
-        when(amazonS3.getObject(basicBucket, BASIC_FILE_STORAGE_PATH)).thenReturn(object);
-
         when(s3Factory.getClient("http://0.0.0.0:9000/", "eu-central-1", "user", "passwd"))
-                .thenReturn(amazonS3FromFactory);
-        S3Object another = new S3Object();
-        another.setObjectContent(new ByteArrayInputStream(DATA_STORAGE_ANSWER.getBytes(UTF_8)));
-        when(amazonS3FromFactory.getObject(DATA_BUCKET, DATA_FILE_STORAGE_PATH)).thenReturn(another);
+                .thenReturn(s3ClientFromFactory);
+
+        GetObjectResponse objectResponseMock = GetObjectResponse.builder()
+                .contentLength((long) BASIC_STORAGE_ANSWER.getBytes(UTF_8).length)
+                .build();
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(BASIC_STORAGE_ANSWER.getBytes(UTF_8));
+        ResponseInputStream<GetObjectResponse> responseInputStreamMock =
+                new ResponseInputStream<>(objectResponseMock, byteArrayInputStream);
+        when(s3ClientFromFactory.getObject(GetObjectRequest.builder()
+                .bucket(basicBucket)
+                .key(BASIC_FILE_STORAGE_PATH)
+                .build()))
+                .thenReturn(responseInputStreamMock);
+
+        ByteArrayInputStream anotherInputStream = new ByteArrayInputStream(DATA_STORAGE_ANSWER.getBytes(UTF_8));
+        ResponseInputStream<GetObjectResponse> anotherResponseInputStreamMock =
+                new ResponseInputStream<>(objectResponseMock, anotherInputStream);
+        when(s3ClientFromFactory.getObject(GetObjectRequest.builder()
+                .bucket(DATA_BUCKET)
+                .key(DATA_FILE_STORAGE_PATH)
+                .build()))
+                .thenReturn(anotherResponseInputStreamMock);
     }
 
     @Test

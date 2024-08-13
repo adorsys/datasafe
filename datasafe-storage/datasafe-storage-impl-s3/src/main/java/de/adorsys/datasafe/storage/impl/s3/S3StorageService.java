@@ -1,10 +1,5 @@
 package de.adorsys.datasafe.storage.impl.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.iterable.S3Objects;
-import com.amazonaws.services.s3.iterable.S3Versions;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
@@ -17,6 +12,8 @@ import de.adorsys.datasafe.types.api.resource.VersionedResourceLocation;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +36,7 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class S3StorageService implements StorageService {
 
-    private final AmazonS3 s3;
+    private final S3Client s3;
     private final BucketRouter router;
     private final ExecutorService executorService;
 
@@ -48,7 +45,7 @@ public class S3StorageService implements StorageService {
      * @param bucketName Bucket to use
      * @param executorService Multipart sending threadpool (file chunks are sent in parallel)
      */
-    public S3StorageService(AmazonS3 s3, String bucketName, ExecutorService executorService) {
+    public S3StorageService(S3Client s3, String bucketName, ExecutorService executorService) {
         this.s3 = s3;
         this.router = new StaticBucketRouter(bucketName);
         this.executorService = executorService;
@@ -63,13 +60,18 @@ public class S3StorageService implements StorageService {
         log.debug("List at {}", location.location());
         String prefix = router.resourceKey(location);
 
-        S3Objects s3ObjectSummaries = S3Objects.withPrefix(s3, router.bucketName(location), prefix);
-        Stream<S3ObjectSummary> objectStream = StreamSupport.stream(s3ObjectSummaries.spliterator(), false);
+        ListObjectsV2Request request = ListObjectsV2Request.builder()
+                .bucket(router.bucketName(location))
+                .prefix(prefix)
+                .build();
+
+        ListObjectsV2Response response = s3.listObjectsV2(request);
+        Stream<S3Object> objectStream = response.contents().stream();
         return objectStream
                 .map(os -> new AbsoluteLocation<>(
                         new BaseResolvedResource(
                                 createPath(location, os, prefix.length()),
-                                os.getLastModified().toInstant()
+                                os.lastModified()
                         ))
                 );
     }
@@ -84,11 +86,15 @@ public class S3StorageService implements StorageService {
         String bucketName = router.bucketName(location);
         return executeAndReturn(
                 location,
-                key -> s3.getObject(bucketName, key).getObjectContent(),
-                (key, version) ->
-                        s3.getObject(
-                                new GetObjectRequest(bucketName, key, version.getVersionId())
-                        ).getObjectContent()
+                key -> s3.getObjectAsBytes(GetObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(key)
+                        .build()).asInputStream(),
+                (key, version) -> s3.getObjectAsBytes(GetObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(key)
+                        .versionId(version.getVersionId())
+                        .build()).asInputStream()
         );
     }
 
@@ -100,15 +106,16 @@ public class S3StorageService implements StorageService {
         log.debug("Write data by path: {}", locationWithCallback.getWrapped().location());
 
         String bucketName = router.bucketName(locationWithCallback.getWrapped());
+        String key = router.resourceKey(locationWithCallback.getWrapped());
         return new MultipartUploadS3StorageOutputStream(
                 bucketName,
-                router.resourceKey(locationWithCallback.getWrapped()),
+                key,
                 s3,
                 executorService,
-                locationWithCallback.getCallbacks()
+                //locationWithCallback.getWrapped().location().getPath(),
+                locationWithCallback.getCallbacks() // List of ResourceWriteCallback
         );
     }
-
     /**
      * Removes resource by its location (latest one if versioning enabled) or removes just one version of the
      * resource if version if available in {@code location}
@@ -121,7 +128,7 @@ public class S3StorageService implements StorageService {
         execute(
                 location,
                 key -> doRemove(bucketName, key),
-                (key, version) -> s3.deleteVersion(bucketName, key, version.getVersionId())
+                (key, version) -> s3.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(key).versionId(version.getVersionId()).build())
         );
     }
 
@@ -135,16 +142,15 @@ public class S3StorageService implements StorageService {
 
         boolean pathExists = executeAndReturn(
                 location,
-                key -> s3.doesObjectExist(bucketName, key),
-                (key, version) ->
-                        StreamSupport.stream(
-                                S3Versions.withPrefix(s3, bucketName, key).spliterator(), false)
-                                .anyMatch(it -> it.getVersionId().equals(version.getVersionId()))
+                key -> s3.listObjects(ListObjectsRequest.builder().bucket(bucketName).prefix(key).maxKeys(1).build()).contents().size() > 0,
+                (key, version) -> s3.listObjectVersions(ListObjectVersionsRequest.builder().bucket(bucketName).prefix(key).versionIdMarker(version.getVersionId()).maxKeys(1).build())
+                        .versions().stream().anyMatch(v -> v.versionId().equals(version.getVersionId()))
         );
 
         log.debug("Path {} exists {}", location, pathExists);
         return pathExists;
     }
+
 
     @Override
     public Optional<Integer> flushChunkSize(AbsoluteLocation location) {
@@ -153,15 +159,26 @@ public class S3StorageService implements StorageService {
 
     private void doRemove(String bucket, String key) {
         if (key.endsWith("/")) {
-            S3Objects.withPrefix(s3, bucket, key).forEach(it -> s3.deleteObject(bucket, it.getKey()));
+            ListObjectsV2Request request = ListObjectsV2Request.builder()
+                    .bucket(bucket)
+                    .prefix(key)
+                    .build();
+            ListObjectsV2Response response = s3.listObjectsV2(request);
+            response.contents().forEach(obj -> s3.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(obj.key())
+                    .build()));
             return;
         }
 
-        s3.deleteObject(bucket, key);
+        s3.deleteObject(DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build());
     }
 
-    private PrivateResource createPath(AbsoluteLocation root, S3ObjectSummary os, int prefixLen) {
-        String relUrl = os.getKey().substring(prefixLen).replaceFirst("^/", "");
+    private PrivateResource createPath(AbsoluteLocation root, S3Object os, int prefixLen) {
+        String relUrl = os.key().substring(prefixLen).replaceFirst("^/", "");
         if ("".equals(relUrl)) {
             return BasePrivateResource.forPrivate(root.location());
         }

@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.rest.impl.exceptions.UnauthorizedException;
 import de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExistsException;
 import de.adorsys.datasafe.rest.impl.exceptions.UserExistsException;
@@ -11,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import javax.crypto.BadPaddingException;
 import java.security.UnrecoverableKeyException;
@@ -42,7 +42,7 @@ public class GenericControllerAdvice {
         return ResponseEntity.badRequest().body(new ArrayList<>(errors));
     }
 
-    @ExceptionHandler({AmazonS3Exception.class})
+    @ExceptionHandler({S3Exception.class})
     public ResponseEntity<List<String>> handleFileNotFoundException(Exception ex) {
         log.debug("File not found exception: {}", ex.getMessage(), ex);
         List<String> errors = Collections.singletonList("File not found");

@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -119,7 +119,7 @@ public class InboxController {
                     .toList();
             log.debug("User's {} inbox contains {} items", user, inboxList.size());
             return inboxList;
-        } catch (AmazonS3Exception e) { // for list this exception most likely means that user credentials wrong
+        } catch (S3Exception e) { // for list this exception most likely means that user credentials wrong
             throw new UnauthorizedException("Unauthorized", e);
         }
     }

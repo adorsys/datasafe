@@ -1,9 +1,9 @@
 package de.adorsys.datasafe.rest.impl.config;
 
-import com.amazonaws.services.s3.AmazonS3;
+import software.amazon.awssdk.services.s3.S3Client;
 
 public interface S3Factory {
 
-    AmazonS3 getClient(String endpointUrl, String region, String accessKey, String secretKey);
-    AmazonS3 getAmazonClient(String region, String accessKey, String secretKey);
+    S3Client getClient(String endpointUrl, String region, String accessKey, String secretKey);
+    S3Client getAmazonClient(String region, String accessKey, String secretKey);
 }

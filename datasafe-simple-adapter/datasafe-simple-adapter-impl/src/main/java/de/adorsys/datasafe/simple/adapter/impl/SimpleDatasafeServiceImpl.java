@@ -1,12 +1,6 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+//import com.amazonaws.client.builder.AwsClientBuilder;
 import com.google.common.base.CharMatcher;
 import com.google.common.io.ByteStreams;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
@@ -49,11 +43,23 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
+import software.amazon.awssdk.services.s3.S3Configuration;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
+import software.amazon.awssdk.services.s3.model.Protocol;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -248,63 +254,62 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         }
 
         log.info(lsf.toString());
-        AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
-            .withCredentials(
-                new AWSStaticCredentialsProvider(
-                    new BasicAWSCredentials(
-                        amazonS3DFSCredentials.getAccessKey(),
-                        amazonS3DFSCredentials.getSecretKey()))
-            );
+        S3ClientBuilder s3ClientBuilder = S3Client.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(
+                                amazonS3DFSCredentials.getAccessKey(),
+                                amazonS3DFSCredentials.getSecretKey()
+                        )
+                ))
+                .region(Region.of(amazonS3DFSCredentials.getRegion()));
 
         boolean useEndpoint = !amazonS3DFSCredentials.getUrl().matches(AMAZON_URL)
             && !amazonS3DFSCredentials.getUrl().startsWith(S3_PREFIX);
         lsf = new LogStringFrame();
         if (useEndpoint) {
             lsf.add("not real amazon, so use pathStyleAccess");
-            AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
-                amazonS3DFSCredentials.getUrl(),
-                amazonS3DFSCredentials.getRegion()
-            );
-            amazonS3ClientBuilder
-                .withEndpointConfiguration(endpoint)
-                .enablePathStyleAccess();
+            s3ClientBuilder.endpointOverride(URI.create(amazonS3DFSCredentials.getUrl()))
+                    .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build());
         } else {
             lsf.add("real amazon, so use bucketStyleAccess");
-            amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
+//            amazonS3ClientBuilder.withRegion(amazonS3DFSCredentials.getRegion());
         }
         log.info("{}", lsf.toString());
 
         if (amazonS3DFSCredentials.isNoHttps() || maxConnections > 0 || requestTimeout > 0) {
-            ClientConfiguration clientConfig = new ClientConfiguration();
-            if (amazonS3DFSCredentials.isNoHttps()) {
-                log.info("Creating S3 client without https");
-                clientConfig.setProtocol(Protocol.HTTP);
-                clientConfig.disableSocketProxy();
-            }
+            ApacheHttpClient.Builder httpClientBuilder = ApacheHttpClient.builder();
             if (maxConnections > 0) {
                 log.info("Creating S3 client with max connections:{}", maxConnections);
-                clientConfig.setMaxConnections(maxConnections);
+                httpClientBuilder.maxConnections(maxConnections);
             }
             if (requestTimeout > 0) {
                 log.info("Creating S3 client with connection timeout:{}", requestTimeout);
-                clientConfig.setRequestTimeout(requestTimeout);
+                httpClientBuilder.connectionTimeout(Duration.ofSeconds(requestTimeout));
             }
-            amazonS3ClientBuilder.withClientConfiguration(clientConfig);
+            s3ClientBuilder.httpClient(httpClientBuilder.build());
         }
 
-        AmazonS3 amazons3 = amazonS3ClientBuilder.build();
+        S3Client s3Client = s3ClientBuilder.build();
 
-        if (!amazons3.doesBucketExistV2(amazonS3DFSCredentials.getContainer())) {
-            amazons3.createBucket(amazonS3DFSCredentials.getContainer());
+        try {
+            s3Client.headBucket(HeadBucketRequest.builder()
+                    .bucket(amazonS3DFSCredentials.getContainer())
+                    .build());
+            log.info("Bucket {} exists.", amazonS3DFSCredentials.getContainer());
+        } catch (NoSuchBucketException e) {
+            log.info("Bucket {} does not exist. Creating bucket.", amazonS3DFSCredentials.getContainer());
+            s3Client.createBucket(CreateBucketRequest.builder()
+                    .bucket(amazonS3DFSCredentials.getContainer())
+                    .build());
         }
-        StorageService storageService = new S3StorageService(
-            amazons3,
-            amazonS3DFSCredentials.getContainer(),
-            ExecutorServiceUtil
-                .submitterExecutesOnStarvationExecutingService(
-                    amazonS3DFSCredentials.getThreadPoolSize(),
-                    amazonS3DFSCredentials.getQueueSize()
-                )
+        S3StorageService storageService = new S3StorageService(
+                s3Client,
+                amazonS3DFSCredentials.getContainer(),
+                ExecutorServiceUtil
+                        .submitterExecutesOnStarvationExecutingService(
+                                amazonS3DFSCredentials.getThreadPoolSize(),
+                                amazonS3DFSCredentials.getQueueSize()
+                        )
         );
         URI systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
         log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());

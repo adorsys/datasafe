@@ -1,6 +1,5 @@
 package de.adorsys.datasafe.simple.adapter.impl;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
@@ -27,6 +26,7 @@ import org.bouncycastle.util.io.Streams;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
@@ -288,7 +288,7 @@ class SimpleDatasafeAdapterIT extends WithStorageProvider {
             );
         } else {
             assertThrows(
-                    AmazonS3Exception.class,
+                    S3Exception.class,
                     () -> simpleDatasafeService.documentExists(userIDAuth2, document.getDocumentFQN())
             );
         }

@@ -1,10 +1,11 @@
 package de.adorsys.datasafe.rest.impl.config;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import dagger.Lazy;
@@ -40,6 +41,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.services.s3.model.HeadBucketResponse;
+
 
 import java.net.URI;
 import java.nio.file.Paths;
@@ -128,7 +131,7 @@ public class DatasafeConfig {
 
     @Bean
     @ConditionalOnProperty(value = CLIENT_CREDENTIALS, havingValue = "true")
-    StorageService clientCredentials(AmazonS3 s3, S3Factory factory, DatasafeProperties properties) {
+    StorageService clientCredentials(S3Client s3, S3Factory factory, DatasafeProperties properties) {
         ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
         S3StorageService basicStorage = new S3StorageService(
             s3,
@@ -182,7 +185,7 @@ public class DatasafeConfig {
      */
     @Bean
     @ConditionalOnProperty(name = DATASAFE_S3_STORAGE, havingValue = "true")
-    StorageService singleStorageServiceS3(AmazonS3 s3, DatasafeProperties properties) {
+    StorageService singleStorageServiceS3(S3Client s3, DatasafeProperties properties) {
         return new S3StorageService(
             s3,
             properties.getBucketName(),
@@ -217,36 +220,48 @@ public class DatasafeConfig {
 
     @Bean
     @org.springframework.context.annotation.Lazy
-    AmazonS3 s3(DatasafeProperties properties) {
-        AmazonS3 amazonS3;
+    S3Client s3(DatasafeProperties properties) {
+//        AmazonS3 amazonS3;
 
         boolean useEndpoint = properties.getAmazonUrl() != null;
 
-        AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(properties.getAmazonAccessKeyID(), properties.getAmazonSecretAccessKey())
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(
+                properties.getAmazonAccessKeyID(),
+                properties.getAmazonSecretAccessKey()
         );
-
-        AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard()
-                .withCredentials(credentialsProvider);
-
-        if (useEndpoint) {
-            builder = builder.withEndpointConfiguration(
-                    new AwsClientBuilder.EndpointConfiguration(
-                            properties.getAmazonUrl(),
-                            properties.getAmazonRegion())
-            ).enablePathStyleAccess();
-        } else {
-            builder.withRegion(properties.getAmazonRegion());
-        }
-
-        amazonS3 = builder.build();
+        S3Client s3Client = S3Client.builder()  // Create a builder
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .region(Region.of(properties.getAmazonRegion()))
+                .build();
+//
+//        if (useEndpoint) {
+//            s3ClientBuilder.endpointOverride(URI.create(properties.getAmazonUrl()));
+//        }
+//
+//        S3Client s3Client = s3ClientBuilder.build();
+//                .serviceConfiguration(configBuilder.build())
+//                .build();
 
         // used by local deployment in conjunction with minio
-        if (useEndpoint && !amazonS3.doesBucketExistV2(properties.getBucketName())) {
-            amazonS3.createBucket(properties.getBucketName());
+        if (useEndpoint) {
+            try {
+                HeadBucketResponse response = s3Client.headBucket(HeadBucketRequest.builder()
+                        .bucket(properties.getBucketName())
+                        .build());
+
+                if (!response.sdkHttpResponse().isSuccessful()) {
+                    s3Client.createBucket(CreateBucketRequest.builder()
+                            .bucket(properties.getBucketName())
+                            .build());
+                }
+            } catch (Exception e) {
+                s3Client.createBucket(CreateBucketRequest.builder()
+                        .bucket(properties.getBucketName())
+                        .build());
+            }
         }
 
-        return amazonS3;
+        return s3Client;
     }
 
     private static class WithAccessCredentials extends BucketAccessServiceImpl {
