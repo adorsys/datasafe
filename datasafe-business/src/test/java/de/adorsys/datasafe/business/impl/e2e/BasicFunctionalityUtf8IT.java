@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule_ProvideRootBucketFactory.provideRootBucket;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -83,19 +84,21 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
 
     @ParameterizedTest
     @MethodSource("allStorages")
+        // Updated BasicFunctionaltyUT8IT.java
     void readInboxContentWithUnicodeUsingUnicodePath(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
         john = registerUser("john");
         jane = registerUser("jane");
 
-
         String unicodeMessage = "привет мир!";
-        writeDataToInbox(john, jane, " привет/prüfungsdokument=/файл:&? с пробелом.док", unicodeMessage);
+        String filePath = provideRootBucket() + "/привет/prüfungsdokument=/файл:&? с пробелом.док"; // Updated
+
+        writeDataToInbox(john, jane, filePath, unicodeMessage);
 
         String inboxContentJane = readInboxUsingPrivateKey(
                 jane,
-                BasePrivateResource.forPrivate(" привет/prüfungsdokument=/файл:&? с пробелом.док")
+                BasePrivateResource.forPrivate(filePath)
         );
 
         assertThat(inboxContentJane).isEqualTo(unicodeMessage);
@@ -108,22 +111,24 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
 
         registerJohnAndJane();
 
-        writeDataToInbox(john, jane, "prüfungsdokument.doc+doc", MESSAGE_ONE);
-        writeDataToInbox(john, jane, "уровень1/?файл+doc", MESSAGE_ONE);
-        writeDataToInbox(john, jane, "уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
+        String rootBucket = provideRootBucket();
+        writeDataToInbox(john, jane, rootBucket + "/prüfungsdokument.doc+doc", MESSAGE_ONE);
+        writeDataToInbox(john, jane, rootBucket + "/уровень1/?файл+doc", MESSAGE_ONE);
+        writeDataToInbox(john, jane, rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
 
-        assertInboxSpaceList(jane, "", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, "./", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, ".", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "", rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/уровень1/?файл+doc", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./", rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/уровень1/?файл+doc", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, ".", rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/уровень1/?файл+doc", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
 
-        assertInboxSpaceList(jane, "prüfungsdokument.doc+doc", "prüfungsdokument.doc+doc");
-        assertInboxSpaceList(jane, "./prüfungsdokument.doc+doc", "prüfungsdokument.doc+doc");
+        assertInboxSpaceList(jane, rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/prüfungsdokument.doc+doc");
+        assertInboxSpaceList(jane, "./" + rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/prüfungsdokument.doc+doc");
 
-        assertInboxSpaceList(jane, "уровень1/уровень 2=+", "уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, "уровень1/уровень 2=+/", "уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, "./уровень1/уровень 2=+", "уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, "./уровень1/уровень 2=+/", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, rootBucket + "/уровень1/уровень 2=+", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, rootBucket + "/уровень1/уровень 2=+/", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./" + rootBucket + "/уровень1/уровень 2=+", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./" + rootBucket + "/уровень1/уровень 2=+/", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
     }
+
 
     private void init(StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider

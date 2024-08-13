@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import static de.adorsys.datasafe.business.impl.e2e.Const.MESSAGE_ONE;
 import static de.adorsys.datasafe.business.impl.e2e.Const.PRIVATE_FILE_PATH;
 import static de.adorsys.datasafe.business.impl.e2e.Const.SHARED_FILE_PATH;
+import static de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule_ProvideRootBucketFactory.provideRootBucket;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -66,7 +67,9 @@ class BasicFunctionalityWithPasswordChangeIT extends BaseE2EIT {
         UserIDAuth jane = registerUser("jane");
         UserIDAuth jamie = registerUser("jamie");
 
-        String multiShareFile = "multishare.txt";
+        String rootBucket = provideRootBucket(); // Added
+        String multiShareFile = rootBucket + "/multishare.txt"; // Updated
+
         multishareFiles(sender, john, jane, jamie, multiShareFile);
 
         Stream.of(john, jane, jamie).forEach(
@@ -77,6 +80,7 @@ class BasicFunctionalityWithPasswordChangeIT extends BaseE2EIT {
                                 .hasContent(MESSAGE_ONE))
         );
     }
+
 
     @ParameterizedTest
     @MethodSource("allStorages")

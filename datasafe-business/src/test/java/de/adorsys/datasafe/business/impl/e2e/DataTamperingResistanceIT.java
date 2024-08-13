@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
+import static de.adorsys.datasafe.business.impl.inbox.actions.DefaultInboxActionsModule_ProvideRootBucketFactory.provideRootBucket;
 import static org.assertj.core.api.Java6Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -79,11 +80,15 @@ class DataTamperingResistanceIT extends BaseE2EIT {
         }
     }
 
+    // Updated DataTamperingResistanceIT.java
     @Test
     @SneakyThrows
     void testInboxDocumentContentTamperResistance() {
+        String rootBucket = provideRootBucket();
+        String fullFileName = rootBucket + "/" + FILENAME;
+
         try (OutputStream os = writeToInbox.write(
-                WriteInboxRequest.forDefaultPublic(jane, Collections.singleton(john.getUserID()), FILENAME))
+                WriteInboxRequest.forDefaultPublic(jane, Collections.singleton(john.getUserID()), fullFileName))
         ) {
             os.write(FILE_TEXT.getBytes(StandardCharsets.UTF_8));
         }
@@ -91,12 +96,13 @@ class DataTamperingResistanceIT extends BaseE2EIT {
         AbsoluteLocation<ResolvedResource> inboxFile = getFirstFileInInbox(john);
         tamperFileByReplacingOneByteOfEncryptedMessage(inboxFile);
 
-        try (InputStream is = readFromInbox.read(ReadRequest.forDefaultPrivate(john, FILENAME))) {
+        try (InputStream is = readFromInbox.read(ReadRequest.forDefaultPrivate(john, fullFileName))) {
             assertThatThrownBy(
                     () -> ByteStreams.copy(is, ByteStreams.nullOutputStream())
             ).isInstanceOf(InvalidCipherTextIOException.class).hasCauseInstanceOf(AEADBadTagException.class);
         }
     }
+
 
     @ParameterizedTest(name = "{arguments}")
     @ValueSource(strings = {FILENAME, DIR_AND_FILENAME, DIR_DIR_AND_FILENAME})
