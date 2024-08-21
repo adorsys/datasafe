@@ -12,6 +12,7 @@
         <module>datasafe-privatestore</module>
         <module>datasafe-directory</module>
         <module>datasafe-encryption</module>
+        <module>datasafe-encryption-standalone</module>
         <module>datasafe-inbox</module>
         <module>datasafe-storage</module>
         <module>datasafe-rest-impl</module>
@@ -21,6 +22,7 @@
         <module>datasafe-long-run-tests</module>
         <module>datasafe-cli</module>
         <module>last-module-codecoverage-check</module>
+        <module>datasafe-encryption-standalone</module>
     </modules>
 
     <groupId>de.adorsys</groupId>
@@ -342,7 +344,7 @@
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
             </dependency>
-	    </dependencies>
+        </dependencies>
 	</dependencyManagement>
 
     <build>
