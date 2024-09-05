@@ -84,7 +84,7 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
 
     @ParameterizedTest
     @MethodSource("allStorages")
-        // Updated BasicFunctionaltyUT8IT.java
+     //   // Updated BasicFunctionaltyUT8IT.java
     void readInboxContentWithUnicodeUsingUnicodePath(WithStorageProvider.StorageDescriptor descriptor) {
         init(descriptor);
 
@@ -116,17 +116,17 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
         writeDataToInbox(john, jane, rootBucket + "/уровень1/?файл+doc", MESSAGE_ONE);
         writeDataToInbox(john, jane, rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
 
-        assertInboxSpaceList(jane, "", rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/уровень1/?файл+doc", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, "./", rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/уровень1/?файл+doc", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, ".", rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/уровень1/?файл+doc", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "",  "prüfungsdokument.doc+doc",  "уровень1/?файл+doc",  "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./",  "prüfungsdokument.doc+doc",  "уровень1/?файл+doc",  "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, ".",  "prüfungsdokument.doc+doc",  "уровень1/?файл+doc",  "уровень1/уровень 2=+/&файл пробел+плюс");
 
-        assertInboxSpaceList(jane, rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/prüfungsdokument.doc+doc");
-        assertInboxSpaceList(jane, "./" + rootBucket + "/prüfungsdokument.doc+doc", rootBucket + "/prüfungsdokument.doc+doc");
+        assertInboxSpaceList(jane, rootBucket + "/prüfungsdokument.doc+doc",  "prüfungsdokument.doc+doc");
+        assertInboxSpaceList(jane, "./" + rootBucket + "/prüfungsdokument.doc+doc", "prüfungsdokument.doc+doc");
 
-        assertInboxSpaceList(jane, rootBucket + "/уровень1/уровень 2=+", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, rootBucket + "/уровень1/уровень 2=+/", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, "./" + rootBucket + "/уровень1/уровень 2=+", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
-        assertInboxSpaceList(jane, "./" + rootBucket + "/уровень1/уровень 2=+/", rootBucket + "/уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, rootBucket + "/уровень1/уровень 2=+",  "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, rootBucket + "/уровень1/уровень 2=+/",  "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./" + rootBucket + "/уровень1/уровень 2=+", "уровень1/уровень 2=+/&файл пробел+плюс");
+        assertInboxSpaceList(jane, "./" + rootBucket + "/уровень1/уровень 2=+/",  "уровень1/уровень 2=+/&файл пробел+плюс");
     }
 
 

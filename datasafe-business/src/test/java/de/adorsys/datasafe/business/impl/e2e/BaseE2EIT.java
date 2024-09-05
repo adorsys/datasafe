@@ -43,6 +43,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,7 +126,6 @@ public abstract class BaseE2EIT extends WithStorageProvider {
 
             stream.write(data.getBytes(UTF_8));
         }
-        log.info("File {} of user {} saved to {}", Obfuscate.secure(data), auth, Obfuscate.secure(path, "/"));
     }
 
     protected AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth owner) {
@@ -241,15 +241,21 @@ public abstract class BaseE2EIT extends WithStorageProvider {
 
     protected void assertInboxSpaceList(UserIDAuth user, String root, String... expected) {
         List<String> paths;
+        String prefixedRoot = "datasafe-root/" + root;
+
         try (Stream<AbsoluteLocation<ResolvedResource>> ls =
-                 listInbox.list(ListRequest.forDefaultPrivate(user, root))
+                     listInbox.list(ListRequest.forDefaultPrivate(user, prefixedRoot))
         ) {
             paths = ls
-                .map(it -> it.getResource().asPrivate().decryptedPath().asString())
-                .collect(Collectors.toList());
+                    .map(it -> it.getResource().asPrivate().decryptedPath().asString())
+                    .collect(Collectors.toList());
         }
 
-        assertThat(paths).containsExactlyInAnyOrder(expected);
+        String[] prefixedExpected = Arrays.stream(expected)
+                .map(path -> "datasafe-root/" + path)
+                .toArray(String[]::new);
+
+        assertThat(paths).containsExactlyInAnyOrder(prefixedExpected);
     }
 
     @SneakyThrows
