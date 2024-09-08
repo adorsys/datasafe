@@ -120,7 +120,8 @@ public abstract class BaseE2EIT extends WithStorageProvider {
 
     @SneakyThrows
     protected void writeDataToInbox(UserIDAuth owner, UserIDAuth auth, String path, String data) {
-        String fullPath = "datasafe-root/" + path;
+        String trimmedPath = path.trim();
+        String fullPath = "datasafe-root/" + trimmedPath;
         try (OutputStream stream = writeToInbox.write(
                 WriteInboxRequest.forDefaultPublic(owner, Collections.singleton(auth.getUserID()), fullPath)
         )) {

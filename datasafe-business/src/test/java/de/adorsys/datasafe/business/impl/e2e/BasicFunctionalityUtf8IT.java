@@ -90,11 +90,12 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
         jane = registerUser("jane");
 
         String unicodeMessage = "привет мир!";
-        writeDataToInbox(john, jane, " привет/prüfungsdokument=/файл:&? с пробелом.док", unicodeMessage);
+        String path = " привет/prüfungsdokument=/файл:&? с пробелом.док";
+        writeDataToInbox(john, jane, path, unicodeMessage);
 
         String inboxContentJane = readInboxUsingPrivateKey(
                 jane,
-                BasePrivateResource.forPrivate(" привет/prüfungsdokument=/файл:&? с пробелом.док")
+                BasePrivateResource.forPrivate("datasafe-root/" + path.trim())
         );
 
         assertThat(inboxContentJane).isEqualTo(unicodeMessage);
