@@ -3,49 +3,41 @@ package de.adorsys;
 import de.adorsys.config.Properties;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
-import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.CmsEncryptionConfig;
-import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
-import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadService;
-import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteService;
-import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
-import de.adorsys.datasafe.types.api.actions.ReadRequest;
-import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.*;
-import de.adorsys.datasafe.types.api.resource.WithCallback;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.io.File;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 @Component
 public class DocumentEncryption {
 
-    private EncryptedDocumentWriteService writer;
-
     private EncryptedDocumentReadService reader;
+    private EncryptedDocumentWriteService writer;
     private Properties properties;
-    public DocumentEncryption() {
+
+
+//    CMSDocumentWriteService write = new CMSDocumentWriteService();
+
+    public DocumentEncryption(Properties properties, EncryptedDocumentWriteService writer, EncryptedDocumentReadService reader) {
+        this.properties = properties;
+        this.writer = writer;
+        this.reader = reader;
     }
 
-    public OutputStream write( String password, SecretKey secretKey) {
-
-        SecretKeyIDWithKey secretKeyIDWithKey = new SecretKeyIDWithKey (new KeyID(password), secretKey);
-        Uri location = new Uri(properties.getSystemRoot() + "/EncryptedDocuments");
+    @SneakyThrows
+    public void write(SecretKeyIDWithKey secretKey, String filename) {
+        Uri location = new Uri(properties.getSystemRoot());
         PrivateResource privateResource = new BasePrivateResource(location);
         AbsoluteLocation<PrivateResource> absoluteLocation = new AbsoluteLocation<>(privateResource);
 
-        List<ResourceWriteCallback> callback = null;
-
-        return writer.write(WithCallback.<AbsoluteLocation<PrivateResource>, ResourceWriteCallback>builder()
-                .wrapped(absoluteLocation).callbacks(callback).build(), secretKeyIDWithKey);
+        try (OutputStream outputStream = writer.write(WithCallback.noCallback(absoluteLocation), secretKey)) {
+            outputStream.write(Files.readAllBytes(Paths.get(properties.getSystemRoot() + "/" + filename)));
+        }
     }
 
 //    public InputStream read( String password, SecretKey secretKey) {
