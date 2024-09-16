@@ -86,6 +86,7 @@ public class DatasafeFactory {
                                 acc.getAccessKey(),
                                 acc.getSecretKey()
                         ),
+                        acc.getRegion(),
                         // Bucket name is encoded in first path segment
                         acc.getBucketName(),
                         ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
@@ -134,6 +135,7 @@ public class DatasafeFactory {
 
         return new S3StorageService(
                 amazons3,
+                region,
                 bucket,
                 ExecutorServiceUtil
                         .submitterExecutesOnStarvationExecutingService(

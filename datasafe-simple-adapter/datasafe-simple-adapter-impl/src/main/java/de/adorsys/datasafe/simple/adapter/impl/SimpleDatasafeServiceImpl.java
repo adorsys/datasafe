@@ -298,6 +298,7 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
         }
         StorageService storageService = new S3StorageService(
                 amazons3,
+                amazonS3DFSCredentials.getRegion(),
                 amazonS3DFSCredentials.getContainer(),
                 ExecutorServiceUtil
                         .submitterExecutesOnStarvationExecutingService(
