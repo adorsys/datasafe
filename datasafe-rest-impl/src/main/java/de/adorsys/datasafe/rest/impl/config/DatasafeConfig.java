@@ -132,6 +132,7 @@ public class DatasafeConfig {
         ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
         S3StorageService basicStorage = new S3StorageService(
             s3,
+            properties.getAmazonRegion(),
             properties.getBucketName(),
             executorService
         );
@@ -185,6 +186,7 @@ public class DatasafeConfig {
     StorageService singleStorageServiceS3(AmazonS3 s3, DatasafeProperties properties) {
         return new S3StorageService(
             s3,
+            properties.getAmazonRegion(),
             properties.getBucketName(),
             ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
@@ -203,7 +205,7 @@ public class DatasafeConfig {
             )
         );
 
-        S3StorageService s3StorageService = new S3StorageService(s3(properties), properties.getBucketName(),
+        S3StorageService s3StorageService = new S3StorageService(s3(properties), properties.getAmazonRegion(), properties.getBucketName(),
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
 

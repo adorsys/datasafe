@@ -121,6 +121,7 @@ class BaseUserOperationsWithDefaultDatasafeOnVersionedStorageIT{
                 .config(new DefaultDFSConfig(cephMappedUrl, "secret"::toCharArray))
                 .storage(new S3StorageService(
                         cephS3,
+                        "",
                         VERSIONED_BUCKET_NAME,
                         ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()))
                 .build();

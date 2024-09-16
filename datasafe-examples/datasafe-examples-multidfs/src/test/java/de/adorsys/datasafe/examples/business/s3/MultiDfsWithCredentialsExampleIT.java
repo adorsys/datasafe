@@ -108,6 +108,7 @@ class MultiDfsWithCredentialsExampleIT{
         StorageService directoryStorage = new S3StorageService(
                 directoryClient,
                 DIRECTORY_BUCKET.getBucketName(),
+                REGION,
                 EXECUTOR
         );
 
@@ -137,6 +138,7 @@ class MultiDfsWithCredentialsExampleIT{
                                                 ),
                                                 // Bucket name is encoded in first path segment
                                                 acc.getBucketName(),
+                                                acc.getRegion(),
                                                 EXECUTOR
                                             )
                                     )

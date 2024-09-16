@@ -8,6 +8,7 @@ import java.util.function.UnaryOperator;
 @RequiredArgsConstructor
 public class StaticBucketRouter implements BucketRouter {
 
+    private final String region;
     private final String bucketName;
 
     @Override
@@ -20,10 +21,11 @@ public class StaticBucketRouter implements BucketRouter {
         UnaryOperator<String> trimStartingSlash = str -> str.replaceFirst("^/", "");
 
         String resourcePath = trimStartingSlash.apply(resource.location().getRawPath());
-        if (bucketName == null || "".equals(bucketName) || !resourcePath.contains(bucketName)) {
+        String bucketNameWithRegion = region + "/" + bucketName;
+        if (bucketName == null || "".equals(bucketName) || !resourcePath.startsWith(bucketNameWithRegion)) {
             return resourcePath;
         }
 
-        return trimStartingSlash.apply(resourcePath.substring(resourcePath.indexOf(bucketName) + bucketName.length()));
+        return trimStartingSlash.apply(resourcePath.substring(resourcePath.indexOf(bucketNameWithRegion) + bucketNameWithRegion.length()));
     }
 }

@@ -82,6 +82,7 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     void init() {
         this.storageService = new S3StorageService(
                 s3,
+                "eu-central-1",
                 bucketName,
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );

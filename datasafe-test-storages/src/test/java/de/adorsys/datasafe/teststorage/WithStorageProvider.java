@@ -235,7 +235,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             StorageDescriptorName.MINIO,
             () -> {
                 minioStorage.get();
-                return new S3StorageService(minio, primaryBucket, EXECUTOR_SERVICE);
+                return new S3StorageService(minio, minioRegion, primaryBucket, EXECUTOR_SERVICE);
             },
             new Uri("s3://" + primaryBucket + "/" + bucketPath + "/"),
             minioAccessKeyID,
@@ -254,7 +254,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             StorageDescriptorName.CEPH,
             () -> {
                 cephStorage.get();
-                return new S3StorageService(ceph, primaryBucket, EXECUTOR_SERVICE);
+                return new S3StorageService(ceph, cephRegion, primaryBucket, EXECUTOR_SERVICE);
             },
             new Uri("s3://" + primaryBucket + "/" + bucketPath + "/"),
             cephAccessKeyID,
@@ -275,10 +275,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     protected static Function<String, StorageService> storageServiceByBucket() {
         if (null == amazonS3) {
-            return bucketName -> new S3StorageService(minio, bucketName, EXECUTOR_SERVICE);
+            return bucketName -> new S3StorageService(minio, amazonRegion, bucketName, EXECUTOR_SERVICE);
         }
 
-        return bucketName -> new S3StorageService(amazonS3, bucketName, EXECUTOR_SERVICE);
+        return bucketName -> new S3StorageService(amazonS3, amazonRegion, bucketName, EXECUTOR_SERVICE);
     }
 
     protected static StorageDescriptor s3() {
@@ -290,7 +290,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             StorageDescriptorName.AMAZON,
             () -> {
                 amazonStorage.get();
-                return new S3StorageService(amazonS3, primaryBucket, EXECUTOR_SERVICE);
+                return new S3StorageService(amazonS3, amazonRegion, primaryBucket, EXECUTOR_SERVICE);
             },
             new Uri("s3://" + primaryBucket + "/" + bucketPath + "/"),
             amazonAccessKeyID,
