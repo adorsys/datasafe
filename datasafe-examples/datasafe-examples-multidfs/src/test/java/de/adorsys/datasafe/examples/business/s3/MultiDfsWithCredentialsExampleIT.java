@@ -105,8 +105,8 @@ class MultiDfsWithCredentialsExampleIT {
         // static client that will be used to access `directory` bucket:
         StorageService directoryStorage = new S3StorageService(
                 directoryClient,
-                DIRECTORY_BUCKET.getBucketName(),
                 REGION,
+                DIRECTORY_BUCKET.getBucketName(),
                 EXECUTOR
         );
 
@@ -134,9 +134,9 @@ class MultiDfsWithCredentialsExampleIT {
                                                                         acc.getAccessKey(),
                                                                         acc.getSecretKey()
                                                                 ),
+                                                                acc.getRegion(),
                                                                 // Bucket name is encoded in first path segment
                                                                 acc.getBucketName(),
-                                                                acc.getRegion(),
                                                                 EXECUTOR
                                                         )
                                                 )
