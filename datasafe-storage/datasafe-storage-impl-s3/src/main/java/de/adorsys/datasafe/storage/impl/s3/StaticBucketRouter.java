@@ -20,10 +20,10 @@ public class StaticBucketRouter implements BucketRouter {
         UnaryOperator<String> trimStartingSlash = str -> str.replaceFirst("^/", "");
 
         String resourcePath = trimStartingSlash.apply(resource.location().getRawPath());
-        if (bucketName == null || "".equals(bucketName) || !resourcePath.contains(bucketName)) {
+        if (bucketName == null || "".equals(bucketName) || !resourcePath.startsWith(bucketName)) {
             return resourcePath;
         }
 
-        return trimStartingSlash.apply(resourcePath.substring(resourcePath.indexOf(bucketName) + bucketName.length()));
+        return trimStartingSlash.apply(resourcePath.substring(bucketName.length()));
     }
 }
