@@ -89,13 +89,13 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
         john = registerUser("john");
         jane = registerUser("jane");
 
+
         String unicodeMessage = "привет мир!";
-        String path = " привет/prüfungsdokument=/файл:&? с пробелом.док";
-        writeDataToInbox(john, jane, path, unicodeMessage);
+        writeDataToInbox(john, jane, " привет/prüfungsdokument=/файл:&? с пробелом.док", unicodeMessage);
 
         String inboxContentJane = readInboxUsingPrivateKey(
                 jane,
-                BasePrivateResource.forPrivate("datasafe-root/" + path.trim())
+                BasePrivateResource.forPrivate(" привет/prüfungsdokument=/файл:&? с пробелом.док")
         );
 
         assertThat(inboxContentJane).isEqualTo(unicodeMessage);
@@ -108,10 +108,9 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
 
         registerJohnAndJane();
 
-        //String rootBucket = provideRootBucket();
-        writeDataToInbox(john, jane,  "/prüfungsdokument.doc+doc", MESSAGE_ONE);
-        writeDataToInbox(john, jane,  "/уровень1/?файл+doc", MESSAGE_ONE);
-        writeDataToInbox(john, jane,  "/уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "prüfungsdokument.doc+doc", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "уровень1/?файл+doc", MESSAGE_ONE);
+        writeDataToInbox(john, jane, "уровень1/уровень 2=+/&файл пробел+плюс", MESSAGE_ONE);
 
         assertInboxSpaceList(jane, "", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
         assertInboxSpaceList(jane, "./", "prüfungsdokument.doc+doc", "уровень1/?файл+doc", "уровень1/уровень 2=+/&файл пробел+плюс");
@@ -125,7 +124,6 @@ class BasicFunctionalityUtf8IT extends BaseE2EIT {
         assertInboxSpaceList(jane, "./уровень1/уровень 2=+", "уровень1/уровень 2=+/&файл пробел+плюс");
         assertInboxSpaceList(jane, "./уровень1/уровень 2=+/", "уровень1/уровень 2=+/&файл пробел+плюс");
     }
-
 
     private void init(StorageDescriptor descriptor) {
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider

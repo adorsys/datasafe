@@ -69,6 +69,8 @@ public interface DefaultDatasafeServices {
         @BindsInstance
         Builder config(DFSConfig config);
 
+        @BindsInstance
+        Builder rootBucket( String rootBucket);
         /**
          * Binds (configures) all storage operations - not necessary to call {@code storageList} after.
          */

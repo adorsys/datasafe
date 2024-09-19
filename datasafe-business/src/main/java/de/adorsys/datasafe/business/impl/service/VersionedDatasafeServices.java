@@ -90,6 +90,8 @@ public interface VersionedDatasafeServices {
         @BindsInstance
         Builder storage(StorageService storageService);
 
+        @BindsInstance
+        Builder rootBucket( String rootBucket);
         /**
          * Provides class overriding functionality, so that you can disable i.e. path encryption
          * @param overridesRegistry Map with class-overrides (note: you can override classes that are

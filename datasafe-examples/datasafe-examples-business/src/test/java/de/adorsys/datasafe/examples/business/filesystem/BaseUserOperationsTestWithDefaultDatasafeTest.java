@@ -136,7 +136,7 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
         }
         // END_SNIPPET
 
-        assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(jane, "datasafe-root/hello.txt")))
+        assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(jane, "hello.txt")))
                 .hasContent("Hello Jane");
     }
 
@@ -162,9 +162,9 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
         }
         // END_SNIPPET
 
-        assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(jane, "datasafe-root/hello.txt")))
+        assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(jane, "hello.txt")))
                 .hasContent("Hello Jane and Jamie");
-        assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(jamie, "datasafe-root/hello.txt")))
+        assertThat(defaultDatasafeServices.inboxService().read(ReadRequest.forDefaultPrivate(jamie, "hello.txt")))
                 .hasContent("Hello Jane and Jamie");
     }
 
@@ -230,18 +230,18 @@ class BaseUserOperationsTestWithDefaultDatasafeTest {
         assertThat(johnsInboxFilesInRoot)
                 .extracting(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
                 .containsExactlyInAnyOrder(
-                        "datasafe-root/home/my/secret.txt",
-                        "datasafe-root/home/watch/films.txt"
+                        "home/my/secret.txt",
+                        "home/watch/films.txt"
                 );
 
         // Now let's list John's home/watch:
         List<AbsoluteLocation<ResolvedResource>> johnsInboxFilesInWatch = defaultDatasafeServices.inboxService()
-                .list(ListRequest.forDefaultPrivate(user, "datasafe-root/home/watch")).collect(Collectors.toList());
+                .list(ListRequest.forDefaultPrivate(user, "home/watch")).collect(Collectors.toList());
         // same files we created
         assertThat(johnsInboxFilesInWatch)
                 .extracting(it -> it.getResource().asPrivate().decryptedPath().toASCIIString())
                 .containsExactly(
-                        "datasafe-root/home/watch/films.txt"
+                        "home/watch/films.txt"
                 );
         // END_SNIPPET
     }

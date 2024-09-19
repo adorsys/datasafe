@@ -203,11 +203,12 @@ class BasicFunctionalityIT extends BaseE2EIT {
         init(descriptor);
 
         UserIDAuth owner = registerUser("owner");
+
         UserIDAuth john = registerUser("john");
         UserIDAuth jane = registerUser("jane");
         UserIDAuth jamie = registerUser("jamie");
 
-        String multiShareFile = "datasafe-root/multishare.txt"; // Corrected path with prefix
+        String multiShareFile = "multishare.txt";
         try (OutputStream os = writeToInbox.write(WriteInboxRequest.forDefaultPublic(
                 owner,
                 ImmutableSet.of(john.getUserID(), jane.getUserID(), jamie.getUserID()),
@@ -228,11 +229,12 @@ class BasicFunctionalityIT extends BaseE2EIT {
         init(descriptor);
 
         UserIDAuth owner = registerUser("owner");
+
         UserIDAuth john = registerUser("john");
         UserIDAuth jane = registerUser("jane");
         UserIDAuth jamie = registerUser("jamie");
 
-        String multiShareFile = "datasafe-root/multishare.txt"; // Corrected path with prefix
+        String multiShareFile = "multishare.txt";
         byte[] bytes = new byte[LARGE_SIZE];
         ThreadLocalRandom.current().nextBytes(bytes);
         try (OutputStream os = writeToInbox.write(WriteInboxRequest.forDefaultPublic(

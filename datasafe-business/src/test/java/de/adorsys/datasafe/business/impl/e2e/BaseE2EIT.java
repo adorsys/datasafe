@@ -43,7 +43,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -120,18 +119,13 @@ public abstract class BaseE2EIT extends WithStorageProvider {
 
     @SneakyThrows
     protected void writeDataToInbox(UserIDAuth owner, UserIDAuth auth, String path, String data) {
-        String trimmedPath = path.trim();
-        String fullPath = "datasafe-root/" + trimmedPath;
         try (OutputStream stream = writeToInbox.write(
-                WriteInboxRequest.forDefaultPublic(owner, Collections.singleton(auth.getUserID()), fullPath)
+                WriteInboxRequest.forDefaultPublic(owner, Collections.singleton(auth.getUserID()), path)
         )) {
-            log.info("Writing data '{}' to path '{}' for user '{}'", data, fullPath, auth.getUserID());
+
             stream.write(data.getBytes(UTF_8));
-            log.info("File {} of user {} saved to {}", Obfuscate.secure(data), auth, Obfuscate.secure(fullPath, "/"));
-        } catch (Exception e) {
-            log.error("Failed to write data to inbox: {}", e.getMessage());
-            throw e;
         }
+        log.info("File {} of user {} saved to {}", Obfuscate.secure(data), auth, Obfuscate.secure(path, "/"));
     }
 
     protected AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth owner) {
@@ -140,7 +134,7 @@ public abstract class BaseE2EIT extends WithStorageProvider {
 
     protected List<AbsoluteLocation<ResolvedResource>> getAllFilesInPrivate(UserIDAuth owner) {
         try (Stream<AbsoluteLocation<ResolvedResource>> ls = listPrivate.list(
-            ListRequest.forDefaultPrivate(owner, "./")
+                ListRequest.forDefaultPrivate(owner, "./")
         )) {
             List<AbsoluteLocation<ResolvedResource>> files = ls.collect(Collectors.toList());
             log.info("{} has {} in PRIVATE", owner.getUserID(), files);
@@ -184,7 +178,7 @@ public abstract class BaseE2EIT extends WithStorageProvider {
 
     protected List<AbsoluteLocation<ResolvedResource>> getAllFilesInInbox(UserIDAuth inboxOwner) {
         try (Stream<AbsoluteLocation<ResolvedResource>> ls = listInbox.list(
-            ListRequest.forDefaultPrivate(inboxOwner, "./")
+                ListRequest.forDefaultPrivate(inboxOwner, "./")
         )) {
             List<AbsoluteLocation<ResolvedResource>> files = ls.collect(Collectors.toList());
             log.info("{} has {} in INBOX", inboxOwner, files);
@@ -200,7 +194,7 @@ public abstract class BaseE2EIT extends WithStorageProvider {
     @SneakyThrows
     protected void sendToInbox(UserIDAuth from, UserID to, String filename, String data) {
         try (OutputStream stream = writeToInbox.write(
-            WriteInboxRequest.forDefaultPublic(from, Collections.singleton(to), "./" + filename)
+                WriteInboxRequest.forDefaultPublic(from, Collections.singleton(to), "./" + filename)
         )) {
             stream.write(data.getBytes());
         }
@@ -235,11 +229,11 @@ public abstract class BaseE2EIT extends WithStorageProvider {
     protected void assertPrivateSpaceList(UserIDAuth user, String root, String... expected) {
         List<String> paths;
         try (Stream<AbsoluteLocation<ResolvedResource>> ls =
-                 listPrivate.list(ListRequest.forDefaultPrivate(user, root))
+                     listPrivate.list(ListRequest.forDefaultPrivate(user, root))
         ) {
             paths = ls
-                .map(it -> it.getResource().asPrivate().decryptedPath().asString())
-                .collect(Collectors.toList());
+                    .map(it -> it.getResource().asPrivate().decryptedPath().asString())
+                    .collect(Collectors.toList());
         }
 
         assertThat(paths).containsExactlyInAnyOrder(expected);
@@ -247,28 +241,22 @@ public abstract class BaseE2EIT extends WithStorageProvider {
 
     protected void assertInboxSpaceList(UserIDAuth user, String root, String... expected) {
         List<String> paths;
-        String prefixedRoot = "datasafe-root/" + root;
-
         try (Stream<AbsoluteLocation<ResolvedResource>> ls =
-                     listInbox.list(ListRequest.forDefaultPrivate(user, prefixedRoot))
+                     listInbox.list(ListRequest.forDefaultPrivate(user, root))
         ) {
             paths = ls
                     .map(it -> it.getResource().asPrivate().decryptedPath().asString())
                     .collect(Collectors.toList());
         }
 
-        String[] prefixedExpected = Arrays.stream(expected)
-                .map(path -> "datasafe-root/" + path)
-                .toArray(String[]::new);
-
-        assertThat(paths).containsExactlyInAnyOrder(prefixedExpected);
+        assertThat(paths).containsExactlyInAnyOrder(expected);
     }
 
     @SneakyThrows
     protected void assertRootDirIsEmpty(WithStorageProvider.StorageDescriptor descriptor) {
         try (Stream<AbsoluteLocation<ResolvedResource>> ls = descriptor.getStorageService().get()
-            .list(
-                new AbsoluteLocation<>(BasePrivateResource.forPrivate(descriptor.getLocation())))
+                .list(
+                        new AbsoluteLocation<>(BasePrivateResource.forPrivate(descriptor.getLocation())))
         ) {
             assertThat(ls).isEmpty();
         }
@@ -279,17 +267,17 @@ public abstract class BaseE2EIT extends WithStorageProvider {
             // however we can't remove anything above
             try (Stream<Path> files = Files.walk(Paths.get(descriptor.getLocation().asURI()))) {
                 assertThat(files)
-                    .allMatch(it -> it.toFile().isDirectory())
-                    .extracting(Path::toUri)
-                    .extracting(it -> descriptor.getLocation().asURI().relativize(it))
-                    .extracting(URI::toString)
-                    .containsExactlyInAnyOrder(
-                        "",
-                        "users/",
-                        "profiles/",
-                        "profiles/public/",
-                        "profiles/private/"
-                    );
+                        .allMatch(it -> it.toFile().isDirectory())
+                        .extracting(Path::toUri)
+                        .extracting(it -> descriptor.getLocation().asURI().relativize(it))
+                        .extracting(URI::toString)
+                        .containsExactlyInAnyOrder(
+                                "",
+                                "users/",
+                                "profiles/",
+                                "profiles/public/",
+                                "profiles/private/"
+                        );
             }
         }
     }

@@ -35,7 +35,6 @@ public abstract class DefaultInboxActionsModule {
     /**
      * By default, writes file into users' INBOX using his public key (no privatespace access required).
      */
-
     @Binds
     abstract WriteToInbox writeInbox(WriteToInboxImplRuntimeDelegatable impl);
 
