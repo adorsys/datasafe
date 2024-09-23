@@ -1,48 +1,52 @@
 package de.adorsys;
 
+import de.adorsys.config.Config;
 import de.adorsys.config.Properties;
-import de.adorsys.datasafe.encrypiton.api.cmsencryption.CMSEncryptionService;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.PublicKeyIDWithPublicKey;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
+import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentReadService;
 import de.adorsys.datasafe.encrypiton.impl.document.CMSDocumentWriteService;
-import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
+import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Interface {
     private final Properties properties = new Properties();
-    DocumentEncryption documentEncryptor;
-    KeyStoreOper keyStoreOper;
+    private EncryptionServices.EncryptionServicesImpl encryptionServices;
+    private DocumentEncryption documentEncryption;
+    private KeyStoreOper keyStoreOper;
+    private Config config;
     Scanner scanner = new Scanner(System.in);
-    private boolean running = true;
+    private boolean running;
     private String readKeyPassword;
     private String readStorePassword;
-    private StorageWriteService writeService;
-    private CMSEncryptionService cms;
-    private CMSDocumentWriteService cmsDocumentWriteService;
+
 
     public Interface() {
     }
 
     public void start() throws KeyStoreException {
-//        writeService = context.getBean(StorageService.class);
-//        cmsDocumentWriteService = new CMSDocumentWriteService(writeService, cms);
+        running = true;
+        System.out.println("Encryption Application");
+        System.out.println("Enter storage path where you have stored txt files to be encrypted");
+        Path storagePath = Paths.get(scanner.nextLine());
+        System.out.print("Enter a password for the KeyStoreOper: ");
+        readStorePassword = scanner.nextLine();
+        System.out.print("Enter a password to read keys from the KeyStoreOper ");
+        readKeyPassword = scanner.nextLine();
+
+        encryptionServices = Config.encryptionServices(storagePath,new ReadStorePassword(readStorePassword));
+        documentEncryption = encryptionServices.documentEncryption();
+        keyStoreOper = encryptionServices.keyStoreOper();
 
         while (running) {
-
-            System.out.println("Encryption Application");
-            System.out.println("Enter storage path where you have stored txt files to be encrypted");
-//            properties.setSystemRoot(scanner.nextLine());
-            System.out.print("Enter a password for the KeyStoreOper: ");
-            readStorePassword = scanner.nextLine();
-            System.out.print("Enter a password to read keys from the KeyStoreOper ");
-            readKeyPassword = scanner.nextLine();
-
             System.out.println("Creating keyStoreOper and keys....");
-            keyStoreOper = new KeyStoreOper(properties);
             keyStoreOper.createKeyStore(readStorePassword, readKeyPassword);
 
             System.out.println("Choose an option:");
@@ -70,18 +74,15 @@ public class Interface {
                 break;
             case 3:
 //                System.out.println("Enable Path Encryption? Yes/No");
-//                if (Objects.equals(scanner.nextLine(), "Yes")) {
+//                String encryptionEnabled = scanner.nextLine();
+//                if (Objects.equals(encryptionEnabled, "Yes")) {
 //                    properties.setPathEncryptionEnabled(true);
 //                } else {
 //                    properties.setPathEncryptionEnabled(false);
 //                }
-//                CMSDocumentWriteService = new CMSDocumentWriteService(writeService, cms);
-//                documentEncryptor = new DocumentEncryption(properties, writerService, readerService);
-                SecretKeyIDWithKey secretKey = keyStoreOper.getSecretKey();
-
                 System.out.println("Please enter file name to be encrypted");
                 String filename = scanner.nextLine();
-                documentEncryptor.write(secretKey, "Input.txt");
+                documentEncryption.write(keyStoreOper.getSecretKey(), filename);
                 break;
             case 4:
                 // Decrypt document
