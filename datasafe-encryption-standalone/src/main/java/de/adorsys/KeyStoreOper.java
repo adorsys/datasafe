@@ -37,8 +37,7 @@ public class KeyStoreOper {
 
     private ReadKeyPassword readKeyPassword;
 
-    public KeyStoreOper(Properties properties) {
-        this.properties = properties;
+    public KeyStoreOper() {
     }
 
     public void createKeyStore(String readStorePass, String readKeyPass) {

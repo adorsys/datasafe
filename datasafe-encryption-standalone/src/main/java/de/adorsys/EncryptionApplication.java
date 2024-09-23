@@ -1,20 +1,13 @@
 package de.adorsys;
 
-import lombok.SneakyThrows;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.security.KeyStoreException;
 
 @SpringBootApplication()
-public class EncryptionApplication implements CommandLineRunner {
-    public static void main(String[] args) {
-        SpringApplication.run(EncryptionApplication.class, args);
-    }
-
-    @SneakyThrows
-    @Override
-    public void run(String... args) {
+public class EncryptionApplication {
+    public static void main(String[] args) throws KeyStoreException {
         Interface application = new Interface();
         application.start();
     }
+
 }
