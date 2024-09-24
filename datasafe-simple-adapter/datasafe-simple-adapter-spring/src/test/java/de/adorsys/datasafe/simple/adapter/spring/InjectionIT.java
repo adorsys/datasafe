@@ -103,7 +103,7 @@ public class InjectionIT extends WithStorageProvider {
         }
         if (dfsCredentials instanceof AmazonS3DFSCredentials) {
             AmazonS3DFSCredentials a = (AmazonS3DFSCredentials) dfsCredentials;
-            return new AbsoluteLocation<>(BasePrivateResource.forPrivate(new URI(a.getUrl() + "/" + a.getRootBucket())));
+            return new AbsoluteLocation<>(BasePrivateResource.forPrivate(new URI(a.getUrl() + "/" + a.getRegion() + "/" + a.getRootBucket())));
         }
         throw new TestException("NYI");
     }
