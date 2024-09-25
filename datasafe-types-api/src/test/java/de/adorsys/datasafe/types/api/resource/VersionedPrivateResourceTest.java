@@ -16,7 +16,8 @@ class VersionedPrivateResourceTest extends BaseMockitoTest {
             .forAbsolutePrivate("file://some/path/").getResource();
 
     private VersionedPrivateResource<Version> tested = new VersionedPrivateResource<>(resource, version);
-    private VersionedPrivateResource<Version> absoluteTested = new VersionedPrivateResource<>(absoluteResource, version);
+    private VersionedPrivateResource<Version> absoluteTested = new VersionedPrivateResource<>(absoluteResource,
+            version);
 
     @Test
     void encryptedPath() {
@@ -25,7 +26,7 @@ class VersionedPrivateResourceTest extends BaseMockitoTest {
 
     @Test
     void decryptedPath() {
-        assertThat(tested.decryptedPath().asString()).isEqualTo("");
+        assertThat(tested.decryptedPath().asString()).isEmpty();
     }
 
     @Test

@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * <li>SECURE_SENSITIVE=off,0,false AND SECURE_LOGS=off,0,false - passwords are not obscured in logs</li>
  * <li>SECURE_SENSITIVE=hash - first 4 chars of SHA-256 hashed value is logged</li>
  * <li>all other values yield string with stars</li>
- * <ul>
+ * </ul>
  */
 @UtilityClass
 public class Obfuscate {
@@ -34,9 +34,10 @@ public class Obfuscate {
 
     /**
      * By default, protects moderately sensitive data, but preserves delimiters in it.
+     *
      * @param value String with delimiters to obfuscate
-     * @param delim Delimiters to split on and preserve
-     * I.e. a/b/c with {@code delim} equal to "/" will create sha(a)/sha(b)/sha(c)
+     * @param delim Delimiters to split on and preserve.
+     *              I.e. a/b/c with {@code delim} equal to "/" will create sha(a)/sha(b)/sha(c)
      */
     public static String secure(String value, String delim) {
         if (null == value) {
@@ -50,6 +51,7 @@ public class Obfuscate {
 
     /**
      * By default, protects moderately sensitive data, but allows to log it using SECURE_LOGS property.
+     *
      * @param value Its toString() result will get encrypted.
      * @return Secured string value that is safe to log.
      */
@@ -78,10 +80,10 @@ public class Obfuscate {
      * because is call sometimes with null and thus can not
      * be clearly assigned.
      *
-     * By default, protects highly sensitive data, but allows to log it using SECURE_SENSITIVE property.
+     * <p>By default, protects highly sensitive data, but allows to log it using SECURE_SENSITIVE property.
+     *
      * @param value Its toString() result will get encrypted.
      * @return Secured string value that is safe to log.
-     *
      */
     public static String secureSensitiveChar(char[] value) {
         if (value == null) {
@@ -101,6 +103,7 @@ public class Obfuscate {
 
     /**
      * By default, protects highly sensitive data, but allows to log it using SECURE_SENSITIVE property.
+     *
      * @param value Its toString() result will get encrypted.
      * @return Secured string value that is safe to log.
      */
@@ -136,9 +139,9 @@ public class Obfuscate {
     }
 
     private static boolean isDisabled(String value) {
-        return "0".equals(value)
-                || "false".equalsIgnoreCase(value)
-                || "off".equalsIgnoreCase(value);
+        return "0".equals(value) ||
+                "false".equalsIgnoreCase(value) ||
+                "off".equalsIgnoreCase(value);
     }
 
     @SneakyThrows
