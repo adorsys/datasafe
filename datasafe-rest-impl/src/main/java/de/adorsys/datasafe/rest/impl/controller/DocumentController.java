@@ -1,5 +1,8 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.encrypiton.api.types.UserID;
@@ -14,6 +17,10 @@ import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +33,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Optional;
-
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * User private space REST api.
@@ -63,7 +61,7 @@ public class DocumentController {
 
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         ReadRequest<UserIDAuth, PrivateResource> request =
-            ReadRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
+                ReadRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         // this is needed for swagger, produces is just a directive:
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
 
@@ -93,7 +91,7 @@ public class DocumentController {
         WriteRequest<UserIDAuth, PrivateResource> request =
                 WriteRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         try (OutputStream os = datasafeService.privateService().write(request);
-             InputStream is = file.getInputStream()) {
+                InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
         }
         log.debug("User: {}, write private file to: {}", user, path);
@@ -119,7 +117,7 @@ public class DocumentController {
 
         try {
             List<String> documentList = datasafeService.privateService().list(
-                ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
+                            ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
                     .map(e -> e.getResource().asPrivate().decryptedPath().asString())
                     .toList();
             log.debug("List for path {} returned {} items", path, documentList.size());
@@ -145,7 +143,7 @@ public class DocumentController {
 
         UserIDAuth userIDAuth = new UserIDAuth(new UserID(user), ReadKeyPasswordHelper.getForString(password));
         RemoveRequest<UserIDAuth, PrivateResource> request =
-            RemoveRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
+                RemoveRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         datasafeService.privateService().remove(request);
         log.debug("User: {}, delete private file: {}", user, path);
     }

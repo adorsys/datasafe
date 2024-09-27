@@ -29,9 +29,9 @@ public class RemoveFromPrivateImpl implements RemoveFromPrivate {
     public void remove(RemoveRequest<UserIDAuth, PrivateResource> request) {
         // Access check is implicit - on keystore access in EncryptedResourceResolver
         remover.remove(resolver.encryptAndResolvePath(
-            request.getOwner(),
-            request.getLocation(),
-            request.getStorageIdentifier())
+                request.getOwner(),
+                request.getLocation(),
+                request.getStorageIdentifier())
         );
         request.getOwner().getReadKeyPassword().clear();
     }

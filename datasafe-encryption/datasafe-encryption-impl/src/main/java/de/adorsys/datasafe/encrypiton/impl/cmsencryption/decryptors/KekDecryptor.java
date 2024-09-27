@@ -28,7 +28,7 @@ class KekDecryptor extends Decryptor {
     @Override
     @SneakyThrows
     public InputStream decryptionStream(Key key) {
-         return recipientInfo
+        return recipientInfo
                  .getContentStream(new JceKEKEnvelopedRecipient((SecretKey) key))
                 .getContentStream();
     }

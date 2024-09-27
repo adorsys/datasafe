@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @Data
 @Builder(toBuilder = true)
-public class UserPrivateProfile{
+public class UserPrivateProfile {
 
     /**
      * Users' keystore location

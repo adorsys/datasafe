@@ -58,7 +58,7 @@ class ListPrivateImplTest extends BaseMockitoTest {
         when(resolvedResource.withResource(resource.getResource())).thenReturn(resolvedResource);
         ListRequest<UserIDAuth, PrivateResource> request = ListRequest.forDefaultPrivate(auth, PATH);
         when(resolver.encryptAndResolvePath(request.getOwner(), request.getLocation(), request.getStorageIdentifier()))
-            .thenReturn(resource);
+                .thenReturn(resource);
         when(resolver.decryptingResolver(request.getOwner(), resource.getResource(), request.getStorageIdentifier()))
                 .thenReturn(path -> resource);
         when(listService.list(resource)).thenReturn(Stream.of(absoluteResolvedResource));

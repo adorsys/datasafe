@@ -12,7 +12,7 @@ import picocli.CommandLine;
                 Copy.class,
                 List.class,
                 Delete.class,
-})
+        })
 public class Privatespace implements Runnable {
 
     @Getter

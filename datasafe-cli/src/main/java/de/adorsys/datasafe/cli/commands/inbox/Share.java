@@ -47,7 +47,7 @@ public class Share implements Runnable {
                                 filename
                         )
                 );
-             InputStream is = MoreFiles.asByteSource(path, StandardOpenOption.READ).openStream()
+                InputStream is = MoreFiles.asByteSource(path, StandardOpenOption.READ).openStream()
         ) {
             ByteStreams.copy(is, os);
         }

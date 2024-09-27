@@ -1,5 +1,11 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
+import static de.adorsys.datasafe.types.api.actions.ListRequest.forDefaultPrivate;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.MoreFiles;
 import de.adorsys.datasafe.business.impl.e2e.metrtics.TestMetricCollector;
@@ -12,16 +18,6 @@ import de.adorsys.datasafe.types.api.actions.WriteRequest;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.util.encoders.Hex;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,13 +40,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static de.adorsys.datasafe.types.api.actions.ListRequest.forDefaultPrivate;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.Hex;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Multithreaded test of basic operations.
@@ -155,7 +153,7 @@ class BasicFunctionalityWithConcurrencyIT extends BaseE2EIT {
         metricCollector.setDataSize(size);
         metricCollector.setStorageType(storage.getClass().getSimpleName());
         metricCollector.setNumberOfThreads(poolSize);
-        metricCollector.writeToJSON();//json files in target folder
+        metricCollector.writeToJSON(); //json files in target folder
 
         deleteTestFile(testFile);
     }
@@ -299,7 +297,7 @@ class BasicFunctionalityWithConcurrencyIT extends BaseE2EIT {
     protected void writeDataToFileForUser(UserIDAuth john, String filePathForWriting, Path filePathForReading,
                                           CountDownLatch latch) {
         try (OutputStream write = writeToPrivate.write(WriteRequest.forDefaultPrivate(john, filePathForWriting));
-             FileInputStream fis = new FileInputStream(filePathForReading.toFile())
+                FileInputStream fis = new FileInputStream(filePathForReading.toFile())
         ) {
             ByteStreams.copy(fis, write);
         } catch (IOException e) {
@@ -311,10 +309,10 @@ class BasicFunctionalityWithConcurrencyIT extends BaseE2EIT {
 
     @BeforeAll
     public static void setUp() {
-        if(System.getenv("NUMBER_OF_TEST_USERS") != null) {
+        if (System.getenv("NUMBER_OF_TEST_USERS") != null) {
             NUMBER_OF_TEST_USERS = Integer.parseInt(System.getenv("NUMBER_OF_TEST_USERS"));
         }
-        if(System.getenv("NUMBER_OF_TEST_FILES") != null) {
+        if (System.getenv("NUMBER_OF_TEST_FILES") != null) {
             NUMBER_OF_TEST_FILES = Integer.parseInt(System.getenv("NUMBER_OF_TEST_FILES"));
             EXPECTED_NUMBER_OF_FILES_PER_USER = NUMBER_OF_TEST_FILES;
         }

@@ -36,7 +36,7 @@ public class ResourceResolverImpl implements ResourceResolver {
      */
     @Override
     public AbsoluteLocation<PublicResource> resolveRelativeToPublicInbox(
-        UserID userID, PublicResource resource) {
+            UserID userID, PublicResource resource) {
 
         return bucketAccessService.publicAccessFor(
             userID,
@@ -51,7 +51,7 @@ public class ResourceResolverImpl implements ResourceResolver {
      */
     @Override
     public AbsoluteLocation<PrivateResource> resolveRelativeToPrivateInbox(
-        UserIDAuth userID, PrivateResource resource) {
+            UserIDAuth userID, PrivateResource resource) {
 
         return bucketAccessService.privateAccessFor(
             userID,
@@ -64,7 +64,7 @@ public class ResourceResolverImpl implements ResourceResolver {
      */
     @Override
     public AbsoluteLocation<PrivateResource> resolveRelativeToPrivate(
-        UserIDAuth userID, PrivateResource resource, StorageIdentifier identifier) {
+            UserIDAuth userID, PrivateResource resource, StorageIdentifier identifier) {
 
         return bucketAccessService.privateAccessFor(
             userID,
@@ -81,7 +81,7 @@ public class ResourceResolverImpl implements ResourceResolver {
     }
 
     private <T extends ResourceLocation<T>> T resolveRelative(
-        T resource, Supplier<ResourceLocation<T>> resolveTo) {
+            T resource, Supplier<ResourceLocation<T>> resolveTo) {
         if (isAbsolute(resource)) {
             return resource;
         }

@@ -1,5 +1,9 @@
 package de.adorsys.datasafe.examples.business.s3;
 
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.DIRECTORY_BUCKET;
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_ONE;
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_TWO;
+import static org.assertj.core.api.Assertions.assertThat;
 import com.amazonaws.services.s3.AmazonS3;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -26,6 +30,15 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.shared.AwsClientRetry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+import java.io.OutputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.regex.Pattern;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -36,21 +49,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
-import java.io.OutputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.regex.Pattern;
-
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.DIRECTORY_BUCKET;
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_ONE;
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_TWO;
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * This example shows how client can register storage system and securely store its access details.
  * Here, we will use 2 Datasafe class instances - one for securely storing user access credentials
@@ -58,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * filesBucketOne, filesBucketTwo.
  */
 @Slf4j
-class MultiDfsWithCredentialsExampleIT{
+class MultiDfsWithCredentialsExampleIT {
 
     private static final String REGION = "eu-central-1";
     private static final ExecutorService EXECUTOR = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);
@@ -122,25 +120,25 @@ class MultiDfsWithCredentialsExampleIT{
                 .storage(
                         new RegexDelegatingStorage(
                                 ImmutableMap.<Pattern, StorageService>builder()
-                                    // bind URI that contains `directoryBucket` to directoryStorage
-                                    .put(Pattern.compile(directoryBucketS3Uri + ".+"), directoryStorage)
-                                    .put(
-                                        Pattern.compile(getDockerUri("http://127.0.0.1") + ".+"),
-                                        // Dynamically creates S3 client with bucket name equal to host value
-                                        new UriBasedAuthStorageService(
-                                            acc -> new S3StorageService(
-                                                S3ClientFactory.getClient(
-                                                    acc.getEndpoint(),
-                                                    acc.getRegion(),
-                                                    acc.getAccessKey(),
-                                                    acc.getSecretKey()
-                                                ),
-                                                // Bucket name is encoded in first path segment
-                                                acc.getBucketName(),
-                                                EXECUTOR
-                                            )
-                                    )
-                                ).build()
+                                        // bind URI that contains `directoryBucket` to directoryStorage
+                                        .put(Pattern.compile(directoryBucketS3Uri + ".+"), directoryStorage)
+                                        .put(
+                                                Pattern.compile(getDockerUri("http://127.0.0.1") + ".+"),
+                                                // Dynamically creates S3 client with bucket name equal to host value
+                                                new UriBasedAuthStorageService(
+                                                        acc -> new S3StorageService(
+                                                                S3ClientFactory.getClient(
+                                                                        acc.getEndpoint(),
+                                                                        acc.getRegion(),
+                                                                        acc.getAccessKey(),
+                                                                        acc.getSecretKey()
+                                                                ),
+                                                                // Bucket name is encoded in first path segment
+                                                                acc.getBucketName(),
+                                                                EXECUTOR
+                                                        )
+                                                )
+                                        ).build()
                         )
                 )
                 .overridesRegistry(registry)
@@ -148,7 +146,7 @@ class MultiDfsWithCredentialsExampleIT{
         // Instead of default BucketAccessService we will use service that reads storage access credentials from
         // keystore
         BucketAccessServiceImplRuntimeDelegatable.overrideWith(
-            registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())
+                registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())
         );
 
         // John will have all his private files stored on `filesBucketOne` and `filesBucketOne`.
@@ -165,12 +163,12 @@ class MultiDfsWithCredentialsExampleIT{
         // Set location for John's credentials keystore and put storage credentials into it:
         UserPrivateProfile profile = multiDfsDatasafe.userProfile().privateProfile(john);
         profile.getPrivateStorage().put(
-            bucketOne,
-            new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpointsByHost.get(FILES_BUCKET_ONE) + "/"))
+                bucketOne,
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpointsByHost.get(FILES_BUCKET_ONE) + "/"))
         );
         profile.getPrivateStorage().put(
-            bucketTwo,
-            new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpointsByHost.get(FILES_BUCKET_TWO) + "/"))
+                bucketTwo,
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpointsByHost.get(FILES_BUCKET_TWO) + "/"))
         );
         multiDfsDatasafe.userProfile().updatePrivateProfile(john, profile);
 

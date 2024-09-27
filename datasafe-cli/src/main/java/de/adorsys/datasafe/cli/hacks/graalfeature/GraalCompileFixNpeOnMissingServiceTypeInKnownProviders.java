@@ -21,12 +21,12 @@ import java.util.Map;
 /**
  * This class fixes NPE exception in Graal-compilator - when it tries to get non-existing engines from
  * {@link java.security.Provider}
- * <p>
- * Additionally can log access to null service types using property PROVIDER_ACCESS_LOGGER,
+ *
+ * <p>Additionally can log access to null service types using property PROVIDER_ACCESS_LOGGER,
  * so you can add necessary fields to extra_engines.hack. (This will break build later, so you will need
  * to remove this property when you detected all nulls in Provider).
- * <p>
- * Override string example:
+ *
+ * <p>Override string example:
  * X509Store=false,null
  */
 @AutomaticFeature
@@ -39,8 +39,8 @@ public class GraalCompileFixNpeOnMissingServiceTypeInKnownProviders implements F
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 
         try (InputStream is = classloader.getResourceAsStream("extra_engines.hack");
-             InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(streamReader)) {
+                InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
+                BufferedReader reader = new BufferedReader(streamReader)) {
             reader.lines().forEach(it -> {
                 System.out.println("Overriding " + it);
                 String[] typeAndValue = it.split("=");
@@ -86,8 +86,8 @@ public class GraalCompileFixNpeOnMissingServiceTypeInKnownProviders implements F
         @SuppressWarnings("unchecked")
         Map<String, Object> originalEngine = (Map<String, Object>) knownEngines.get(null);
 
-        Map<String, Object> delegate = null != System.getProperty(PROVIDER_ACCESS_LOGGER)
-                ? new EngineDelegate(originalEngine) : originalEngine;
+        Map<String, Object> delegate = null != System.getProperty(PROVIDER_ACCESS_LOGGER) ?
+                new EngineDelegate(originalEngine) : originalEngine;
 
         knownEngines.set(Map.class, delegate);
 

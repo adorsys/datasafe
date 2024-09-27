@@ -94,7 +94,7 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
 
         byte[] byteArray = outputStream.toByteArray();
 
-        for(KeyStoreAccess keyStoreAccessItem : Arrays.asList(keyStoreAccess1, keyStoreAccess2)) {
+        for (KeyStoreAccess keyStoreAccessItem : Arrays.asList(keyStoreAccess1, keyStoreAccess2)) {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
             InputStream decryptionStream = cmsEncryptionService.buildDecryptionInputStream(inputStream,
                     keyIds -> getKeys(keyIds, keyStoreAccessItem));
@@ -151,7 +151,7 @@ class CmsEncryptionServiceImplTest extends BaseMockitoTest {
 
         KeyStoreAuth keyStoreAuth = new KeyStoreAuth(readStorePassword, readKeyPassword);
         KeyCreationConfig config = KeyCreationConfig.builder()
-                .signing(KeyCreationConfig.SigningKeyCreationCfg.builder().algo("RSA").size(2048).sigAlgo( "SHA256withRSA").curve(null).build())
+                .signing(KeyCreationConfig.SigningKeyCreationCfg.builder().algo("RSA").size(2048).sigAlgo("SHA256withRSA").curve(null).build())
                 .encrypting(KeyCreationConfig.EncryptingKeyCreationCfg.builder().algo("RSA").size(2048).sigAlgo("SHA256withRSA").curve(null).build())
                 .build();
 

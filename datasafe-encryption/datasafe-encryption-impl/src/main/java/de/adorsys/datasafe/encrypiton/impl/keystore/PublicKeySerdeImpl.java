@@ -33,7 +33,8 @@ public class PublicKeySerdeImpl implements PublicKeySerde {
         byte[] bytes = Base64.getDecoder().decode(encoded);
         SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.getInstance(bytes);
         if (RSA.equals(subjectPublicKeyInfo.getAlgorithm().getAlgorithm())) {
-            return new org.bouncycastle.jcajce.provider.asymmetric.rsa.KeyFactorySpi().generatePublic(SubjectPublicKeyInfo.getInstance(bytes));
+            return new org.bouncycastle.jcajce.provider.asymmetric.rsa.KeyFactorySpi()
+                    .generatePublic(SubjectPublicKeyInfo.getInstance(bytes));
         } else if (EC.equals(subjectPublicKeyInfo.getAlgorithm().getAlgorithm())) {
             return new org.bouncycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi.ECDH().generatePublic(subjectPublicKeyInfo);
         }

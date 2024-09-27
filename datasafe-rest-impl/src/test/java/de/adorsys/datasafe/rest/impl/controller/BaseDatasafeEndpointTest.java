@@ -51,9 +51,9 @@ public abstract class BaseDatasafeEndpointTest extends BaseMockitoTest {
     @SneakyThrows
     MvcResult sendAuthenticateRequestWithStatus(UserDTO userDTO, ResultMatcher statusMatcher) {
         return this.mvc
-                .perform(post("/api/authenticate").
-                        content(jsonMapper.writeValueAsString(userDTO)).
-                        contentType(MediaType.APPLICATION_JSON))
+                .perform(post("/api/authenticate")
+                        .content(jsonMapper.writeValueAsString(userDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(statusMatcher)
                 .andReturn();
     }

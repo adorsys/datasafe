@@ -1,5 +1,21 @@
 package de.adorsys.datasafe.rest.impl.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.google.gson.Gson;
 import de.adorsys.datasafe.business.impl.service.DefaultDatasafeServices;
 import de.adorsys.datasafe.directory.api.types.StorageCredentials;
@@ -20,23 +36,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     private Gson gson;
@@ -70,13 +69,13 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
                 ));
 
         mvc.perform(put("/user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .characterEncoding("UTF-8")
-                .content(getLoginData())
-                .header("token", token)
-                .content(gson.toJson(request))
-        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(getLoginData())
+                        .header("token", token)
+                        .content(gson.toJson(request))
+                )
                 .andExpect(status().isOk())
                 .andDo(document);
         verify(userProfile).registerUsingDefaults(any());
@@ -88,14 +87,14 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
         String newPassword = "NEW!";
 
         mvc.perform(post("/user/password")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .characterEncoding("UTF-8")
-                .content("{\"newPassword\": \"" + newPassword + "\"}")
-                .header("user", TEST_USER)
-                .header("password", TEST_PASS)
-                .header("token", token)
-        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content("{\"newPassword\": \"" + newPassword + "\"}")
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("token", token)
+                )
                 .andExpect(status().isOk());
 
         verify(userProfile).updateReadKeyPassword(
@@ -110,20 +109,20 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     @Test
     void getPrivateProfileTest() {
         when(userProfile.privateProfile(eq(new UserIDAuth(TEST_USER, TEST_PASS))))
-            .thenReturn(mock(UserPrivateProfile.class));
+                .thenReturn(mock(UserPrivateProfile.class));
 
         mvc.perform(get("/user/privateProfile")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("user", TEST_USER)
-            .header("password", TEST_PASS)
-            .header("token", token)
-        )
-            .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("token", token)
+                )
+                .andExpect(status().isOk());
 
         verify(userProfile).privateProfile(
-            eq(new UserIDAuth(TEST_USER, TEST_PASS))
+                eq(new UserIDAuth(TEST_USER, TEST_PASS))
         );
     }
 
@@ -131,20 +130,20 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     @Test
     void getPublicProfileTest() {
         when(userProfile.publicProfile(eq(new UserID(TEST_USER))))
-            .thenReturn(mock(UserPublicProfile.class));
+                .thenReturn(mock(UserPublicProfile.class));
 
         mvc.perform(get("/user/publicProfile")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("user", TEST_USER)
-            .header("password", TEST_PASS)
-            .header("token", token)
-        )
-            .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("token", token)
+                )
+                .andExpect(status().isOk());
 
         verify(userProfile).publicProfile(
-            eq(new UserID(TEST_USER))
+                eq(new UserID(TEST_USER))
         );
     }
 
@@ -152,19 +151,19 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     @Test
     void changePrivateProfileTest() {
         mvc.perform(post("/user/privateProfile")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(Fixture.read("endpoints/private_profile.json"))
-            .header("user", TEST_USER)
-            .header("password", TEST_PASS)
-            .header("token", token)
-        )
-            .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(Fixture.read("endpoints/private_profile.json"))
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("token", token)
+                )
+                .andExpect(status().isOk());
 
         verify(userProfile).updatePrivateProfile(
-            eq(new UserIDAuth(TEST_USER, TEST_PASS)),
-            any()
+                eq(new UserIDAuth(TEST_USER, TEST_PASS)),
+                any()
         );
     }
 
@@ -172,19 +171,19 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     @Test
     void changePublicProfileTest() {
         mvc.perform(post("/user/publicProfile")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(Fixture.read("endpoints/public_profile.json"))
-            .header("user", TEST_USER)
-            .header("password", TEST_PASS)
-            .header("token", token)
-        )
-            .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(Fixture.read("endpoints/public_profile.json"))
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("token", token)
+                )
+                .andExpect(status().isOk());
 
         verify(userProfile).updatePublicProfile(
-            eq(new UserIDAuth(TEST_USER, TEST_PASS)),
-            any()
+                eq(new UserIDAuth(TEST_USER, TEST_PASS)),
+                any()
         );
     }
 
@@ -192,20 +191,20 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     @Test
     void addStorageCredentialsTest() {
         mvc.perform(post("/user/storages")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(Fixture.read("endpoints/storage_creds.json"))
-            .header("user", TEST_USER)
-            .header("password", TEST_PASS)
-            .header("token", token)
-        )
-            .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(Fixture.read("endpoints/storage_creds.json"))
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("token", token)
+                )
+                .andExpect(status().isOk());
 
         verify(userProfile).registerStorageCredentials(
-            eq(new UserIDAuth(TEST_USER, TEST_PASS)),
-            eq(new StorageIdentifier("AAA")),
-            eq(new StorageCredentials("FOO", "BAR"))
+                eq(new UserIDAuth(TEST_USER, TEST_PASS)),
+                eq(new StorageIdentifier("AAA")),
+                eq(new StorageCredentials("FOO", "BAR"))
         );
     }
 
@@ -213,20 +212,20 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
     @Test
     void removeStorageCredentialsTest() {
         mvc.perform(delete("/user/storages")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content("{}")
-            .header("user", TEST_USER)
-            .header("password", TEST_PASS)
-            .header("token", token)
-            .header("storageId", "111")
-        )
-            .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content("{}")
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("token", token)
+                        .header("storageId", "111")
+                )
+                .andExpect(status().isOk());
 
         verify(userProfile).deregisterStorageCredentials(
-            eq(new UserIDAuth(TEST_USER, TEST_PASS)),
-            eq(new StorageIdentifier("111"))
+                eq(new UserIDAuth(TEST_USER, TEST_PASS)),
+                eq(new StorageIdentifier("111"))
         );
     }
 
@@ -260,12 +259,12 @@ class UserControllerTest extends BaseTokenDatasafeEndpointTest {
         when(dataSafeService.userProfile().userExists(any())).thenReturn(true);
 
         mvc.perform(delete("/user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .header("user", TEST_USER)
-                .header("password", TEST_PASS)
-                .header("token", token)
-        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("user", TEST_USER)
+                        .header("password", TEST_PASS)
+                        .header("token", token)
+                )
                 .andExpect(status().isOk())
                 .andDo(document);
         verify(userProfile).deregister(any());

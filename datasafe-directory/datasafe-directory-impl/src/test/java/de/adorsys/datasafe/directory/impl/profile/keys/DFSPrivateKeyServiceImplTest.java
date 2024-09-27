@@ -25,6 +25,7 @@ public class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
     @Mock
     private KeyStoreService keyStoreService;
     DFSPrivateKeyServiceImpl privateKeyService;
+
     @BeforeEach
     public void setUp() {
         privateKeyService = new DFSPrivateKeyServiceImpl(keyStoreOper);
@@ -32,7 +33,7 @@ public class DFSPrivateKeyServiceImplTest extends BaseMockitoTest {
 
     @Test
     @SneakyThrows
-    public void getKeyPair(){
+    public void getKeyPair() {
         ReadKeyPassword readKeyPassword = new ReadKeyPassword("keypass".toCharArray());
         UserID user = new UserID("user1");
         UserIDAuth userAuth = new UserIDAuth(user, readKeyPassword);

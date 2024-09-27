@@ -86,7 +86,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
         assertThat(endpoint).isEqualTo("http://host.com:8080/");
     }
 
-        @MethodSource("fixture")
+    @MethodSource("fixture")
     @ParameterizedTest
     void objectExists(MappedItem item) {
         tested.objectExists(item.getUri());
@@ -131,7 +131,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
         return Stream.of(
             new MappedItem(
                 "http://user:password@host:9999/region/bucket",
-                new UriBasedAuthStorageService.AccessId(
+                    new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
                         "region",
@@ -143,7 +143,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
             ),
             new MappedItem(
                 "http://user:password@host:9999/region/bucket/",
-                new UriBasedAuthStorageService.AccessId(
+                    new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
                         "region",
@@ -155,7 +155,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
             ),
             new MappedItem(
                 "http://user:password@host:9999/region/bucket/path/to",
-                new UriBasedAuthStorageService.AccessId(
+                    new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
                         "region",
@@ -167,7 +167,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
             ),
             new MappedItem(
                 "http://user:password@host:9999/region/bucket/path/to/",
-                new UriBasedAuthStorageService.AccessId(
+                    new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
                         "region",
@@ -179,7 +179,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
             ),
             new MappedItem(
                 "http://user:password@host.com/region/bucket",
-                new UriBasedAuthStorageService.AccessId(
+                    new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
                         "region",
@@ -191,7 +191,7 @@ class UriBasedAuthStorageServiceTest extends BaseMockitoTest {
             ),
             new MappedItem(
                 "http://user:password@host.com/region/bucket/",
-                new UriBasedAuthStorageService.AccessId(
+                    new UriBasedAuthStorageService.AccessId(
                     "user",
                     "password",
                         "region",

@@ -58,6 +58,7 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
     private static final class CloseCoordinatingStream extends InputStream {
         private final InputStream streamToRead;
         private final List<InputStream> streamsToClose;
+
         @Override
         public int read(byte[] b, int off, int len) throws IOException {
             return streamToRead.read(b, off, len);
@@ -88,4 +89,5 @@ public class CMSDocumentReadService implements EncryptedDocumentReadService {
                 exceptions.add(ex);
             }
         }
-    }}
+    }
+}

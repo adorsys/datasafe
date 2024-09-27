@@ -13,7 +13,7 @@ import picocli.CommandLine;
                 List.class,
                 Share.class,
                 Delete.class,
-})
+        })
 public class Inbox implements Runnable {
 
     @Getter
