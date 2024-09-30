@@ -14,7 +14,6 @@
     <properties>
         <spring.framework.version>6.1.10</spring.framework.version>
         <spring.framework.boot.version>3.3.1</spring.framework.boot.version>
-        <snakeyaml.version>2.2</snakeyaml.version>
     </properties>
 
     <dependencies>
@@ -89,11 +88,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>${snakeyaml.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${jupiter.version}</version>
@@ -136,11 +130,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
@@ -160,8 +149,14 @@
                         </goals>
                         <configuration>
                             <failOnWarning>false</failOnWarning>
+                            <ignoredUsedUndeclaredDependencies>
+                                <ignoredUsedUndeclaredDependency>org.jetbrains:annotations</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-storage-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-types-api</ignoredUsedUndeclaredDependency>
+                            </ignoredUsedUndeclaredDependencies>
                             <ignoredUnusedDeclaredDependencies>
                                 <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-business</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>
