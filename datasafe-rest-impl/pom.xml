@@ -20,7 +20,7 @@
         <asciidoctor-maven-plugin.version>2.2.4</asciidoctor-maven-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
         <spring.framework.security.version>6.3.1</spring.framework.security.version>
-        <spring.framework.version>6.1.10</spring.framework.version>
+        <spring.framework.version>6.1.13</spring.framework.version>
         <spring.framework.restdocs.version>3.0.0</spring.framework.restdocs.version>
         <tomcat.version>10.1.11</tomcat.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
