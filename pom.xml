@@ -353,22 +353,20 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle-maven-plugin.version}</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <consoleOutput>true</consoleOutput>
+                    <linkXRef>false</linkXRef>
+                    <outputFile>${project.basedir}/target/checkstyle-report.xml</outputFile>
+                    <propertyExpansion>org.checkstyle.google.severity=error</propertyExpansion>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>validate</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
-                        <configuration>
-                            <configLocation>checkstyle.xml</configLocation>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <encoding>UTF-8</encoding>
-                            <consoleOutput>true</consoleOutput>
-                            <failsOnError>false</failsOnError>
-                            <linkXRef>false</linkXRef>
-                            <propertyExpansion>org.checkstyle.google.severity=warning</propertyExpansion>
-                            <outputFile>${project.basedir}/target/checkstyle-report.xml</outputFile>
-                        </configuration>
                     </execution>
                 </executions>
                 <dependencies>

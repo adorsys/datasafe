@@ -12,10 +12,10 @@ public class TestHelper {
 
     public static MockHttpServletRequestBuilder putFileBuilder(String path, Object vars) {
         MockMultipartFile file = new MockMultipartFile(
-            "file",
-            "file.txt",
-            "text/plain",
-            "DATA".getBytes()
+                "file",
+                "file.txt",
+                "text/plain",
+                "DATA".getBytes()
         );
 
         MockMultipartHttpServletRequestBuilder builder = RestDocumentationRequestBuilders.multipart(path, vars).file(file);

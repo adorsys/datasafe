@@ -67,7 +67,7 @@ class EncryptedResourceResolverImplTest extends BaseMockitoTest {
         when(accessService.privateAccessFor(auth, absolute)).thenReturn(new AbsoluteLocation<>(absolute));
 
         AbsoluteLocation<PrivateResource> resource = resolver.encryptAndResolvePath(
-            auth, absolute, StorageIdentifier.DEFAULT
+                auth, absolute, StorageIdentifier.DEFAULT
         );
 
         assertThat(resource.location()).isEqualTo(absolute.location());
@@ -81,7 +81,7 @@ class EncryptedResourceResolverImplTest extends BaseMockitoTest {
                 .thenAnswer(inv -> BasePrivateResource.forAbsolutePrivate(root.location().resolve(ENCRYPTED)));
 
         AbsoluteLocation<PrivateResource> resource = resolver
-            .encryptAndResolvePath(auth, relative, StorageIdentifier.DEFAULT);
+                .encryptAndResolvePath(auth, relative, StorageIdentifier.DEFAULT);
 
         verify(resourceResolver).resolveRelativeToPrivate(eq(auth), captor.capture(), eq(StorageIdentifier.DEFAULT));
         assertThat(resource.location()).extracting(Uri::toASCIIString).isEqualTo("s3://root/" + ENCRYPTED);

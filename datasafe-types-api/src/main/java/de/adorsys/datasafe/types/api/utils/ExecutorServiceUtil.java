@@ -12,6 +12,7 @@ public class ExecutorServiceUtil {
 
     /**
      * Submitter will execute task if it can't be submitted, effectively blocking submitting threads.
+     *
      * @param poolSize executor and queue size
      * @return ExecutorService with limited queue size that executes task using submitter thread on starvation
      */
@@ -24,6 +25,7 @@ public class ExecutorServiceUtil {
 
     /**
      * Submitter will execute task if it can't be submitted, effectively blocking submitting threads.
+     *
      * @return ExecutorService with limited queue size that executes task using submitter thread on starvation that has
      * thread pool with size equal to processor count
      */

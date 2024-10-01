@@ -86,8 +86,7 @@ class SimpleDatasafeAdapterIT extends WithStorageProvider {
             assertThat(ls).extracting(it -> descriptor.getLocation().relativize(it.location()).asString())
                     .containsExactlyInAnyOrder(
                             "users/peter/public/pubkeys",
-                            "users/peter/private/keystore"
-                    );
+                            "users/peter/private/keystore");
         }
         log.info("test create user and delete user with  {}", descriptor.getName());
     }
@@ -106,8 +105,7 @@ class SimpleDatasafeAdapterIT extends WithStorageProvider {
             assertThat(ls).extracting(it -> descriptor.getLocation().relativize(it.location()).asString())
                     .containsExactlyInAnyOrder(
                             "users/peter/public/pubkeys",
-                            "users/peter/private/keystore"
-                    );
+                            "users/peter/private/keystore");
         }
         log.info("test create user and delete user with {}", descriptor.getName());
     }

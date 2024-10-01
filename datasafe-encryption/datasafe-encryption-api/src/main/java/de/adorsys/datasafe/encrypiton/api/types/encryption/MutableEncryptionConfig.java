@@ -201,7 +201,7 @@ public class MutableEncryptionConfig {
                 }
 
 
-                    builder.curve(curve);
+                builder.curve(curve);
 
 
                 return builder.build();
@@ -232,7 +232,7 @@ public class MutableEncryptionConfig {
                 }
 
 
-                    builder.curve(curve);
+                builder.curve(curve);
 
 
                 return builder.build();

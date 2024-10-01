@@ -82,8 +82,8 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
                 .filter(it -> uri.matches(it.getId()))
                 .findFirst();
 
-        return directMatch.isPresent()
-                ? directMatch
+        return directMatch.isPresent() ?
+                directMatch
                 : aliases.stream().filter(it -> StorageIdentifier.DEFAULT.getId().equals(it.getId())).findFirst();
     }
 }

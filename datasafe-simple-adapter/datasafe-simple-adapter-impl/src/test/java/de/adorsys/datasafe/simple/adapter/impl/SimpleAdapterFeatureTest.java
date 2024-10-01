@@ -102,7 +102,7 @@ class SimpleAdapterFeatureTest extends BaseMockitoTest {
             Assertions.assertEquals(1, absoluteLocationStream.count());
         }
         try (Stream<AbsoluteLocation<ResolvedResource>> absoluteLocationStream = simpleDatasafeService.getStorageService().list(rootLocation).filter(el -> el.location().toASCIIString().contains(path))) {
-            Optional<AbsoluteLocation<ResolvedResource>> first =absoluteLocationStream.findFirst();
+            Optional<AbsoluteLocation<ResolvedResource>> first = absoluteLocationStream.findFirst();
 
             try (InputStream read = simpleDatasafeService.getStorageService().read(first.get())) {
                 StringWriter writer = new StringWriter();

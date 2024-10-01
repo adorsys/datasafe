@@ -59,7 +59,9 @@ public class UserKeyStoreCache {
      */
     @SneakyThrows
     private KeyStore convertKeyStoreToUberKeyStore(UserIDAuth currentCredentials, KeyStore current) {
-        log.debug("the keystore for user {} is of type {} and will be converted to uber in cache", currentCredentials.getUserID(), current.getType() );
+        log.debug("the keystore for user {} is of type {} and will be converted to uber in cache",
+                currentCredentials.getUserID(),
+                current.getType());
 
         KeyStore newKeystore = KeyStore.getInstance("UBER");
         newKeystore.load(null, null);
@@ -79,7 +81,7 @@ public class UserKeyStoreCache {
         return newKeystore;
     }
 
-    private interface ExcludeComputeIfAbsent<K,V> {
+    private interface ExcludeComputeIfAbsent<K, V> {
         KeyStore computeIfAbsent(UserID key, Function<? super UserID, ? extends KeyStore> mappingFunction);
     }
 }

@@ -22,8 +22,8 @@ public class BaseTypePasswordString {
 
     /**
      * ATTENTION
-     * <p>
-     * caller of method gives ownership of {@code value[]}
+     *
+     * <p>caller of method gives ownership of {@code value[]}
      * to this class. Value will be nullyfied after successful read/write/list.
      *
      * @param value will be nullified asap
@@ -35,6 +35,7 @@ public class BaseTypePasswordString {
 
     /**
      * Argument provider is responsible for password cleanup
+     *
      * @param value will stay unchanged
      */
     public BaseTypePasswordString(Supplier<char[]> value) {

@@ -68,7 +68,7 @@ public class EncryptedLatestLinkServiceImpl implements EncryptedLatestLinkServic
 
     @Override
     public Function<AbsoluteLocation<PrivateResource>, AbsoluteLocation<PrivateResource>> linkDecryptingReader(
-        UserIDAuth owner, StorageIdentifier identifier) {
+            UserIDAuth owner, StorageIdentifier identifier) {
         UserPrivateProfile privateProfile = profiles.privateProfile(owner);
         PrivateResource userPrivate = privateProfile.getPrivateStorage().get(identifier).getResource();
 

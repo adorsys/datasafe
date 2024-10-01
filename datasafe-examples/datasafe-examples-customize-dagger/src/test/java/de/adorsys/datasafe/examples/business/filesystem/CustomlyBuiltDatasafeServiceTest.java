@@ -39,7 +39,7 @@ class CustomlyBuiltDatasafeServiceTest {
 
     // not using lombok
     private List<Path> walk(Path root) {
-        try (Stream<Path> result = Files.walk(root)){
+        try (Stream<Path> result = Files.walk(root)) {
             return result.collect(Collectors.toList());
         } catch (IOException ex) {
             throw new IllegalStateException("IOException", ex);

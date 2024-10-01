@@ -1,5 +1,7 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
+import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
+import static org.assertj.core.api.Assertions.assertThat;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -21,11 +23,6 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
@@ -34,9 +31,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static de.adorsys.datasafe.types.api.global.PathEncryptionId.AES_SIV;
-import static org.assertj.core.api.Assertions.assertThat;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class SchemeDelegationWithDbIT extends WithStorageProvider {
 
@@ -51,22 +49,22 @@ class SchemeDelegationWithDbIT extends WithStorageProvider {
         this.fsPath = tempDir;
         StorageService filesystem = new FileSystemStorageService(tempDir);
         this.db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
-            uri -> uri.location().getWrapped().getScheme() + ":" + uri.location().getPath().split("/")[1],
-            ImmutableMap.of("jdbc://localhost:9999", new DatabaseCredentials("sa", "sa")))
+                uri -> uri.location().getWrapped().getScheme() + ":" + uri.location().getPath().split("/")[1],
+                ImmutableMap.of("jdbc://localhost:9999", new DatabaseCredentials("sa", "sa")))
         );
 
         StorageService multiDfs = new SchemeDelegatingStorage(
-            ImmutableMap.of(
-                "file", filesystem,
-                "jdbc", db
-            )
+                ImmutableMap.of(
+                        "file", filesystem,
+                        "jdbc", db
+                )
         );
 
         this.datasafeServices = DaggerDefaultDatasafeServices
-            .builder()
-            .config(new ProfilesOnDbDataOnFs(tempDir.toUri(), URI.create("jdbc://localhost:9999/h2:mem:test/")))
-            .storage(multiDfs)
-            .build();
+                .builder()
+                .config(new ProfilesOnDbDataOnFs(tempDir.toUri(), URI.create("jdbc://localhost:9999/h2:mem:test/")))
+                .storage(multiDfs)
+                .build();
     }
 
     @Test
@@ -79,34 +77,34 @@ class SchemeDelegationWithDbIT extends WithStorageProvider {
 
         // But this data - it will be saved to FS
         try (OutputStream os =
-                 datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(userJohn, "file.txt"))) {
+                     datasafeServices.privateService().write(WriteRequest.forDefaultPrivate(userJohn, "file.txt"))) {
             os.write("Hello".getBytes());
         }
 
         // Profiles are on DB
         assertThat(listDb("jdbc://localhost:9999/h2:mem:test/private_profiles/"))
-            .containsExactly("jdbc://localhost:9999/h2:mem:test/private_profiles/john");
+                .containsExactly("jdbc://localhost:9999/h2:mem:test/private_profiles/john");
         assertThat(listDb("jdbc://localhost:9999/h2:mem:test/public_profiles/"))
-            .containsExactly("jdbc://localhost:9999/h2:mem:test/public_profiles/john");
+                .containsExactly("jdbc://localhost:9999/h2:mem:test/public_profiles/john");
 
         Path path = fsPath.resolve(new Uri("users/john/private/files/").resolve(AES_SIV.asUriRoot()).asString());
         Path encryptedFile = walk(path).get(1);
         // File and keystore/pub keys are on FS
         assertThat(walk(fsPath))
-            .extracting(it -> fsPath.toUri().relativize(it.toUri()))
-            .extracting(URI::toString)
-            .containsExactlyInAnyOrder(
-                "",
-                "users/",
-                "users/john/",
-                "users/john/public/",
-                "users/john/public/pubkeys",
-                "users/john/private/",
-                "users/john/private/keystore",
-                "users/john/private/files/",
-                "users/john/private/files/SIV/",
-                fsPath.toUri().relativize(encryptedFile.toUri()).toString()
-            );
+                .extracting(it -> fsPath.toUri().relativize(it.toUri()))
+                .extracting(URI::toString)
+                .containsExactlyInAnyOrder(
+                        "",
+                        "users/",
+                        "users/john/",
+                        "users/john/public/",
+                        "users/john/public/pubkeys",
+                        "users/john/private/",
+                        "users/john/private/keystore",
+                        "users/john/private/files/",
+                        "users/john/private/files/SIV/",
+                        fsPath.toUri().relativize(encryptedFile.toUri()).toString()
+                );
     }
 
     @SneakyThrows
@@ -117,7 +115,7 @@ class SchemeDelegationWithDbIT extends WithStorageProvider {
     }
 
     private List<String> listDb(String path) {
-        try (Stream<AbsoluteLocation<ResolvedResource>> stream = db.list(BasePrivateResource.forAbsolutePrivate(URI.create(path)))){
+        try (Stream<AbsoluteLocation<ResolvedResource>> stream = db.list(BasePrivateResource.forAbsolutePrivate(URI.create(path)))) {
             return stream.map(it -> it.location().asURI().toString()).collect(Collectors.toList());
         }
     }
@@ -134,18 +132,18 @@ class SchemeDelegationWithDbIT extends WithStorageProvider {
         @Override
         public AbsoluteLocation publicProfile(UserID forUser) {
             return new AbsoluteLocation<>(
-                BasePrivateResource.forPrivate(
-                    profilesPath.resolve("public_profiles/").resolve(forUser.getValue())
-                )
+                    BasePrivateResource.forPrivate(
+                            profilesPath.resolve("public_profiles/").resolve(forUser.getValue())
+                    )
             );
         }
 
         @Override
         public AbsoluteLocation privateProfile(UserID forUser) {
             return new AbsoluteLocation<>(
-                BasePrivateResource.forPrivate(
-                    profilesPath.resolve("private_profiles/").resolve(forUser.getValue())
-                )
+                    BasePrivateResource.forPrivate(
+                            profilesPath.resolve("private_profiles/").resolve(forUser.getValue())
+                    )
             );
         }
     }

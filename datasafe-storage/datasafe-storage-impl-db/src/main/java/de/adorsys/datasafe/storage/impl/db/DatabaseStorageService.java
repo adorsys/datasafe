@@ -64,8 +64,8 @@ public class DatabaseStorageService implements StorageService {
     @Override
     public Stream<AbsoluteLocation<ResolvedResource>> list(AbsoluteLocation location) {
         ParsedLocation parsed = new ParsedLocation(location, allowedTables);
-        String sql = "SELECT \"key\",`last_modified` FROM " + parsed.getTableName() + " WHERE \"key\" LIKE '"
-                + parsed.getPathWithUser() + "%'";
+        String sql = "SELECT \"key\",`last_modified` FROM " + parsed.getTableName() + " WHERE \"key\" LIKE '" +
+                parsed.getPathWithUser() + "%'";
 
         List<Map<String, Object>> keys = conn.jdbcTemplate(location).queryForList(sql);
         return keys.stream().map(it -> new AbsoluteLocation<>(

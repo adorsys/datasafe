@@ -27,6 +27,6 @@ public class DocumentFQNTest {
         Assertions.assertEquals("", d.getDatasafePath());
     }
     @Test void slashDocumentFQN() {
-        Assertions.assertThrows(SimpleAdapterException.class , () ->new DocumentFQN("/"));
+        Assertions.assertThrows(SimpleAdapterException.class , () -> new DocumentFQN("/"));
     }
 }

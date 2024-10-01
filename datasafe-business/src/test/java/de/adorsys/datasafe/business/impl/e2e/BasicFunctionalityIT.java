@@ -1,5 +1,14 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
+import static de.adorsys.datasafe.business.impl.e2e.Const.FOLDER;
+import static de.adorsys.datasafe.business.impl.e2e.Const.MESSAGE_ONE;
+import static de.adorsys.datasafe.business.impl.e2e.Const.PRIVATE_FILE;
+import static de.adorsys.datasafe.business.impl.e2e.Const.PRIVATE_FILE_PATH;
+import static de.adorsys.datasafe.business.impl.e2e.Const.SHARED_FILE;
+import static de.adorsys.datasafe.business.impl.e2e.Const.SHARED_FILE_PATH;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -23,14 +32,11 @@ import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.BaseTypePasswordStringException;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.UnrecoverableKeyException;
 import java.util.Arrays;
@@ -39,16 +45,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static de.adorsys.datasafe.business.impl.e2e.Const.FOLDER;
-import static de.adorsys.datasafe.business.impl.e2e.Const.MESSAGE_ONE;
-import static de.adorsys.datasafe.business.impl.e2e.Const.PRIVATE_FILE;
-import static de.adorsys.datasafe.business.impl.e2e.Const.PRIVATE_FILE_PATH;
-import static de.adorsys.datasafe.business.impl.e2e.Const.SHARED_FILE;
-import static de.adorsys.datasafe.business.impl.e2e.Const.SHARED_FILE_PATH;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 
 /**
  * Tests that validates basic functionality - storing data to inbox, privatespace, listing files, etc.
@@ -64,11 +65,9 @@ class BasicFunctionalityIT extends BaseE2EIT {
 
 
     /**
-     *
      * In this test, password is provided as char[].
      * This means after every operation, the password in cleared.
      * This is tested for read/write/list/remove
-     *
      */
     @SneakyThrows
     @ParameterizedTest
@@ -284,9 +283,10 @@ class BasicFunctionalityIT extends BaseE2EIT {
         removeFromPrivate(jane, privateJane.getResource().asPrivate());
         removeFromInbox(john, inboxJohn.getResource().asPrivate());
     }
+
     @ParameterizedTest
     @MethodSource("allStorages")
-    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInboxCustom( WithStorageProvider.StorageDescriptor descriptor) {
+    void testWriteToPrivateListPrivateReadPrivateAndSendToAndReadFromInboxCustom(WithStorageProvider.StorageDescriptor descriptor) {
         String yamlFixture = "config/mutable.yaml";
         customInit(descriptor, yamlFixture);
 
@@ -425,6 +425,7 @@ class BasicFunctionalityIT extends BaseE2EIT {
         this.location = descriptor.getLocation();
         this.storage = descriptor.getStorageService().get();
     }
+
     private void customInit(WithStorageProvider.StorageDescriptor descriptor, String yamlFixture) {
         MutableEncryptionConfig config = readResource(mapper, yamlFixture, MutableEncryptionConfig.class);
         DefaultDatasafeServices datasafeServices = DatasafeServicesProvider
@@ -438,8 +439,7 @@ class BasicFunctionalityIT extends BaseE2EIT {
     private static <T> T readResource(ObjectMapper mapper, String path, Class<T> type) {
         try (Reader reader = Resources.asCharSource(Resources.getResource(path), StandardCharsets.UTF_8).openStream()) {
             return mapper.readValue(reader, type);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

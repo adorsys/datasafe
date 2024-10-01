@@ -34,7 +34,7 @@ public class DocumentFQN {
             throw new SimpleAdapterException("not a valid value for documentFQN: String with zero length: " + s);
         }
         // add leading slash
-        if (!value.substring(0,1).equals("/")) {
+        if (!value.substring(0, 1).equals("/")) {
             value = "/" + value;
         }
 
