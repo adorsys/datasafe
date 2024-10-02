@@ -36,6 +36,7 @@ import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.UnrecoverableKeyException;
@@ -47,6 +48,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -58,9 +60,11 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+
 import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * This test distributes users' storage access keystore, document encryption keystore,
  * users' private files into buckets that reside on different buckets. Bootstrap knows only how to
@@ -128,41 +132,41 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
     @BeforeEach
     void initDatasafe() {
         StorageService directoryStorage = new S3StorageService(
-            S3ClientFactory.getClient(
-                endpointsByHostNoBucket.get(CREDENTIALS),
-                REGION,
-                accessKey(CREDENTIALS),
-                secretKey(CREDENTIALS)
-            ),
+                S3ClientFactory.getClient(
+                        endpointsByHostNoBucket.get(CREDENTIALS),
+                        REGION,
+                        accessKey(CREDENTIALS),
+                        secretKey(CREDENTIALS)
+                ),
                 REGION,
                 CREDENTIALS,
-            EXECUTOR
+                EXECUTOR
         );
 
         OverridesRegistry registry = new BaseOverridesRegistry();
         this.datasafeServices = DaggerDefaultDatasafeServices.builder()
-            .config(new DefaultDFSConfig(endpointsByHost.get(CREDENTIALS), new ReadStorePassword("PAZZWORT")))
-            .overridesRegistry(registry)
-            .storage(new RegexDelegatingStorage(
-                ImmutableMap.<Pattern, StorageService>builder()
-                    .put(Pattern.compile(endpointsByHost.get(CREDENTIALS) + ".+"), directoryStorage)
-                    .put(
-                        Pattern.compile(LOCALHOST + ".+"),
-                        new UriBasedAuthStorageService(
-                            acc -> new S3StorageService(
-                                S3ClientFactory.getClient(
-                                    acc.getEndpoint(),
-                                    acc.getRegion(),
-                                    acc.getAccessKey(),
-                                    acc.getSecretKey()
-                                ),
-                                acc.getRegion(),
-                                acc.getBucketName(),
-                                EXECUTOR
-                            )
-                        )
-                    ).build())
-            ).build();
+                .config(new DefaultDFSConfig(endpointsByHost.get(CREDENTIALS), new ReadStorePassword("PAZZWORT")))
+                .overridesRegistry(registry)
+                .storage(new RegexDelegatingStorage(
+                        ImmutableMap.<Pattern, StorageService>builder()
+                                .put(Pattern.compile(endpointsByHost.get(CREDENTIALS) + ".+"), directoryStorage)
+                                .put(
+                                        Pattern.compile(LOCALHOST + ".+"),
+                                        new UriBasedAuthStorageService(
+                                                acc -> new S3StorageService(
+                                                        S3ClientFactory.getClient(
+                                                                acc.getEndpoint(),
+                                                                acc.getRegion(),
+                                                                acc.getAccessKey(),
+                                                                acc.getSecretKey()
+                                                        ),
+                                                        acc.getRegion(),
+                                                        acc.getBucketName(),
+                                                        EXECUTOR
+                                                )
+                                        )
+                                ).build())
+                ).build();
 
         BucketAccessServiceImplRuntimeDelegatable.overrideWith(
                 registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())

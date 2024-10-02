@@ -34,12 +34,14 @@ import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
+
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -130,10 +132,10 @@ public class DatasafeConfig {
     StorageService clientCredentials(AmazonS3 s3, S3Factory factory, DatasafeProperties properties) {
         ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
         S3StorageService basicStorage = new S3StorageService(
-            s3,
-            properties.getAmazonRegion(),
-            properties.getBucketName(),
-            executorService
+                s3,
+                properties.getAmazonRegion(),
+                properties.getBucketName(),
+                executorService
         );
 
         return new RegexDelegatingStorage(
@@ -184,10 +186,10 @@ public class DatasafeConfig {
     @ConditionalOnProperty(name = DATASAFE_S3_STORAGE, havingValue = "true")
     StorageService singleStorageServiceS3(AmazonS3 s3, DatasafeProperties properties) {
         return new S3StorageService(
-            s3,
-            properties.getAmazonRegion(),
-            properties.getBucketName(),
-            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
+                s3,
+                properties.getAmazonRegion(),
+                properties.getBucketName(),
+                ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
     }
 

@@ -45,12 +45,14 @@ import de.adorsys.datasafe.types.api.resource.StorageCapability;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -297,14 +299,14 @@ public class SimpleDatasafeServiceImpl implements SimpleDatasafeService {
             amazons3.createBucket(amazonS3DFSCredentials.getContainer());
         }
         StorageService storageService = new S3StorageService(
-            amazons3,
-            amazonS3DFSCredentials.getRegion(),
-            amazonS3DFSCredentials.getContainer(),
-            ExecutorServiceUtil
-                .submitterExecutesOnStarvationExecutingService(
-                    amazonS3DFSCredentials.getThreadPoolSize(),
-                    amazonS3DFSCredentials.getQueueSize()
-                )
+                amazons3,
+                amazonS3DFSCredentials.getRegion(),
+                amazonS3DFSCredentials.getContainer(),
+                ExecutorServiceUtil
+                        .submitterExecutesOnStarvationExecutingService(
+                                amazonS3DFSCredentials.getThreadPoolSize(),
+                                amazonS3DFSCredentials.getQueueSize()
+                        )
         );
         URI systemRoot = URI.create(S3_PREFIX + amazonS3DFSCredentials.getRootBucket());
         log.info("build DFS to S3 with root " + amazonS3DFSCredentials.getRootBucket() + " and url " + amazonS3DFSCredentials.getUrl());

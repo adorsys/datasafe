@@ -26,6 +26,7 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.shared.AwsClientRetry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
+
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+
 import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.DIRECTORY_BUCKET;
 import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_ONE;
 import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_TWO;
@@ -121,26 +124,26 @@ class MultiDfsWithCredentialsExampleIT {
                 .storage(
                         new RegexDelegatingStorage(
                                 ImmutableMap.<Pattern, StorageService>builder()
-                                    // bind URI that contains `directoryBucket` to directoryStorage
-                                    .put(Pattern.compile(directoryBucketS3Uri + ".+"), directoryStorage)
-                                    .put(
-                                        Pattern.compile(getDockerUri("http://127.0.0.1") + ".+"),
-                                        // Dynamically creates S3 client with bucket name equal to host value
-                                        new UriBasedAuthStorageService(
-                                            acc -> new S3StorageService(
-                                                S3ClientFactory.getClient(
-                                                    acc.getEndpoint(),
-                                                    acc.getRegion(),
-                                                    acc.getAccessKey(),
-                                                    acc.getSecretKey()
-                                                ),
-                                                acc.getRegion(),
-                                                // Bucket name is encoded in first path segment
-                                                acc.getBucketName(),
-                                                EXECUTOR
-                                            )
-                                    )
-                                ).build()
+                                        // bind URI that contains `directoryBucket` to directoryStorage
+                                        .put(Pattern.compile(directoryBucketS3Uri + ".+"), directoryStorage)
+                                        .put(
+                                                Pattern.compile(getDockerUri("http://127.0.0.1") + ".+"),
+                                                // Dynamically creates S3 client with bucket name equal to host value
+                                                new UriBasedAuthStorageService(
+                                                        acc -> new S3StorageService(
+                                                                S3ClientFactory.getClient(
+                                                                        acc.getEndpoint(),
+                                                                        acc.getRegion(),
+                                                                        acc.getAccessKey(),
+                                                                        acc.getSecretKey()
+                                                                ),
+                                                                acc.getRegion(),
+                                                                // Bucket name is encoded in first path segment
+                                                                acc.getBucketName(),
+                                                                EXECUTOR
+                                                        )
+                                                )
+                                        ).build()
                         )
                 )
                 .overridesRegistry(registry)
