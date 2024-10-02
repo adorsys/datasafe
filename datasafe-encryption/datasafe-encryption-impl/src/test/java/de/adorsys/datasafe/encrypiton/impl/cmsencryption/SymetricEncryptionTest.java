@@ -91,7 +91,7 @@ class SymetricEncryptionTest extends BaseMockitoTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         // Opening envelope with wrong key must throw a cms exception.
         Assertions.assertThrows(CMSException.class, () ->
-            cmsEncryptionService.buildDecryptionInputStream(inputStream, keyIds -> getKeys(keyIds, keyStoreAccess))
+                cmsEncryptionService.buildDecryptionInputStream(inputStream, keyIds -> getKeys(keyIds, keyStoreAccess))
         );
     }
 

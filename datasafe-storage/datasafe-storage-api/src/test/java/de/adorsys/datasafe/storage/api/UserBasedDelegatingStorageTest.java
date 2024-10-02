@@ -12,7 +12,6 @@ import org.mockito.Mock;
 
 import java.io.OutputStream;
 import java.util.Optional;
-
 import java.util.List;
 import java.util.function.Function;
 
@@ -25,9 +24,9 @@ public class UserBasedDelegatingStorageTest extends BaseMockitoTest {
     @Mock
     private StorageService storage;
     @Mock
-    private Function<String , StorageService> storageServiceBuilder;
+    private Function<String, StorageService> storageServiceBuilder;
     private UserBasedDelegatingStorage tested;
-    private static final List<String> AMAZON_BUCKETS = List.of("bucket1","bucket2" );
+    private static final List<String> AMAZON_BUCKETS = List.of("bucket1", "bucket2");
 
     private AbsoluteLocation locationUser1 = new AbsoluteLocation<>(
             BasePrivateResource.forPrivate("s3://datasafe-test1/073047da-dd68-4f70-b9bf-5759d7e30c85/users/user-1/private/files/")
@@ -88,7 +87,7 @@ public class UserBasedDelegatingStorageTest extends BaseMockitoTest {
     }
 
     @Test
-    void listDelegates(){
+    void listDelegates() {
         tested.list(locationUser1);
 
         verify(storageServiceBuilder).apply("bucket2");
@@ -96,7 +95,7 @@ public class UserBasedDelegatingStorageTest extends BaseMockitoTest {
     }
 
     @Test
-    void readDelegates(){
+    void readDelegates() {
         tested.read(locationUser1);
 
         verify(storageServiceBuilder).apply("bucket2");
@@ -104,7 +103,7 @@ public class UserBasedDelegatingStorageTest extends BaseMockitoTest {
     }
 
     @Test
-    void removeDelegates(){
+    void removeDelegates() {
         tested.remove(locationUser1);
 
         verify(storageServiceBuilder).apply("bucket2");

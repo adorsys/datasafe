@@ -22,6 +22,7 @@ public class AwsClientRetry {
     @NoArgsConstructor
     static class RetryLogger {
         int counter = 0;
+
         public void log() {
             if (counter > 0) {
                 log.info("this is the {} retry to create bucket", counter);

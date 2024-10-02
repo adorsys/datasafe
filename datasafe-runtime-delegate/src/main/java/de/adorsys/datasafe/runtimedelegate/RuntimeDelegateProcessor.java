@@ -52,8 +52,8 @@ public class RuntimeDelegateProcessor extends AbstractProcessor {
             for (Element annotated : annotatedElements) {
                 if (annotated.getKind() != ElementKind.CLASS) {
                     processingEnv.getMessager().printMessage(
-                        Diagnostic.Kind.ERROR,
-                        "Only classes should be annotated with @" + ANNOTATION_CLASS,
+                            Diagnostic.Kind.ERROR,
+                            "Only classes should be annotated with @" + ANNOTATION_CLASS,
                             annotated
                     );
                     return false;
@@ -63,8 +63,8 @@ public class RuntimeDelegateProcessor extends AbstractProcessor {
 
                 if (clazz.getModifiers().contains(Modifier.FINAL)) {
                     processingEnv.getMessager().printMessage(
-                        Diagnostic.Kind.ERROR,
-                        "Class should not be final",
+                            Diagnostic.Kind.ERROR,
+                            "Class should not be final",
                             clazz
                     );
                     return false;
@@ -111,8 +111,8 @@ public class RuntimeDelegateProcessor extends AbstractProcessor {
 
         if (annotated.size() != 1) {
             processingEnv.getMessager().printMessage(
-                Diagnostic.Kind.ERROR,
-                "Class should have exactly one @Inject annotation",
+                    Diagnostic.Kind.ERROR,
+                    "Class should have exactly one @Inject annotation",
                     element
             );
 

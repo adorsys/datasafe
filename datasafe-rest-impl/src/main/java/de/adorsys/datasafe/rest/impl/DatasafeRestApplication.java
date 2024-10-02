@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 public class DatasafeRestApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DatasafeRestApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DatasafeRestApplication.class, args);
+    }
 }

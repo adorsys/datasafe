@@ -26,16 +26,6 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.shared.AwsClientRetry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
-import lombok.SneakyThrows;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
-
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +35,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
-
+import lombok.SneakyThrows;
+import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.DIRECTORY_BUCKET;
 import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_ONE;
 import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_TWO;
@@ -58,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * filesBucketOne, filesBucketTwo.
  */
 @Slf4j
-class MultiDfsWithCredentialsExampleIT{
+class MultiDfsWithCredentialsExampleIT {
 
     private static final String REGION = "eu-central-1";
     private static final ExecutorService EXECUTOR = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);
@@ -150,7 +148,7 @@ class MultiDfsWithCredentialsExampleIT{
         // Instead of default BucketAccessService we will use service that reads storage access credentials from
         // keystore
         BucketAccessServiceImplRuntimeDelegatable.overrideWith(
-            registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())
+                registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())
         );
 
         // John will have all his private files stored on `filesBucketOne` and `filesBucketOne`.
@@ -167,12 +165,12 @@ class MultiDfsWithCredentialsExampleIT{
         // Set location for John's credentials keystore and put storage credentials into it:
         UserPrivateProfile profile = multiDfsDatasafe.userProfile().privateProfile(john);
         profile.getPrivateStorage().put(
-            bucketOne,
-            new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpointsByHost.get(FILES_BUCKET_ONE) + "/"))
+                bucketOne,
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpointsByHost.get(FILES_BUCKET_ONE) + "/"))
         );
         profile.getPrivateStorage().put(
-            bucketTwo,
-            new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpointsByHost.get(FILES_BUCKET_TWO) + "/"))
+                bucketTwo,
+                new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpointsByHost.get(FILES_BUCKET_TWO) + "/"))
         );
         multiDfsDatasafe.userProfile().updatePrivateProfile(john, profile);
 

@@ -36,18 +36,6 @@ import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
-import lombok.SneakyThrows;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.util.io.Streams;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.UnrecoverableKeyException;
@@ -59,11 +47,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import lombok.SneakyThrows;
+import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.io.Streams;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 /**
  * This test distributes users' storage access keystore, document encryption keystore,
  * users' private files into buckets that reside on different buckets. Bootstrap knows only how to
@@ -82,7 +79,7 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
     private static final String INBOX = "inboxbucket";
 
     private static final ExecutorService EXECUTOR = ExecutorServiceUtil
-        .submitterExecutesOnStarvationExecutingService(5, 5);
+            .submitterExecutesOnStarvationExecutingService(5, 5);
 
     private static Map<String, GenericContainer> minios = new HashMap<>();
     private static Map<String, String> endpointsByHost = new HashMap<>();
@@ -95,17 +92,17 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
         // Create all required minio-backed S3 buckets:
         Stream.of(CREDENTIALS, KEYSTORE, FILES_ONE, FILES_TWO, INBOX).forEach(it -> {
             GenericContainer minio = new GenericContainer("minio/minio:RELEASE.2019-08-01T22-18-54Z")
-                .withExposedPorts(9000)
-                .withEnv("MINIO_ACCESS_KEY", accessKey(it))
-                .withEnv("MINIO_SECRET_KEY", secretKey(it))
-                .withCommand("server /data")
-                .waitingFor(Wait.defaultWaitStrategy());
+                    .withExposedPorts(9000)
+                    .withEnv("MINIO_ACCESS_KEY", accessKey(it))
+                    .withEnv("MINIO_SECRET_KEY", secretKey(it))
+                    .withCommand("server /data")
+                    .waitingFor(Wait.defaultWaitStrategy());
             minio.start();
             minios.put(it, minio);
 
             String endpoint = LOCALHOST + ":" + minio.getFirstMappedPort() + "/";
             log.info("Minio `{}` with endpoint `{}` and keys `{}`/`{}` has started",
-                it, endpoint, accessKey(it), secretKey(it));
+                    it, endpoint, accessKey(it), secretKey(it));
 
             // http://localhost:1234/eu-central-1/bucket/
             endpointsByHost.put(it, endpoint + REGION + "/" + it + "/");
@@ -113,10 +110,10 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
             endpointsByHostNoBucket.put(it, endpoint);
 
             AmazonS3 client = S3ClientFactory.getClient(
-                endpoint,
-                REGION,
-                accessKey(it),
-                secretKey(it)
+                    endpoint,
+                    REGION,
+                    accessKey(it),
+                    secretKey(it)
             );
 
             AwsClientRetry.createBucketWithRetry(client, it);
@@ -168,7 +165,7 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
             ).build();
 
         BucketAccessServiceImplRuntimeDelegatable.overrideWith(
-            registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())
+                registry, args -> new WithCredentialProvider(args.getStorageKeyStoreOperations())
         );
     }
 
@@ -221,10 +218,10 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
         assertThat(listInBucket(FILES_TWO)).hasSize(1);
         assertThat(listInBucket(KEYSTORE)).hasSize(1);
         assertThat(listInBucket(CREDENTIALS)).containsExactlyInAnyOrder(
-            "profiles/private/john",
-            "profiles/public/john",
-            "pubkeys",
-            "storagecreds");
+                "profiles/private/john",
+                "profiles/public/john",
+                "pubkeys",
+                "storagecreds");
     }
 
     private void deregisterAndValidateEmpty(UserIDAuth john) {
@@ -243,28 +240,28 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
 
         // User does not declare his keystore location, so we are registering his stuff separately
         datasafeServices.userProfile().registerPublic(CreateUserPublicProfile.builder()
-            .id(auth.getUserID())
-            .inbox(BasePublicResource.forAbsolutePublic(inboxLocation))
-            .publicKeys(BasePublicResource.forAbsolutePublic(pubKeysLocation))
-            .build()
+                .id(auth.getUserID())
+                .inbox(BasePublicResource.forAbsolutePublic(inboxLocation))
+                .publicKeys(BasePublicResource.forAbsolutePublic(pubKeysLocation))
+                .build()
         );
 
         datasafeServices.userProfile().registerPrivate(CreateUserPrivateProfile.builder()
-            .id(auth)
-            .storageCredentialsKeystore(
-                BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(CREDENTIALS) + "storagecreds")
-            )
-            .inboxWithWriteAccess(BasePrivateResource.forAbsolutePrivate(inboxLocation))
-            .keystore(
-                BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(KEYSTORE) + "keystore")
-            )
-            // filesOneBucket is default private space, it is not directly accessible without credentials
-            .privateStorage(
-                BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(FILES_ONE) + "private/")
-            )
-            .associatedResources(Collections.emptyList())
-            .publishPubKeysTo(BasePublicResource.forAbsolutePublic(pubKeysLocation))
-            .build()
+                .id(auth)
+                .storageCredentialsKeystore(
+                        BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(CREDENTIALS) + "storagecreds")
+                )
+                .inboxWithWriteAccess(BasePrivateResource.forAbsolutePrivate(inboxLocation))
+                .keystore(
+                        BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(KEYSTORE) + "keystore")
+                )
+                // filesOneBucket is default private space, it is not directly accessible without credentials
+                .privateStorage(
+                        BasePrivateResource.forAbsolutePrivate(endpointsByHost.get(FILES_ONE) + "private/")
+                )
+                .associatedResources(Collections.emptyList())
+                .publishPubKeysTo(BasePublicResource.forAbsolutePublic(pubKeysLocation))
+                .build()
         );
 
         datasafeServices.userProfile().createStorageKeystore(auth);
@@ -273,14 +270,14 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
             String endpoint = endpointsByHost.get(it);
             UserPrivateProfile profile = datasafeServices.userProfile().privateProfile(auth);
             profile.getPrivateStorage().put(
-                id(it),
-                new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpoint + "/"))
+                    id(it),
+                    new AbsoluteLocation<>(BasePrivateResource.forPrivate(endpoint + "/"))
             );
 
             datasafeServices.userProfile().registerStorageCredentials(
-                auth,
-                id(it),
-                new StorageCredentials(accessKey(it), secretKey(it))
+                    auth,
+                    id(it),
+                    new StorageCredentials(accessKey(it), secretKey(it))
             );
 
             datasafeServices.userProfile().updatePrivateProfile(auth, profile);
@@ -293,16 +290,16 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
 
     private List<String> listInBucket(String bucket) {
         return S3ClientFactory.getClient(
-            endpointsByHostNoBucket.get(bucket),
-            REGION,
-            accessKey(bucket),
-            secretKey(bucket)
-        )
-            .listObjects(bucket, "")
-            .getObjectSummaries()
-            .stream()
-            .map(S3ObjectSummary::getKey)
-            .collect(Collectors.toList());
+                        endpointsByHostNoBucket.get(bucket),
+                        REGION,
+                        accessKey(bucket),
+                        secretKey(bucket)
+                )
+                .listObjects(bucket, "")
+                .getObjectSummaries()
+                .stream()
+                .map(S3ObjectSummary::getKey)
+                .collect(Collectors.toList());
     }
 
     @SneakyThrows
@@ -322,7 +319,7 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
     @SneakyThrows
     private String readFromPrivate(UserIDAuth user, AbsoluteLocation<ResolvedResource> location) {
         try (InputStream is = datasafeServices.privateService().read(
-            ReadRequest.forPrivate(user, location.getResource().asPrivate()))) {
+                ReadRequest.forPrivate(user, location.getResource().asPrivate()))) {
             return new String(Streams.readAll(is));
         }
     }
@@ -331,9 +328,9 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
     private AbsoluteLocation<ResolvedResource> getFirstFileInPrivate(UserIDAuth user, StorageIdentifier id,
                                                                      String path) {
         return datasafeServices.privateService()
-            .list(ListRequest.forPrivate(user, id, path))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Not found"));
+                .list(ListRequest.forPrivate(user, id, path))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
     }
 
     private static StorageIdentifier id(String endpointId) {

@@ -148,7 +148,7 @@ public class CMSEncryptionServiceImpl implements CMSEncryptionService {
 
         return generator.open(
                 dataContentStream,
-                new JceCMSContentEncryptorBuilder(algorithm).setProvider(GeneratorModule_ProviderFactory.provider()).setSecureRandom( this.secureRandom).build()
+                new JceCMSContentEncryptorBuilder(algorithm).setProvider(GeneratorModule_ProviderFactory.provider()).setSecureRandom(this.secureRandom).build()
         );
     }
 }

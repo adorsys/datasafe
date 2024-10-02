@@ -1,4 +1,5 @@
 package de.adorsys.datasafe.storage.api;
+
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-public class RegexDelegatingStorageTest extends BaseMockitoTest{
+public class RegexDelegatingStorageTest extends BaseMockitoTest {
 
     @Mock
     private StorageService service;
@@ -54,9 +55,9 @@ public class RegexDelegatingStorageTest extends BaseMockitoTest{
         verify(service).write(any(WithCallback.class));
     }
     @Test
-    void objectExistsWithNoMatch() {
-    AbsoluteLocation badlocation = new AbsoluteLocation<>(BasePrivateResource.forPrivate("file://bucket"));
-    assertThrows(IllegalArgumentException.class, () -> tested.objectExists(badlocation));
+        void objectExistsWithNoMatch() {
+        AbsoluteLocation badlocation = new AbsoluteLocation<>(BasePrivateResource.forPrivate("file://bucket"));
+        assertThrows(IllegalArgumentException.class, () -> tested.objectExists(badlocation));
     }
 
 }

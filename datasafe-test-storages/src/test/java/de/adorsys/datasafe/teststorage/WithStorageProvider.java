@@ -62,8 +62,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String bucketPath = UUID.randomUUID().toString();
 
     private static final ExecutorService EXECUTOR_SERVICE = "true".equals(readPropOrEnv("USE_EXECUTOR_POOL")) ?
-        ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService() :
-        ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);
+            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService() :
+            ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService(4, 4);
 
     private static String minioAccessKeyID = "admin";
     private static String minioSecretAccessKey = "password";
@@ -75,7 +75,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
     private static String cephRegion = "eu-central-1";
-    private static String cephUrl = getDockerUri("http://0.0.0.0");// not localhost!
+    private static String cephUrl = getDockerUri("http://0.0.0.0"); // not localhost!
     private static String cephMappedUrl;
 
     private static String amazonAccessKeyID = readPropOrEnv("AWS_ACCESS_KEY");
@@ -85,7 +85,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static String amazonMappedUrl;
 
     protected static List<String> buckets =
-        Arrays.asList(readPropOrEnv("AWS_BUCKET", "adorsys-docusafe").split(","));
+            Arrays.asList(readPropOrEnv("AWS_BUCKET", "adorsys-docusafe").split(","));
     protected static String primaryBucket = buckets.get(0);
 
     private static GenericContainer minioContainer;
@@ -223,8 +223,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     protected static StorageDescriptor fs() {
         return new StorageDescriptor(
             StorageDescriptorName.FILESYSTEM,
-            () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
-            new Uri(tempDir.toUri()),
+                () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
+                new Uri(tempDir.toUri()),
             null, null, null,
             tempDir.toString()
         );
@@ -309,11 +309,11 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
         String lambdafinalBucket = bucket;
         amazonS3.listObjects(bucket, prefix)
-            .getObjectSummaries()
-            .forEach(it -> {
-                log.debug("Remove {}", it.getKey());
-                amazonS3.deleteObject(lambdafinalBucket, it.getKey());
-            });
+                .getObjectSummaries()
+                .forEach(it -> {
+                    log.debug("Remove {}", it.getKey());
+                    amazonS3.deleteObject(lambdafinalBucket, it.getKey());
+                });
     }
 
     private static void initS3() {
@@ -323,8 +323,8 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
-            .withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
+                .withCredentials(new AWSStaticCredentialsProvider(
+                        new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
             );
 
         if (buckets.size() > 1) {
@@ -372,7 +372,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             )
             .withCredentials(
                 new AWSStaticCredentialsProvider(
-                    new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)
+                        new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)
                 )
             )
             .enablePathStyleAccess()
@@ -409,7 +409,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
             )
             .withCredentials(
                 new AWSStaticCredentialsProvider(
-                    new BasicAWSCredentials(cephAccessKeyID, cephSecretAccessKey)
+                        new BasicAWSCredentials(cephAccessKeyID, cephSecretAccessKey)
                 )
             )
             .enablePathStyleAccess()
@@ -422,7 +422,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         ceph.setBucketVersioningConfiguration(
             new SetBucketVersioningConfigurationRequest(
                 primaryBucket,
-                new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
+                    new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
             )
         );
     }

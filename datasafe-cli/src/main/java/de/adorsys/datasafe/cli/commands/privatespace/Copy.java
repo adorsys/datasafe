@@ -42,7 +42,7 @@ public class Copy implements Runnable {
                                 to
                         )
                 );
-             InputStream is = MoreFiles.asByteSource(from, StandardOpenOption.READ).openStream()
+                InputStream is = MoreFiles.asByteSource(from, StandardOpenOption.READ).openStream()
         ) {
             ByteStreams.copy(is, os);
         }

@@ -31,7 +31,7 @@ public class PublicKeySerdeImplTest extends BaseMockitoTest {
     );
 
     @Test
-    public void writeAndReadPubKey(){
+    public void writeAndReadPubKey() {
         ReadStorePassword readStorePassword = new ReadStorePassword("storepass");
         ReadKeyPassword readKeyPassword = ReadKeyPasswordTestFactory.getForString("keypass");
 

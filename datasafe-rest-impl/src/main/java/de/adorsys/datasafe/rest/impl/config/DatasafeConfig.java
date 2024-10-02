@@ -34,19 +34,18 @@ import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
+import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Configures default (non-versioned) Datasafe service that uses S3 client as storage provider.
@@ -84,7 +83,7 @@ public class DatasafeConfig {
     OverridesRegistry withClientCredentialsOverrides() {
         OverridesRegistry registry = new BaseOverridesRegistry();
         BucketAccessServiceImplRuntimeDelegatable.overrideWith(registry, args ->
-            new WithAccessCredentials(args.getStorageKeyStoreOperations()));
+                new WithAccessCredentials(args.getStorageKeyStoreOperations()));
         return registry;
     }
 
@@ -138,25 +137,25 @@ public class DatasafeConfig {
         );
 
         return new RegexDelegatingStorage(
-            ImmutableMap.<Pattern, StorageService>builder()
-                .put(Pattern.compile(properties.getSystemRoot() + ".+"), basicStorage)
-                // here order is important, immutable map preserves key order, so properties.getAmazonUrl()
-                // will be tried first
-                .put(
-                    Pattern.compile(".+"),
-                    new UriBasedAuthStorageService(
-                        acc -> new S3StorageService(
-                                factory.getClient(
-                                acc.getEndpoint(),
-                                acc.getRegion(),
-                                acc.getAccessKey(),
-                                acc.getSecretKey()
-                            ),
-                            new BucketNameRemovingRouter(acc.getBucketName()),
-                            executorService
-                        )
-                    )
-                ).build()
+                ImmutableMap.<Pattern, StorageService>builder()
+                        .put(Pattern.compile(properties.getSystemRoot() + ".+"), basicStorage)
+                        // here order is important, immutable map preserves key order, so properties.getAmazonUrl()
+                        // will be tried first
+                        .put(
+                                Pattern.compile(".+"),
+                                new UriBasedAuthStorageService(
+                                        acc -> new S3StorageService(
+                                                factory.getClient(
+                                                        acc.getEndpoint(),
+                                                        acc.getRegion(),
+                                                        acc.getAccessKey(),
+                                                        acc.getSecretKey()
+                                                ),
+                                                new BucketNameRemovingRouter(acc.getBucketName()),
+                                                executorService
+                                        )
+                                )
+                        ).build()
         );
     }
 
@@ -202,7 +201,7 @@ public class DatasafeConfig {
         StorageService db = new DatabaseStorageService(ALLOWED_TABLES, new DatabaseConnectionRegistry(
                 ImmutableMap.of(properties.getDbUrl(),
                         new DatabaseCredentials(properties.getDbUsername(), properties.getDbPassword()))
-            )
+        )
         );
 
         S3StorageService s3StorageService = new S3StorageService(s3(properties), properties.getAmazonRegion(), properties.getBucketName(),

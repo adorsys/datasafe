@@ -16,7 +16,9 @@ public class LogStringFrame {
     public String toString() {
         int max = 0;
         for (String line : list) {
-            if (line.length() > max) max = line.length();
+            if (line.length() > max) {
+                max = line.length();
+            }
         }
 
         StringBuilder sb = new StringBuilder();
@@ -35,7 +37,7 @@ public class LogStringFrame {
     }
 
     private String fill(String start, int length, String el) {
-        while(start.length() < length) {
+        while (start.length() < length) {
             start = start + el;
         }
         return start;

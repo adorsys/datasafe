@@ -11,6 +11,7 @@ public class ReadKeyPassword extends BaseTypePasswordString {
 
     /**
      * Caller of method makes sure, supplied char[] is deleted asap
+     *
      * @param readKeyPassword will stay unchanged
      */
     public ReadKeyPassword(Supplier<char[]> readKeyPassword) {
@@ -20,8 +21,9 @@ public class ReadKeyPassword extends BaseTypePasswordString {
     /**
      * ATTENTION:
      * caller of method gives ownership of {@code readKeyPassword} to this class.
-     * @code readKeyPassword} will be nullyfied after successful read/write/list.
+     *
      * @param readKeyPassword Password to read key that will be cleared after read/write/list.
+     * @code readKeyPassword} will be nullyfied after successful read/write/list.
      */
     public ReadKeyPassword(char[] readKeyPassword) {
         super(readKeyPassword);

@@ -93,10 +93,10 @@ public class IntegrityPreservingUriEncryption implements SymmetricPathEncryption
 
     protected String decryptorAndDecoder(PathSegmentWithSecretKeyWith keyAndSegment,
                                          PathEncryptorDecryptor pathEncryptorDecryptor) {
-            byte[] segment = keyAndSegment.getPath().getBytes(StandardCharsets.UTF_8);
-            keyAndSegment.getDigest().update(segment);
+        byte[] segment = keyAndSegment.getPath().getBytes(StandardCharsets.UTF_8);
+        keyAndSegment.getDigest().update(segment);
 
-            return new String(
+        return new String(
                     pathEncryptorDecryptor.decrypt(
                             keyAndSegment.getPathEncryptionSecretKey(),
                             decode(keyAndSegment.getPath()),

@@ -110,7 +110,7 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
         assertThat(storageService.list(
                 new AbsoluteLocation<>(
                         BasePrivateResource.forPrivate(new Uri("s3://" + bucketName + "/over_limit")))))
-        .hasSize(numberOfFilesOverLimit);
+                .hasSize(numberOfFilesOverLimit);
     }
 
     @Test

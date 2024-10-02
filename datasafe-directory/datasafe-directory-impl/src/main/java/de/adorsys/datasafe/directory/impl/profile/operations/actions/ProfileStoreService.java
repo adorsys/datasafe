@@ -40,7 +40,7 @@ public class ProfileStoreService {
     public void registerPrivate(UserID id, UserPrivateProfile profile) {
         log.debug("Register private {}", profile);
         try (OutputStream os = writeService.write(
-            WithCallback.noCallback(access.withSystemAccess(dfsConfig.privateProfile(id))))
+                WithCallback.noCallback(access.withSystemAccess(dfsConfig.privateProfile(id))))
         ) {
             os.write(serde.toJson(profile).getBytes());
         }
@@ -51,7 +51,7 @@ public class ProfileStoreService {
     public void registerPublic(UserID id, UserPublicProfile profile) {
         log.debug("Register public {}", profile);
         try (OutputStream os = writeService.write(
-            WithCallback.noCallback(access.withSystemAccess(dfsConfig.publicProfile(id))))
+                WithCallback.noCallback(access.withSystemAccess(dfsConfig.publicProfile(id))))
         ) {
             os.write(serde.toJson(profile).getBytes());
         }

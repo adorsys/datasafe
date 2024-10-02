@@ -91,7 +91,7 @@ class RandomActionsOnSimpleDatasafeAdapterIT extends BaseRandomActions {
 
     private DefaultDatasafeServices datasafeServicesFromSimpleDatasafeAdapter(StorageDescriptor descriptor) {
         SimpleDatasafeService datasafeService = new SimpleDatasafeServiceImpl(
-            DFSTestCredentialsFactory.credentials(descriptor), new MutableEncryptionConfig(), new PathEncryptionConfig(true)
+                DFSTestCredentialsFactory.credentials(descriptor), new MutableEncryptionConfig(), new PathEncryptionConfig(true)
         );
 
         return new DefaultDatasafeServices() {

@@ -136,7 +136,9 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         for (Enumeration<String> keyAliases = keyStore.aliases(); keyAliases.hasMoreElements(); ) {
             final String keyAlias = keyAliases.nextElement();
             X509Certificate cert = (X509Certificate) keyStore.getCertificate(keyAlias);
-            if (cert == null) continue; // skip
+            if (cert == null) {
+                continue; // skip
+            }
             boolean[] keyUsage = cert.getKeyUsage();
             // digitalSignature (0), nonRepudiation (1), keyEncipherment (2), dataEncipherment (3),
             // keyAgreement (4), keyCertSign (5), cRLSign (6), encipherOnly (7), decipherOnly (8)
