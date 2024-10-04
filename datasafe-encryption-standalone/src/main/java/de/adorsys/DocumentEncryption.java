@@ -5,56 +5,68 @@ import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.SecretKeyIDWithKey;
-import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
-import de.adorsys.datasafe.types.api.callback.ResourceWriteCallback;
 import de.adorsys.datasafe.types.api.resource.*;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StreamUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Component
+@Slf4j
+//@Component
 public class DocumentEncryption {
     private final EncryptedDocumentReadService reader;
     private final EncryptedDocumentWriteService writer;
+    private boolean PathEncryptionEnabled;
     private Properties properties;
 
-    public DocumentEncryption(EncryptedDocumentWriteService writer, EncryptedDocumentReadService reader) {
-//        this.properties = properties;
+    public DocumentEncryption(Properties properties, EncryptedDocumentWriteService writer, EncryptedDocumentReadService reader) {
         this.writer = writer;
         this.reader = reader;
+        this.properties = properties;
+    }
+    public void enablePathEncryption(String isPathEncryptEnabled ) {
+        if (Objects.equals(isPathEncryptEnabled, "Yes")) {
+            PathEncryptionEnabled = true;
+        } else {
+            PathEncryptionEnabled = false;
+        }
     }
 
     @SneakyThrows
     public void write(SecretKeyIDWithKey secretKey, String filename) {
-        Uri location = new Uri(properties.getSystemRoot() + "/" + filename);
+        Uri location = new Uri(properties.getSystemRoot() + "/Encrypted/" + "Output");
         PrivateResource privateResource = new BasePrivateResource(location);
         AbsoluteLocation<PrivateResource> absoluteLocation = new AbsoluteLocation<>(privateResource);
 
         try (OutputStream outputStream = writer.write(WithCallback.noCallback(absoluteLocation), secretKey)) {
-            outputStream.write(Files.readAllBytes(Paths.get(properties.getSystemRoot()+ "/" + filename)));
+            outputStream.write("Hello".getBytes(UTF_8));
         }
     }
+    @SneakyThrows
+    public void read(String filename, UserIDAuth user) {
+        Uri location = new Uri(properties.getSystemRoot()+ "/Encrypted/" + "Output");
+        PrivateResource privateResource = new BasePrivateResource(location);
+        AbsoluteLocation<PrivateResource> absoluteLocation = new AbsoluteLocation<>(privateResource);
 
-//    public int read( String password, SecretKeyIDWithKey secretKey, String filename ) {
-//        Uri location = new Uri(properties.getSystemRoot() + "/" + filename);
-//        PrivateResource privateResource = new BasePrivateResource(location);
-//        AbsoluteLocation<PrivateResource> absoluteLocation = new AbsoluteLocation<>(privateResource);
-//        ReadRequest readRequest = ReadRequest.<UserIDAuth, AbsoluteLocation<PrivateResource>>builder()
-//                .location(resolver.resolveRelativeToPrivateInbox(request.getOwner(), request.getLocation()))
-//                .owner(request.getOwner())
-//                .storageIdentifier(request.getStorageIdentifier())
-//                .build();
-//
-//        try(InputStream inputStream = reader.read(WithCallback.noCallback(absoluteLocation), secretKey)) {
-//            return inputStream.read(Files.readAllBytes(Paths.get(properties.getSystemRoot()+ "/" + filename)));
-//
-//        }
-//    }
+        ReadRequest<UserIDAuth, AbsoluteLocation<PrivateResource>> readRequest = ReadRequest.<UserIDAuth, AbsoluteLocation<PrivateResource>>builder()
+                .location(absoluteLocation)
+                .owner(user)
+                .storageIdentifier(new StorageIdentifier(StorageIdentifier.DEFAULT_ID))
+                .build();
+
+        try( InputStream inputStream = reader.read(readRequest)) {
+            System.out.println(StreamUtils.copyToString(inputStream, UTF_8));
+        }
+    }
 
 }
