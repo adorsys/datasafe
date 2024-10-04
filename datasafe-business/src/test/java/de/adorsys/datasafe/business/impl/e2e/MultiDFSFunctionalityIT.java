@@ -96,7 +96,7 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
     static void initDistributedMinios() {
         // Create all required minio-backed S3 buckets:
         Stream.of(CREDENTIALS, KEYSTORE, FILES_ONE, FILES_TWO, INBOX).forEach(it -> {
-            GenericContainer minio = new GenericContainer("minio/minio:RELEASE.2019-08-01T22-18-54Z")
+            GenericContainer minio = new GenericContainer("minio/minio:RELEASE.2023-06-02T23-17-26Z")
                 .withExposedPorts(9000)
                 .withEnv("MINIO_ACCESS_KEY", accessKey(it))
                 .withEnv("MINIO_SECRET_KEY", secretKey(it))

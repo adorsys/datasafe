@@ -165,8 +165,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
                 .build();
         try {
             s3.putObject(putObjectRequest, RequestBody.fromInputStream(new ByteArrayInputStream(content, 0, size), size));
-        } catch (Exception e) {
-            log.error("Failed to put object to S3: {}", e.getMessage(), e);
+        } catch (S3Exception e) {
+            log.error("Failed to put object to S3: {}", e.awsErrorDetails().errorMessage(), e);
             throw e;
         }
 
@@ -212,7 +212,6 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
     }
 
     private void sendLastChunkOfMultipartIfNeeded() {
-        // empty file can be created only using simple upload:
         if (currentOutputStream.size() == 0) {
             partCounter--;
             return;
@@ -260,9 +259,8 @@ public class MultipartUploadS3StorageOutputStream extends OutputStream {
             try {
                 multiPartUploadResult = s3.createMultipartUpload(initiateRequest);
             } catch (S3Exception e) {
-                log.error("Failed to initiate multipart upload", e);
-                // Handle the exception as needed
-                throw e; // or handle accordingly
+                log.error("Failed to initiate multipart upload", e.awsErrorDetails().errorMessage(), e);
+                throw e;
             }
         }
     }

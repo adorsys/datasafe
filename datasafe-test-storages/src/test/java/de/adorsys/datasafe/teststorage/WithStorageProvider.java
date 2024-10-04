@@ -73,7 +73,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     // Note that CEPH is used to test bucket-level versioning, so you will get versioned bucket:
     private static String cephAccessKeyID = "admin";
     private static String cephSecretAccessKey = "password";
-    private static String cephRegion = "eu-central-1";
+    private static String cephRegion = "us-east-1";
     private static String cephUrl = getDockerUri("http://0.0.0.0");// not localhost!
     private static String cephMappedUrl;
 
