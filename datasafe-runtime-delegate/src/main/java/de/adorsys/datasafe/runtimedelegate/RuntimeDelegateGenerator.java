@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
 
 class RuntimeDelegateGenerator {
 
-    private static final String CLASS_PURPOSE_COMMENT = "This class performs functionality delegation based on "
-            + "contextClass content. If contextClass contains overriding class - it will be used.";
-    private static final String OVERRIDE_WITH_PURPOSE_COMMENT = "This is a typesafe function to register "
-            + "overriding class into context.\n";
+    private static final String CLASS_PURPOSE_COMMENT = "This class performs functionality delegation based on " +
+            "contextClass content. If contextClass contains overriding class - it will be used.";
+    private static final String OVERRIDE_WITH_PURPOSE_COMMENT = "This is a typesafe function to register " +
+            "overriding class into context.\n";
 
     private static final String CAPTOR_TYPE_NAME = "ArgumentsCaptor";
     private static final String CAPTOR_NAME = "argumentsCaptor";
@@ -63,9 +63,9 @@ class RuntimeDelegateGenerator {
         delegator.addMethod(overrideWith(forClass, contextClass, argCaptor));
 
         JavaFile javaFile = JavaFile
-            .builder(ClassName.get(forClass).packageName(), delegator.build())
-            .indent("    ")
-            .build();
+                .builder(ClassName.get(forClass).packageName(), delegator.build())
+                .indent("    ")
+                .build();
 
         try {
             javaFile.writeTo(filer);
@@ -108,19 +108,19 @@ class RuntimeDelegateGenerator {
     // perform actual delegation
     private void addSuperClassOverrides(TypeSpec.Builder toClass, TypeElement baseClass) {
         baseClass.getEnclosedElements().stream()
-            // limiting to overridable-only methods:
-            .filter(it -> it instanceof ExecutableElement)
-            .filter(it -> it.getKind() == ElementKind.METHOD)
-            .filter(it -> !it.getModifiers().contains(Modifier.PRIVATE))
-            .forEach(it -> {
-                MethodSpec overriddenBase = MethodSpec.overriding((ExecutableElement) it).build();
-                MethodSpec.Builder overridden = MethodSpec.overriding((ExecutableElement) it);
-                overridden.addCode(
+                // limiting to overridable-only methods:
+                .filter(it -> it instanceof ExecutableElement)
+                .filter(it -> it.getKind() == ElementKind.METHOD)
+                .filter(it -> !it.getModifiers().contains(Modifier.PRIVATE))
+                .forEach(it -> {
+                    MethodSpec overriddenBase = MethodSpec.overriding((ExecutableElement) it).build();
+                    MethodSpec.Builder overridden = MethodSpec.overriding((ExecutableElement) it);
+                    overridden.addCode(
                     delegateToIfOverrideIsPresent(overriddenBase)
                 ).build();
 
-                toClass.addMethod(overridden.build());
-            });
+                    toClass.addMethod(overridden.build());
+                });
     }
 
     private CodeBlock delegateToIfOverrideIsPresent(MethodSpec target) {
@@ -143,15 +143,15 @@ class RuntimeDelegateGenerator {
                 .addTypeVariables(typeVariables);
 
         MethodSpec.Builder ctor = MethodSpec
-            .constructorBuilder()
-            .addModifiers(Modifier.PRIVATE);
+                .constructorBuilder()
+                .addModifiers(Modifier.PRIVATE);
 
         usingConstructor.getParameters().forEach(it -> {
             FieldSpec argCaptor = FieldSpec.builder(
-                TypeName.get(it.asType()),
-                firstCharToLowerCase(it.getSimpleName().toString()),
-                Modifier.PRIVATE,
-                Modifier.FINAL
+                    TypeName.get(it.asType()),
+                    firstCharToLowerCase(it.getSimpleName().toString()),
+                    Modifier.PRIVATE,
+                    Modifier.FINAL
             ).build();
 
             ctor.addParameter(argCaptor.type, argCaptor.name);
@@ -159,10 +159,10 @@ class RuntimeDelegateGenerator {
 
             builder.addField(argCaptor);
             builder.addMethod(MethodSpec.methodBuilder("get" + firstCharToUpperCase(argCaptor.name))
-                .addModifiers(Modifier.PUBLIC)
-                .returns(argCaptor.type)
-                .addCode(CodeBlock.builder().addStatement("return $N", argCaptor).build())
-                .build()
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(argCaptor.type)
+                    .addCode(CodeBlock.builder().addStatement("return $N", argCaptor).build())
+                    .build()
             );
         });
 
@@ -184,11 +184,11 @@ class RuntimeDelegateGenerator {
         method.addParameter(contextParam);
 
         usingConstructor.getParameters().forEach(it ->
-            method.addParameter(
+                method.addParameter(
                 TypeName.get(it.asType()),
                 firstCharToLowerCase(it.getSimpleName().toString())
             )
-            .addAnnotations(
+                .addAnnotations(
                 it.getAnnotationMirrors().stream().map(AnnotationSpec::get).collect(Collectors.toList())
             )
         );

@@ -86,7 +86,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     protected Fixture getFixture() {
-        switch(FIXTURE_SIZE) {
+        switch (FIXTURE_SIZE) {
             case "MEDIUM" : return fixture("fixture/fixture_1000_ops.json");
             case "LARGE" : return fixture("fixture/fixture_10000_ops.json");
             default : return fixture("fixture/fixture_200_ops.json");
@@ -94,7 +94,7 @@ public abstract class BaseRandomActions extends WithStorageProvider {
     }
 
     protected Fixture getSimpleDatasafeAdapterFixture() {
-        switch(FIXTURE_SIZE) {
+        switch (FIXTURE_SIZE) {
             case "MEDIUM" : return fixture("fixture/fixture_simple_datasafe_1000_ops.json");
             case "LARGE" : return fixture("fixture/fixture_simple_datasafe_10000_ops.json");
             default : return fixture("fixture/fixture_simple_datasafe_200_ops.json");

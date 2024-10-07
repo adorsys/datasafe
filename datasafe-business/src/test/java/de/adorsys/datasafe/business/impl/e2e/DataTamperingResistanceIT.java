@@ -143,9 +143,9 @@ class DataTamperingResistanceIT extends BaseE2EIT {
         }
 
         log.info("About to tamper path `{}`", pathAsString);
-        pathAsString = pathAsString.substring(0, characterToTamper - 1)
-                + randomChar(pathAsString.charAt(characterToTamper))
-                + pathAsString.substring(characterToTamper);
+        pathAsString = pathAsString.substring(0, characterToTamper - 1) +
+                randomChar(pathAsString.charAt(characterToTamper)) +
+                pathAsString.substring(characterToTamper);
         log.info("Tampered path as `{}`", pathAsString);
         Files.createDirectories(Paths.get(pathAsString).getParent());
         Files.write(Paths.get(pathAsString), privateBytes, StandardOpenOption.CREATE);

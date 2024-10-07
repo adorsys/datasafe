@@ -72,21 +72,21 @@ public class FileSystemStorageService implements StorageService {
 
     private boolean allowableDir(Path it) {
         String name = it.getFileName().toString();
-        return !".".equals(name)
-                && !"..".equals(name)
+        return !".".equals(name) &&
+                !"..".equals(name) &&
                 // prevents root folder to appear
-                && !(it.toString() + "/").equals(dir.getRawPath());
+                !(it.toString() + "/").equals(dir.getRawPath());
     }
 
     private boolean shouldReturnDir(AbsoluteLocation path) {
-        return path instanceof AbsoluteLocationWithCapability
-                && ((AbsoluteLocationWithCapability) path).getCapability().equals(StorageCapability.LIST_RETURNS_DIR);
+        return path instanceof AbsoluteLocationWithCapability &&
+                ((AbsoluteLocationWithCapability) path).getCapability().equals(StorageCapability.LIST_RETURNS_DIR);
     }
 
     @SneakyThrows
     @Override
     public InputStream read(AbsoluteLocation path) {
-        log.debug("Read file request: {}",path.location());
+        log.debug("Read file request: {}", path.location());
         Path filePath = resolve(path.location().getRawPath(), false);
         return MoreFiles.asByteSource(filePath, StandardOpenOption.READ).openStream();
     }

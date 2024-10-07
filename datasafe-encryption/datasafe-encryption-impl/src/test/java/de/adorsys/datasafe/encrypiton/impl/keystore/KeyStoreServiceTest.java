@@ -125,9 +125,9 @@ class KeyStoreServiceTest extends BaseMockitoTest {
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
         List<String> list = Collections.list(keyStore.aliases());
         Assertions.assertThrows(ClassCastException.class, () -> {
-        	for(String id : list) {
-        		keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(id));
-        	}
+            for (String id : list) {
+                keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(id));
+            }
         });
     }
 

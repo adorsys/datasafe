@@ -4,6 +4,11 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import de.adorsys.datasafe.rest.impl.exceptions.UnauthorizedException;
 import de.adorsys.datasafe.rest.impl.exceptions.UserDoesNotExistsException;
 import de.adorsys.datasafe.rest.impl.exceptions.UserExistsException;
+import java.security.UnrecoverableKeyException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.crypto.BadPaddingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +16,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import javax.crypto.BadPaddingException;
-import java.security.UnrecoverableKeyException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @ControllerAdvice(basePackageClasses = {
         DocumentController.class,
@@ -50,7 +49,7 @@ public class GenericControllerAdvice {
     }
 
     @ExceptionHandler({UnauthorizedException.class, BadCredentialsException.class})
-    @ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="Access Denied")
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "Access Denied")
     public ResponseEntity<List<String>> handleUnauthorizedException(Exception ex) {
         log.debug("Unauthorized exception: {}", ex.getMessage(), ex);
         List<String> errors = Collections.singletonList(ex.getMessage());
@@ -58,7 +57,7 @@ public class GenericControllerAdvice {
     }
 
     @ExceptionHandler({UnrecoverableKeyException.class, BadPaddingException.class})
-    @ResponseStatus(value=HttpStatus.FORBIDDEN, reason="Access Denied")
+    @ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "Access Denied")
     public ResponseEntity<List<String>> handleBadCredentialsException(Exception ex) {
         log.debug("Bad credentials exception: {}", ex.getMessage(), ex);
         List<String> errors = Collections.singletonList(ex.getMessage());

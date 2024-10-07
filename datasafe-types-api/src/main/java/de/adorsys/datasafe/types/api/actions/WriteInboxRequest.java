@@ -37,7 +37,8 @@ public class WriteInboxRequest<T, R, L extends ResourceLocation> {
     @Singular
     List<? extends ResourceWriteCallback> callbacks;
 
-    private WriteInboxRequest(@NonNull T owner, @NonNull R recipients, @NonNull L location, List<? extends ResourceWriteCallback> callbacks) {
+    private WriteInboxRequest(@NonNull T owner, @NonNull R recipients, @NonNull L location,
+                              List<? extends ResourceWriteCallback> callbacks) {
         this.owner = owner;
         this.recipients = recipients;
         this.location = location;

@@ -58,7 +58,7 @@ public class VersionController {
         path = path.replaceAll("^/", "");
         try {
             List<String> documentList = versionedDatasafeServices.latestPrivate().listWithDetails(
-                ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
+                    ListRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path))
                     .map(e -> e.absolute().getResource().decryptedPath().asString())
                     .toList();
             log.debug("List for path {} returned {} items", path, documentList.size());
@@ -87,7 +87,7 @@ public class VersionController {
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
 
         try (InputStream is = versionedDatasafeServices.latestPrivate().read(request);
-             OutputStream os = response.getOutputStream()) {
+                OutputStream os = response.getOutputStream()) {
             StreamUtils.copy(is, os);
         }
         log.debug("User: {}, read private file from: {}", user, path);
@@ -108,7 +108,7 @@ public class VersionController {
         WriteRequest<UserIDAuth, PrivateResource> request =
                 WriteRequest.forPrivate(userIDAuth, new StorageIdentifier(storageId), path);
         try (OutputStream os = versionedDatasafeServices.latestPrivate().write(request);
-             InputStream is = file.getInputStream()) {
+                InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
         }
         log.debug("User: {}, write private file to: {}", user, path);

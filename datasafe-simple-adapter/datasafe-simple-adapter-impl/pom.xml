@@ -10,6 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>datasafe-simple-adapter-impl</artifactId>
+
+    <properties>
+        <bouncycastle.bcprov.version>1.78.1</bouncycastle.bcprov.version>
+        <jetbrains.annotations.version>17.0.0</jetbrains.annotations.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.adorsys</groupId>
@@ -39,6 +45,51 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j-simple.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncycastle.bcprov.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.dagger</groupId>
+            <artifactId>dagger</artifactId>
+            <version>${dagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr-305.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cryptomator</groupId>
+            <artifactId>siv-mode</artifactId>
+            <version>${siv-mode.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${amazon.aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>${amazon.aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${jetbrains.annotations.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -78,18 +129,40 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven.dependency.plugin.version}</version>
+                <configuration>
+                    <ignoredUsedUndeclaredDependencies>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-encryption-impl</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-inbox-impl</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys.keymanagement:api</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-storage-api</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-privatestore-api</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-privatestore-impl</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-directory-api</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-directory-impl</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-inbox-api</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-types-api</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>de.adorsys:datasafe-encryption-api</ignoredUsedUndeclaredDependency>
+                        <ignoredUsedUndeclaredDependency>org.projectlombok:lombok</ignoredUsedUndeclaredDependency>
+                    </ignoredUsedUndeclaredDependencies>
+                    <ignoredUnusedDeclaredDependencies>
+                        <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-simple</ignoredUnusedDeclaredDependency>
+                        <ignoredUnusedDeclaredDependency>org.mockito:mockito-core</ignoredUnusedDeclaredDependency>
+                    </ignoredUnusedDeclaredDependencies>
+                    <ignoredNonTestScopedDependencies>
+                        <ignoredNonTestScopedDependency>org.bouncycastle:bcprov-jdk18on</ignoredNonTestScopedDependency>
+                    </ignoredNonTestScopedDependencies>
+
+                </configuration>
                 <executions>
                     <execution>
                         <id>analyze</id>
                         <goals>
                             <goal>analyze-only</goal>
                         </goals>
-                        <configuration>
-                            <failOnWarning>false</failOnWarning>
-                            <outputXML>true</outputXML>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

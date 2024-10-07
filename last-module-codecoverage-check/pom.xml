@@ -134,13 +134,11 @@
             <version>${project.version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
-
 
     </dependencies>
 
@@ -244,6 +242,11 @@
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-storage-impl-s3</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-types-api</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-spring</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-simple-adapter-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>de.adorsys:datasafe-runtime-delegate</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-api</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
 
                         </configuration>

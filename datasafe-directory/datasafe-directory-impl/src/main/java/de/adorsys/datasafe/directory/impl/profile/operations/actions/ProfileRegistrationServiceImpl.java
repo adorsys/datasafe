@@ -95,8 +95,8 @@ public class ProfileRegistrationServiceImpl implements ProfileRegistrationServic
     @Override
     public void createDocumentKeystore(UserIDAuth user, UserPrivateProfile profile) {
         publishPublicKeysIfNeeded(
-            profile.getPublishPublicKeysTo(),
-            keyStoreOper.createAndWriteKeyStore(user)
+                profile.getPublishPublicKeysTo(),
+                keyStoreOper.createAndWriteKeyStore(user)
         );
     }
 

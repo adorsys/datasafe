@@ -19,7 +19,7 @@ import javax.inject.Inject;
  * 1. To add user-specific credentials, if it is 1 user per bucket or similar
  * 2. To redirect requests
  *
- * By default is no-op - simply wraps resource into {@link AbsoluteLocation}
+ * <p>By default is no-op - simply wraps resource into {@link AbsoluteLocation}
  */
 @Slf4j
 @RuntimeDelegate

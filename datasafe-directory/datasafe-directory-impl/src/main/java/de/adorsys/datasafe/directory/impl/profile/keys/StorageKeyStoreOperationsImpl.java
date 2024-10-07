@@ -101,10 +101,10 @@ public class StorageKeyStoreOperationsImpl implements StorageKeyStoreOperations 
         AbsoluteLocation location = keystoreLocationWithAccess(forUser);
 
         genericOper.writeKeystore(
-            forUser.getUserID(),
-            genericOper.keystoreAuth(forUser),
-            location,
-            newKeystore(forUser)
+                forUser.getUserID(),
+                genericOper.keystoreAuth(forUser),
+                location,
+                newKeystore(forUser)
         );
     }
 

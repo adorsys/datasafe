@@ -75,9 +75,9 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
             keyByPrefix(forUser, DOCUMENT_KEY_ID_PREFIX); // for access check
         } catch (RuntimeException ex) {
             // lombok @SneakyThrows handling
-            if (ex.getCause() instanceof KeyStoreException
-                    || ex.getCause() instanceof UnrecoverableKeyException
-                    || ex.getCause() instanceof BadPaddingException) {
+            if (ex.getCause() instanceof KeyStoreException ||
+                    ex.getCause() instanceof UnrecoverableKeyException ||
+                    ex.getCause() instanceof BadPaddingException) {
                 throw ex.getCause();
             }
 

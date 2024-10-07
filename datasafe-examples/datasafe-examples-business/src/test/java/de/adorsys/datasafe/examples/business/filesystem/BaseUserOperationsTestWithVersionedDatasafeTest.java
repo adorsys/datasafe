@@ -1,5 +1,6 @@
 package de.adorsys.datasafe.examples.business.filesystem;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import de.adorsys.datasafe.business.impl.service.DaggerVersionedDatasafeServices;
 import de.adorsys.datasafe.business.impl.service.VersionedDatasafeServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
@@ -15,11 +16,6 @@ import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.ResolvedResource;
 import de.adorsys.datasafe.types.api.resource.Versioned;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -27,8 +23,10 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * This test shows simplistic usage of Datasafe versioned services that reside on filesystem.
@@ -96,7 +94,7 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
         ).hasContent("Hello 3");
         // but there are 3 versions of file stored physically in users' privatespace:
         assertThat(versionedServices.privateService().list(
-            ListRequest.forDefaultPrivate(user, "my/own/file.txt"))
+                ListRequest.forDefaultPrivate(user, "my/own/file.txt"))
         ).hasSize(3);
         // and still only one file visible on latest view
         assertThat(versionedServices.latestPrivate().list(ListRequest.forDefaultPrivate(user, ""))).hasSize(1);
@@ -105,18 +103,18 @@ class BaseUserOperationsTestWithVersionedDatasafeTest {
         // BEGIN_SNIPPET:Lets check how to read oldest file version
         // so lets collect all versions
         List<Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion>> withVersions =
-            versionedServices.versionInfo().versionsOf(
-                ListRequest.forDefaultPrivate(user, "my/own/file.txt")
-            ).collect(Collectors.toList());
+                versionedServices.versionInfo().versionsOf(
+                        ListRequest.forDefaultPrivate(user, "my/own/file.txt")
+                ).collect(Collectors.toList());
         // so that we can find oldest
         Versioned<AbsoluteLocation<ResolvedResource>, PrivateResource, DFSVersion> oldest =
-            withVersions.stream()
-                .sorted(Comparator.comparing(it -> it.absolute().getResource().getModifiedAt()))
-                .collect(Collectors.toList())
-                .get(0);
+                withVersions.stream()
+                        .sorted(Comparator.comparing(it -> it.absolute().getResource().getModifiedAt()))
+                        .collect(Collectors.toList())
+                        .get(0);
         // and read oldest content
         assertThat(versionedServices.privateService()
-            .read(ReadRequest.forPrivate(user, oldest.absolute().getResource().asPrivate()))
+                .read(ReadRequest.forPrivate(user, oldest.absolute().getResource().asPrivate()))
         ).hasContent("Hello 1");
         // END_SNIPPET
     }

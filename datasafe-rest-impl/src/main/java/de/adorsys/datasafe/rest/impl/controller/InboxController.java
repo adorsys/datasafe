@@ -61,7 +61,7 @@ public class InboxController {
         Set<UserID> toUsers = recipients.stream().map(UserID::new).collect(Collectors.toSet());
         path = path.replaceAll("^/", "");
         try (OutputStream os = dataSafeService.inboxService().write(WriteInboxRequest.forDefaultPublic(fromUser, toUsers, path));
-             InputStream is = file.getInputStream()) {
+                InputStream is = file.getInputStream()) {
             StreamUtils.copy(is, os);
         }
         log.debug("Users {}, write to INBOX file: {}", toUsers, path);
@@ -83,7 +83,7 @@ public class InboxController {
         response.addHeader(CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE);
 
         try (InputStream is = dataSafeService.inboxService().read(ReadRequest.forPrivate(userIDAuth, resource));
-             OutputStream os = response.getOutputStream()) {
+                OutputStream os = response.getOutputStream()) {
             StreamUtils.copy(is, os);
         }
         log.debug("User {}, read from INBOX file {}", user, resource);

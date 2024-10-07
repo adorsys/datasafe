@@ -34,8 +34,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class SimpleAdapterFeatureTest extends BaseMockitoTest {
@@ -102,7 +102,7 @@ class SimpleAdapterFeatureTest extends BaseMockitoTest {
             Assertions.assertEquals(1, absoluteLocationStream.count());
         }
         try (Stream<AbsoluteLocation<ResolvedResource>> absoluteLocationStream = simpleDatasafeService.getStorageService().list(rootLocation).filter(el -> el.location().toASCIIString().contains(path))) {
-            Optional<AbsoluteLocation<ResolvedResource>> first =absoluteLocationStream.findFirst();
+            Optional<AbsoluteLocation<ResolvedResource>> first = absoluteLocationStream.findFirst();
 
             try (InputStream read = simpleDatasafeService.getStorageService().read(first.get())) {
                 StringWriter writer = new StringWriter();
