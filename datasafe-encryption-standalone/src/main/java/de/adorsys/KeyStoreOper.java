@@ -20,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.crypto.SecretKey;
 import java.io.OutputStream;
 import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.util.Enumeration;
+import java.util.List;
 
 import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 
@@ -50,31 +52,30 @@ public class KeyStoreOper {
     public void createKeyStore(UserPrivateProfile userProfile, UserIDAuth user) {
         keyStoreAuth = new KeyStoreAuth(config.privateKeyStoreAuth(user).getReadStorePassword(), user.getReadKeyPassword());
         keyStore = keyStoreService.createKeyStore(keyStoreAuth, keyCreationConfig);
-
         writeKeystore(userProfile, user, keyStore, keyStoreAuth);
         keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
     }
+
     @SneakyThrows
     private void writeKeystore(UserPrivateProfile userPrivateProfile, UserIDAuth user, KeyStore keystore, KeyStoreAuth auth) {
-         PrivateResource resource = userPrivateProfile.getKeystore().getResource();
-         AbsoluteLocation<PrivateResource> location = new AbsoluteLocation<>(resource);
+        PrivateResource resource = userPrivateProfile.getKeystore().getResource();
+        AbsoluteLocation<PrivateResource> location = new AbsoluteLocation<>(resource);
 
         try (OutputStream os = writeService.write(WithCallback.noCallback(location))) {
             os.write(keyStoreService.serialize(keystore, auth.getReadStorePassword()));
         }
         log.debug("Keystore created for user {} in path {}", user, keystore);
     }
-//
-//    public List<PublicKeyIDWithPublicKey> getPublicKey() {
-//        return keyStoreService.getPublicKeys(keyStoreAccess);
-//    }
-//
-//    @SneakyThrows
-//    public PrivateKey getPrivateKey() {
-//        List<String> aliases = Collections.list(keyStore.aliases());
-//        KeyID keyID = new KeyID(aliases.get(0));
-//        return keyStoreService.getPrivateKey(keyStoreAccess, keyID);
-//    }
+
+    public List<PublicKeyIDWithPublicKey> getPublicKey() {
+        return keyStoreService.getPublicKeys(keyStoreAccess);
+    }
+
+    @SneakyThrows
+    public PrivateKey getPrivateKey(UserIDAuth user) {
+        String alias = getPublicKey().get(0).getKeyID().getValue();
+        return keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(alias));
+    }
 
     @SneakyThrows
     public SecretKeyIDWithKey getSecretKey() {
