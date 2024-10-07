@@ -13,7 +13,8 @@ public class Userprofile {
     private ProfileStoreService storeProfile;
     private UserPrivateProfile privateProfile;
     private Vector<CreateUserPrivateProfile> userPrivateProfiles = new Vector<CreateUserPrivateProfile>();
-    public Userprofile (DFSConfig config, ProfileStoreService storeProfile) {
+
+    public Userprofile(DFSConfig config, ProfileStoreService storeProfile) {
         this.config = config;
         this.storeProfile = storeProfile;
     }
@@ -28,6 +29,7 @@ public class Userprofile {
     public UserPrivateProfile getUserProfile(UserIDAuth user) {
         return findUserProfile(user);
     }
+
     private UserPrivateProfile findUserProfile(UserIDAuth user) {
         for (CreateUserPrivateProfile profile : userPrivateProfiles) {
             if (profile.getId().getUserID().equals(user.getUserID())) {

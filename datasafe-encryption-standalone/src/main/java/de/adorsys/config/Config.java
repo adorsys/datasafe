@@ -21,11 +21,10 @@ public class Config {
     public static final String FILESYSTEM_ENV = "USE_FILESYSTEM";
     private static final MutableEncryptionConfig encryptionConfig = new MutableEncryptionConfig();
 
-    private static StorageService StorageServiceFilesystem(Path fsRoot ) {
+    private static StorageService StorageServiceFilesystem(Path fsRoot) {
         log.info("==================== FILESYSTEM");
         log.info("build to FILESYSTEM with root " + fsRoot);
-        String path = System.getenv(FILESYSTEM_ENV);
-        return new FileSystemStorageService(Path.of(path));
+        return new FileSystemStorageService(fsRoot);
     }
 
     @SneakyThrows
@@ -39,6 +38,8 @@ public class Config {
                 .setOverridesRegistry(registry)
                 .setAlgorithm(algo)
                 .build();
+
+
     }
 
 }

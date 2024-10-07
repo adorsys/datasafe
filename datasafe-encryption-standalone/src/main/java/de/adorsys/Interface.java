@@ -23,10 +23,12 @@ public class Interface {
     private String readStorePassword;
     private UserIDAuth user;
     private Path storagePath;
+    private int keyType;
 
 
     public Interface() {
     }
+
     @SneakyThrows
     public void start() {
         running = true;
@@ -34,10 +36,12 @@ public class Interface {
 
         System.out.println("Encryption Application");
 
-        if(properties.getSystemRoot()==null) {
+        if (properties.getSystemRoot() == null) {
             System.out.println("Enter storage path where you have stored txt files to be encrypted");
             storagePath = Paths.get(scanner.nextLine());
-        } else {storagePath = Paths.get(properties.getSystemRoot());}
+        } else {
+            storagePath = Paths.get(properties.getSystemRoot());
+        }
 
         System.out.println("Enter a profile name");
         String name = scanner.nextLine();
@@ -46,20 +50,22 @@ public class Interface {
         System.out.print("Enter a password to read keys from the Keystore ");
         readKeyPassword = scanner.nextLine();
 
+        System.out.println("Would you like to Encrypt and decrypt document with a Public Key / Private Key or a secret key ");
+        System.out.println("Enter 1 for Pub/Priv key or 2 for secret key");
+        keyType = Integer.parseInt(scanner.nextLine());
+
         System.out.println("The encryption library uses two encryption Algorithms. Namely RSA and Elliptic curve");
         System.out.println("Enter 1 for RSA or 2 for Elliptic curve encryption");
-        String num = scanner.nextLine();
-        int algo;
-        if(num == "1") { algo = 1;} else {
-            algo = 2;
-        }
+        int algo = Integer.parseInt(scanner.nextLine());
 
-        user = new UserIDAuth(name, new ReadKeyPassword(readKeyPassword.toCharArray()));
+
         encryptionServices = Config.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algo);
+
         userprofile = encryptionServices.userprofile();
+        user = new UserIDAuth(name, new ReadKeyPassword(readKeyPassword.toCharArray()));
         userprofile.createProfile(user);
 
-        documentEncryption = encryptionServices.documentEncryption(properties);
+        documentEncryption = encryptionServices.documentEncryption(properties, keyType);
         keyStoreOper = encryptionServices.keyStoreOper(properties);
         keyStoreOper.createKeyStore(userprofile.getUserProfile(user), user);
 
@@ -76,8 +82,9 @@ public class Interface {
             switchOption(choice);
         }
     }
+
     @SneakyThrows
-    private void switchOption(int choice){
+    private void switchOption(int choice) {
         switch (choice) {
             case 1:
                 System.out.println("Enable Path Encryption? Yes / No");
@@ -86,7 +93,7 @@ public class Interface {
 
                 System.out.println("Please enter file name to be encrypted");
                 String filename = scanner.nextLine();
-                documentEncryption.write(keyStoreOper.getSecretKey(), filename);
+                documentEncryption.write(keyStoreOper.getPublicKey(), keyStoreOper.getPrivateKey(user), keyStoreOper.getSecretKey(), filename);
                 break;
             case 2:
                 System.out.println("Please enter file name to be decrypted");
@@ -95,16 +102,11 @@ public class Interface {
                 break;
             case 3:
                 System.out.println("Enter 1 for RSA or 2 for EC (Elliptic Curve Encryption)");
-                String encryptionAlgorithm = scanner.nextLine();
-                String num = scanner.nextLine();
-                int algo;
-                if(num == "1") { algo = 1;} else {
-                    algo = 2;
-                }
+                int algo = Integer.parseInt(scanner.nextLine());
 
                 encryptionServices = Config.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algo);
 
-                documentEncryption = encryptionServices.documentEncryption(properties);
+                documentEncryption = encryptionServices.documentEncryption(properties, keyType);
                 keyStoreOper = encryptionServices.keyStoreOper(properties);
                 keyStoreOper.createKeyStore(userprofile.getUserProfile(user), user);
 
