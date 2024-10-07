@@ -94,9 +94,7 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     void list() {
         createFileWithMessage();
 
-//        // Log root and fileWithMsg URIs for debugging
-//        log.info("Root URI: " + root.location().toASCIIString());
-//        log.info("fileWithMsg URI: " + fileWithMsg.location().toASCIIString());
+        // Log root and fileWithMsg URIs for debugging
 
         Stream<AbsoluteLocation<ResolvedResource>> list = storageService.list(root);
         List<AbsoluteLocation<ResolvedResource>> resultList = list.collect(Collectors.toList());
@@ -106,16 +104,16 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
 
         // Log the returned URI
         String uriString = resultList.get(0).location().toASCIIString();
-//        log.info("Returned URI in CI/CD: " + uriString);
+        //        log.info("Returned URI in CI/CD: " + uriString);
 
-//        // Add environment-related logging
-//        log.info("Running in region: " + System.getenv("AWS_REGION"));
-//        log.info("S3 Bucket Name: " + bucketName);
-//        log.info("AWS_ACCESS_KEY_ID: " + System.getenv("AWS_ACCESS_KEY_ID"));
-//        log.info("AWS_SECRET_ACCESS_KEY: " + System.getenv("AWS_SECRET_ACCESS_KEY"));
-//        log.info("AWS_REGION: " + System.getenv("AWS_REGION"));
-//        log.info("Minio container started at port: " + minio.getMappedPort(9000));
-//        log.info("Minio container is running: " + minio.isRunning());
+        //        // Add environment-related logging
+        //        log.info("Running in region: " + System.getenv("AWS_REGION"));
+        //        log.info("S3 Bucket Name: " + bucketName);
+        //        log.info("AWS_ACCESS_KEY_ID: " + System.getenv("AWS_ACCESS_KEY_ID"));
+        //        log.info("AWS_SECRET_ACCESS_KEY: " + System.getenv("AWS_SECRET_ACCESS_KEY"));
+        //        log.info("AWS_REGION: " + System.getenv("AWS_REGION"));
+        //        log.info("Minio container started at port: " + minio.getMappedPort(9000));
+        //        log.info("Minio container is running: " + minio.isRunning());
 
         assertThat(uriString).contains(FILE);
     }
