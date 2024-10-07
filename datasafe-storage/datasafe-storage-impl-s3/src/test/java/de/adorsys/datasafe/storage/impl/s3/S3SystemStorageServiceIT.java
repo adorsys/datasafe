@@ -190,6 +190,7 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     @AfterEach
     @SneakyThrows
     void cleanup() {
+        Thread.sleep(1000);
         log.info("Executing cleanup");
         if (null != minio) {
             removeObjectFromS3(s3, bucketName, "");
