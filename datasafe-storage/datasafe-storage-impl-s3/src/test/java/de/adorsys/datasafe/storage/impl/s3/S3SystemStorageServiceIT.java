@@ -16,6 +16,7 @@ import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,6 +28,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,10 +94,15 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     void list() {
         createFileWithMessage();
 
-        assertThat(storageService.list(root))
-                .hasSize(1)
-                .extracting(AbsoluteLocation::location)
-                .asString().contains(FILE);
+        Stream<AbsoluteLocation<ResolvedResource>> list = storageService.list(root);
+        AbstractStringAssert<?> stringAssert = assertThat(list)
+                .hasSize(1).extracting(AbsoluteLocation::location)
+                .asString();
+        // Adding this line to check if the List is NotEmpty or NotNull
+        stringAssert.isNotEmpty();
+        stringAssert.isNotNull();
+        stringAssert.doesNotContain("java");
+        stringAssert.contains(FILE);
     }
 
     @Test
