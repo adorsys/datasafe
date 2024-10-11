@@ -1,6 +1,5 @@
 package de.adorsys.config;
 
-import de.adorsys.EncryptionServices;
 import de.adorsys.datasafe.directory.impl.profile.config.DefaultDFSConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.MutableEncryptionConfig;
 import de.adorsys.datasafe.storage.api.StorageService;
@@ -38,7 +37,6 @@ public class Config {
                 .setOverridesRegistry(registry)
                 .setAlgorithm(algo)
                 .build();
-
 
     }
 

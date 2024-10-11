@@ -1,7 +1,9 @@
 package de.adorsys;
 
 import de.adorsys.config.Config;
+import de.adorsys.config.EncryptionServices;
 import de.adorsys.config.Properties;
+import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
@@ -62,11 +64,11 @@ public class Interface {
         encryptionServices = Config.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algo);
 
         userprofile = encryptionServices.userprofile();
+        documentEncryption = encryptionServices.documentEncryption(properties, keyType);
+        keyStoreOper = encryptionServices.keyStoreOper();
+
         user = new UserIDAuth(name, new ReadKeyPassword(readKeyPassword.toCharArray()));
         userprofile.createProfile(user);
-
-        documentEncryption = encryptionServices.documentEncryption(properties, keyType);
-        keyStoreOper = encryptionServices.keyStoreOper(properties);
         keyStoreOper.createKeyStore(userprofile.getUserProfile(user), user);
 
         while (running) {
@@ -93,7 +95,13 @@ public class Interface {
 
                 System.out.println("Please enter file name to be encrypted");
                 String filename = scanner.nextLine();
-                documentEncryption.write(keyStoreOper.getPublicKey(), keyStoreOper.getPrivateKey(user), keyStoreOper.getSecretKey(), filename);
+
+                UserPrivateProfile userPrivateProfile = userprofile.getUserProfile(user);
+                documentEncryption.write(
+                        keyStoreOper.getPublicKey(user, userPrivateProfile)
+                        , keyStoreOper.getPrivateKey(user, userPrivateProfile)
+                        , keyStoreOper.getSecretKey(user, userPrivateProfile), filename
+                );
                 break;
             case 2:
                 System.out.println("Please enter file name to be decrypted");
@@ -107,7 +115,7 @@ public class Interface {
                 encryptionServices = Config.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algo);
 
                 documentEncryption = encryptionServices.documentEncryption(properties, keyType);
-                keyStoreOper = encryptionServices.keyStoreOper(properties);
+                keyStoreOper = encryptionServices.keyStoreOper();
                 keyStoreOper.createKeyStore(userprofile.getUserProfile(user), user);
 
             case 4:

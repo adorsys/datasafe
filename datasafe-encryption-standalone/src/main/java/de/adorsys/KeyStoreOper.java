@@ -1,5 +1,6 @@
 package de.adorsys;
 
+import com.google.common.io.ByteStreams;
 import de.adorsys.config.Properties;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
@@ -9,15 +10,18 @@ import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
 import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
+import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.SecretKey;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -28,32 +32,28 @@ import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationCon
 
 @Slf4j
 public class KeyStoreOper {
-    private KeyStore keyStore;
-
-    private KeyStoreService keyStoreService = new KeyStoreServiceImpl(
+    private final KeyStoreService keyStoreService = new KeyStoreServiceImpl(
             EncryptionConfig.builder().build().getKeystore(),
             DaggerBCJuggler.builder().build()
     );
-    private KeyStoreAuth keyStoreAuth;
-    private StorageWriteService writeService;
-    private KeyCreationConfig keyCreationConfig;
+    private final StorageReadService readService;
+    private final StorageWriteService writeService;
+    private final KeyCreationConfig keyCreationConfig;
+    private final DFSConfig config;
 
-    private KeyStoreAccess keyStoreAccess;
-    private Properties properties;
-    private DFSConfig config;
-
-    public KeyStoreOper(Properties properties, DFSConfig config, StorageWriteService writeService, KeyCreationConfig keyCreationConfig) {
-        this.properties = properties;
+    public KeyStoreOper(StorageReadService readService, DFSConfig config, StorageWriteService writeService, KeyCreationConfig keyCreationConfig) {
+        this.readService = readService;
         this.config = config;
         this.writeService = writeService;
         this.keyCreationConfig = keyCreationConfig;
     }
 
     public void createKeyStore(UserPrivateProfile userProfile, UserIDAuth user) {
-        keyStoreAuth = new KeyStoreAuth(config.privateKeyStoreAuth(user).getReadStorePassword(), user.getReadKeyPassword());
-        keyStore = keyStoreService.createKeyStore(keyStoreAuth, keyCreationConfig);
-        writeKeystore(userProfile, user, keyStore, keyStoreAuth);
-        keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+        if(readKeystore(user, userProfile) != null) {
+            KeyStoreAuth keyStoreAuth = new KeyStoreAuth(config.privateKeyStoreAuth(user).getReadStorePassword(), user.getReadKeyPassword());
+            KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, keyCreationConfig);
+            writeKeystore(userProfile, user, keyStore, keyStoreAuth);
+        }
     }
 
     @SneakyThrows
@@ -67,26 +67,53 @@ public class KeyStoreOper {
         log.debug("Keystore created for user {} in path {}", user, keystore);
     }
 
-    public List<PublicKeyIDWithPublicKey> getPublicKey() {
+    @SneakyThrows
+    private KeyStore readKeystore(UserIDAuth user, UserPrivateProfile userPrivateProfile) {
+        PrivateResource resource = userPrivateProfile.getKeystore().getResource();
+        AbsoluteLocation<PrivateResource> location = new AbsoluteLocation<>(resource);
+
+        byte[] payload;
+        try (InputStream is = readService.read(location)) {
+            payload = ByteStreams.toByteArray(is);
+        }
+
+        return keyStoreService.deserialize(payload, config.privateKeyStoreAuth(user).getReadStorePassword());
+
+    }
+
+    public List<PublicKeyIDWithPublicKey> getPublicKey(UserIDAuth user, UserPrivateProfile userPrivateProfile) {
+        KeyStoreAuth keyStoreAuth = new KeyStoreAuth(config.privateKeyStoreAuth(user).getReadStorePassword(), user.getReadKeyPassword());
+        KeyStore keyStore = readKeystore(user, userPrivateProfile);
+        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+
         return keyStoreService.getPublicKeys(keyStoreAccess);
     }
 
     @SneakyThrows
-    public PrivateKey getPrivateKey(UserIDAuth user) {
-        String alias = getPublicKey().get(0).getKeyID().getValue();
+    public PrivateKey getPrivateKey(UserIDAuth user, UserPrivateProfile userPrivateProfile) {
+        KeyStoreAuth keyStoreAuth = new KeyStoreAuth(config.privateKeyStoreAuth(user).getReadStorePassword(), user.getReadKeyPassword());
+        KeyStore keyStore = readKeystore(user, userPrivateProfile);
+        KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
+
+        String alias = getPublicKey(user, userPrivateProfile).get(0).getKeyID().getValue();
         return keyStoreService.getPrivateKey(keyStoreAccess, new KeyID(alias));
+
     }
 
     @SneakyThrows
-    public SecretKeyIDWithKey getSecretKey() {
+    public SecretKeyIDWithKey getSecretKey(UserIDAuth user, UserPrivateProfile userPrivateProfile) {
+        KeyStoreAuth keyStoreAuth = new KeyStoreAuth(config.privateKeyStoreAuth(user).getReadStorePassword(), user.getReadKeyPassword());
+        KeyStore keyStore = readKeystore(user, userPrivateProfile);
         KeyStoreAccess keyStoreAccess = new KeyStoreAccess(keyStore, keyStoreAuth);
-        KeyID keyID = KeyIDByPrefix();
+
+        KeyID keyID = KeyIDByPrefix(keyStore);
+
         SecretKey secretKey = keyStoreService.getSecretKey(keyStoreAccess, keyID);
         return new SecretKeyIDWithKey(keyID, secretKey);
     }
 
     @SneakyThrows
-    private KeyID KeyIDByPrefix() {
+    private KeyID KeyIDByPrefix(KeyStore keyStore) {
         Enumeration<String> aliases = keyStore.aliases();
         while (aliases.hasMoreElements()) {
             String element = aliases.nextElement();
