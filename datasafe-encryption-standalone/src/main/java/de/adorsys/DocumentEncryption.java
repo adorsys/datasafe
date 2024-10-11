@@ -58,12 +58,12 @@ public class DocumentEncryption {
                     absoluteLocation
             );
             try (OutputStream outputStream = writer.write(map, new KeyPair(publicKeys.get(0).getPublicKey(), privateKey))) {
-                outputStream.write("Hello".getBytes(UTF_8));
+                outputStream.write("Hello World (Pub Key)".getBytes(UTF_8));
             }
 
         } else if (keyType == 2) {
             try (OutputStream outputStream = writer.write(WithCallback.noCallback(absoluteLocation), secretKey)) {
-                outputStream.write("Hello".getBytes(UTF_8));
+                outputStream.write("Hello World (Secret Key)".getBytes(UTF_8));
             }
         }
 

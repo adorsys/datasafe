@@ -1,18 +1,22 @@
-package de.adorsys;
+package de.adorsys.config;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dagger.internal.DelegateFactory;
 import dagger.internal.DoubleCheck;
 import dagger.internal.Provider;
-import de.adorsys.config.Properties;
+import de.adorsys.DocumentEncryption;
+import de.adorsys.KeyStoreOper;
+import de.adorsys.Userprofile;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
+import de.adorsys.datasafe.directory.api.profile.operations.ProfileRetrievalService;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.directory.api.types.UserPublicProfile;
 import de.adorsys.datasafe.directory.impl.profile.dfs.BucketAccessServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.keys.*;
 import de.adorsys.datasafe.directory.impl.profile.operations.DefaultUserProfileCache;
 import de.adorsys.datasafe.directory.impl.profile.operations.UserProfileCache;
+import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImpl;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileRetrievalServiceImplRuntimeDelegatable;
 import de.adorsys.datasafe.directory.impl.profile.operations.actions.ProfileStoreService;
 import de.adorsys.datasafe.directory.impl.profile.serde.GsonSerde;
@@ -38,6 +42,7 @@ import java.security.KeyStore;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+
 @Slf4j
 public final class EncryptionServices {
     private EncryptionServices() {
@@ -56,8 +61,6 @@ public final class EncryptionServices {
 
         private EncryptionBuilder() {
         }
-
-        ;
 
         public EncryptionBuilder setDFSConfig(DFSConfig config) {
             this.config = config;
@@ -90,13 +93,13 @@ public final class EncryptionServices {
     }
 
     public static final class EncryptionServicesImpl {
-        private DFSConfig config;
+        private final DFSConfig config;
 
-        private StorageService storage;
+        private final StorageService storage;
 
-        private EncryptionConfig encryption;
-        private OverridesRegistry overridesRegistry;
-        private int algorithm;
+        private final EncryptionConfig encryption;
+        private final OverridesRegistry overridesRegistry;
+        private final int algorithm;
 
         public EncryptionServicesImpl(DFSConfig config, StorageService storage, EncryptionConfig encryption, OverridesRegistry overridesRegistry, int algorithm) {
             this.config = config;
@@ -171,7 +174,6 @@ public final class EncryptionServices {
                 return encryption.getKeys();
             }
 
-
         }
 
         private KeyStoreServiceImplRuntimeDelegatable keyStoreServiceImplRuntimeDelegatable() {
@@ -231,19 +233,23 @@ public final class EncryptionServices {
         private ProfileStoreService profileStoreService() {
             return new ProfileStoreService(gsonSerde(), userProfileCache(), config, bucketAccessServiceImplRuntimeDelegatable(), storage);
         }
+        private ProfileRetrievalService profileRetrievalService() {
+            return new ProfileRetrievalServiceImpl(config, storage, storage, bucketAccessServiceImplRuntimeDelegatable(), gsonSerde(), userProfileCache());
+        }
 
         public DocumentEncryption documentEncryption(Properties properties, int keyType) {
             CMSDocumentWriteServiceRuntimeDelegatable writer = new CMSDocumentWriteServiceRuntimeDelegatable(overridesRegistry, storage, cmsEncryptionServiceImplRuntimeDelegatable());
             CMSDocumentReadServiceRuntimeDelegatable reader = new CMSDocumentReadServiceRuntimeDelegatable(overridesRegistry, storage, privateKeyServiceImplRuntimeDelegatable(), cmsEncryptionServiceImplRuntimeDelegatable());
+
             return new DocumentEncryption(properties, writer, reader, keyType);
         }
 
-        public KeyStoreOper keyStoreOper(Properties properties) {
-            return new KeyStoreOper(properties, config, storage, keyCreationConfig());
+        public KeyStoreOper keyStoreOper() {
+            return new KeyStoreOper(storage, config, storage, keyCreationConfig());
         }
 
         public Userprofile userprofile() {
-            return new Userprofile(config, profileStoreService());
+            return new Userprofile(config, profileStoreService(), profileRetrievalService());
         }
 
     }
