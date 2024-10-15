@@ -1,7 +1,6 @@
 package de.adorsys;
 
 import com.google.common.io.ByteStreams;
-import de.adorsys.config.Properties;
 import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
@@ -15,7 +14,6 @@ import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +47,7 @@ public class KeyStoreOper {
     }
 
     public void createKeyStore(UserPrivateProfile userProfile, UserIDAuth user) {
-        if(readKeystore(user, userProfile) != null) {
+        if(readKeystore(user, userProfile) == null) {
             KeyStoreAuth keyStoreAuth = new KeyStoreAuth(config.privateKeyStoreAuth(user).getReadStorePassword(), user.getReadKeyPassword());
             KeyStore keyStore = keyStoreService.createKeyStore(keyStoreAuth, keyCreationConfig);
             writeKeystore(userProfile, user, keyStore, keyStoreAuth);
