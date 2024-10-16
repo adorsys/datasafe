@@ -135,6 +135,7 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
                         accessKey(CREDENTIALS),
                         secretKey(CREDENTIALS)
                 ),
+                REGION,
                 CREDENTIALS,
                 EXECUTOR
         );
@@ -156,6 +157,7 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
                                                                 acc.getAccessKey(),
                                                                 acc.getSecretKey()
                                                         ),
+                                                        acc.getRegion(),
                                                         acc.getBucketName(),
                                                         EXECUTOR
                                                 )

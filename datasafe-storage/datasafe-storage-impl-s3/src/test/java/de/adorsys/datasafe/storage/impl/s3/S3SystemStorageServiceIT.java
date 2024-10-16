@@ -27,6 +27,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,6 +83,7 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     void init() {
         this.storageService = new S3StorageService(
                 s3,
+                "eu-central-1",
                 bucketName,
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
@@ -90,6 +92,9 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     @Test
     void list() {
         createFileWithMessage();
+
+        Stream<AbsoluteLocation<ResolvedResource>> list = storageService.list(root);
+        list.forEach(l -> log.info(l.toString()));
 
         assertThat(storageService.list(root))
                 .hasSize(1)
