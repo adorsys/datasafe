@@ -1,9 +1,5 @@
 package de.adorsys.datasafe.examples.business.s3;
 
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.DIRECTORY_BUCKET;
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_ONE;
-import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_TWO;
-import static org.assertj.core.api.Assertions.assertThat;
 import com.amazonaws.services.s3.AmazonS3;
 import dagger.Lazy;
 import de.adorsys.datasafe.business.impl.service.DaggerDefaultDatasafeServices;
@@ -30,6 +26,7 @@ import de.adorsys.datasafe.types.api.resource.BasePrivateResource;
 import de.adorsys.datasafe.types.api.resource.StorageIdentifier;
 import de.adorsys.datasafe.types.api.shared.AwsClientRetry;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
+
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +46,11 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.DIRECTORY_BUCKET;
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_ONE;
+import static de.adorsys.datasafe.examples.business.s3.MinioContainerId.FILES_BUCKET_TWO;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * This example shows how client can register storage system and securely store its access details.
@@ -105,6 +108,7 @@ class MultiDfsWithCredentialsExampleIT {
         // static client that will be used to access `directory` bucket:
         StorageService directoryStorage = new S3StorageService(
                 directoryClient,
+                REGION,
                 DIRECTORY_BUCKET.getBucketName(),
                 EXECUTOR
         );
@@ -133,6 +137,7 @@ class MultiDfsWithCredentialsExampleIT {
                                                                         acc.getAccessKey(),
                                                                         acc.getSecretKey()
                                                                 ),
+                                                                acc.getRegion(),
                                                                 // Bucket name is encoded in first path segment
                                                                 acc.getBucketName(),
                                                                 EXECUTOR

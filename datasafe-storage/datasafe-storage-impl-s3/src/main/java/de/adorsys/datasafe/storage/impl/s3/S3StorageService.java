@@ -45,12 +45,13 @@ public class S3StorageService implements StorageService {
 
     /**
      * @param s3 Connection to S3
-     * @param bucketName Bucket to use
+     * @param region Region to use
+     * @param bucket Bucket to use
      * @param executorService Multipart sending threadpool (file chunks are sent in parallel)
      */
-    public S3StorageService(AmazonS3 s3, String bucketName, ExecutorService executorService) {
+    public S3StorageService(AmazonS3 s3, String region, String bucket, ExecutorService executorService) {
         this.s3 = s3;
-        this.router = new StaticBucketRouter(bucketName);
+        this.router = new StaticBucketRouter(region, bucket);
         this.executorService = executorService;
     }
 

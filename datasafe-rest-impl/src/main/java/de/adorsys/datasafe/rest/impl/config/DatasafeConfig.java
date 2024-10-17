@@ -34,12 +34,14 @@ import de.adorsys.datasafe.types.api.context.BaseOverridesRegistry;
 import de.adorsys.datasafe.types.api.context.overrides.OverridesRegistry;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
+
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
+
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -131,6 +133,7 @@ public class DatasafeConfig {
         ExecutorService executorService = ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService();
         S3StorageService basicStorage = new S3StorageService(
                 s3,
+                properties.getAmazonRegion(),
                 properties.getBucketName(),
                 executorService
         );
@@ -184,6 +187,7 @@ public class DatasafeConfig {
     StorageService singleStorageServiceS3(AmazonS3 s3, DatasafeProperties properties) {
         return new S3StorageService(
                 s3,
+                properties.getAmazonRegion(),
                 properties.getBucketName(),
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
@@ -202,7 +206,7 @@ public class DatasafeConfig {
         )
         );
 
-        S3StorageService s3StorageService = new S3StorageService(s3(properties), properties.getBucketName(),
+        S3StorageService s3StorageService = new S3StorageService(s3(properties), properties.getAmazonRegion(), properties.getBucketName(),
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
 

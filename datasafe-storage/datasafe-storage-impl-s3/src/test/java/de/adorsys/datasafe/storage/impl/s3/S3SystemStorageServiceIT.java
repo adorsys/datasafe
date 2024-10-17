@@ -16,6 +16,7 @@ import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,6 +28,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,6 +84,7 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     void init() {
         this.storageService = new S3StorageService(
                 s3,
+                "eu-central-1",
                 bucketName,
                 ExecutorServiceUtil.submitterExecutesOnStarvationExecutingService()
         );
@@ -91,11 +94,30 @@ class S3SystemStorageServiceIT extends BaseMockitoTest {
     void list() {
         createFileWithMessage();
 
-        assertThat(storageService.list(root))
-                .hasSize(1)
-                .extracting(AbsoluteLocation::location)
-                .asString().contains(FILE);
+        // Log root and fileWithMsg URIs for debugging
+
+        Stream<AbsoluteLocation<ResolvedResource>> list = storageService.list(root);
+        List<AbsoluteLocation<ResolvedResource>> resultList = list.collect(Collectors.toList());
+
+        // Check if the size of the list is correct
+        assertThat(resultList).hasSize(1);
+
+        // Log the returned URI
+        String uriString = resultList.get(0).location().toASCIIString();
+        //        log.info("Returned URI in CI/CD: " + uriString);
+
+        //        // Add environment-related logging
+        //        log.info("Running in region: " + System.getenv("AWS_REGION"));
+        //        log.info("S3 Bucket Name: " + bucketName);
+        //        log.info("AWS_ACCESS_KEY_ID: " + System.getenv("AWS_ACCESS_KEY_ID"));
+        //        log.info("AWS_SECRET_ACCESS_KEY: " + System.getenv("AWS_SECRET_ACCESS_KEY"));
+        //        log.info("AWS_REGION: " + System.getenv("AWS_REGION"));
+        //        log.info("Minio container started at port: " + minio.getMappedPort(9000));
+        //        log.info("Minio container is running: " + minio.isRunning());
+
+        assertThat(uriString).contains(FILE);
     }
+
 
     @Test
     void testListOutOfStandardListFilesLimit() {

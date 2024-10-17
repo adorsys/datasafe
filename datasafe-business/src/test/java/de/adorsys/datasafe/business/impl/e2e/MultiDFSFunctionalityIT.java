@@ -1,8 +1,5 @@
 package de.adorsys.datasafe.business.impl.e2e;
 
-import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import dagger.Lazy;
@@ -39,6 +36,7 @@ import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import de.adorsys.datasafe.types.api.utils.ExecutorServiceUtil;
 import de.adorsys.datasafe.types.api.utils.ReadKeyPasswordTestFactory;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.UnrecoverableKeyException;
@@ -50,6 +48,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +60,10 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+
+import static de.adorsys.datasafe.types.api.shared.DockerUtil.getDockerUri;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * This test distributes users' storage access keystore, document encryption keystore,
@@ -135,6 +138,7 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
                         accessKey(CREDENTIALS),
                         secretKey(CREDENTIALS)
                 ),
+                REGION,
                 CREDENTIALS,
                 EXECUTOR
         );
@@ -156,6 +160,7 @@ class MultiDFSFunctionalityIT extends BaseMockitoTest {
                                                                 acc.getAccessKey(),
                                                                 acc.getSecretKey()
                                                         ),
+                                                        acc.getRegion(),
                                                         acc.getBucketName(),
                                                         EXECUTOR
                                                 )

@@ -165,83 +165,83 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     @ValueSource
     protected static Stream<StorageDescriptor> allLocalDefaultStorages() {
         return Stream.of(
-            fs(),
-            minio()
-            /* No CEPH here because it is quite slow*/
+                fs(),
+                minio()
+                /* No CEPH here because it is quite slow*/
         ).filter(Objects::nonNull);
     }
 
     @ValueSource
     protected static Stream<StorageDescriptor> allLocalStorages() {
         return Stream.of(
-            fs(),
-            minio(),
-            cephVersioned()
+                fs(),
+                minio(),
+                cephVersioned()
         ).filter(Objects::nonNull);
     }
 
     @ValueSource
     protected static Stream<StorageDescriptor> allDefaultStorages() {
         return Stream.of(
-            fs(),
-            minio(),
-            s3()
+                fs(),
+                minio(),
+                s3()
         ).filter(Objects::nonNull);
     }
 
     @ValueSource
     protected static Stream<StorageDescriptor> allStorages() {
         return Stream.of(
-            fs(),
-            minio(),
-            cephVersioned(),
-            s3()
+                fs(),
+                minio(),
+                cephVersioned(),
+                s3()
         ).filter(Objects::nonNull);
     }
 
     @ValueSource
     protected static Stream<StorageDescriptor> fsOnly() {
         return Stream.of(
-            fs()
+                fs()
         ).filter(Objects::nonNull);
     }
 
     @ValueSource
     protected static Stream<StorageDescriptor> s3Only() {
         return Stream.of(
-            s3()
+                s3()
         ).filter(Objects::nonNull);
     }
 
     @ValueSource
     protected static Stream<StorageDescriptor> minioOnly() {
         return Stream.of(
-            minio()
+                minio()
         ).filter(Objects::nonNull);
     }
 
     protected static StorageDescriptor fs() {
         return new StorageDescriptor(
-            StorageDescriptorName.FILESYSTEM,
+                StorageDescriptorName.FILESYSTEM,
                 () -> new FileSystemStorageService(new Uri(tempDir.toUri())),
                 new Uri(tempDir.toUri()),
-            null, null, null,
-            tempDir.toString()
+                null, null, null,
+                tempDir.toString()
         );
     }
 
     protected static StorageDescriptor minio() {
         return new StorageDescriptor(
-            StorageDescriptorName.MINIO,
+                StorageDescriptorName.MINIO,
                 () -> {
                     minioStorage.get();
-                    return new S3StorageService(minio, primaryBucket, EXECUTOR_SERVICE);
+                    return new S3StorageService(minio, minioRegion, primaryBucket, EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + primaryBucket + "/" + bucketPath + "/"),
-            minioAccessKeyID,
-            minioSecretAccessKey,
-            minioRegion,
-            primaryBucket + "/" + bucketPath
+                minioAccessKeyID,
+                minioSecretAccessKey,
+                minioRegion,
+                primaryBucket + "/" + bucketPath
         );
     }
 
@@ -251,16 +251,16 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         return new StorageDescriptor(
-            StorageDescriptorName.CEPH,
+                StorageDescriptorName.CEPH,
                 () -> {
                     cephStorage.get();
-                    return new S3StorageService(ceph, primaryBucket, EXECUTOR_SERVICE);
+                    return new S3StorageService(ceph, cephRegion, primaryBucket, EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + primaryBucket + "/" + bucketPath + "/"),
-            cephAccessKeyID,
-            cephSecretAccessKey,
-            cephRegion,
-            primaryBucket + "/" + bucketPath
+                cephAccessKeyID,
+                cephSecretAccessKey,
+                cephRegion,
+                primaryBucket + "/" + bucketPath
         );
     }
 
@@ -275,10 +275,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
 
     protected static Function<String, StorageService> storageServiceByBucket() {
         if (null == amazonS3) {
-            return bucketName -> new S3StorageService(minio, bucketName, EXECUTOR_SERVICE);
+            return bucketName -> new S3StorageService(minio, amazonRegion, bucketName, EXECUTOR_SERVICE);
         }
 
-        return bucketName -> new S3StorageService(amazonS3, bucketName, EXECUTOR_SERVICE);
+        return bucketName -> new S3StorageService(amazonS3, amazonRegion, bucketName, EXECUTOR_SERVICE);
     }
 
     protected static StorageDescriptor s3() {
@@ -287,16 +287,16 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         }
 
         return new StorageDescriptor(
-            StorageDescriptorName.AMAZON,
+                StorageDescriptorName.AMAZON,
                 () -> {
                     amazonStorage.get();
-                    return new S3StorageService(amazonS3, primaryBucket, EXECUTOR_SERVICE);
+                    return new S3StorageService(amazonS3, amazonRegion, primaryBucket, EXECUTOR_SERVICE);
                 },
                 new Uri("s3://" + primaryBucket + "/" + bucketPath + "/"),
-            amazonAccessKeyID,
-            amazonSecretAccessKey,
-            amazonRegion,
-            primaryBucket + "/" + bucketPath
+                amazonAccessKeyID,
+                amazonSecretAccessKey,
+                amazonRegion,
+                primaryBucket + "/" + bucketPath
         );
     }
 
@@ -325,7 +325,7 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(
                         new BasicAWSCredentials(amazonAccessKeyID, amazonSecretAccessKey))
-            );
+                );
 
         if (buckets.size() > 1) {
             log.info("Using {} buckets:{}", buckets.size(), buckets);
@@ -337,10 +337,10 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
         final boolean isRealAmazon = amazonUrl.endsWith(amazonDomain);
 
         amazonS3ClientBuilder = amazonS3ClientBuilder
-            .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
-            .withEndpointConfiguration(
-                new AwsClientBuilder.EndpointConfiguration(amazonUrl, amazonRegion)
-            );
+                .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(amazonUrl, amazonRegion)
+                );
         if (isRealAmazon) {
             amazonMappedUrl = amazonProtocol + primaryBucket + "." + amazonDomain;
         } else {
@@ -356,27 +356,27 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static void startMinio() {
         log.info("Starting MINIO");
         minioContainer = new GenericContainer("minio/minio")
-            .withExposedPorts(9000)
-            .withEnv("MINIO_ACCESS_KEY", minioAccessKeyID)
-            .withEnv("MINIO_SECRET_KEY", minioSecretAccessKey)
-            .withCommand("server /data")
-            .waitingFor(Wait.defaultWaitStrategy());
+                .withExposedPorts(9000)
+                .withEnv("MINIO_ACCESS_KEY", minioAccessKeyID)
+                .withEnv("MINIO_SECRET_KEY", minioSecretAccessKey)
+                .withCommand("server /data")
+                .waitingFor(Wait.defaultWaitStrategy());
 
         minioContainer.start();
         Integer mappedPort = minioContainer.getMappedPort(9000);
         minioMappedUrl = minioUrl + ":" + mappedPort;
         log.info("Minio mapped URL:" + minioMappedUrl);
         minio = AmazonS3ClientBuilder.standard()
-            .withEndpointConfiguration(
-                new AwsClientBuilder.EndpointConfiguration(minioMappedUrl, minioRegion)
-            )
-            .withCredentials(
-                new AWSStaticCredentialsProvider(
-                        new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(minioMappedUrl, minioRegion)
                 )
-            )
-            .enablePathStyleAccess()
-            .build();
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(minioAccessKeyID, minioSecretAccessKey)
+                        )
+                )
+                .enablePathStyleAccess()
+                .build();
 
 
         buckets.forEach(minio::createBucket);
@@ -385,45 +385,45 @@ public abstract class WithStorageProvider extends BaseMockitoTest {
     private static void startCeph() {
         log.info("Starting CEPH");
         cephContainer = new GenericContainer("ceph/daemon")
-            .withExposedPorts(8000)
-            .withEnv("RGW_FRONTEND_PORT", "8000")
-            .withEnv("SREE_PORT", "5000")
-            .withEnv("DEBUG", "verbose")
-            .withEnv("CEPH_DEMO_UID", "nano")
-            .withEnv("MON_IP", "127.0.0.1")
-            .withEnv("CEPH_PUBLIC_NETWORK", "0.0.0.0/0")
-            .withEnv("CEPH_DAEMON", "demo")
-            .withEnv("DEMO_DAEMONS", "mon,mgr,osd,rgw")
-            .withEnv("CEPH_DEMO_ACCESS_KEY", cephAccessKeyID)
-            .withEnv("CEPH_DEMO_SECRET_KEY", cephSecretAccessKey)
-            .withCommand("mkdir -p /etc/ceph && mkdir -p /var/lib/ceph && /entrypoint.sh")
-            .waitingFor(Wait.defaultWaitStrategy().withStartupTimeout(Duration.ofSeconds(180)));
+                .withExposedPorts(8000)
+                .withEnv("RGW_FRONTEND_PORT", "8000")
+                .withEnv("SREE_PORT", "5000")
+                .withEnv("DEBUG", "verbose")
+                .withEnv("CEPH_DEMO_UID", "nano")
+                .withEnv("MON_IP", "127.0.0.1")
+                .withEnv("CEPH_PUBLIC_NETWORK", "0.0.0.0/0")
+                .withEnv("CEPH_DAEMON", "demo")
+                .withEnv("DEMO_DAEMONS", "mon,mgr,osd,rgw")
+                .withEnv("CEPH_DEMO_ACCESS_KEY", cephAccessKeyID)
+                .withEnv("CEPH_DEMO_SECRET_KEY", cephSecretAccessKey)
+                .withCommand("mkdir -p /etc/ceph && mkdir -p /var/lib/ceph && /entrypoint.sh")
+                .waitingFor(Wait.defaultWaitStrategy().withStartupTimeout(Duration.ofSeconds(180)));
 
         cephContainer.start();
         Integer mappedPort = cephContainer.getMappedPort(8000);
         cephMappedUrl = cephUrl + ":" + mappedPort;
         log.info("Ceph mapped URL:" + cephMappedUrl);
         ceph = AmazonS3ClientBuilder.standard()
-            .withEndpointConfiguration(
-                new AwsClientBuilder.EndpointConfiguration(cephMappedUrl, cephRegion)
-            )
-            .withCredentials(
-                new AWSStaticCredentialsProvider(
-                        new BasicAWSCredentials(cephAccessKeyID, cephSecretAccessKey)
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(cephMappedUrl, cephRegion)
                 )
-            )
-            .enablePathStyleAccess()
-            .build();
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(cephAccessKeyID, cephSecretAccessKey)
+                        )
+                )
+                .enablePathStyleAccess()
+                .build();
 
         ceph.createBucket(buckets.get(0));
         // curiously enough CEPH docs are incorrect, looks like they do support version id:
         // https://github.com/ceph/ceph/blame/bc065cae7857c352ca36d5f06cdb5107cf72ed41/src/rgw/rgw_rest_s3.cc
         // so for versioned local tests we can use CEPH
         ceph.setBucketVersioningConfiguration(
-            new SetBucketVersioningConfigurationRequest(
-                primaryBucket,
-                    new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
-            )
+                new SetBucketVersioningConfigurationRequest(
+                        primaryBucket,
+                        new BucketVersioningConfiguration(BucketVersioningConfiguration.ENABLED)
+                )
         );
     }
 
