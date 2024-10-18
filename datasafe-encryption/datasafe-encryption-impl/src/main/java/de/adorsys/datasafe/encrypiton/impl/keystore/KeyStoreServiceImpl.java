@@ -3,6 +3,7 @@ package de.adorsys.datasafe.encrypiton.impl.keystore;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
+import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyID;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.KeyStoreAccess;
@@ -30,6 +31,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.spec.ECParameterSpec;
 import java.util.ArrayList;
@@ -198,5 +200,17 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     @SneakyThrows
     public KeyStore deserialize(byte[] payload, ReadStorePassword readStorePassword) {
         return juggler.serializeDeserialize().deserialize(payload, readStorePassword::getValue);
+    }
+
+    public void addKeyPair(KeyStoreAccess user, PrivateKey privateKey, PublicKey publicKey) {
+        return;
+    }
+
+    public PrivateKey getPrivateKey(KeyStoreAccess user, String rsa) {
+        return null;
+    }
+
+    public void deleteKeyPair(UserIDAuth user, String rsa) {
+        return;
     }
 }
