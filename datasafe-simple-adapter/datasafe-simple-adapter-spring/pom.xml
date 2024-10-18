@@ -12,7 +12,7 @@
     <artifactId>datasafe-simple-adapter-spring</artifactId>
 
     <properties>
-        <spring.framework.version>6.1.10</spring.framework.version>
+        <spring.framework.version>6.1.14</spring.framework.version>
         <spring.framework.boot.version>3.3.1</spring.framework.boot.version>
     </properties>
 
