@@ -9,10 +9,10 @@ import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Base64;
 
-public class DataConverter {
+public class DataMigrationTool {
     private final KeyStoreServiceImpl keyStoreService;
 
-    public DataConverter(KeyStoreServiceImpl keyStoreService) {
+    public DataMigrationTool(KeyStoreServiceImpl keyStoreService) {
         this.keyStoreService = keyStoreService;
     }
 
