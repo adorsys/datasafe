@@ -21,16 +21,18 @@ public class Userprofile {
         this.retrieveProfile = retrieveProfile;
     }
 
-    public void createProfile(UserIDAuth user) {
-        if (!retrieveProfile.userExists(user.getUserID())) {
+    public void createPrivProfile(UserIDAuth user) {
+        if (!userExists(user)) {
             CreateUserPrivateProfile templatePrivProfile = config.defaultPrivateTemplate(user);
             privateProfile = templatePrivProfile.buildPrivateProfile();
             storeProfile.registerPrivate(templatePrivProfile.getId().getUserID(), privateProfile);
         }
     }
 
-    public UserPrivateProfile getUserProfile(UserIDAuth user) {
+    public UserPrivateProfile getUserPrivProfile(UserIDAuth user) {
         return retrieveProfile.privateProfile(user);
     }
-
+    public boolean userExists(UserIDAuth user) {
+        return retrieveProfile.userExists(user.getUserID());
+    }
 }

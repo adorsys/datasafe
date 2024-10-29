@@ -6,9 +6,5 @@ import lombok.Data;
 
 @Data
 public class Properties {
-    private UserIDAuth userIDAuth;
-    private boolean pathEncryptionEnabled;
-    private String systemRoot = "file:///Users/thendo/Desktop/test";
-    private String keystorePassword;
-    private String readKeyPassword;
+    private String systemRoot = "file:///Users/thendo/Desktop/test/";
 }

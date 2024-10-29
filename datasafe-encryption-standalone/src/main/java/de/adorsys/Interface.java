@@ -1,18 +1,23 @@
 package de.adorsys;
 
-import de.adorsys.config.Config;
+import com.google.common.io.MoreFiles;
+import de.adorsys.config.EncryptionConfig;
 import de.adorsys.config.EncryptionServices;
 import de.adorsys.config.Properties;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
+import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
 import de.adorsys.datasafe.types.api.types.ReadStorePassword;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 
+@Slf4j
 public class Interface {
     private final Properties properties = new Properties();
     private EncryptionServices.EncryptionServicesImpl encryptionServices;
@@ -25,7 +30,9 @@ public class Interface {
     private String readStorePassword;
     private UserIDAuth user;
     private Path storagePath;
-    private int keyType;
+    private String keyType;
+    private String algorithm;
+    private Uri dir;
 
 
     public Interface() {
@@ -47,29 +54,29 @@ public class Interface {
 
         System.out.println("Enter a profile name");
         String name = scanner.nextLine();
-        System.out.print("Enter a password for the keystore: ");
+        System.out.print("Enter a password for the keystore and to read keys: ");
         readStorePassword = scanner.nextLine();
-        System.out.print("Enter a password to read keys from the Keystore ");
-        readKeyPassword = scanner.nextLine();
+        readKeyPassword = readStorePassword;
 
-        System.out.println("Would you like to Encrypt and decrypt document with a Public Key / Private Key or a secret key ");
-        System.out.println("Enter 1 for Pub/Priv key or 2 for secret key");
-        keyType = Integer.parseInt(scanner.nextLine());
+        System.out.println("Would you like to use Asymmetric (Pub/Priv key) or Symmetric encryption (Secret key) ? ");
+        System.out.println("Enter 'PUB' for Asymmetric or 'SEC' for Symmetric encryption");
+        keyType = scanner.nextLine();
 
         System.out.println("The encryption library uses two encryption Algorithms. Namely RSA and Elliptic curve");
-        System.out.println("Enter 1 for RSA or 2 for Elliptic curve encryption");
-        int algo = Integer.parseInt(scanner.nextLine());
+        System.out.println("Elliptic curve will be used to by default for the key creation");
+        algorithm = "EC";
 
-
-        encryptionServices = Config.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algo);
+        encryptionServices = EncryptionConfig.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algorithm);
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine();
 
         userprofile = encryptionServices.userprofile();
-        documentEncryption = encryptionServices.documentEncryption(properties, keyType);
+        documentEncryption = encryptionServices.documentEncryption(properties);
         keyStoreOper = encryptionServices.keyStoreOper();
 
         user = new UserIDAuth(name, new ReadKeyPassword(readKeyPassword.toCharArray()));
-        userprofile.createProfile(user);
-        keyStoreOper.createKeyStore(userprofile.getUserProfile(user), user);
+        userprofile.createPrivProfile(user);
+        keyStoreOper.createKeyStore(userprofile.getUserPrivProfile(user), user);
 
         while (running) {
             System.out.println("Choose an option:");
@@ -86,49 +93,75 @@ public class Interface {
     }
 
     @SneakyThrows
+    private byte[] InputfiletoBytes(String filename) {
+        dir = new Uri(properties.getSystemRoot());
+        String uriPath = filename + ".txt";
+        Path inputFilePath = Paths.get(dir.resolve(uriPath).asURI());
+
+        return MoreFiles.asByteSource(inputFilePath, StandardOpenOption.READ).read();
+    }
+
+    @SneakyThrows
     private void switchOption(int choice) {
         switch (choice) {
             case 1:
-                System.out.println("Enable Path Encryption? Yes / No");
-                String isEncryptionEnabled = scanner.nextLine();
-                documentEncryption.enablePathEncryption(isEncryptionEnabled);
-
-                System.out.println("Please enter file name to be encrypted");
+                System.out.println("Please enter file name to be encrypted, that is stored in the directory : " + properties.getSystemRoot());
                 String filename = scanner.nextLine();
 
-                UserPrivateProfile userPrivateProfile = userprofile.getUserProfile(user);
-                documentEncryption.write(
-                        keyStoreOper.getPublicKey(user, userPrivateProfile)
-                        , keyStoreOper.getPrivateKey(user, userPrivateProfile)
-                        , keyStoreOper.getSecretKey(user, userPrivateProfile), filename
-                );
+                UserPrivateProfile userPrivateProfile = userprofile.getUserPrivProfile(user);
+
+                if (keyType.equalsIgnoreCase("PUB")) {
+
+                    documentEncryption.encryptWithPubKey(
+                            keyStoreOper.getPublicKey(user, userPrivateProfile),
+                            keyStoreOper.getPrivateKey(user, userPrivateProfile),
+                            InputfiletoBytes(filename), filename
+                    );
+                } else if (keyType.equalsIgnoreCase("SEC")) {
+
+                    documentEncryption.encryptWithSecretKey(
+                            keyStoreOper.getSecretKey(user, userPrivateProfile),
+                            InputfiletoBytes(filename), filename
+                    );
+                }
                 break;
             case 2:
                 System.out.println("Please enter file name to be decrypted");
                 String encryptedFilename = scanner.nextLine();
-                documentEncryption.read(encryptedFilename, user);
+                documentEncryption.decrypt(encryptedFilename, user);
                 break;
             case 3:
-                System.out.println("Enter 1 for RSA or 2 for EC (Elliptic Curve Encryption)");
-                int algo = Integer.parseInt(scanner.nextLine());
+                System.out.println("Enter 'EC' (Elliptic Curve Encryption) or 'RSA' to switch encryption algorithm");
+                algorithm = scanner.nextLine();
 
-                encryptionServices = Config.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algo);
+                encryptionServices = EncryptionConfig.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algorithm);
 
-                documentEncryption = encryptionServices.documentEncryption(properties, keyType);
+                documentEncryption = encryptionServices.documentEncryption(properties);
                 keyStoreOper = encryptionServices.keyStoreOper();
-                keyStoreOper.createKeyStore(userprofile.getUserProfile(user), user);
+                keyStoreOper.createKeyStore(userprofile.getUserPrivProfile(user), user);
+                break;
 
             case 4:
                 System.out.println("Enter a new profile name");
-                String newName = scanner.nextLine();
-                System.out.print("Enter a new password for the keystore: ");
+                String name = scanner.nextLine();
+                System.out.print("Enter a password for the keystore and to read keys: ");
                 readStorePassword = scanner.nextLine();
-                System.out.print("Enter a new password to read keys from the Keystore ");
-                readKeyPassword = scanner.nextLine();
+                readKeyPassword = readStorePassword;
 
-                user = new UserIDAuth(newName, new ReadKeyPassword(readKeyPassword.toCharArray()));
-                userprofile.createProfile(user);
-                keyStoreOper.createKeyStore(userprofile.getUserProfile(user), user);
+                System.out.println("Would you like to use Asymmetric (Pub/Priv key) or Symmetric encryption (Secret key) ? ");
+                System.out.println("Enter 'PUB' for Asymmetric or 'SEC' for Symmetric encryption");
+                keyType = scanner.nextLine();
+
+                System.out.println("Enter 'EC' (Elliptic Curve Encryption) or 'RSA' to switch encryption algorithm  (Case sensitive)");
+                algorithm = scanner.nextLine();
+
+                encryptionServices = EncryptionConfig.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algorithm);
+                documentEncryption = encryptionServices.documentEncryption(properties);
+                keyStoreOper = encryptionServices.keyStoreOper();
+
+                user = new UserIDAuth(name, new ReadKeyPassword(readKeyPassword.toCharArray()));
+                userprofile.createPrivProfile(user);
+                keyStoreOper.createKeyStore(userprofile.getUserPrivProfile(user), user);
                 break;
             case 5:
                 running = false;

@@ -57,7 +57,7 @@ public final class EncryptionServices {
         private StorageService storage;
         private EncryptionConfig encryption;
         private OverridesRegistry overridesRegistry;
-        private int algorithm;
+        private String algorithm;
 
         private EncryptionBuilder() {
         }
@@ -82,7 +82,7 @@ public final class EncryptionServices {
             return this;
         }
 
-        public EncryptionBuilder setAlgorithm(int algorithm) {
+        public EncryptionBuilder setAlgorithm(String algorithm) {
             this.algorithm = algorithm;
             return this;
         }
@@ -99,9 +99,9 @@ public final class EncryptionServices {
 
         private final EncryptionConfig encryption;
         private final OverridesRegistry overridesRegistry;
-        private final int algorithm;
+        private final String algorithm;
 
-        public EncryptionServicesImpl(DFSConfig config, StorageService storage, EncryptionConfig encryption, OverridesRegistry overridesRegistry, int algorithm) {
+        public EncryptionServicesImpl(DFSConfig config, StorageService storage, EncryptionConfig encryption, OverridesRegistry overridesRegistry, String algorithm) {
             this.config = config;
             this.storage = storage;
             this.encryption = encryption;
@@ -161,8 +161,8 @@ public final class EncryptionServices {
             return getCustomKeyCreationConfig(algorithm);
         }
 
-        private KeyCreationConfig getCustomKeyCreationConfig(int Algorithm) {
-            if (Algorithm == 1) {
+        private KeyCreationConfig getCustomKeyCreationConfig(String algorithm) {
+            if (algorithm.equalsIgnoreCase("RSA")) {
                 return KeyCreationConfig.builder()
                         .signing(
                                 KeyCreationConfig.SigningKeyCreationCfg.builder().algo("RSA").size(4096).sigAlgo("SHA256withRSA").curve(null).build())
@@ -170,9 +170,10 @@ public final class EncryptionServices {
                                 KeyCreationConfig.EncryptingKeyCreationCfg.builder().algo("RSA").
                                         size(4096).sigAlgo("SHA256withRSA").curve(null).build())
                         .build();
-            } else {
+            } else if (algorithm.equalsIgnoreCase("EC")){
                 return encryption.getKeys();
             }
+            throw new IllegalArgumentException("Encryption algorithm is not set");
 
         }
 
@@ -237,15 +238,15 @@ public final class EncryptionServices {
             return new ProfileRetrievalServiceImpl(config, storage, storage, bucketAccessServiceImplRuntimeDelegatable(), gsonSerde(), userProfileCache());
         }
 
-        public DocumentEncryption documentEncryption(Properties properties, int keyType) {
+        public DocumentEncryption documentEncryption(Properties properties) {
             CMSDocumentWriteServiceRuntimeDelegatable writer = new CMSDocumentWriteServiceRuntimeDelegatable(overridesRegistry, storage, cmsEncryptionServiceImplRuntimeDelegatable());
             CMSDocumentReadServiceRuntimeDelegatable reader = new CMSDocumentReadServiceRuntimeDelegatable(overridesRegistry, storage, privateKeyServiceImplRuntimeDelegatable(), cmsEncryptionServiceImplRuntimeDelegatable());
 
-            return new DocumentEncryption(properties, writer, reader, keyType);
+            return new DocumentEncryption(properties, writer, reader);
         }
 
         public KeyStoreOper keyStoreOper() {
-            return new KeyStoreOper(storage, config, storage, keyCreationConfig());
+            return new KeyStoreOper(storage, config, keyCreationConfig(), keyStoreServiceImplRuntimeDelegatable());
         }
 
         public Userprofile userprofile() {

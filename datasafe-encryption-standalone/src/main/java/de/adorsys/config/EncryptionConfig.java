@@ -16,8 +16,7 @@ import java.nio.file.Path;
 
 @Slf4j
 @UtilityClass
-public class Config {
-    public static final String FILESYSTEM_ENV = "USE_FILESYSTEM";
+public class EncryptionConfig {
     private static final MutableEncryptionConfig encryptionConfig = new MutableEncryptionConfig();
 
     private static StorageService StorageServiceFilesystem(Path fsRoot) {
@@ -27,7 +26,7 @@ public class Config {
     }
 
     @SneakyThrows
-    public static EncryptionServices.EncryptionServicesImpl encryptionServices(Path fsRoot, ReadStorePassword readStorePassword, int algo) {
+    public static EncryptionServices.EncryptionServicesImpl encryptionServices(Path fsRoot, ReadStorePassword readStorePassword, String algorithm) {
         OverridesRegistry registry = new BaseOverridesRegistry();
         return EncryptionServices
                 .builder()
@@ -35,7 +34,7 @@ public class Config {
                 .setEncryption(encryptionConfig.toEncryptionConfig())
                 .setStorage(StorageServiceFilesystem(fsRoot))
                 .setOverridesRegistry(registry)
-                .setAlgorithm(algo)
+                .setAlgorithm(algorithm)
                 .build();
 
     }

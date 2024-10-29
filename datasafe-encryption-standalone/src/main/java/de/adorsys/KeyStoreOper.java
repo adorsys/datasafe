@@ -5,16 +5,14 @@ import de.adorsys.datasafe.directory.api.config.DFSConfig;
 import de.adorsys.datasafe.directory.api.types.UserPrivateProfile;
 import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.EncryptionConfig;
 import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
+import de.adorsys.datasafe.storage.api.StorageService;
 import de.adorsys.datasafe.storage.api.actions.StorageReadService;
 import de.adorsys.datasafe.storage.api.actions.StorageWriteService;
 import de.adorsys.datasafe.types.api.resource.AbsoluteLocation;
 import de.adorsys.datasafe.types.api.resource.PrivateResource;
 import de.adorsys.datasafe.types.api.resource.WithCallback;
-import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,20 +28,18 @@ import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationCon
 
 @Slf4j
 public class KeyStoreOper {
-    private final KeyStoreService keyStoreService = new KeyStoreServiceImpl(
-            EncryptionConfig.builder().build().getKeystore(),
-            DaggerBCJuggler.builder().build()
-    );
+    private final KeyStoreService keyStoreService;
     private final StorageReadService readService;
     private final StorageWriteService writeService;
     private final KeyCreationConfig keyCreationConfig;
     private final DFSConfig config;
 
-    public KeyStoreOper(StorageReadService readService, DFSConfig config, StorageWriteService writeService, KeyCreationConfig keyCreationConfig) {
-        this.readService = readService;
+    public KeyStoreOper(StorageService service, DFSConfig config, KeyCreationConfig keyCreationConfig, KeyStoreService keyStoreService) {
+        this.readService = service;
+        this.writeService = service;
         this.config = config;
-        this.writeService = writeService;
         this.keyCreationConfig = keyCreationConfig;
+        this.keyStoreService = keyStoreService;
     }
 
     public void createKeyStore(UserPrivateProfile userProfile, UserIDAuth user) {
@@ -73,9 +69,11 @@ public class KeyStoreOper {
         byte[] payload;
         try (InputStream is = readService.read(location)) {
             payload = ByteStreams.toByteArray(is);
+            return keyStoreService.deserialize(payload, config.privateKeyStoreAuth(user).getReadStorePassword());
+        } catch (Exception e) {
+            log.error("Keystore does not exist");
+            return null;
         }
-
-        return keyStoreService.deserialize(payload, config.privateKeyStoreAuth(user).getReadStorePassword());
 
     }
 
