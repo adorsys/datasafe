@@ -10,10 +10,9 @@ import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
 import java.util.Vector;
 
 public class Userprofile {
-    private DFSConfig config;
-    private ProfileStoreService storeProfile;
-    private ProfileRetrievalService retrieveProfile;
-    private UserPrivateProfile privateProfile;
+    private final DFSConfig config;
+    private final ProfileStoreService storeProfile;
+    private final ProfileRetrievalService retrieveProfile;
 
     public Userprofile(DFSConfig config, ProfileStoreService storeProfile, ProfileRetrievalService retrieveProfile) {
         this.config = config;
@@ -24,7 +23,7 @@ public class Userprofile {
     public void createPrivProfile(UserIDAuth user) {
         if (!userExists(user)) {
             CreateUserPrivateProfile templatePrivProfile = config.defaultPrivateTemplate(user);
-            privateProfile = templatePrivProfile.buildPrivateProfile();
+            UserPrivateProfile privateProfile = templatePrivProfile.buildPrivateProfile();
             storeProfile.registerPrivate(templatePrivProfile.getId().getUserID(), privateProfile);
         }
     }
@@ -32,7 +31,7 @@ public class Userprofile {
     public UserPrivateProfile getUserPrivProfile(UserIDAuth user) {
         return retrieveProfile.privateProfile(user);
     }
-    public boolean userExists(UserIDAuth user) {
+    private boolean userExists(UserIDAuth user) {
         return retrieveProfile.userExists(user.getUserID());
     }
 }

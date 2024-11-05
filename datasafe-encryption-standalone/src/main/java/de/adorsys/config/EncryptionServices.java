@@ -238,18 +238,18 @@ public final class EncryptionServices {
             return new ProfileRetrievalServiceImpl(config, storage, storage, bucketAccessServiceImplRuntimeDelegatable(), gsonSerde(), userProfileCache());
         }
 
-        public DocumentEncryption documentEncryption(Properties properties) {
+        public DocumentEncryption getDocumentEncryption(Properties properties) {
             CMSDocumentWriteServiceRuntimeDelegatable writer = new CMSDocumentWriteServiceRuntimeDelegatable(overridesRegistry, storage, cmsEncryptionServiceImplRuntimeDelegatable());
             CMSDocumentReadServiceRuntimeDelegatable reader = new CMSDocumentReadServiceRuntimeDelegatable(overridesRegistry, storage, privateKeyServiceImplRuntimeDelegatable(), cmsEncryptionServiceImplRuntimeDelegatable());
 
             return new DocumentEncryption(properties, writer, reader);
         }
 
-        public KeyStoreOper keyStoreOper() {
+        public KeyStoreOper getKeyStoreOper() {
             return new KeyStoreOper(storage, config, keyCreationConfig(), keyStoreServiceImplRuntimeDelegatable());
         }
 
-        public Userprofile userprofile() {
+        public Userprofile getUserprofile() {
             return new Userprofile(config, profileStoreService(), profileRetrievalService());
         }
 

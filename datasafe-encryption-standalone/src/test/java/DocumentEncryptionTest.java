@@ -1,23 +1,12 @@
-import com.google.common.io.MoreFiles;
 import de.adorsys.DocumentEncryption;
-import de.adorsys.config.EncryptionConfig;
-import de.adorsys.config.EncryptionServices;
 import de.adorsys.config.Properties;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentReadService;
 import de.adorsys.datasafe.encrypiton.api.document.EncryptedDocumentWriteService;
-import de.adorsys.datasafe.encrypiton.api.keystore.KeyStoreService;
 import de.adorsys.datasafe.encrypiton.api.types.UserIDAuth;
-import de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig;
 import de.adorsys.datasafe.encrypiton.api.types.keystore.*;
-import de.adorsys.datasafe.encrypiton.impl.keystore.KeyStoreServiceImpl;
 import de.adorsys.datasafe.types.api.actions.ReadRequest;
 import de.adorsys.datasafe.types.api.resource.Uri;
 import de.adorsys.datasafe.types.api.shared.BaseMockitoTest;
-import de.adorsys.datasafe.types.api.types.ReadKeyPassword;
-import de.adorsys.datasafe.types.api.types.ReadStorePassword;
-import de.adorsys.keymanagement.api.Juggler;
-import de.adorsys.keymanagement.api.config.keystore.KeyStoreConfig;
-import de.adorsys.keymanagement.juggler.services.DaggerBCJuggler;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,20 +14,15 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import javax.crypto.SecretKey;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.util.List;
 import java.util.Map;
 
-import static de.adorsys.datasafe.encrypiton.api.types.encryption.KeyCreationConfig.DOCUMENT_KEY_ID_PREFIX;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

@@ -43,14 +43,14 @@ public class Interface {
         running = true;
         scanner = new Scanner(System.in);
 
-        System.out.println("Encryption Application");
+        System.out.println("----------------Encryption Application-----------------");
 
-        if (properties.getSystemRoot() == null) {
-            System.out.println("Enter storage path where you have stored txt files to be encrypted");
-            storagePath = Paths.get(scanner.nextLine());
-        } else {
-            storagePath = Paths.get(properties.getSystemRoot());
-        }
+        System.out.println("Enter storage path where you have stored txt files, to be encrypted");
+        System.out.println("Format example :  /Users/YourUsername/Documents/YourDirectory/");
+        String absolutePath = "file://" + scanner.nextLine();
+        properties.setSystemRoot(absolutePath);
+        storagePath = Paths.get(absolutePath);
+
 
         System.out.println("Enter a profile name");
         String name = scanner.nextLine();
@@ -67,16 +67,18 @@ public class Interface {
         algorithm = "EC";
 
         encryptionServices = EncryptionConfig.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algorithm);
-        System.out.println("Press Enter to continue...");
-        scanner.nextLine();
 
-        userprofile = encryptionServices.userprofile();
-        documentEncryption = encryptionServices.documentEncryption(properties);
-        keyStoreOper = encryptionServices.keyStoreOper();
+
+        userprofile = encryptionServices.getUserprofile();
+        documentEncryption = encryptionServices.getDocumentEncryption(properties);
+        keyStoreOper = encryptionServices.getKeyStoreOper();
 
         user = new UserIDAuth(name, new ReadKeyPassword(readKeyPassword.toCharArray()));
         userprofile.createPrivProfile(user);
         keyStoreOper.createKeyStore(userprofile.getUserPrivProfile(user), user);
+
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine();
 
         while (running) {
             System.out.println("Choose an option:");
@@ -95,8 +97,7 @@ public class Interface {
     @SneakyThrows
     private byte[] InputfiletoBytes(String filename) {
         dir = new Uri(properties.getSystemRoot());
-        String uriPath = filename + ".txt";
-        Path inputFilePath = Paths.get(dir.resolve(uriPath).asURI());
+        Path inputFilePath = Paths.get(dir.resolve(filename).asURI());
 
         return MoreFiles.asByteSource(inputFilePath, StandardOpenOption.READ).read();
     }
@@ -105,7 +106,7 @@ public class Interface {
     private void switchOption(int choice) {
         switch (choice) {
             case 1:
-                System.out.println("Please enter file name to be encrypted, that is stored in the directory : " + properties.getSystemRoot());
+                System.out.println("Please enter file name to be encrypted, that is stored in the directory (eg. yourfile.txt) : " + properties.getSystemRoot());
                 String filename = scanner.nextLine();
 
                 UserPrivateProfile userPrivateProfile = userprofile.getUserPrivProfile(user);
@@ -126,9 +127,10 @@ public class Interface {
                 }
                 break;
             case 2:
-                System.out.println("Please enter file name to be decrypted");
+                System.out.println("Please enter file name to be decrypted (eg. yourfile.txt)");
                 String encryptedFilename = scanner.nextLine();
                 documentEncryption.decrypt(encryptedFilename, user);
+                System.out.println("File decrypted and stored in: " + properties.getSystemRoot());
                 break;
             case 3:
                 System.out.println("Enter 'EC' (Elliptic Curve Encryption) or 'RSA' to switch encryption algorithm");
@@ -136,8 +138,8 @@ public class Interface {
 
                 encryptionServices = EncryptionConfig.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algorithm);
 
-                documentEncryption = encryptionServices.documentEncryption(properties);
-                keyStoreOper = encryptionServices.keyStoreOper();
+                documentEncryption = encryptionServices.getDocumentEncryption(properties);
+                keyStoreOper = encryptionServices.getKeyStoreOper();
                 keyStoreOper.createKeyStore(userprofile.getUserPrivProfile(user), user);
                 break;
 
@@ -156,8 +158,8 @@ public class Interface {
                 algorithm = scanner.nextLine();
 
                 encryptionServices = EncryptionConfig.encryptionServices(storagePath, new ReadStorePassword(readStorePassword), algorithm);
-                documentEncryption = encryptionServices.documentEncryption(properties);
-                keyStoreOper = encryptionServices.keyStoreOper();
+                documentEncryption = encryptionServices.getDocumentEncryption(properties);
+                keyStoreOper = encryptionServices.getKeyStoreOper();
 
                 user = new UserIDAuth(name, new ReadKeyPassword(readKeyPassword.toCharArray()));
                 userprofile.createPrivProfile(user);

@@ -24,14 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-//@Component
 public class DocumentEncryption {
     private final EncryptedDocumentReadService reader;
     private final EncryptedDocumentWriteService writer;
     private final Properties properties;
     private Uri dir;
-    private boolean PathEncryptionEnabled;
-    private int keyType;
 
     public DocumentEncryption(Properties properties, EncryptedDocumentWriteService writer, EncryptedDocumentReadService reader) {
         this.writer = writer;
@@ -89,7 +86,7 @@ public class DocumentEncryption {
     @SneakyThrows
     private void writeToFile(InputStream is, String filename){
         dir = new Uri(properties.getSystemRoot());
-        String uriPath = filename + "_decrypted" + ".txt";
+        String uriPath = filename + "_decrypted";
         Path outputPath = Paths.get(dir.resolve(uriPath).asURI());
         if (!Files.exists(outputPath)) {
             Files.createFile(outputPath);

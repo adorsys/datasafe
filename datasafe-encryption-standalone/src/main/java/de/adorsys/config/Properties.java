@@ -6,5 +6,5 @@ import lombok.Data;
 
 @Data
 public class Properties {
-    private String systemRoot = "file:///Users/thendo/Desktop/test/";
+    private String systemRoot;
 }
