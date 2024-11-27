@@ -34,17 +34,21 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
     }
 
     /**
-     * Regex-match associated private resource URI's
+     * Regex-match associated private resource URI's.
      */
     @Override
     public AbsoluteLocation<PrivateResource> privateAccessFor(UserIDAuth user, PrivateResource resource) {
         log.debug("get private access for user {} and bucket {}", user, resource);
-        Optional<StorageIdentifier> storageAccess = getStorageAccessCredentials(user, resource);
+        Optional<StorageIdentifier> storageAccess = StorageAccessHelper.getStorageAccessCredentials(
+                storageKeyStoreOperations.get(), user, resource
+        );
 
         if (!storageAccess.isPresent()) {
             // attempt to re-read storages keystore, maybe cache is expired:
             storageKeyStoreOperations.get().invalidateCache(user);
-            storageAccess = getStorageAccessCredentials(user, resource);
+            storageAccess = StorageAccessHelper.getStorageAccessCredentials(
+                    storageKeyStoreOperations.get(), user, resource
+            );
             // looks like there is really no storage credentials for this resource, either it can be public:
             if (!storageAccess.isPresent()) {
                 return new AbsoluteLocation<>(resource);
@@ -73,17 +77,32 @@ public class RegexAccessServiceWithStorageCredentialsImpl implements BucketAcces
         return new AbsoluteLocation<>(resource);
     }
 
-    private Optional<StorageIdentifier> getStorageAccessCredentials(UserIDAuth user, PrivateResource resource) {
-        String uri = resource.location().asString();
-        Set<StorageIdentifier> aliases = storageKeyStoreOperations.get().readAliases(user);
+    /**
+     * Helper class for managing Storage Access logic.
+     */
+    private static class StorageAccessHelper {
 
-        Optional<StorageIdentifier> directMatch = aliases
-                .stream()
-                .filter(it -> uri.matches(it.getId()))
-                .findFirst();
+        /**
+         * Fetches storage access credentials based on the provided user and resource.
+         */
+        public static Optional<StorageIdentifier> getStorageAccessCredentials(
+                StorageKeyStoreOperations keyStoreOperations,
+                UserIDAuth user,
+                PrivateResource resource
+        ) {
+            String uri = resource.location().asString();
+            Set<StorageIdentifier> aliases = keyStoreOperations.readAliases(user);
 
-        return directMatch.isPresent() ?
-                directMatch
-                : aliases.stream().filter(it -> StorageIdentifier.DEFAULT.getId().equals(it.getId())).findFirst();
+            // Attempt to find a direct match.
+            Optional<StorageIdentifier> directMatch = aliases
+                    .stream()
+                    .filter(it -> uri.matches(it.getId()))
+                    .findFirst();
+
+            // If no direct match, try the default.
+            return directMatch.isPresent() ? directMatch : aliases.stream()
+                    .filter(it -> StorageIdentifier.DEFAULT.getId()
+                    .equals(it.getId())).findFirst();
+        }
     }
 }

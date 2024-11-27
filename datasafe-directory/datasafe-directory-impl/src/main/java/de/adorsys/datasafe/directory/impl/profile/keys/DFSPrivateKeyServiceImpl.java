@@ -46,14 +46,10 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      */
     @Override
     public AuthPathEncryptionSecretKey pathEncryptionSecretKey(UserIDAuth forUser) {
-        Set<String> aliases = keyStoreOper.readAliases(forUser);
-        SecretKeyIDWithKey secretPathKeyId = keyByPrefix(forUser, aliases, PATH_KEY_ID_PREFIX);
-        SecretKeyIDWithKey secretPathCtrKeyId = keyByPrefix(forUser, aliases, PATH_KEY_ID_PREFIX_CTR);
+        SecretKeyIDWithKey secretPathKeyId = getKeyByPrefix(forUser, new PathKeyType());
+        SecretKeyIDWithKey secretPathCtrKeyId = getKeyByPrefix(forUser, new PathCtrKeyType());
 
-        return new AuthPathEncryptionSecretKey(
-                secretPathKeyId,
-                secretPathCtrKeyId
-        );
+        return new AuthPathEncryptionSecretKey(secretPathKeyId, secretPathCtrKeyId);
     }
 
     /**
@@ -61,7 +57,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
      */
     @Override
     public SecretKeyIDWithKey documentEncryptionSecretKey(UserIDAuth forUser) {
-        return keyByPrefix(forUser, DOCUMENT_KEY_ID_PREFIX);
+        return getKeyByPrefix(forUser, new DocumentKeyType());
     }
 
     /**
@@ -72,7 +68,7 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
     public void validateUserHasAccessOrThrow(UserIDAuth forUser) {
         // avoid only unauthorized access
         try {
-            keyByPrefix(forUser, DOCUMENT_KEY_ID_PREFIX); // for access check
+            getKeyByPrefix(forUser, new DocumentKeyType()); // for access check
         } catch (RuntimeException ex) {
             // lombok @SneakyThrows handling
             if (ex.getCause() instanceof KeyStoreException ||
@@ -97,8 +93,8 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 .filter(aliases::contains)
                 .collect(Collectors.toMap(
                         keyId -> keyId,
-                        keyId -> keyStoreOper.getKey(forUser, keyId))
-                );
+                        keyId -> keyStoreOper.getKey(forUser, keyId)
+                ));
     }
 
     @Override
@@ -106,15 +102,13 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
         return keyStoreOper.getKeyPair(forUser);
     }
 
-    protected SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, String prefix) {
-        return keyByPrefix(
-                forUser,
-                keyStoreOper.readAliases(forUser),
-                prefix
-        );
-    }
+    /**
+     * Retrieves a key from the keystore based on the given key type.
+     */
+    private SecretKeyIDWithKey getKeyByPrefix(UserIDAuth forUser, KeyType keyType) {
+        Collection<String> aliases = keyStoreOper.readAliases(forUser);
+        String prefix = keyType.getPrefix();
 
-    protected SecretKeyIDWithKey keyByPrefix(UserIDAuth forUser, Collection<String> aliases, String prefix) {
         KeyID key = aliases.stream()
                 .filter(it -> it.startsWith(prefix))
                 .map(KeyID::new)
@@ -125,5 +119,42 @@ public class DFSPrivateKeyServiceImpl implements PrivateKeyService {
                 key,
                 (SecretKey) keyStoreOper.getKey(forUser, key.getValue())
         );
+    }
+
+    /**
+     * Abstract class representing different key types.
+     */
+    private abstract static class KeyType {
+        public abstract String getPrefix();
+    }
+
+    /**
+     * Key type for document encryption keys.
+     */
+    private static class DocumentKeyType extends KeyType {
+        @Override
+        public String getPrefix() {
+            return DOCUMENT_KEY_ID_PREFIX;
+        }
+    }
+
+    /**
+     * Key type for path encryption keys.
+     */
+    private static class PathKeyType extends KeyType {
+        @Override
+        public String getPrefix() {
+            return PATH_KEY_ID_PREFIX;
+        }
+    }
+
+    /**
+     * Key type for path counter encryption keys.
+     */
+    private static class PathCtrKeyType extends KeyType {
+        @Override
+        public String getPrefix() {
+            return PATH_KEY_ID_PREFIX_CTR;
+        }
     }
 }

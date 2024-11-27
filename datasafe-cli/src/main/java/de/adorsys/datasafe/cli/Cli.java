@@ -90,24 +90,24 @@ public class Cli implements Runnable {
         private Credentials credentials;
 
         String getUsername() {
-            return credentials().getUsername();
+            return getCredentials().getUsername();
         }
 
         ReadKeyPassword getPassword() {
             return new ReadKeyPassword(new Supplier<char[]>() {
                 @Override
                 public char[] get() {
-                    return credentials().getPassword().toCharArray();
+                    return getCredentials().getPassword().toCharArray();
                 }
             });
         }
 
         ReadStorePassword getSystemPassword() {
-            return new ReadStorePassword(credentials().getSystemPassword());
+            return new ReadStorePassword(getCredentials().getSystemPassword());
         }
 
         @SneakyThrows
-        private Credentials credentials() {
+        private Credentials getCredentials() {
             if (null != credentials) {
                 return credentials;
             }

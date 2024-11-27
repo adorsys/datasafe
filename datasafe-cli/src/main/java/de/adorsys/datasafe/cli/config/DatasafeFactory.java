@@ -123,7 +123,8 @@ public class DatasafeFactory {
         );
         amazonS3ClientBuilder.withEndpointConfiguration(endpoint);
 
-        if (! url.toLowerCase().startsWith("https")) {
+        boolean usesHttpProtocol = !url.toLowerCase().startsWith("https");
+        if (usesHttpProtocol) {
             log.info("Creating S3 client without https");
             ClientConfiguration clientConfig = new ClientConfiguration();
             clientConfig.setProtocol(Protocol.HTTP);
@@ -133,14 +134,16 @@ public class DatasafeFactory {
 
         AmazonS3 amazons3 = amazonS3ClientBuilder.build();
 
+        int poolSize = 5;
+        int queueSize = 5;
+
         return new S3StorageService(
                 amazons3,
                 region,
                 bucket,
                 ExecutorServiceUtil
-                        .submitterExecutesOnStarvationExecutingService(
-                                5,
-                                5
+                        .submitterExecutesOnStarvationExecutingService(poolSize,
+                                queueSize
                         )
         );
     }

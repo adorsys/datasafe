@@ -30,24 +30,26 @@ public abstract class DefaultKeystoreCacheModule {
     @Singleton
     static KeyStoreCache keyStoreCache(@Nullable OverridesRegistry registry) {
 
-        Supplier<Cache<UserID, KeyStore>> cacheKeystore = () -> CacheBuilder.newBuilder()
-                .initialCapacity(1000)
-                // for this interval removed storage access key/changed keystore might not be seen
-                .expireAfterWrite(15, TimeUnit.MINUTES)
-                .build();
-
-        // These are actually static, so we can afford longer expiry time
-        Supplier<Cache<UserID, List<PublicKeyIDWithPublicKey>>> cachePubKeys = () -> CacheBuilder.newBuilder()
-                .initialCapacity(1000)
-                .expireAfterWrite(60, TimeUnit.MINUTES)
-                .build();
+        Supplier<Cache<UserID, KeyStore>> cacheKeystore = CacheCreator.create(15, TimeUnit.MINUTES);
+        Supplier<Cache<UserID, List<PublicKeyIDWithPublicKey>>> cachePubKeys = CacheCreator.create(60, TimeUnit.MINUTES);
 
         return new DefaultKeyStoreCacheRuntimeDelegatable(
                 registry,
                 cachePubKeys.get().asMap(),
                 cacheKeystore.get().asMap(),
-                // it will generate new instance here
                 cacheKeystore.get().asMap()
         );
+    }
+
+    /**
+     * Inner class responsible for creating caches with specific expiration configurations.
+     */
+    private static class CacheCreator {
+        static <T> Supplier<Cache<UserID, T>> create(long expireAfter, TimeUnit timeUnit) {
+            return () -> CacheBuilder.newBuilder()
+                    .initialCapacity(1000)
+                    .expireAfterWrite(expireAfter, timeUnit)
+                    .build();
+        }
     }
 }

@@ -75,14 +75,14 @@ public class CreateUserPrivateProfile {
 
     public UserPrivateProfile buildPrivateProfile() {
         return UserPrivateProfile.builder()
-            .keystore(keystore)
-            .privateStorage(new HashMap<>(Collections.singletonMap(StorageIdentifier.DEFAULT, privateStorage)))
-            .storageCredentialsKeystore(storageCredentialsKeystore)
-            .inboxWithFullAccess(inboxWithWriteAccess)
-            .documentVersionStorage(documentVersionStorage)
-            .associatedResources(associatedResources)
-            .publishPublicKeysTo(publishPubKeysTo)
-            .appVersion(appVersion)
-            .build();
+                .keystore(keystore)
+                .privateStorage(new HashMap<>(Collections.singletonMap(StorageIdentifier.DEFAULT, privateStorage)))
+                .storageCredentialsKeystore(storageCredentialsKeystore)
+                .inboxWithFullAccess(inboxWithWriteAccess)
+                .documentVersionStorage(documentVersionStorage)
+                .associatedResources(associatedResources)
+                .publishPublicKeysTo(publishPubKeysTo)
+                .appVersion(appVersion)
+                .build();
     }
 }
