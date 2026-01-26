@@ -84,7 +84,7 @@
         <guava.version>32.1.1-jre</guava.version>
         <picocli.version>4.0.3</picocli.version>
         <jupiter.version>5.11.0-M2</jupiter.version>
-        <assertj.version>3.12.2</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <mockito.version>5.5.0</mockito.version>
         <surefire.version>3.1.2</surefire.version>
         <compress.version>1.26.0</compress.version>
