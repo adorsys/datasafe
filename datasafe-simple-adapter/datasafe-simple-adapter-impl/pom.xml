@@ -12,7 +12,7 @@
     <artifactId>datasafe-simple-adapter-impl</artifactId>
 
     <properties>
-        <bouncycastle.bcprov.version>1.78.1</bouncycastle.bcprov.version>
+        <bouncycastle.bcprov.version>1.84</bouncycastle.bcprov.version>
         <jetbrains.annotations.version>17.0.0</jetbrains.annotations.version>
     </properties>
 
